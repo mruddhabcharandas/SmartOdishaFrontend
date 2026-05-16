@@ -55,11 +55,11 @@ export default function Home() {
     return () => window.removeEventListener('scroll', fn)
   }, [])
   useEffect(() => {
-    setSEO('Wholesale Electronics Supplier India | Click2Kart', 'Buy wholesale electronics like chargers, mobiles, accessories at best B2B prices. GST invoice, fast delivery across India.')
+    setSEO('Wholesale Electronics Supplier India | SmartOdisha', 'Buy wholesale electronics like chargers, mobiles, accessories at best B2B prices. GST invoice, fast delivery across India.')
     const cleanup = injectJsonLd({
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "Click2Kart",
+      "name": "SmartOdisha",
       "url": location.origin,
       "logo": (CONFIG.LOGO_URL || ""),
       "contactPoint": {
@@ -72,14 +72,14 @@ export default function Home() {
   }, [])
 
   const line1 = CONFIG.HERO_TITLE_LINE1 || 'Wholesale with'
-  const line2 = CONFIG.HERO_TITLE_LINE2 || 'Click2Kart'
+  const line2 = CONFIG.HERO_TITLE_LINE2 || 'SmartOdisha'
 
   useEffect(() => {
-    setSEO('Click2Kart | India\'s Premier B2B Tech Hub', 'Direct wholesale access to top-tier electronics. GST compliant billing, bulk-only pricing, and Pan-India logistics for modern enterprises.')
+    setSEO('SmartOdisha | India\'s Premier B2B Tech Hub', 'Direct wholesale access to top-tier electronics. GST compliant billing, bulk-only pricing, and Pan-India logistics for modern enterprises.')
     injectJsonLd({
       "@context": "https://schema.org",
       "@type": "Organization",
-      "name": "Click2Kart",
+      "name": "SmartOdisha",
       "url": window.location.origin,
       "logo": window.location.origin + "/logo.png",
       "description": "India's Premier B2B Tech Hub for electronics wholesale."
@@ -102,7 +102,7 @@ export default function Home() {
       { key: 'n1', label: 'GST-ready invoicing · bulk price tiers', pill: 'B2B' },
       { key: 'n2', label: 'Pan-India dispatch on stocked SKUs', pill: 'Logistics' },
       { key: 'n3', label: 'Login for wholesale rates on the catalogue', pill: 'Secure' },
-      { key: 'n4', label: 'Verified catalogue · partner onboarding', pill: 'Click2Kart' },
+      { key: 'n4', label: 'Verified catalogue · partner onboarding', pill: 'SmartOdisha' },
     ]
     const base = fromApi.length > 0 ? fromApi : neutral
     return [...base, ...base]
@@ -823,7 +823,7 @@ export default function Home() {
 
         {/* ── FEATURES ── */}
         <section className="hm-features-section">
-          <div className="hm-section-label">Why Click2Kart</div>
+          <div className="hm-section-label">Why SmartOdisha</div>
           <h2 className="hm-section-heading">
             Built for <em>Serious</em><br />Business
           </h2>
@@ -863,7 +863,7 @@ export default function Home() {
               Ready to <em>Transform</em><br />Your Inventory?
             </h2>
             <p className="hm-cta-sub">
-              Join 500+ businesses sourcing directly from Click2Kart. Get access to credit lines,
+              Join 500+ businesses sourcing directly from SmartOdisha. Get access to credit lines,
               dedicated account managers, and exclusive factory-direct stock.
             </p>
             <div className="hm-cta-btns">
@@ -902,7 +902,7 @@ export default function Home() {
               <div className="hm-step-tag-pill">Get Started</div>
               <div className="hm-step-h">Create Your B2B Account</div>
               <p className="hm-step-p">
-                Sign up at Click2Kart in under 2 minutes. Enter your business details — <strong>no documents needed</strong> at this stage.
+                Sign up at SmartOdisha in under 2 minutes. Enter your business details — <strong>no documents needed</strong> at this stage.
               </p>
             </div>
 

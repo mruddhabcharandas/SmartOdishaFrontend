@@ -214,45 +214,27 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
         {/* Pricing & CTA */}
         <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10 }}>
           <div style={{ flex: 1 }}>
-            {authed ? (
-              <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 1 }}>
-                  <span className="ct-card-price" style={{ fontSize: '20px', fontWeight: 800, color: '#111827' }}>
-                    ₹{Number(minPrice).toLocaleString()}
-                  </span>
-                  {displayMrp > minPrice && (
-                    <span className="ct-card-off" style={{ 
-                      fontSize: '10px', fontWeight: 800, color: '#059669', 
-                      background: 'rgba(5, 150, 105, 0.08)', 
-                      padding: '1px 5px', borderRadius: '4px' 
-                    }}>
-                      -{Math.round(((displayMrp - minPrice) / displayMrp) * 100)}%
-                    </span>
-                  )}
-                </div>
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 1 }}>
+                <span className="ct-card-price" style={{ fontSize: '20px', fontWeight: 800, color: '#111827' }}>
+                  ₹{Number(minPrice).toLocaleString()}
+                </span>
                 {displayMrp > minPrice && (
-                  <div className="ct-card-mrp" style={{ fontSize: '11px', color: '#9ca3af', textDecoration: 'line-through' }}>
-                    MRP ₹{Number(displayMrp).toLocaleString()}
-                  </div>
+                  <span className="ct-card-off" style={{ 
+                    fontSize: '10px', fontWeight: 800, color: '#059669', 
+                    background: 'rgba(5, 150, 105, 0.08)', 
+                    padding: '1px 5px', borderRadius: '4px' 
+                  }}>
+                    -{Math.round(((displayMrp - minPrice) / displayMrp) * 100)}%
+                  </span>
                 )}
-              </>
-            ) : (
-              <Link to="/login" style={{ textDecoration: 'none' }}>
-                <div style={{ 
-                  display: 'inline-flex', alignItems: 'center', gap: 5, 
-                  background: '#f9fafb', border: '1px solid #f3f4f6', 
-                  padding: '5px 10px', borderRadius: '8px'
-                }}>
-                  <span style={{ fontSize: '13px', fontWeight: 800, color: '#7c3aed' }}>₹</span>
-                  <span style={{ filter: 'blur(3px)', fontWeight: 900, color: '#7c3aed', letterSpacing: '1px' }}>****</span>
-                  <svg width="10" height="10" fill="none" stroke="#7c3aed" strokeWidth={2.5} viewBox="0 0 24 24">
-                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+              </div>
+              {displayMrp > minPrice && (
+                <div className="ct-card-mrp" style={{ fontSize: '11px', color: '#9ca3af', textDecoration: 'line-through' }}>
+                  MRP ₹{Number(displayMrp).toLocaleString()}
                 </div>
-                <div style={{ fontSize: '8px', fontWeight: 800, color: '#7c3aed', marginTop: 3, textTransform: 'uppercase' }}>Login for Price</div>
-              </Link>
-            )}
+              )}
+            </>
           </div>
 
           <button

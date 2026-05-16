@@ -209,9 +209,9 @@ export default function Catalogue({ initialBrand, brandName }) {
     return () => t && clearTimeout(t)
   }, [q])
   useEffect(() => {
-    const title = category ? `${category} · Wholesale | Click2Kart`
-      : q ? `Search: ${q} | Click2Kart` : 'B2B Collection | Click2Kart'
-    setSEO(title, 'Discover quality wholesale electronics with exclusive B2B pricing, GST billing, and bulk discounts.')
+    const title = category ? `${category} · Shop | SmartOdisha`
+      : q ? `Search: ${q} | SmartOdisha` : 'Collection | SmartOdisha'
+    setSEO(title, 'Discover quality electronics with best prices, fast delivery across Odisha.')
   }, [q, category])
 
   const filteredSorted = useMemo(() => {
@@ -227,25 +227,21 @@ export default function Catalogue({ initialBrand, brandName }) {
     };
 
     let list = [...items]
-    if (authed) {
-      const mn = Number(minPrice), mx = Number(maxPrice)
-      if (!isNaN(mn) && minPrice !== '') list = list.filter(p => getMinPrice(p) >= mn)
-      if (!isNaN(mx) && maxPrice !== '') list = list.filter(p => getMinPrice(p) <= mx)
+    const mn = Number(minPrice), mx = Number(maxPrice)
+    if (!isNaN(mn) && minPrice !== '') list = list.filter(p => getMinPrice(p) >= mn)
+    if (!isNaN(mx) && maxPrice !== '') list = list.filter(p => getMinPrice(p) <= mx)
 
-      if (sort === 'PRICE_LOW') list.sort((a, b) => getMinPrice(a) - getMinPrice(b))
-      if (sort === 'PRICE_HIGH') list.sort((a, b) => getMinPrice(b) - getMinPrice(a))
-    }
+    if (sort === 'PRICE_LOW') list.sort((a, b) => getMinPrice(a) - getMinPrice(b))
+    if (sort === 'PRICE_HIGH') list.sort((a, b) => getMinPrice(b) - getMinPrice(a))
     if (sort === 'NEW') list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
     return list
-  }, [items, minPrice, maxPrice, sort, authed])
+  }, [items, minPrice, maxPrice, sort])
 
   /* ── SORT OPTIONS ── */
   const sortOpts = [
     { v: 'NEW', l: 'Newest First', ico: '✨' },
-    ...(authed ? [
-      { v: 'PRICE_LOW', l: 'Price: Low → High', ico: '💰' },
-      { v: 'PRICE_HIGH', l: 'Price: High → Low', ico: '💎' },
-    ] : [])
+    { v: 'PRICE_LOW', l: 'Price: Low → High', ico: '💰' },
+    { v: 'PRICE_HIGH', l: 'Price: High → Low', ico: '💎' },
   ]
 
   if (loading && items.length === 0) return (

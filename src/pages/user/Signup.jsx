@@ -74,14 +74,14 @@ export default function Signup() {
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[2.5rem] shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-500">
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center h-16 w-16 rounded-3xl bg-blue-600 text-white text-2xl font-black shadow-xl shadow-blue-100 mb-4">
-            C2K
+SO
           </div>
           <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-            {step === 1 ? 'Create Business Account' : 'Verify Email'}
+            {step === 1 ? 'Create Account' : 'Verify Email'}
           </h2>
           <p className="text-sm text-gray-500 font-medium">
             {step === 1 
-              ? 'Join 500+ businesses sourcing premium tech.' 
+              ? 'Join thousands of customers shopping with SmartOdisha.' 
               : `We've sent a 6-digit code to ${formData.email}`}
           </p>
         </div>
