@@ -152,8 +152,8 @@ export default function AdminLayout() {
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
           <div className="flex items-center gap-3">
-            <span className="h-12 rounded-2xl bg-white flex items-center justify-center shadow-xl border border-gray-100 p-1 overflow-hidden">
-              <img src="/logo.png" alt="Click2Kart" className="h-full w-auto object-contain" />
+            <span className="h-16 w-20 rounded-2xl flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
             </span>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
