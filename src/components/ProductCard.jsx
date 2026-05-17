@@ -20,12 +20,10 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
     })
   }
 
-  // Calculate overall stock status based on variants
   const totalStock = Array.isArray(p.variants) && p.variants.length > 0
     ? p.variants.filter(v => v.isActive !== false).reduce((sum, v) => sum + (v.stock || 0), 0)
     : (p.stock || 0)
 
-  // Find the lowest price among active variants
   const minPrice = useMemo(() => {
     const safeNumber = (val) => {
       const num = Number(val);
@@ -37,7 +35,6 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
     return Math.min(...activeVariants.map(v => safeNumber(v.price || 0)));
   }, [p.variants, p.price]);
 
-  // Find the MRP corresponding to the min price or the highest MRP
   const displayMrp = useMemo(() => {
     const safeNumber = (val) => {
       const num = Number(val);
@@ -77,7 +74,7 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
         animationDelay: `${index * 38}ms`,
         background: 'white',
         borderRadius: '16px',
-        border: '1px solid rgba(124, 58, 237, 0.08)',
+        border: '1px solid rgba(30, 58, 138, 0.08)',
         boxShadow: '0 4px 20px rgba(0, 0, 0, 0.02)',
         overflow: 'hidden',
         display: 'flex',
@@ -107,14 +104,12 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
         }
       `}</style>
 
-      {/* Image Section */}
       <div style={{ 
         position: 'relative', 
         aspectRatio: '1', 
-        background: '#fcfaff', 
+        background: '#f0f9ff', 
         overflow: 'hidden'
       }}>
-        {/* Top Badges Row */}
         <div style={{ 
           position: 'absolute', top: 10, left: 10, right: 10, 
           display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
@@ -123,17 +118,17 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
           <div style={{ display: 'flex', gap: 6 }}>
             {authed && hasBulk && (
               <div className="ct-card-bulk" style={{ 
-                background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                background: 'linear-gradient(135deg, #1e3a8a, #f97316)',
                 color: 'white', padding: '4px 10px', borderRadius: '6px',
                 fontSize: '9px', fontWeight: 900, textTransform: 'uppercase',
-                boxShadow: '0 4px 12px rgba(124, 58, 237, 0.2)'
+                boxShadow: '0 4px 12px rgba(30, 58, 138, 0.2)'
               }}>
                 Bulk Offer
               </div>
             )}
             {authed && !hasBulk && discount >= 10 && (
               <div className="ct-card-bulk" style={{ 
-                background: '#059669', color: 'white', 
+                background: '#f97316', color: 'white', 
                 padding: '4px 10px', borderRadius: '6px',
                 fontSize: '9px', fontWeight: 900, textTransform: 'uppercase'
               }}>
@@ -143,7 +138,6 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
           </div>
         </div>
 
-        {/* Product Image */}
         <div className="ct-card-img-wrap" style={{ width: '100%', height: '100%', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {p.images?.length ? (
             <img 
@@ -158,12 +152,11 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
           )}
         </div>
 
-        {/* Verified Badge - Floating inside image at bottom */}
         <div className="ct-verified-badge" style={{ 
           position: 'absolute', bottom: 10, left: 10, 
           background: 'rgba(255, 255, 255, 0.95)', 
           backdropFilter: 'blur(4px)',
-          border: '1px solid rgba(124, 58, 237, 0.12)',
+          border: '1px solid rgba(30, 58, 138, 0.12)',
           padding: '3px 8px',
           borderRadius: '6px',
           display: 'flex',
@@ -175,20 +168,19 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
           <span className="ct-verified-id" style={{ fontSize: '8px', fontWeight: 800, color: '#9ca3af' }}>
             {p._id?.toString().slice(-8).toUpperCase()}
           </span>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="#7c3aed">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="#1e3a8a">
             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
           </svg>
-          <span style={{ fontSize: '8px', fontWeight: 900, color: '#7c3aed', letterSpacing: '0.05em' }}>VERIFIED</span>
+          <span style={{ fontSize: '8px', fontWeight: 900, color: '#1e3a8a', letterSpacing: '0.05em' }}>VERIFIED</span>
         </div>
       </div>
 
-      {/* Content Section */}
       <div className="ct-card-body" style={{ padding: '16px', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div style={{ marginBottom: 6 }} className="ct-card-tags">
           {p.category?.name && (
             <span style={{ 
-              fontSize: '8px', fontWeight: 900, color: '#7c3aed', 
-              background: 'rgba(124, 58, 237, 0.05)', 
+              fontSize: '8px', fontWeight: 900, color: '#1e3a8a', 
+              background: 'rgba(30, 58, 138, 0.05)', 
               padding: '2px 6px', borderRadius: '4px', 
               textTransform: 'uppercase', letterSpacing: '0.08em' 
             }}>
@@ -206,12 +198,11 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
             WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
             minHeight: '2.8em', textDecoration: 'none', transition: 'color 0.2s'
           }}
-          className="ct-card-name hover:text-purple-600"
+          className="ct-card-name hover:text-blue-600"
         >
           {p.name}
         </Link>
 
-        {/* Pricing & CTA */}
         <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 10 }}>
           <div style={{ flex: 1 }}>
             <>
@@ -221,8 +212,8 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
                 </span>
                 {displayMrp > minPrice && (
                   <span className="ct-card-off" style={{ 
-                    fontSize: '10px', fontWeight: 800, color: '#059669', 
-                    background: 'rgba(5, 150, 105, 0.08)', 
+                    fontSize: '10px', fontWeight: 800, color: '#f97316', 
+                    background: 'rgba(249, 115, 22, 0.08)', 
                     padding: '1px 5px', borderRadius: '4px' 
                   }}>
                     -{Math.round(((displayMrp - minPrice) / displayMrp) * 100)}%
@@ -242,11 +233,11 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
             disabled={!authed || totalStock <= 0}
             style={{ 
               width: 40, height: 40, borderRadius: '12px', 
-              background: totalStock <= 0 ? '#f3f4f6' : 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+              background: totalStock <= 0 ? '#f3f4f6' : 'linear-gradient(135deg, #1e3a8a, #f97316)',
               color: totalStock <= 0 ? '#9ca3af' : 'white',
               border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: totalStock <= 0 ? 'not-allowed' : 'pointer',
-              boxShadow: totalStock <= 0 ? 'none' : '0 4px 12px rgba(124, 58, 237, 0.2)',
+              boxShadow: totalStock <= 0 ? 'none' : '0 4px 12px rgba(30, 58, 138, 0.2)',
               transition: 'all 0.2s'
             }}
             onClick={async e => {
@@ -273,14 +264,13 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
           </button>
         </div>
 
-        {/* Clean Bottom Tags Row */}
         <div className="ct-card-tags" style={{ 
           marginTop: 14, paddingTop: 10, 
           borderTop: '1px solid #f3f4f6',
           display: 'flex', gap: 8
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-            <div style={{ width: 4, height: 4, background: '#059669', borderRadius: '50%' }} />
+            <div style={{ width: 4, height: 4, background: '#1e3a8a', borderRadius: '50%' }} />
             <span style={{ fontSize: '8px', fontWeight: 800, color: '#374151', textTransform: 'uppercase' }}>In Stock</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>

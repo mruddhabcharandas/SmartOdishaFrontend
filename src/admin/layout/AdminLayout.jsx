@@ -23,24 +23,28 @@ export default function AdminLayout() {
   const link = (to, label) => (
     <NavLink to={to} end={to==='/admin'} onClick={() => setOpen(false)} className={({ isActive }) => `
       flex items-center px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-200
-      ${isActive ? 'bg-blue-600 text-white shadow-lg shadow-blue-200 scale-105' : 'text-gray-500 hover:bg-gray-50 hover:text-blue-600'}
+      ${isActive ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-lg shadow-blue-200 scale-105' : 'text-gray-500 hover:bg-gradient-to-br from-blue-50 to-orange-50 hover:text-blue-600'}
     `}>{label}</NavLink>
   )
   return (
-    <div className="min-h-screen grid md:grid-cols-[260px_1fr] grid-cols-1 bg-gray-50/50">
+    <div className="min-h-screen grid md:grid-cols-[260px_1fr] grid-cols-1 bg-blue-50/50">
       <button className="md:hidden p-4 bg-white border-b flex items-center justify-between z-50 sticky top-0" onClick={() => setOpen(!open)}>
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-xs">C2K</div>
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden">
+            <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
+          </div>
           <span className="font-black uppercase tracking-widest text-xs">Admin Console</span>
         </div>
         <svg className="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
       </button>
 
-      <aside className={`bg-white border-r p-6 space-y-2 fixed inset-y-0 left-0 z-40 w-[260px] transform transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:relative`}>
+      <aside className={`bg-white border-r border-blue-100 p-6 space-y-2 fixed inset-y-0 left-0 z-40 w-[260px] transform transition-transform duration-300 ${open ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:relative`}>
         <div className="flex items-center gap-3 mb-10 px-2">
-          <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-black text-sm shadow-xl shadow-blue-100">C2K</div>
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden">
+            <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
+          </div>
           <div>
-            <div className="font-black text-sm uppercase tracking-tighter">Click2Kart</div>
+            <div className="font-black text-sm uppercase tracking-tighter">SmartOdisha</div>
             <div className="text-[9px] font-black text-blue-600 uppercase tracking-widest leading-none">Admin Panel</div>
           </div>
         </div>
@@ -59,7 +63,7 @@ export default function AdminLayout() {
           {link('/admin/settings', <><Icon name="settings"/>Settings</>)}
         </div>
 
-        <div className="pt-8 mt-8 border-t border-gray-50">
+        <div className="pt-8 mt-8 border-t border-blue-50">
           <button
             type="button"
             onClick={logout}
@@ -73,7 +77,7 @@ export default function AdminLayout() {
           </button>
         </div>
       </aside>
-      <main className="p-4 md:p-6 overflow-x-auto bg-gray-50">
+      <main className="p-4 md:p-6 overflow-x-auto bg-blue-50">
         <Outlet />
       </main>
     </div>

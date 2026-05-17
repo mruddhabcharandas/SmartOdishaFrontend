@@ -88,7 +88,6 @@ export default function AdminLayout() {
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
   
-  // Get role and permissions from token
   const token = localStorage.getItem('token')
   let role = 'admin'
   let permissions = []
@@ -125,8 +124,8 @@ export default function AdminLayout() {
           [
             'flex items-center px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-200 group',
             isActive
-              ? 'bg-gray-900 text-white shadow-lg shadow-gray-200 scale-[1.02]'
-              : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900 hover:pl-5'
+              ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-lg shadow-blue-200 scale-[1.02]'
+              : 'text-gray-500 hover:bg-gradient-to-br from-blue-50 to-orange-50 hover:text-gray-900 hover:pl-5'
           ].join(' ')
         }
       >
@@ -143,22 +142,22 @@ export default function AdminLayout() {
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
       `}</style>
-      <div className="flex h-20 items-center justify-between border-b border-gray-100 bg-white/80 backdrop-blur-md px-6 md:px-10 sticky top-0 z-30">
+      <div className="flex h-20 items-center justify-between border-b border-blue-100 bg-white/80 backdrop-blur-md px-6 md:px-10 sticky top-0 z-30">
         <div className="flex items-center gap-4">
           <button
-            className="md:hidden p-2 rounded-xl hover:bg-gray-50 border border-gray-100 transition-colors"
+            className="md:hidden p-2 rounded-xl hover:bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-100 transition-colors"
             onClick={() => setOpen(!open)}
           >
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
           <div className="flex items-center gap-3">
-            <span className="h-16 w-20 rounded-2xl flex items-center justify-center overflow-hidden">
+            <span className="h-16 w-20 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden">
               <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
             </span>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="text-base font-black tracking-tight text-gray-900">{CONFIG.BRAND_NAME}</span>
-                <span className="px-2 py-0.5 bg-gray-900 text-[10px] font-black text-white rounded-lg tracking-widest uppercase">{role}</span>
+                <span className="px-2 py-0.5 bg-gradient-to-r from-blue-600 to-orange-500 text-[10px] font-black text-white rounded-lg tracking-widest uppercase">{role}</span>
               </div>
               <div className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">{role === 'admin' ? 'Admin Panel' : 'Staff Panel'}</div>
             </div>
@@ -179,7 +178,7 @@ export default function AdminLayout() {
 
       <div className="grid min-h-[calc(100vh-5rem)] md:grid-cols-[280px_minmax(0,1fr)]">
         <aside
-          className={`border-r border-gray-100 bg-white/50 backdrop-blur-sm ${
+          className={`border-r border-blue-100 bg-white/50 backdrop-blur-sm ${
             open ? 'fixed inset-0 z-40 bg-white pt-20' : 'hidden'
           } md:block sticky top-20 h-[calc(100vh-5rem)]`}
         >
@@ -287,7 +286,7 @@ export default function AdminLayout() {
                   Staff Management
                 </>
               ), 'staff')}
-              <div className="pt-6 mt-6 border-t border-gray-50">
+              <div className="pt-6 mt-6 border-t border-blue-50">
                 <div className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-4 px-2">
                   System
                 </div>
@@ -304,16 +303,16 @@ export default function AdminLayout() {
                 ), 'settings')}
               </div>
             </nav>
-            <div className="mt-auto pt-6 border-t border-gray-50 px-2">
-              <div className="flex items-center gap-2 text-[10px] font-bold text-emerald-500 uppercase tracking-widest">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <div className="mt-auto pt-6 border-t border-blue-50 px-2">
+              <div className="flex items-center gap-2 text-[10px] font-bold text-green-500 uppercase tracking-widest">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
                 System Online
               </div>
             </div>
           </div>
         </aside>
 
-        <main className="bg-gray-50/30">
+        <main className="bg-blue-50/30">
           <div className="max-w-[1400px] mx-auto p-6 md:p-10">
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
               <Outlet />

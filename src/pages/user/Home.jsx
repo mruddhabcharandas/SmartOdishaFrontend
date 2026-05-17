@@ -54,22 +54,6 @@ export default function Home() {
     window.addEventListener('scroll', fn, { passive: true })
     return () => window.removeEventListener('scroll', fn)
   }, [])
-  useEffect(() => {
-    setSEO('Wholesale Electronics Supplier India | SmartOdisha', 'Buy wholesale electronics like chargers, mobiles, accessories at best B2B prices. GST invoice, fast delivery across India.')
-    const cleanup = injectJsonLd({
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "SmartOdisha",
-      "url": location.origin,
-      "logo": (CONFIG.LOGO_URL || ""),
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+91-79788-80244",
-        "contactType": "customer service"
-      }
-    })
-    return cleanup
-  }, [])
 
   const line1 = CONFIG.HERO_TITLE_LINE1 || 'Smart Choice,'
   const line2 = CONFIG.HERO_TITLE_LINE2 || 'Smart Life'
@@ -113,7 +97,6 @@ export default function Home() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&display=swap');
 
-        /* ── same variables as Partner.jsx ── */
         .hm-root {
           font-family: 'DM Sans', system-ui, sans-serif;
           background: #ffffff;
@@ -122,32 +105,29 @@ export default function Home() {
           padding-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        /* same subtle grid as Partner */
         .hm-root::before {
           content: '';
           position: fixed; inset: 0;
           background-image:
-            linear-gradient(rgba(139,92,246,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(139,92,246,0.02) 1px, transparent 1px);
+            linear-gradient(rgba(30,58,138,0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(30,58,138,0.02) 1px, transparent 1px);
           background-size: 80px 80px;
           pointer-events: none; z-index: 0;
         }
 
-        /* violet glow blobs — light, not dark */
         .hm-blob1 {
           position: fixed; top: -300px; left: 50%; transform: translateX(-50%);
           width: 1200px; height: 800px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(139,92,246,0.04), transparent 70%);
+          background: radial-gradient(ellipse, rgba(30,58,138,0.04), transparent 70%);
           pointer-events: none; z-index: 0;
         }
         .hm-blob2 {
           position: fixed; bottom: -200px; right: -150px;
           width: 600px; height: 600px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(109,40,217,0.06), transparent 65%);
+          background: radial-gradient(ellipse, rgba(249,115,22,0.06), transparent 65%);
           pointer-events: none; z-index: 0;
         }
 
-        /* ────────────── HERO ────────────── */
         .hm-hero {
           position: relative;
           min-height: 100svh;
@@ -157,25 +137,23 @@ export default function Home() {
           overflow: hidden; z-index: 1;
         }
 
-        /* same eyebrow pill as Partner */
         .hm-eyebrow {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 7px 20px; border-radius: 100px;
-          background: rgba(139,92,246,0.1);
-          border: 1px solid rgba(139,92,246,0.25);
-          color: #7c3aed;
+          background: rgba(30,58,138,0.1);
+          border: 1px solid rgba(30,58,138,0.25);
+          color: #1e3a8a;
           font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
           margin-bottom: 28px;
           animation: hmFadeUp 0.7s ease both;
         }
         .hm-eyebrow-dot {
           width: 6px; height: 6px; border-radius: 50%;
-          background: #7c3aed; box-shadow: 0 0 6px rgba(124,58,237,0.5);
+          background: #1e3a8a; box-shadow: 0 0 6px rgba(30,58,138,0.5);
           animation: hmPulse 2s ease infinite;
         }
         @keyframes hmPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
 
-        /* Bebas Neue title — dark text on light bg */
         .hm-title {
           font-family: 'Bebas Neue', sans-serif;
           font-size: clamp(64px, 13vw, 150px);
@@ -185,7 +163,7 @@ export default function Home() {
           margin-bottom: 24px;
           animation: hmFadeUp 0.7s 0.1s ease both;
         }
-        .hm-title .accent { color: #7c3aed; }
+        .hm-title .accent { color: #f97316; }
 
         .hm-sub {
           font-size: clamp(15px, 2vw, 19px);
@@ -201,7 +179,6 @@ export default function Home() {
         }
         @media(min-width:480px) { .hm-ctas { flex-direction: row; } }
 
-        /* Primary btn — orange */
         .hm-btn-primary {
           display: inline-flex; align-items: center; gap: 12px;
           background: linear-gradient(135deg, #f97316, #ea580c); color: white;
@@ -224,27 +201,25 @@ export default function Home() {
         .hm-btn-primary:hover::before { transform: translateX(100%); }
         .hm-btn-primary:active { transform: translateY(-1px) scale(0.97); }
 
-        /* Secondary btn — outlined */
         .hm-btn-secondary {
           display: inline-flex; align-items: center; gap: 12px;
-          border: 2px solid rgba(124,58,237,0.25);
+          border: 2px solid rgba(30,58,138,0.25);
           background: white;
-          color: #7c3aed;
+          color: #1e3a8a;
           padding: 16px 40px; border-radius: 14px;
           font-size: 11px; font-weight: 800;
           text-transform: uppercase; letter-spacing: 0.18em;
           text-decoration: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 12px rgba(124,58,237,0.06);
+          box-shadow: 0 4px 12px rgba(30,58,138,0.06);
         }
         .hm-btn-secondary:hover {
-          background: #fdfcff;
-          border-color: #7c3aed;
+          background: #f0f9ff;
+          border-color: #1e3a8a;
           transform: translateY(-3px);
-          box-shadow: 0 10px 24px rgba(124,58,237,0.12);
+          box-shadow: 0 10px 24px rgba(30,58,138,0.12);
         }
         .hm-btn-secondary:active { transform: translateY(-1px) scale(0.97); }
 
-        /* Trust badge grid */
         .hm-trust-grid {
           display: grid; grid-template-columns: repeat(2, 1fr);
           gap: 12px; width: 100%; max-width: 880px; margin-top: 72px;
@@ -252,26 +227,24 @@ export default function Home() {
         }
         @media(min-width:640px) { .hm-trust-grid { grid-template-columns: repeat(4,1fr); gap: 14px; } }
 
-        /* same white card as Partner trust badges */
         .hm-trust-card {
           background: white;
-          border: 1px solid rgba(139,92,246,0.12);
+          border: 1px solid rgba(30,58,138,0.12);
           border-radius: 18px; padding: 22px 18px;
           transition: all 0.3s; position: relative; overflow: hidden;
-          box-shadow: 0 2px 12px rgba(139,92,246,0.05);
+          box-shadow: 0 2px 12px rgba(30,58,138,0.05);
         }
         .hm-trust-card::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+          background: linear-gradient(90deg, transparent, rgba(30,58,138,0.3), transparent);
           opacity: 0; transition: opacity 0.3s;
         }
-        .hm-trust-card:hover { border-color: rgba(124,58,237,0.25); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(124,58,237,0.1); }
+        .hm-trust-card:hover { border-color: rgba(30,58,138,0.25); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(30,58,138,0.1); }
         .hm-trust-card:hover::before { opacity: 1; }
         .hm-trust-icon { font-size: 26px; margin-bottom: 12px; display: block; }
         .hm-trust-title { font-size: 13px; font-weight: 700; color: #1e1b2e; margin-bottom: 5px; }
         .hm-trust-desc { font-size: 11px; color: #9ca3af; line-height: 1.5; font-weight: 400; }
 
-        /* scroll hint */
         .hm-scroll-hint {
           position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
           display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -281,7 +254,7 @@ export default function Home() {
         .hm-scroll-hint span { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: #9ca3af; }
         .hm-scroll-line {
           width: 1px; height: 36px;
-          background: linear-gradient(to bottom, #7c3aed, transparent);
+          background: linear-gradient(to bottom, #1e3a8a, transparent);
           animation: hmScrollLine 1.8s ease infinite;
         }
         @keyframes hmScrollLine {
@@ -291,18 +264,17 @@ export default function Home() {
           100%{transform:scaleY(0);transform-origin:bottom}
         }
 
-        /* ────────────── BRANDS (logo-only) ────────────── */
         .hm-brands-inner { max-width: 1180px; margin: 0 auto; }
         .hm-brands-head { text-align: center; margin-bottom: 40px; }
         .hm-brands-kicker {
           display: inline-flex; align-items: center; gap: 10px;
           font-size: 10px; font-weight: 800; letter-spacing: 0.28em;
-          text-transform: uppercase; color: #7c3aed; margin-bottom: 12px;
+          text-transform: uppercase; color: #1e3a8a; margin-bottom: 12px;
         }
         .hm-brands-kicker::before, .hm-brands-kicker::after {
-          content: ''; width: 24px; height: 1px; background: linear-gradient(90deg, transparent, rgba(124,58,237,0.5));
+          content: ''; width: 24px; height: 1px; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.5));
         }
-        .hm-brands-kicker::after { background: linear-gradient(90deg, rgba(124,58,237,0.5), transparent); }
+        .hm-brands-kicker::after { background: linear-gradient(90deg, rgba(30,58,138,0.5), transparent); }
         .hm-brands-title {
           font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 6vw, 52px);
           color: #1e1b2e; letter-spacing: 0.03em; line-height: 1.05; margin-bottom: 10px;
@@ -323,9 +295,9 @@ export default function Home() {
           position: relative;
           aspect-ratio: 1;
           border-radius: 22px;
-          background: linear-gradient(145deg, #ffffff 0%, #faf8ff 100%);
-          border: 1px solid rgba(124,58,237,0.1);
-          box-shadow: 0 4px 20px rgba(76,29,149,0.06), 0 1px 0 rgba(255,255,255,0.9) inset;
+          background: linear-gradient(145deg, #ffffff 0%, #f0f9ff 100%);
+          border: 1px solid rgba(30,58,138,0.1);
+          box-shadow: 0 4px 20px rgba(30,58,138,0.06), 0 1px 0 rgba(255,255,255,0.9) inset;
           display: flex; align-items: center; justify-content: center;
           padding: 18px 16px;
           text-decoration: none;
@@ -334,13 +306,13 @@ export default function Home() {
         }
         .hm-brand-logo-card::after {
           content: ''; position: absolute; inset: 0;
-          background: radial-gradient(circle at 30% 20%, rgba(124,58,237,0.08), transparent 55%);
+          background: radial-gradient(circle at 30% 20%, rgba(30,58,138,0.08), transparent 55%);
           pointer-events: none; opacity: 0; transition: opacity 0.35s;
         }
         .hm-brand-logo-card:hover {
           transform: translateY(-5px) scale(1.02);
-          border-color: rgba(124,58,237,0.28);
-          box-shadow: 0 16px 40px rgba(124,58,237,0.14), 0 8px 24px rgba(76,29,149,0.08);
+          border-color: rgba(30,58,138,0.28);
+          box-shadow: 0 16px 40px rgba(30,58,138,0.14), 0 8px 24px rgba(30,58,138,0.08);
         }
         .hm-brand-logo-card:hover::after { opacity: 1; }
         .hm-brand-logo-card img {
@@ -357,16 +329,14 @@ export default function Home() {
           font-size: 36px; line-height: 1; opacity: 0.35;
         }
 
-        /* ────────────── STATS BAND ────────────── */
         .hm-stats-section {
           position: relative; z-index: 1;
-          background: #7c3aed;
+          background: linear-gradient(135deg, #1e3a8a, #f97316);
           padding: 56px 24px;
         }
 
-        /* ── TICKER ── */
         .hm-ticker-section {
-          background: #7c3aed;
+          background: linear-gradient(135deg, #1e3a8a, #f97316);
           padding: 14px 0;
           overflow: hidden;
           position: relative;
@@ -392,7 +362,7 @@ export default function Home() {
         }
         .hm-ticker-item span.highlight {
           background: white;
-          color: #7c3aed;
+          color: #1e3a8a;
           padding: 3px 10px;
           border-radius: 6px;
           font-size: 10px;
@@ -423,13 +393,11 @@ export default function Home() {
           letter-spacing: 0.2em; color: rgba(255,255,255,0.7); margin-top: 6px;
         }
 
-        /* divider */
         .hm-divider {
           width: 100%; height: 1px; position: relative; z-index: 1;
-          background: linear-gradient(90deg, transparent, rgba(139,92,246,0.2), transparent);
+          background: linear-gradient(90deg, transparent, rgba(30,58,138,0.2), transparent);
         }
 
-        /* ────────────── FEATURES ────────────── */
         .hm-features-section {
           max-width: 1200px; margin: 0 auto;
           padding: 88px 24px; position: relative; z-index: 1;
@@ -438,9 +406,9 @@ export default function Home() {
         .hm-section-label {
           display: inline-flex; align-items: center; gap: 10px;
           font-size: 10px; font-weight: 700; letter-spacing: 0.25em;
-          text-transform: uppercase; color: #7c3aed; margin-bottom: 16px;
+          text-transform: uppercase; color: #1e3a8a; margin-bottom: 16px;
         }
-        .hm-section-label::before { content: ''; width: 28px; height: 1.5px; background: #7c3aed; border-radius: 2px; }
+        .hm-section-label::before { content: ''; width: 28px; height: 1.5px; background: #1e3a8a; border-radius: 2px; }
 
         .hm-section-heading {
           font-family: 'Bebas Neue', sans-serif;
@@ -448,19 +416,18 @@ export default function Home() {
           line-height: 1; letter-spacing: 0.02em; color: #1e1b2e;
           margin-bottom: 14px;
         }
-        .hm-section-heading em { color: #7c3aed; font-style: normal; }
+        .hm-section-heading em { color: #f97316; font-style: normal; }
 
         .hm-section-sub {
           font-size: 15px; color: #6b7280; font-weight: 300;
           max-width: 460px; line-height: 1.7; margin-bottom: 56px;
         }
 
-        /* features grid — white cards */
         .hm-features-grid {
           display: grid; grid-template-columns: 1fr;
           gap: 2px;
-          background: rgba(139,92,246,0.06);
-          border: 1px solid rgba(139,92,246,0.1);
+          background: rgba(30,58,138,0.06);
+          border: 1px solid rgba(30,58,138,0.1);
           border-radius: 20px; overflow: hidden;
         }
         @media(min-width:540px) { .hm-features-grid { grid-template-columns: repeat(2,1fr); } }
@@ -471,8 +438,8 @@ export default function Home() {
           transition: background 0.25s, box-shadow 0.25s;
           position: relative;
         }
-        .hm-feature-item:hover { background: #faf8ff; box-shadow: inset 0 0 0 1px rgba(139,92,246,0.15); }
-        .hm-feature-item:hover .hm-feature-num { color: #7c3aed; }
+        .hm-feature-item:hover { background: #f0f9ff; box-shadow: inset 0 0 0 1px rgba(30,58,138,0.15); }
+        .hm-feature-item:hover .hm-feature-num { color: #1e3a8a; }
 
         .hm-feature-num {
           font-family: 'Bebas Neue', sans-serif; font-size: 13px;
@@ -481,15 +448,14 @@ export default function Home() {
         }
         .hm-feature-icon {
           width: 46px; height: 46px; border-radius: 12px;
-          background: rgba(139,92,246,0.08);
-          border: 1px solid rgba(139,92,246,0.15);
+          background: rgba(30,58,138,0.08);
+          border: 1px solid rgba(30,58,138,0.15);
           display: flex; align-items: center; justify-content: center;
           font-size: 20px; margin-bottom: 16px;
         }
         .hm-feature-title { font-size: 15px; font-weight: 700; color: #1e1b2e; margin-bottom: 8px; letter-spacing: -0.01em; }
         .hm-feature-desc { font-size: 13px; color: #6b7280; line-height: 1.65; font-weight: 400; }
 
-        /* ────────────── CTA ────────────── */
         .hm-cta-section {
           max-width: 1200px; margin: 0 auto 88px;
           padding: 0 24px; position: relative; z-index: 1;
@@ -502,7 +468,6 @@ export default function Home() {
           text-align: center; position: relative; overflow: hidden;
           box-shadow: 0 8px 50px rgba(30,58,138,0.08);
         }
-        /* same top blue/orange stripe */
         .hm-cta-inner::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
           background: linear-gradient(90deg, transparent 10%, #f97316 50%, transparent 90%);
@@ -515,7 +480,6 @@ export default function Home() {
           pointer-events: none;
         }
 
-        /* same eyebrow pill */
         .hm-cta-badge {
           display: inline-flex; align-items: center; gap: 8px;
           background: rgba(30,58,138,0.08);
@@ -545,7 +509,6 @@ export default function Home() {
           position: relative; z-index: 1;
         }
 
-        /* ── HOW IT WORKS STEPS ── */
         .hm-steps-section {
           max-width: 1200px; margin: 0 auto 88px;
           padding: 0 24px; position: relative; z-index: 1;
@@ -553,7 +516,6 @@ export default function Home() {
 
         .hm-steps-header { margin-bottom: 48px; }
 
-        /* 4-step grid */
         .hm-steps-grid {
           display: grid;
           grid-template-columns: 1fr;
@@ -563,7 +525,6 @@ export default function Home() {
         @media(min-width:540px) { .hm-steps-grid { grid-template-columns: repeat(2,1fr); } }
         @media(min-width:900px) { .hm-steps-grid { grid-template-columns: repeat(4,1fr); } }
 
-        /* connector line between cards — desktop only */
         @media(min-width:900px) {
           .hm-steps-grid::before {
             content: '';
@@ -571,9 +532,9 @@ export default function Home() {
             top: 34px; left: calc(12.5% + 20px); right: calc(12.5% + 20px);
             height: 2px;
             background: linear-gradient(90deg,
-              rgba(139,92,246,0.3),
-              rgba(139,92,246,0.15),
-              rgba(5,150,105,0.3)
+              rgba(30,58,138,0.3),
+              rgba(30,58,138,0.15),
+              rgba(249,115,22,0.3)
             );
             z-index: 0;
           }
@@ -581,35 +542,35 @@ export default function Home() {
 
         .hm-step-card {
           background: white;
-          border: 1px solid rgba(139,92,246,0.12);
+          border: 1px solid rgba(30,58,138,0.12);
           border-radius: 20px;
           padding: 28px 24px;
           position: relative; z-index: 1;
           transition: all 0.3s;
-          box-shadow: 0 2px 16px rgba(139,92,246,0.05);
+          box-shadow: 0 2px 16px rgba(30,58,138,0.05);
         }
         .hm-step-card::before {
           content: '';
           position: absolute; top: 0; left: 0; right: 0; height: 3px;
           border-radius: 20px 20px 0 0;
-          background: linear-gradient(90deg, transparent, rgba(139,92,246,0.35), transparent);
+          background: linear-gradient(90deg, transparent, rgba(30,58,138,0.35), transparent);
           opacity: 0; transition: opacity 0.3s;
         }
-        .hm-step-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.25); }
+        .hm-step-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(30,58,138,0.12); border-color: rgba(30,58,138,0.25); }
         .hm-step-card:hover::before { opacity: 1; }
 
         .hm-step-card.s-active {
-          border-color: rgba(124,58,237,0.28);
-          background: linear-gradient(160deg, white 50%, #faf8ff);
-          box-shadow: 0 4px 24px rgba(124,58,237,0.1);
+          border-color: rgba(30,58,138,0.28);
+          background: linear-gradient(160deg, white 50%, #f0f9ff);
+          box-shadow: 0 4px 24px rgba(30,58,138,0.1);
         }
-        .hm-step-card.s-active::before { opacity: 1; background: linear-gradient(90deg, transparent, #7c3aed, transparent); }
+        .hm-step-card.s-active::before { opacity: 1; background: linear-gradient(90deg, transparent, #1e3a8a, transparent); }
 
         .hm-step-card.s-done {
-          border-color: rgba(5,150,105,0.22);
-          background: linear-gradient(160deg, white 50%, #f0fdf4);
+          border-color: rgba(249,115,22,0.22);
+          background: linear-gradient(160deg, white 50%, #fff7ed);
         }
-        .hm-step-card.s-done::before { opacity: 1; background: linear-gradient(90deg, transparent, #059669, transparent); }
+        .hm-step-card.s-done::before { opacity: 1; background: linear-gradient(90deg, transparent, #f97316, transparent); }
 
         .hm-step-num {
           width: 44px; height: 44px; border-radius: 50%;
@@ -617,23 +578,23 @@ export default function Home() {
           font-family: 'Bebas Neue', sans-serif;
           font-size: 18px; letter-spacing: 0.05em;
           margin-bottom: 20px;
-          background: #f5f3ff; border: 2px solid rgba(139,92,246,0.18);
+          background: #f0f9ff; border: 2px solid rgba(30,58,138,0.18);
           color: #9ca3af;
           transition: all 0.3s;
         }
-        .hm-step-card:hover .hm-step-num { border-color: rgba(124,58,237,0.4); color: #7c3aed; }
-        .hm-step-card.s-active .hm-step-num { background: #7c3aed; border-color: #7c3aed; color: white; box-shadow: 0 6px 20px rgba(124,58,237,0.3); }
-        .hm-step-card.s-done .hm-step-num { background: #059669; border-color: #059669; color: white; box-shadow: 0 6px 20px rgba(5,150,105,0.25); font-size: 16px; }
+        .hm-step-card:hover .hm-step-num { border-color: rgba(30,58,138,0.4); color: #1e3a8a; }
+        .hm-step-card.s-active .hm-step-num { background: #1e3a8a; border-color: #1e3a8a; color: white; box-shadow: 0 6px 20px rgba(30,58,138,0.3); }
+        .hm-step-card.s-done .hm-step-num { background: #f97316; border-color: #f97316; color: white; box-shadow: 0 6px 20px rgba(249,115,22,0.25); font-size: 16px; }
 
         .hm-step-tag-pill {
           display: inline-block;
           font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
-          color: #7c3aed; background: rgba(139,92,246,0.08);
-          border: 1px solid rgba(139,92,246,0.18);
+          color: #1e3a8a; background: rgba(30,58,138,0.08);
+          border: 1px solid rgba(30,58,138,0.18);
           padding: 3px 10px; border-radius: 100px;
           margin-bottom: 10px;
         }
-        .hm-step-tag-pill.green { color: #059669; background: rgba(5,150,105,0.08); border-color: rgba(5,150,105,0.18); }
+        .hm-step-tag-pill.orange { color: #f97316; background: rgba(249,115,22,0.08); border-color: rgba(249,115,22,0.18); }
 
         .hm-step-h {
           font-family: 'Bebas Neue', sans-serif;
@@ -645,15 +606,14 @@ export default function Home() {
         }
         .hm-step-p strong { color: #1e1b2e; font-weight: 700; }
 
-        /* ────────────── OFFERS ────────────── */
         .hm-offers-section { max-width: 1200px; margin: 0 auto; padding: 40px 24px 80px; position: relative; z-index: 1; }
         .hm-offers-grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
         @media(min-width:768px) { .hm-offers-grid { grid-template-columns: repeat(2, 1fr); } }
         .hm-offer-card { 
           position: relative; border-radius: 24px; overflow: hidden; aspect-ratio: 16/9; 
-          background: #f5f3ff; border: 1px solid rgba(124,58,237,0.1); transition: all 0.4s;
+          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.1); transition: all 0.4s;
         }
-        .hm-offer-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(124,58,237,0.25); }
+        .hm-offer-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(30,58,138,0.25); }
         .hm-offer-img { width: 100%; height: 100%; object-fit: cover; }
         .hm-offer-content { 
           position: absolute; inset: 0; padding: 32px; 
@@ -662,18 +622,17 @@ export default function Home() {
         }
         .hm-offer-tag { 
           display: inline-block; width: fit-content; padding: 4px 12px; border-radius: 100px;
-          background: #7c3aed; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 12px;
+          background: #1e3a8a; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 12px;
         }
         .hm-offer-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: 1; letter-spacing: 0.02em; margin-bottom: 8px; }
         .hm-offer-btn { 
           width: fit-content; padding: 10px 24px; border-radius: 12px; background: white; color: #1e1b2e;
           font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; transition: all 0.3s;
         }
-        .hm-offer-card:hover .hm-offer-btn { background: #7c3aed; color: white; }
+        .hm-offer-card:hover .hm-offer-btn { background: #f97316; color: white; }
 
         @media(max-width:768px) {
           .hm-steps-section { margin-bottom: 60px; }
-        }
           .hm-cta-section { margin-bottom: 100px; }
           .hm-cta-inner { padding: 40px 20px; }
           .hm-cta-title { font-size: clamp(32px, 9vw, 52px); }
@@ -725,7 +684,7 @@ export default function Home() {
           <div className="hm-trust-grid">
             {[
               { t: 'Free Delivery',   d: 'On orders over ₹499',      i: '🚚' },
-              { t: 'Easy Returns',    d: '15 days return policy',       i: '🔄' },
+              { t: 'Easy Returns',    d: 'Returns available',       i: '🔄' },
               { t: 'Secure Payments', d: '100% secure transactions',     i: '🔒' },
               { t: 'Best Prices',  d: 'Guaranteed lowest prices',    i: '💰' },
             ].map((f, i) => (
@@ -745,7 +704,7 @@ export default function Home() {
 
         {/* ── BRANDS SECTION ── */}
         {brands.length > 0 && (
-          <section className="hm-brands-section" style={{ padding: '88px 20px 96px', background: 'linear-gradient(180deg, #faf8ff 0%, #f3efff 50%, #faf8ff 100%)', position: 'relative', zIndex: 1 }}>
+          <section className="hm-brands-section" style={{ padding: '88px 20px 96px', background: 'linear-gradient(180deg, #f0f9ff 0%, #fff7ed 50%, #f0f9ff 100%)', position: 'relative', zIndex: 1 }}>
             <div className="hm-brands-inner">
               <div className="hm-brands-head">
                 <div className="hm-brands-kicker">Trusted Brands</div>
@@ -834,10 +793,10 @@ export default function Home() {
             {[
               { num:'01', icon:'🛍️', title:'Wide Selection',   desc:'Choose from thousands of products across categories like electronics, fashion, home & kitchen, and more.' },
               { num:'02', icon:'💳', title:'Secure Payments',       desc:'Pay securely with multiple payment options. Your data is always protected.' },
-              { num:'03', icon:'🔄', title:'Easy Returns',    desc:'Not satisfied? Return your product within 15 days for a full refund or exchange.' },
+              { num:'03', icon:'🔄', title:'Easy Returns',    desc:'Not satisfied? Return your product. Please contact support for more details.' },
               { num:'04', icon:'🚀', title:'Fast Delivery',      desc:'Get your orders delivered quickly across Odisha with our reliable delivery partners.' },
               { num:'05', icon:'💰', title:'Best Prices',   desc:'Get the best deals and discounts on all your favorite products.' },
-              { num:'06', icon:'📞', title:'Customer Support',       desc:"Our friendly support team is here to help you 24/7 with any questions or issues." },
+              { num:'06', icon:'📞', title:'Customer Support',       desc:"Our friendly support team is here to help you 24/7 with any questions or issues at +91 98270 58262." },
             ].map((f, i) => (
               <div key={i} className="hm-feature-item">
                 <div className="hm-feature-num">{f.num}</div>
@@ -856,19 +815,18 @@ export default function Home() {
         <section className="hm-cta-section">
           <div className="hm-cta-inner">
             <div className="hm-cta-badge">
-              <span className="hm-eyebrow-dot" style={{ background: '#7c3aed', boxShadow: '0 0 6px rgba(124,58,237,0.5)' }} />
-              Limited Onboarding Slots
+              <span className="hm-eyebrow-dot" style={{ background: '#f97316', boxShadow: '0 0 6px rgba(249,115,22,0.5)' }} />
+              Ready to Get Started?
             </div>
             <h2 className="hm-cta-title">
-              Ready to <em>Transform</em><br />Your Inventory?
+              Ready to <em>Transform</em><br />Your B2C Shopping?
             </h2>
             <p className="hm-cta-sub">
-              Join 500+ businesses sourcing directly from SmartOdisha. Get access to credit lines,
-              dedicated account managers, and exclusive factory-direct stock.
+              Join thousands of happy customers shopping at SmartOdisha. Get the best deals, fast delivery, and excellent customer support.
             </p>
             <div className="hm-cta-btns">
               <Link to="/signup" className="hm-btn-primary">
-                Create B2B Account
+                Create Account
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
@@ -929,10 +887,10 @@ export default function Home() {
             {/* Step 4 — done */}
             <div className="hm-step-card s-done">
               <div className="hm-step-num">✓</div>
-              <div className="hm-step-tag-pill green">You're Live!</div>
-              <div className="hm-step-h">Start Shopping</div>
+              <div className="hm-step-tag-pill orange">You're Live!</div>
+              <div className="hm-step-h">Enjoy Shopping</div>
               <p className="hm-step-p">
-                Access <strong>500+ products</strong> at exclusive partner pricing. Earn commissions, track referrals, and scale your business — all from one dashboard.
+                Access <strong>500+ products</strong> at great prices. Fast delivery, easy returns, and excellent support — all from one platform.
               </p>
             </div>
 
