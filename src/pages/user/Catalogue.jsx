@@ -26,6 +26,7 @@ export default function Catalogue({ initialBrand, brandName }) {
   const [brand, setBrand] = useState(initialBrand || '')
   const [category, setCategory] = useState('')
   const [subCategory, setSubCategory] = useState('')
+  const [store, setStore] = useState('')
   const [browsePath, setBrowsePath] = useState(initialBrand ? 'brand' : null)
   const [viewMode, setViewMode] = useState('PRODUCTS')
   const [sort, setSort] = useState('NEW')
@@ -39,7 +40,7 @@ export default function Catalogue({ initialBrand, brandName }) {
   // --- REACT QUERY FETCHERS ---
   const fetchProducts = async ({ pageParam = 1 }) => {
     const { data } = await api.get('/api/products', {
-      params: { q, page: pageParam, limit, brand: brand || undefined, category: category || undefined, subCategory: subCategory || undefined },
+      params: { q, page: pageParam, limit, brand: brand || undefined, category: category || undefined, subCategory: subCategory || undefined, store: store || undefined },
     })
     return data
   }
@@ -61,7 +62,7 @@ export default function Catalogue({ initialBrand, brandName }) {
     refetch: refetchProducts,
     isPlaceholderData
   } = useInfiniteQuery({
-    queryKey: ['products', { q, brand, category, subCategory, limit, authed }],
+    queryKey: ['products', { q, brand, category, subCategory, store, limit, authed }],
     queryFn: fetchProducts,
     getNextPageParam: (lastPage) => {
       const next = lastPage.page + 1
@@ -135,6 +136,7 @@ export default function Catalogue({ initialBrand, brandName }) {
     const cat = params.get('category')
     const br = params.get('brand')
     const sc = params.get('subCategory')
+    const st = params.get('store')
     const query = params.get('q')
     const sr = params.get('sort')
     const mn = params.get('minPrice')
@@ -143,6 +145,7 @@ export default function Catalogue({ initialBrand, brandName }) {
     if (cat) setCategory(cat)
     if (br) setBrand(br)
     if (sc) setSubCategory(sc)
+    if (st) setStore(st)
     if (query) setQ(query)
     if (sr) setSort(sr)
     if (mn) setMinPrice(mn)
@@ -154,6 +157,7 @@ export default function Catalogue({ initialBrand, brandName }) {
     if (category) params.set('category', category)
     if (brand) params.set('brand', brand)
     if (subCategory) params.set('subCategory', subCategory)
+    if (store) params.set('store', store)
     if (q) params.set('q', q)
     if (sort !== 'NEW') params.set('sort', sort)
     if (minPrice) params.set('minPrice', minPrice)
@@ -163,12 +167,12 @@ export default function Catalogue({ initialBrand, brandName }) {
     if (newSearch !== location.search.substring(1)) {
       navigate({ search: newSearch }, { replace: true })
     }
-  }, [q, brand, category, subCategory, sort, minPrice, maxPrice])
+  }, [q, brand, category, subCategory, store, sort, minPrice, maxPrice])
 
   useEffect(() => {
     const handleScroll = () => {
       // Use a unique key based on filters to avoid wrong scroll on different views
-      const key = `catalogue-scroll-${q}-${brand}-${category}-${subCategory}`
+      const key = `catalogue-scroll-${q}-${brand}-${category}-${subCategory}-${store}`
       sessionStorage.setItem(key, window.scrollY)
     }
     // Debounce scroll saving to improve performance
@@ -182,11 +186,11 @@ export default function Catalogue({ initialBrand, brandName }) {
       window.removeEventListener('scroll', debouncedScroll)
       clearTimeout(timeout)
     }
-  }, [q, brand, category, subCategory])
+  }, [q, brand, category, subCategory, store])
 
   useEffect(() => {
     if (!loading && items.length > 0) {
-      const key = `catalogue-scroll-${q}-${brand}-${category}-${subCategory}`
+      const key = `catalogue-scroll-${q}-${brand}-${category}-${subCategory}-${store}`
       const saved = sessionStorage.getItem(key)
       if (saved) {
         // Use requestAnimationFrame to ensure DOM is ready
@@ -195,7 +199,7 @@ export default function Catalogue({ initialBrand, brandName }) {
         })
       }
     }
-  }, [loading, items.length, q, brand, category, subCategory])
+  }, [loading, items.length, q, brand, category, subCategory, store])
   useEffect(() => {
     let t
     if (q.trim().length >= 2) {

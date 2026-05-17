@@ -40,10 +40,6 @@ export default function UserLayout() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <style>{`
-        .header-top {
-          background: linear-gradient(135deg, #1e3a8a, #0f172a);
-          color: white;
-        }
         .header-search-input {
           border: none;
           outline: none;
@@ -55,20 +51,6 @@ export default function UserLayout() {
           border-bottom: 2px solid #f97316;
         }
       `}</style>
-
-      {/* Top Bar */}
-      <div className="header-top px-4 sm:px-6 py-2">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-          <span className="text-xs sm:text-sm font-bold flex items-center gap-2">
-            <span>📦</span> Free Delivery on Select Products Over ₹499
-          </span>
-          <div className="flex items-center gap-4 sm:gap-6">
-            <Link to="/orders" className="text-xs sm:text-sm font-semibold hover:underline">Track Order</Link>
-            <a href="tel:+919827058262" className="text-xs sm:text-sm font-semibold hover:underline">Help Center</a>
-            <Link to="/partner" className="text-xs sm:text-sm font-semibold hover:underline">Sell on SmartOdisha</Link>
-          </div>
-        </div>
-      </div>
 
       {/* Main Header */}
       <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
@@ -83,10 +65,13 @@ export default function UserLayout() {
                   className="h-full w-full object-contain"
                 />
               </div>
-              <div className="hidden sm:flex flex-col">
+              <div className="flex flex-col">
                 <span className="text-base sm:text-xl font-black tracking-tighter leading-none">
                   <span className="text-blue-700">SMART</span>
                   <span className="text-orange-500">ODISHA</span>
+                </span>
+                <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">
+                  SMART CHOICE, SMART LIFE
                 </span>
               </div>
             </Link>

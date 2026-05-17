@@ -9,6 +9,7 @@ export default function Home() {
   const [cats, setCats] = useState([])
   const [brands, setBrands] = useState([])
   const [offers, setOffers] = useState([])
+  const [stores, setStores] = useState([])
 
   useEffect(() => {
     setSEO('SmartOdisha | Your One-Stop Shop in Odisha', 'Your one-stop destination for quality products at the best prices in Odisha.')
@@ -23,6 +24,7 @@ export default function Home() {
     api.get('/api/public/categories').then(({ data }) => setCats(data || [])).catch(() => setCats([]))
     api.get('/api/brands', { params: { active: true } }).then(({ data }) => setBrands(data || [])).catch(() => setBrands([]))
     api.get('/api/offers?activeOnly=true').then(({ data }) => setOffers(data || [])).catch(() => setOffers([]))
+    api.get('/api/public/stores').then(({ data }) => setStores(data || [])).catch(() => setStores([]))
   }, [])
 
   const displayCats = useMemo(() => {
@@ -548,6 +550,25 @@ export default function Home() {
           </Link>
         ))}
       </section>
+
+      {/* Popular Stores */}
+      {stores.length > 0 && (
+        <>
+          <h2 className="section-title">Popular Stores</h2>
+          <section className="categories">
+            {stores.map((store, i) => (
+              <Link
+                key={store._id}
+                to={`/products?store=${encodeURIComponent(store.name)}`}
+                className="category-card"
+              >
+                <div className="category-icon">🏪</div>
+                <div className="category-name">{store.name}</div>
+              </Link>
+            ))}
+          </section>
+        </>
+      )}
 
       {/* Offers */}
       {offers.length > 0 && (
