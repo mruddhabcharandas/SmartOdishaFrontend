@@ -502,14 +502,14 @@ export default function Home() {
           <div className="feature-icon">🚚</div>
           <div className="feature-text">
             <h4>Free Delivery</h4>
-            <p>On orders over ₹499</p>
+            <p>On select products</p>
           </div>
         </div>
         <div className="feature-card">
           <div className="feature-icon">🔄</div>
           <div className="feature-text">
             <h4>Easy Returns</h4>
-            <p>15 days return policy</p>
+            <p>Easy return policy</p>
           </div>
         </div>
         <div className="feature-card">
