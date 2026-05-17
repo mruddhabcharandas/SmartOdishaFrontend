@@ -36,13 +36,13 @@ export default function UserLayout() {
                 <div className="h-14 w-14 rounded-2xl bg-white flex items-center justify-center shadow-xl border border-gray-100 transition-all group-hover:scale-110 p-2 overflow-hidden">
                   <img
                     src="/logo.png"
-                    alt="Click2Kart"
+                    alt="SmartOdisha"
                     className="h-full w-full object-contain"
                   />
                 </div>
                 <div className="hidden md:flex flex-col ml-3">
-                  <span className="text-lg font-black tracking-tighter text-gray-900 leading-none">CLICK2<span className="text-indigo-600">KART</span></span>
-                  <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-400 mt-1">B2B Electronics</span>
+                  <span className="text-lg font-black tracking-tighter text-gray-900 leading-none">SMART<span className="text-indigo-600">ODISHA</span></span>
+                  <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-400 mt-1">Electronics Store</span>
                 </div>
               </Link>
             </div>
@@ -96,7 +96,7 @@ export default function UserLayout() {
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
                           <span className="text-[10px] font-black uppercase tracking-widest text-gray-900">{user.name}</span>
                         </div>
-                        <span className="text-[8px] font-black uppercase tracking-widest text-gray-500 leading-none">Business</span>
+                        <span className="text-[8px] font-black uppercase tracking-widest text-gray-500 leading-none">Customer</span>
                       </Link>
                     </div>
                     <button
