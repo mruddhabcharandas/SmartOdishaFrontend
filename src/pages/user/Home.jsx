@@ -75,14 +75,14 @@ export default function Home() {
   const line2 = CONFIG.HERO_TITLE_LINE2 || 'SmartOdisha'
 
   useEffect(() => {
-    setSEO('SmartOdisha | India\'s Premier B2B Tech Hub', 'Direct wholesale access to top-tier electronics. GST compliant billing, bulk-only pricing, and Pan-India logistics for modern enterprises.')
+    setSEO('SmartOdisha | Your One-Stop Shop in Odisha', 'Your one-stop destination for quality products at the best prices in Odisha.')
     injectJsonLd({
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "SmartOdisha",
       "url": window.location.origin,
       "logo": window.location.origin + "/logo.png",
-      "description": "India's Premier B2B Tech Hub for electronics wholesale."
+      "description": "Your one-stop destination for quality products at the best prices in Odisha."
     })
     api.get('/api/public/categories').then(({ data }) => setCats(data || [])).catch(() => setCats([]))
     api.get('/api/brands', { params: { active: true } }).then(({ data }) => setBrands(data || [])).catch(() => setBrands([]))
@@ -712,13 +712,13 @@ export default function Home() {
 
           <div className="hm-ctas">
             <Link to="/products" className="hm-btn-primary">
-              Wholesale Catalog
+              Shop Now
               <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
-            <Link to="/partner" className="hm-btn-secondary">
-              Become a Partner
+            <Link to="/products" className="hm-btn-secondary">
+              Browse Catalogue
             </Link>
           </div>
 
@@ -748,9 +748,9 @@ export default function Home() {
           <section className="hm-brands-section" style={{ padding: '88px 20px 96px', background: 'linear-gradient(180deg, #faf8ff 0%, #f3efff 50%, #faf8ff 100%)', position: 'relative', zIndex: 1 }}>
             <div className="hm-brands-inner">
               <div className="hm-brands-head">
-                <div className="hm-brands-kicker">Trusted supply</div>
-                <h2 className="hm-brands-title">Authorized brand partners</h2>
-                <p className="hm-brands-sub">Tap a mark to open that brand&apos;s wholesale catalogue — logos only, same verified inventory.</p>
+                <div className="hm-brands-kicker">Trusted Brands</div>
+                <h2 className="hm-brands-title">Shop from Top Brands</h2>
+                <p className="hm-brands-sub">Tap a brand to explore their products — 100% genuine and verified.</p>
               </div>
               <div className="hm-brands-grid">
                 {brands.map(b => (
@@ -890,7 +890,7 @@ export default function Home() {
               From Sign-Up to<br /><em>First Order</em> in 3 Steps
             </h2>
             <p className="hm-section-sub">
-              No complicated paperwork. No long waiting periods. Just a straightforward path to India's best wholesale pricing.
+              No complicated paperwork. No long waiting periods. Just a straightforward shopping experience.
             </p>
           </div>
 
@@ -900,29 +900,29 @@ export default function Home() {
             <div className="hm-step-card s-active">
               <div className="hm-step-num">1</div>
               <div className="hm-step-tag-pill">Get Started</div>
-              <div className="hm-step-h">Create Your B2B Account</div>
+              <div className="hm-step-h">Create Your Account</div>
               <p className="hm-step-p">
-                Sign up at SmartOdisha in under 2 minutes. Enter your business details — <strong>no documents needed</strong> at this stage.
+                Sign up at SmartOdisha in under 2 minutes. Enter your details — <strong>no documents needed</strong> at this stage.
               </p>
             </div>
 
             {/* Step 2 */}
             <div className="hm-step-card">
               <div className="hm-step-num">2</div>
-              <div className="hm-step-tag-pill">Activation</div>
-              <div className="hm-step-h">Email Us for Activation</div>
+              <div className="hm-step-tag-pill">Verify</div>
+              <div className="hm-step-h">Verify Email/Phone</div>
               <p className="hm-step-p">
-                Drop us an email from your registered address. Our team personally reviews and <strong>activates your account within 24 hours.</strong>
+                Enter the OTP sent to your email or phone. Your account is <strong>activated instantly!</strong>
               </p>
             </div>
 
             {/* Step 3 */}
             <div className="hm-step-card">
               <div className="hm-step-num">3</div>
-              <div className="hm-step-tag-pill">Verification</div>
-              <div className="hm-step-h">Complete Quick KYC</div>
+              <div className="hm-step-tag-pill">Shop</div>
+              <div className="hm-step-h">Start Shopping</div>
               <p className="hm-step-p">
-                Submit your <strong>GST number, business PAN & address proof.</strong> Verification is guided, hassle-free, and typically done in 1–2 days.
+                Browse our catalogue, add products to cart, and place your order! It's that <strong>simple and fast!</strong>
               </p>
             </div>
 
