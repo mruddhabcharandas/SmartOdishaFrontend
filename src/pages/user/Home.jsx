@@ -636,6 +636,43 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Footer - only on Home */}
+      <footer className="border-t border-blue-50 bg-white py-10 lg:py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div className="flex flex-col items-center lg:items-start gap-4">
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden shadow-sm">
+                  <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-lg font-black tracking-tighter leading-none">
+                    <span className="text-blue-700">SMART</span>
+                    <span className="text-orange-500">ODISHA</span>
+                  </span>
+                  <span className="text-xs font-bold text-gray-500 tracking-widest mt-1">SMART CHOICE, SMART LIFE</span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">© {new Date().getFullYear()} SmartOdisha</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Store Status: Online</span>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto">
+                <Link to="/privacy-policy" className="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-blue-600 transition-colors text-center sm:text-left">
+                  Privacy Policy
+                </Link>
+                <Link to="/terms-of-service" className="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-orange-500 transition-colors text-center sm:text-left">
+                  Terms of Service
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }
