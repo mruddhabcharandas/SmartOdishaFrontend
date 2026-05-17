@@ -201,15 +201,15 @@ export default function Home() {
         }
         @media(min-width:480px) { .hm-ctas { flex-direction: row; } }
 
-        /* Primary btn — violet (same as Partner) */
+        /* Primary btn — orange */
         .hm-btn-primary {
           display: inline-flex; align-items: center; gap: 12px;
-          background: linear-gradient(135deg, #7c3aed, #6366f1); color: white;
+          background: linear-gradient(135deg, #f97316, #ea580c); color: white;
           padding: 16px 40px; border-radius: 14px;
           font-size: 11px; font-weight: 800;
           text-transform: uppercase; letter-spacing: 0.18em;
           text-decoration: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+          box-shadow: 0 8px 24px rgba(249,115,22,0.3);
           position: relative; overflow: hidden;
         }
         .hm-btn-primary::before {
@@ -219,7 +219,7 @@ export default function Home() {
         }
         .hm-btn-primary:hover { 
           transform: translateY(-4px) scale(1.02); 
-          box-shadow: 0 16px 48px rgba(124,58,237,0.45); 
+          box-shadow: 0 16px 48px rgba(249,115,22,0.45); 
         }
         .hm-btn-primary:hover::before { transform: translateX(100%); }
         .hm-btn-primary:active { transform: translateY(-1px) scale(0.97); }
@@ -497,30 +497,30 @@ export default function Home() {
 
         .hm-cta-inner {
           background: white;
-          border: 1px solid rgba(139,92,246,0.15);
+          border: 1px solid rgba(30,58,138,0.15);
           border-radius: 28px; padding: 64px 40px;
           text-align: center; position: relative; overflow: hidden;
-          box-shadow: 0 8px 50px rgba(139,92,246,0.08);
+          box-shadow: 0 8px 50px rgba(30,58,138,0.08);
         }
-        /* same top violet stripe */
+        /* same top blue/orange stripe */
         .hm-cta-inner::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, transparent 10%, #7c3aed 50%, transparent 90%);
+          background: linear-gradient(90deg, transparent 10%, #f97316 50%, transparent 90%);
         }
         .hm-cta-inner::after {
           content: ''; position: absolute;
           top: -80px; left: 50%; transform: translateX(-50%);
           width: 500px; height: 280px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(139,92,246,0.06), transparent 70%);
+          background: radial-gradient(ellipse, rgba(249,115,22,0.06), transparent 70%);
           pointer-events: none;
         }
 
         /* same eyebrow pill */
         .hm-cta-badge {
           display: inline-flex; align-items: center; gap: 8px;
-          background: rgba(139,92,246,0.08);
-          border: 1px solid rgba(139,92,246,0.2);
-          color: #7c3aed; font-size: 9px; font-weight: 700;
+          background: rgba(30,58,138,0.08);
+          border: 1px solid rgba(30,58,138,0.2);
+          color: #1e3a8a; font-size: 9px; font-weight: 700;
           letter-spacing: 0.22em; text-transform: uppercase;
           padding: 6px 18px; border-radius: 100px;
           margin-bottom: 24px; position: relative; z-index: 1;
@@ -532,7 +532,7 @@ export default function Home() {
           line-height: 1; letter-spacing: 0.02em; color: #1e1b2e;
           margin-bottom: 16px; position: relative; z-index: 1;
         }
-        .hm-cta-title em { color: #7c3aed; font-style: normal; }
+        .hm-cta-title em { color: #f97316; font-style: normal; }
 
         .hm-cta-sub {
           font-size: 15px; color: #6b7280; font-weight: 300;
