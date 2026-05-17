@@ -46,7 +46,7 @@ export default function Home() {
 
   const tickerLoop = useMemo(() => {
     const neutral = [
-      { key: 'n1', label: 'Free Delivery on Orders Over ₹499', pill: 'Free' },
+      { key: 'n1', label: 'Free Delivery on Select Products', pill: 'Free' },
       { key: 'n2', label: 'Easy Returns Available', pill: 'Hassle-free' },
       { key: 'n3', label: '100% Secure Payments', pill: 'Trusted' },
       { key: 'n4', label: 'Fast Delivery Across Odisha', pill: 'SmartOdisha' }
@@ -132,11 +132,41 @@ export default function Home() {
           gap: 12px;
         }
         .btn-primary {
-          background: linear-gradient(135deg, #f97316, #ea580c);
+          background: linear-gradient(135deg, #f97316, #ea580c, #f97316);
+          background-size: 200% 200%;
           color: white;
           border: none;
-          padding: 14px 28px;
-          border-radius: 12px;
+          padding: 16px 32px;
+          border-radius: 16px;
+          font-weight: 800;
+          font-size: 14px;
+          cursor: pointer;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          box-shadow: 
+            0 8px 30px rgba(249,115,22,0.4),
+            0 2px 10px rgba(249,115,22,0.2);
+          transition: all 0.3s ease;
+          animation: gradient-shift 4s ease infinite;
+        }
+        .btn-primary:hover {
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 
+            0 16px 40px rgba(249,115,22,0.5),
+            0 4px 16px rgba(249,115,22,0.25);
+        }
+        @keyframes gradient-shift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .btn-secondary {
+          background: rgba(255,255,255,0.08);
+          color: white;
+          border: 1px solid rgba(255,255,255,0.25);
+          padding: 14px 26px;
+          border-radius: 16px;
           font-weight: 700;
           font-size: 14px;
           cursor: pointer;
@@ -144,31 +174,14 @@ export default function Home() {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          box-shadow: 0 8px 24px rgba(249,115,22,0.35);
-          transition: all 0.2s;
-        }
-        .btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(249,115,22,0.45);
-        }
-        .btn-secondary {
-          background: rgba(255,255,255,0.1);
-          color: white;
-          border: 1px solid rgba(255,255,255,0.2);
-          padding: 12px 20px;
-          border-radius: 12px;
-          font-weight: 600;
-          font-size: 14px;
-          cursor: pointer;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          transition: all 0.2s;
+          transition: all 0.3s ease;
+          backdrop-filter: blur(10px);
         }
         .btn-secondary:hover {
           background: rgba(255,255,255,0.15);
-          border-color: rgba(255,255,255,0.3);
+          border-color: rgba(255,255,255,0.4);
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
         .hero-right {
           display: flex;
@@ -456,7 +469,7 @@ export default function Home() {
 
       {/* Top Ticker */}
       <div className="top-ticker">
-        <span>📦 Free Delivery on Orders Over ₹499</span>
+        <span>📦 Free Delivery on Select Products</span>
         <div className="ticker-right">
           <a href="/orders" className="ticker-link">Track Order</a>
           <a href="tel:+919827058262" className="ticker-link">Help Center</a>
@@ -659,34 +672,63 @@ export default function Home() {
       </section>
 
       {/* Footer - only on Home */}
-      <footer className="border-t border-blue-50 bg-white py-10 lg:py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex flex-col items-center lg:items-start gap-4">
-              <div className="flex items-center gap-4">
-                <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden shadow-sm">
+      <footer className="bg-gradient-to-br from-slate-50 via-white to-blue-50 border-t border-slate-200 py-12 lg:py-16">
+        <style>{`
+          .footer-wave {
+            background-image: 
+              radial-gradient(circle at top, rgba(30,58,138,0.06) 0, transparent 55%),
+              radial-gradient(circle at bottom right, rgba(249,115,22,0.06) 0, transparent 50%);
+          }
+        `}</style>
+        <div className="footer-wave max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
+            <div className="flex flex-col items-center lg:items-start gap-6">
+              <div className="flex items-center gap-5">
+                <div className="h-16 w-16 sm:h-18 sm:w-18 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden shadow-lg shadow-blue-100">
                   <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-lg font-black tracking-tighter leading-none">
+                  <span className="text-xl font-black tracking-tighter leading-none">
                     <span className="text-blue-700">SMART</span>
                     <span className="text-orange-500">ODISHA</span>
                   </span>
-                  <span className="text-xs font-bold text-gray-500 tracking-widest mt-1">SMART CHOICE, SMART LIFE</span>
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-2">© {new Date().getFullYear()} SmartOdisha</span>
+                  <span className="text-sm font-bold text-gray-500 tracking-widest mt-1.5">SMART CHOICE, SMART LIFE</span>
+                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-3">© {new Date().getFullYear()} SmartOdisha</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-                <span className="text-[10px] font-bold text-green-600 uppercase tracking-widest">Store Status: Online</span>
+              <div className="flex items-center gap-3 px-4 py-2.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-ping absolute"></span>
+                <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="text-xs font-bold text-green-700 uppercase tracking-widest ml-1">Store Status: Online</span>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:w-auto">
-                <Link to="/privacy-policy" className="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-blue-600 transition-colors text-center sm:text-left">
+            <div className="flex flex-col items-center lg:items-end gap-6">
+              <div className="flex flex-wrap justify-center lg:justify-end gap-4">
+                <a
+                  href={`mailto:${CONFIG.SUPPORT_EMAIL}`}
+                  className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-black uppercase tracking-widest text-slate-700 hover:shadow-xl hover:-translate-y-0.5 hover:border-slate-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-orange-50 transition-all duration-300"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" strokeWidth="2" />
+                    <polyline points="22,6 12,13 2,6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Mail Us
+                </a>
+                <a
+                  href={`tel:${CONFIG.SUPPORT_PHONE_DISPLAY}`}
+                  className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-black uppercase tracking-widest text-slate-700 hover:shadow-xl hover:-translate-y-0.5 hover:border-slate-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-orange-50 transition-all duration-300"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Call Us
+                </a>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-5 sm:gap-8 w-full sm:w-auto">
+                <Link to="/privacy-policy" className="text-sm font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-all hover:underline-offset-8 hover:underline transition-colors text-center sm:text-right">
                   Privacy Policy
                 </Link>
-                <Link to="/terms-of-service" className="text-xs font-bold text-gray-600 uppercase tracking-widest hover:text-orange-500 transition-colors text-center sm:text-left">
+                <Link to="/terms-of-service" className="text-sm font-bold text-slate-600 uppercase tracking-widest hover:text-orange-500 transition-all hover:underline-offset-8 hover:underline transition-colors text-center sm:text-right">
                   Terms of Service
                 </Link>
               </div>
