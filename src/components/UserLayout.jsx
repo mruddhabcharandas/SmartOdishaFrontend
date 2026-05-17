@@ -41,7 +41,11 @@ export default function UserLayout() {
                   />
                 </div>
                 <div className="hidden md:flex flex-col ml-3">
-                  <span className="text-lg font-black tracking-tighter text-gray-900 leading-none">SMART<span className="text-indigo-600">ODISHA</span></span>
+                  <span className="text-xl font-black tracking-tighter leading-none">
+                    <span className="text-blue-900">SMART</span>
+                    <span className="text-orange-500">ODISHA</span>
+                  </span>
+                  <span className="text-xs font-bold text-gray-600 tracking-widest mt-1">SMART CHOICE, SMART LIFE</span>
                 </div>
               </Link>
             </div>
@@ -174,15 +178,22 @@ export default function UserLayout() {
       <footer className="border-t border-gray-50 bg-white py-10">
         <div className="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="flex flex-col md:flex-row items-center gap-6">
-            <div className="h-20 w-28 rounded-2xl flex items-center justify-center overflow-hidden">
-              <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
-            </div>
-            <div className="flex flex-col md:flex-row items-center gap-4">
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">© {new Date().getFullYear()} SmartOdisha</span>
-              <div className="flex gap-4 items-center">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Store Status: Online</span>
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-24 rounded-2xl flex items-center justify-center overflow-hidden">
+                <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
               </div>
+              <div className="flex flex-col">
+                <span className="text-lg font-black tracking-tighter leading-none">
+                  <span className="text-blue-900">SMART</span>
+                  <span className="text-orange-500">ODISHA</span>
+                </span>
+                <span className="text-xs font-bold text-gray-600 tracking-widest mt-1">SMART CHOICE, SMART LIFE</span>
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-2">© {new Date().getFullYear()} SmartOdisha</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Store Status: Online</span>
             </div>
           </div>
           <div className="flex items-center gap-8">

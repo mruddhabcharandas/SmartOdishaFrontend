@@ -7,5 +7,5 @@ export const CONFIG = {
   HERO_TITLE_LINE2: import.meta.env.VITE_HERO_TITLE_LINE2 || '',
   HERO_SUBHEAD:
     import.meta.env.VITE_HERO_SUBHEAD ||
-    'Your one-stop destination for quality products at the best prices in Odisha.'
+    'SMART CHOICE, SMART LIFE'
 }

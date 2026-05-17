@@ -700,7 +700,7 @@ export default function Home() {
         <section className="hm-hero">
           <div className="hm-eyebrow">
             <span className="hm-eyebrow-dot" />
-            India's Trusted B2B Tech Hub
+            Odisha's Trusted Shopping Destination
           </div>
 
           <h1 className="hm-title">
@@ -724,10 +724,10 @@ export default function Home() {
 
           <div className="hm-trust-grid">
             {[
-              { t: 'GST Invoicing',   d: 'Claim 18% ITC easily',      i: '📄' },
-              { t: 'Bulk Pricing',    d: 'Up to 40% Volume Off',       i: '📦' },
-              { t: 'Express Freight', d: 'Priority Pan-India Delivery',     i: '✈️' },
-              { t: 'Brand Warranty',  d: '100% Genuine Authorized',    i: '🛡️' },
+              { t: 'Free Delivery',   d: 'On orders over ₹499',      i: '🚚' },
+              { t: 'Easy Returns',    d: '15 days return policy',       i: '🔄' },
+              { t: 'Secure Payments', d: '100% secure transactions',     i: '🔒' },
+              { t: 'Best Prices',  d: 'Guaranteed lowest prices',    i: '💰' },
             ].map((f, i) => (
               <div key={i} className="hm-trust-card">
                 <span className="hm-trust-icon">{f.i}</span>
