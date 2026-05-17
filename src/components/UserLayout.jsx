@@ -33,7 +33,7 @@ export default function UserLayout() {
           <div className="flex items-center justify-between h-20 gap-8">
             <div className="flex items-center gap-6">
               <Link to="/" className="flex items-center group">
-                <div className="h-16 w-20 rounded-2xl flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden">
+                <div className="h-20 w-28 rounded-2xl flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden">
                   <img
                     src="/logo.png"
                     alt="SmartOdisha"
@@ -135,7 +135,7 @@ export default function UserLayout() {
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 pb-20 lg:pb-0 animate-in fade-in duration-700">
+      <main className="flex-1 min-h-0 pb-40 lg:pb-0 animate-in fade-in duration-700">
         {user && user.isKycComplete === false && (
           <div className="max-w-7xl mx-auto px-6 md:px-10 mt-4">
             <div className="rounded-2xl border border-amber-200 bg-amber-50 text-amber-800 px-4 py-3 text-[12px] font-bold flex items-center justify-between">
@@ -171,14 +171,18 @@ export default function UserLayout() {
         </div>
       </nav>
 
-      <footer className="hidden lg:block border-t border-gray-50 bg-white py-12">
-        <div className="max-w-7xl mx-auto px-10 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="flex items-center gap-6">
-            <img src="/logo.png" alt="SmartOdisha" className="h-14 w-auto rounded-xl" />
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">© {new Date().getFullYear()} SmartOdisha</span>
-            <div className="flex gap-4 items-center">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Store Status: Online</span>
+      <footer className="border-t border-gray-50 bg-white py-10">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="h-20 w-28 rounded-2xl flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
+            </div>
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">© {new Date().getFullYear()} SmartOdisha</span>
+              <div className="flex gap-4 items-center">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Store Status: Online</span>
+              </div>
             </div>
           </div>
           <div className="flex items-center gap-8">
