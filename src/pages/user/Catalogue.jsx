@@ -1043,8 +1043,8 @@ export default function Catalogue({ initialBrand, brandName }) {
             <div className="ct-sort-wrap">
               <select className="ct-sort-sel" value={sort} onChange={e => setSort(e.target.value)}>
                 <option value="NEW">✨ Newest First</option>
-                {authed && <option value="PRICE_LOW">💰 Price: Low → High</option>}
-                {authed && <option value="PRICE_HIGH">💎 Price: High → Low</option>}
+                <option value="PRICE_LOW">💰 Price: Low → High</option>
+                <option value="PRICE_HIGH">💎 Price: High → Low</option>
               </select>
               <svg className="ct-sort-arr" width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" /></svg>
             </div>
@@ -1325,7 +1325,7 @@ export default function Catalogue({ initialBrand, brandName }) {
                 {viewMode === 'START' && (
                   <>
                     <h2 className="ct-flow-h">How would you like to browse?</h2>
-                    <p className="ct-flow-desc">Select your preferred way to discover our premium wholesale products</p>
+                    <p className="ct-flow-desc">Select your preferred way to discover our products</p>
                     <div className="ct-grid-flow">
                       <div className="ct-start-card" onClick={() => setBrowsePath('brand')}>
                         <div className="ct-start-ico">🏷️</div>

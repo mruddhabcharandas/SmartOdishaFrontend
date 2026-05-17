@@ -7,5 +7,5 @@ export const CONFIG = {
   HERO_TITLE_LINE2: import.meta.env.VITE_HERO_TITLE_LINE2 || '',
   HERO_SUBHEAD:
     import.meta.env.VITE_HERO_SUBHEAD ||
-    'Your one-stop shop for all electronics needs in Odisha. Genuine products, best prices, and fast delivery across the state.'
+    'Your one-stop destination for quality products at the best prices in Odisha.'
 }

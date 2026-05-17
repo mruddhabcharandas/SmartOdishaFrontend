@@ -42,7 +42,6 @@ export default function UserLayout() {
                 </div>
                 <div className="hidden md:flex flex-col ml-3">
                   <span className="text-lg font-black tracking-tighter text-gray-900 leading-none">SMART<span className="text-indigo-600">ODISHA</span></span>
-                  <span className="text-[8px] font-black uppercase tracking-[0.3em] text-gray-400 mt-1">Electronics Store</span>
                 </div>
               </Link>
             </div>
@@ -51,8 +50,7 @@ export default function UserLayout() {
               {[
                 { to: '/', label: 'Home' },
                 { to: '/products', label: 'Catalogue' },
-                { to: '/orders', label: 'My Orders' },
-                { to: '/partner', label: 'Partner Portal' }
+                { to: '/orders', label: 'My Orders' }
               ].map((link) => (
                 <NavLink
                   key={link.to}

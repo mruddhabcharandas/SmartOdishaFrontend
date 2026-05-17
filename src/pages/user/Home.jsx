@@ -99,10 +99,10 @@ export default function Home() {
         pill: o.discountPercent != null && o.discountPercent !== '' ? `${o.discountPercent}% off` : 'Live offer',
       }))
     const neutral = [
-      { key: 'n1', label: 'GST-ready invoicing · bulk price tiers', pill: 'B2B' },
-      { key: 'n2', label: 'Pan-India dispatch on stocked SKUs', pill: 'Logistics' },
-      { key: 'n3', label: 'Login for wholesale rates on the catalogue', pill: 'Secure' },
-      { key: 'n4', label: 'Verified catalogue · partner onboarding', pill: 'SmartOdisha' },
+      { key: 'n1', label: 'Free delivery on orders over ₹499', pill: 'Free' },
+      { key: 'n2', label: 'Easy returns and exchanges', pill: 'Hassle-free' },
+      { key: 'n3', label: 'Secure payments and 100% genuine products', pill: 'Trusted' },
+      { key: 'n4', label: 'Fast delivery across Odisha', pill: 'SmartOdisha' },
     ]
     const base = fromApi.length > 0 ? fromApi : neutral
     return [...base, ...base]
@@ -771,7 +771,7 @@ export default function Home() {
           </section>
         )}
 
-        {/* ── TICKER: live offers from API, else neutral B2B copy (no hardcoded promos) ── */}
+        {/* ── TICKER: live offers from API, else neutral copy (no hardcoded promos) ── */}
         <div className="hm-ticker-section">
           <div className="hm-ticker-inner">
             {tickerLoop.map((row, i) => (
@@ -789,10 +789,10 @@ export default function Home() {
         <section className="hm-stats-section">
           <div className="hm-stats-inner">
             {[
-              { n: '500+', t: 'Active Partners',       delay: 0   },
-              { n: '10+',  t: 'Crore Sales Generated', delay: 100 },
+              { n: '10,000+', t: 'Happy Customers',       delay: 0   },
+              { n: '500+',  t: 'Products', delay: 100 },
               { n: '50+',  t: 'Top Brands',        delay: 200 },
-              { n: '24',   t: 'Hr B2B Support',        delay: 300 },
+              { n: '24',   t: 'Hr Customer Support',        delay: 300 },
             ].map((s, i) => (
               <StatItem key={i} n={s.n} t={s.t} delay={s.delay} />
             ))}
@@ -825,19 +825,19 @@ export default function Home() {
         <section className="hm-features-section">
           <div className="hm-section-label">Why SmartOdisha</div>
           <h2 className="hm-section-heading">
-            Built for <em>Serious</em><br />Business
+            Why Choose <em>Smart</em><br />Odisha
           </h2>
           <p className="hm-section-sub">
-            Everything a growing B2B business needs — from flexible credit lines to dedicated account managers.
+            Everything you need for a great shopping experience — from fast delivery to easy returns.
           </p>
           <div className="hm-features-grid">
             {[
-              { num:'01', icon:'🏭', title:'Factory-Direct Stock',   desc:'Source directly from authorized distributors. No middlemen. Guaranteed authentic products at the best margins.' },
-              { num:'02', icon:'💳', title:'B2B Credit Lines',       desc:'Flexible payment terms up to 60 days. Grow your inventory without straining your cash flow.' },
-              { num:'03', icon:'📊', title:'Volume Intelligence',    desc:'Dynamic pricing that rewards scale. The more you buy, the better your margin per unit.' },
-              { num:'04', icon:'🚀', title:'Priority Dispatch',      desc:'Dedicated freight lanes ensure your bulk orders ship first. Sub-48hr processing for verified partners.' },
-              { num:'05', icon:'🧾', title:'Clean GST Compliance',   desc:'Every invoice is GST-ready. Maximize your input tax credit on every purchase, automatically.' },
-              { num:'06', icon:'🤝', title:'Account Managers',       desc:"A dedicated human who knows your business. Not a chatbot — a real expert in your category." },
+              { num:'01', icon:'🛍️', title:'Wide Selection',   desc:'Choose from thousands of products across categories like electronics, fashion, home & kitchen, and more.' },
+              { num:'02', icon:'💳', title:'Secure Payments',       desc:'Pay securely with multiple payment options. Your data is always protected.' },
+              { num:'03', icon:'🔄', title:'Easy Returns',    desc:'Not satisfied? Return your product within 15 days for a full refund or exchange.' },
+              { num:'04', icon:'🚀', title:'Fast Delivery',      desc:'Get your orders delivered quickly across Odisha with our reliable delivery partners.' },
+              { num:'05', icon:'💰', title:'Best Prices',   desc:'Get the best deals and discounts on all your favorite products.' },
+              { num:'06', icon:'📞', title:'Customer Support',       desc:"Our friendly support team is here to help you 24/7 with any questions or issues." },
             ].map((f, i) => (
               <div key={i} className="hm-feature-item">
                 <div className="hm-feature-num">{f.num}</div>
@@ -930,7 +930,7 @@ export default function Home() {
             <div className="hm-step-card s-done">
               <div className="hm-step-num">✓</div>
               <div className="hm-step-tag-pill green">You're Live!</div>
-              <div className="hm-step-h">Order at Wholesale Prices</div>
+              <div className="hm-step-h">Start Shopping</div>
               <p className="hm-step-p">
                 Access <strong>500+ products</strong> at exclusive partner pricing. Earn commissions, track referrals, and scale your business — all from one dashboard.
               </p>
