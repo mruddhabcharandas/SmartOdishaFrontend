@@ -71,8 +71,8 @@ export default function Home() {
     return cleanup
   }, [])
 
-  const line1 = CONFIG.HERO_TITLE_LINE1 || 'Wholesale with'
-  const line2 = CONFIG.HERO_TITLE_LINE2 || 'SmartOdisha'
+  const line1 = CONFIG.HERO_TITLE_LINE1 || 'Smart Choice,'
+  const line2 = CONFIG.HERO_TITLE_LINE2 || 'Smart Life'
 
   useEffect(() => {
     setSEO('SmartOdisha | Your One-Stop Shop in Odisha', 'Your one-stop destination for quality products at the best prices in Odisha.')
