@@ -4,9 +4,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import { getCloudinaryUrl } from '../lib/cloudinary';
 import { getStockStatus, useCart } from '../lib/CartContext'
+import { useWishlist } from '../lib/WishlistContext'
 
 export default function ProductCard({ p, authed, addToCart, navigate, index, setRecOpen, setRecItems }) {
   const { refreshCart } = useCart()
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
   const location = useLocation()
   const queryClient = useQueryClient()
 
@@ -136,6 +138,48 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
               </div>
             )}
           </div>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              const productId = p._id || p.id;
+              if (isInWishlist(productId)) {
+                removeFromWishlist(productId);
+              } else {
+                addToWishlist(p);
+              }
+            }}
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: '10px',
+              background: 'rgba(255,255,255,0.95)',
+              backdropFilter: 'blur(4px)',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              transition: 'all 0.2s',
+            }}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill={isInWishlist(p._id || p.id) ? '#f97316' : 'none'}
+              stroke="#1f2937"
+              strokeWidth="2"
+              style={{ transition: 'all 0.2s' }}
+            >
+              <path
+                d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         </div>
 
         <div className="ct-card-img-wrap" style={{ width: '100%', height: '100%', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import api from '../../lib/api'
 import { getCloudinaryUrl } from '../../lib/cloudinary'
 import { useCart, getStockStatus } from '../../lib/CartContext'
+import { useWishlist } from '../../lib/WishlistContext'
 import { setSEO, injectJsonLd } from '../../shared/lib/seo.js'
 import { useToast } from '../../components/Toast'
 import RecommendationModal from '../../components/RecommendationModal'
@@ -47,6 +48,7 @@ export default function ProductDetail() {
   const navigate = useNavigate()
   const location = useLocation()
   const { addToCart, refreshCart } = useCart()
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist()
   const { notify } = useToast()
   const { user } = useAuth()
 
@@ -240,8 +242,47 @@ export default function ProductDetail() {
           {unitSave > 0 && <div style={{ color: '#10b981', margin: '5px 0' }}>Save ₹{unitSave.toLocaleString()}</div>}
           <div style={{ color: '#6b7280', margin: '10px 0' }}>Inclusive of {gstRate}% GST</div>
           <p style={{ color: '#4b5563', lineHeight: '1.6' }}>{p.description || 'No description available.'}</p>
-          <div style={{ marginTop: '20px' }}>
-            <Link to="/products" style={{ display: 'inline-block', padding: '10px 20px', background: '#7c3aed', color: 'white', textDecoration: 'none', borderRadius: '8px', fontWeight: 'bold' }}>
+          <div style={{ marginTop: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button
+              onClick={() => {
+                const productId = p._id || p.id;
+                if (isInWishlist(productId)) {
+                  removeFromWishlist(productId);
+                } else {
+                  addToWishlist(p);
+                }
+              }}
+              style={{
+                padding: '10px 20px',
+                background: isInWishlist(p._id || p.id) ? '#f97316' : '#ffffff',
+                color: isInWishlist(p._id || p.id) ? '#ffffff' : '#1f2937',
+                border: isInWishlist(p._id || p.id) ? 'none' : '2px solid #e5e7eb',
+                borderRadius: '10px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                transition: 'all 0.2s'
+              }}
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill={isInWishlist(p._id || p.id) ? '#ffffff' : 'none'}
+                stroke={isInWishlist(p._id || p.id) ? '#ffffff' : '#4b5563'}
+                strokeWidth="2"
+              >
+                <path
+                  d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              {isInWishlist(p._id || p.id) ? 'Saved' : 'Save to Wishlist'}
+            </button>
+            <Link to="/products" style={{ display: 'inline-block', padding: '10px 20px', background: 'linear-gradient(135deg, #1e3a8a, #f97316)', color: 'white', textDecoration: 'none', borderRadius: '10px', fontWeight: 'bold' }}>
               Back to Catalogue
             </Link>
           </div>

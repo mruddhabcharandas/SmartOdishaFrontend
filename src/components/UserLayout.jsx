@@ -1,6 +1,7 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { useCart } from '../lib/CartContext'
+import { useWishlist } from '../lib/WishlistContext'
 import { CONFIG } from '../shared/lib/config.js'
 
 function classNames(...classes) {
@@ -10,6 +11,7 @@ function classNames(...classes) {
 export default function UserLayout() {
   const location = useLocation()
   const { cartCount } = useCart()
+  const { wishlistCount } = useWishlist()
   const user = JSON.parse(localStorage.getItem('user') || 'null')
   const bottomNavItems = [
     { to: '/', l: 'Home', i: (<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />) },
@@ -32,7 +34,7 @@ export default function UserLayout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
           <div className="flex items-center justify-between h-16 sm:h-20">
             <Link to="/" className="flex items-center gap-3 sm:gap-4 group">
-              <div className="h-12 w-16 sm:h-16 sm:w-20 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
+              <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
                 <img
                   src="/logo.png"
                   alt="SmartOdisha"
@@ -72,6 +74,19 @@ export default function UserLayout() {
             </nav>
 
             <div className="flex items-center gap-2 sm:gap-4">
+              <Link
+                to="/wishlist"
+                className="group relative h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-100 hover:bg-white hover:shadow-xl transition-all active:scale-95"
+              >
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-blue-700 group-hover:text-orange-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <path d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                {wishlistCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-black text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-full shadow-lg shadow-orange-200 border-2 border-white">
+                    {wishlistCount}
+                  </span>
+                )}
+              </Link>
               <Link
                 to="/cart"
                 className="group relative h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-100 hover:bg-white hover:shadow-xl transition-all active:scale-95"
@@ -174,7 +189,7 @@ export default function UserLayout() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
             <div className="flex flex-col items-center lg:items-start gap-4">
               <div className="flex items-center gap-4">
-                <div className="h-14 w-20 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden shadow-sm">
+                <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden shadow-sm">
                   <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
                 </div>
                 <div className="flex flex-col">

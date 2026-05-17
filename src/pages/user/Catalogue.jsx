@@ -10,7 +10,7 @@ import RecommendationModal from '../../components/RecommendationModal'
 import ProductCard from '../../components/ProductCard'
 
 /* ══════════════════════════════════════════
-   CATALOGUE  –  Click2Kart B2B
+   CATALOGUE  –  Click2Kart B2C
 ══════════════════════════════════════════ */
 export default function Catalogue({ initialBrand, brandName }) {
   const { addToCart } = useCart()
@@ -247,16 +247,16 @@ export default function Catalogue({ initialBrand, brandName }) {
   if (loading && items.length === 0) return (
     <div className="ct">
       <style>{`
-        .ct { font-family: 'DM Sans', system-ui, sans-serif; background: #f5f3ff; min-height: 100vh; position: relative; overflow-x: hidden; padding-top: env(safe-area-inset-top, 0px); }
+        .ct { font-family: 'DM Sans', system-ui, sans-serif; background: #f0f9ff; min-height: 100vh; position: relative; overflow-x: hidden; padding-top: env(safe-area-inset-top, 0px); }
         .ct-skel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 12px; }
         @media (min-width: 640px) { .ct-skel-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; } }
         @media (min-width: 1024px) { .ct-skel-grid { grid-template-columns: repeat(4, 1fr); } }
         @media (min-width: 1280px) { .ct-skel-grid { grid-template-columns: repeat(5, 1fr); } }
-        .ct-skel-card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid rgba(124,58,237,.06); height: 320px; position: relative; }
+        .ct-skel-card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid rgba(30,58,138,.06); height: 320px; position: relative; }
         .ct-skel-img { height: 180px; background: #f9fafb; position: relative; overflow: hidden; }
         .ct-skel-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
         .ct-skel-line { height: 12px; background: #f3f4f6; border-radius: 6px; position: relative; overflow: hidden; }
-        .ct-skel-shim { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(124,58,237,0.05), transparent); transform: translateX(-100%); animation: ctSkelShim 1.5s infinite; }
+        .ct-skel-shim { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.05), transparent); transform: translateX(-100%); animation: ctSkelShim 1.5s infinite; }
         @keyframes ctSkelShim { 100% { transform: translateX(100%); } }
       `}</style>
       <div className="ct-skel-grid">
@@ -284,7 +284,7 @@ export default function Catalogue({ initialBrand, brandName }) {
       /* ─── ROOT ─── */
       .ct {
         font-family: 'DM Sans', system-ui, sans-serif;
-        background: #f5f3ff;
+        background: #f0f9ff;
         min-height: 100vh;
         color: #1e1b2e;
         overflow-x: hidden;
@@ -297,8 +297,8 @@ export default function Catalogue({ initialBrand, brandName }) {
         position: fixed; inset: 0;
         pointer-events: none; z-index: 0;
         background-image:
-          linear-gradient(rgba(139,92,246,.035) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(139,92,246,.035) 1px, transparent 1px);
+          linear-gradient(rgba(30,58,138,.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(30,58,138,.035) 1px, transparent 1px);
         background-size: 60px 60px;
       }
 
@@ -306,13 +306,13 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-glow1 {
         position: fixed; top: -200px; left: -160px;
         width: 600px; height: 600px; border-radius: 50%;
-        background: radial-gradient(ellipse, rgba(139,92,246,.11), transparent 65%);
+        background: radial-gradient(ellipse, rgba(30,58,138,.11), transparent 65%);
         pointer-events: none; z-index: 0;
       }
       .ct-glow2 {
         position: fixed; bottom: -200px; right: -160px;
         width: 500px; height: 500px; border-radius: 50%;
-        background: radial-gradient(ellipse, rgba(99,102,241,.08), transparent 65%);
+        background: radial-gradient(ellipse, rgba(249,115,22,.08), transparent 65%);
         pointer-events: none; z-index: 0;
       }
 
@@ -321,8 +321,8 @@ export default function Catalogue({ initialBrand, brandName }) {
         position: sticky; top: 0; z-index: 50;
         background: rgba(245,243,255,.92);
         backdrop-filter: blur(18px);
-        border-bottom: 1px solid rgba(139,92,246,.12);
-        box-shadow: 0 2px 24px rgba(124,58,237,.07);
+        border-bottom: 1px solid rgba(30,58,138,.12);
+        box-shadow: 0 2px 24px rgba(30,58,138,.07);
       }
       @media (min-width: 1024px) { .ct-topbar-mob { display: none; } }
 
@@ -332,20 +332,20 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-searchbar {
         display: flex; align-items: center; gap: 0;
         background: white;
-        border: 1.5px solid rgba(124,58,237,.22);
+        border: 1.5px solid rgba(30,58,138,.22);
         border-radius: 16px;
-        box-shadow: 0 2px 18px rgba(124,58,237,.08), inset 0 1px 0 rgba(255,255,255,.9);
+        box-shadow: 0 2px 18px rgba(30,58,138,.08), inset 0 1px 0 rgba(255,255,255,.9);
         overflow: hidden;
         transition: border-color .2s, box-shadow .2s;
         position: relative;
       }
       .ct-searchbar:focus-within {
-        border-color: rgba(124,58,237,.55);
-        box-shadow: 0 0 0 4px rgba(124,58,237,.1), 0 4px 24px rgba(124,58,237,.12);
+        border-color: rgba(30,58,138,.55);
+        box-shadow: 0 0 0 4px rgba(30,58,138,.1), 0 4px 24px rgba(30,58,138,.12);
       }
       .ct-searchbar-ico {
         flex-shrink: 0; padding: 0 0 0 14px;
-        color: #7c3aed; display: flex; align-items: center;
+        color: #1e3a8a; display: flex; align-items: center;
         pointer-events: none;
       }
       .ct-searchbar input {
@@ -354,29 +354,29 @@ export default function Catalogue({ initialBrand, brandName }) {
         font-size: 14px; font-weight: 500;
         color: #1e1b2e; font-family: 'DM Sans', sans-serif;
       }
-      .ct-searchbar input::placeholder { color: #c4b5fd; }
+      .ct-searchbar input::placeholder { color: #fca5a5; }
       .ct-searchbar-kbd {
         flex-shrink: 0; margin-right: 10px;
         padding: 3px 7px; border-radius: 6px;
-        background: rgba(139,92,246,.07); border: 1px solid rgba(139,92,246,.15);
+        background: rgba(30,58,138,.07); border: 1px solid rgba(30,58,138,.15);
         font-size: 9px; font-weight: 700; letter-spacing: .08em;
-        color: #9ca3af; white-space: nowrap;
+        color: #6b7280; white-space: nowrap;
       }
       .ct-searchbar-clear {
         flex-shrink: 0; margin-right: 10px;
         width: 26px; height: 26px; border-radius: 8px; border: none;
-        background: rgba(139,92,246,.09); color: #7c3aed;
+        background: rgba(30,58,138,.09); color: #1e3a8a;
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; transition: all .15s;
       }
-      .ct-searchbar-clear:hover { background: rgba(139,92,246,.18); }
+      .ct-searchbar-clear:hover { background: rgba(30,58,138,.18); }
 
       /* suggest dropdown (YT STYLE) */
       .ct-suggest {
         position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 200;
         background: white; border-radius: 18px; overflow: hidden;
         box-shadow: 0 16px 48px rgba(0,0,0,.15);
-        border: 1.5px solid rgba(124,58,237,.1); padding: 8px 0;
+        border: 1.5px solid rgba(30,58,138,.1); padding: 8px 0;
         animation: ctFadeUp .18s ease both;
       }
       .ct-suggest-item {
@@ -384,19 +384,19 @@ export default function Catalogue({ initialBrand, brandName }) {
         padding: 10px 18px; cursor: pointer;
         transition: background .12s;
       }
-      .ct-suggest-item:hover, .ct-suggest-item.act { background: #f5f3ff; }
-      .ct-sug-ico { color: #9ca3af; flex-shrink: 0; display: flex; align-items: center; }
+      .ct-suggest-item:hover, .ct-suggest-item.act { background: #f0f9ff; }
+      .ct-sug-ico { color: #6b7280; flex-shrink: 0; display: flex; align-items: center; }
       .ct-sug-thumb {
         width: 34px; height: 34px; border-radius: 8px;
-        background: #f9f7ff; border: 1px solid rgba(139,92,246,.1);
+        background: #f9f7ff; border: 1px solid rgba(30,58,138,.1);
         overflow: hidden; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
       }
       .ct-sug-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
       .ct-sug-name { font-size: 14px; font-weight: 600; color: #1e1b2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .ct-sug-cat { font-size: 10px; font-weight: 700; color: #7c3aed; text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; }
-      .ct-sug-fill { color: #c4b5fd; margin-left: auto; flex-shrink: 0; display: flex; align-items: center; transform: rotate(-45deg); transition: transform .15s, color .15s; }
-      .ct-suggest-item:hover .ct-sug-fill { color: #7c3aed; transform: rotate(-45deg) scale(1.1); }
+      .ct-sug-cat { font-size: 10px; font-weight: 700; color: #1e3a8a; text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; }
+      .ct-sug-fill { color: #fca5a5; margin-left: auto; flex-shrink: 0; display: flex; align-items: center; transform: rotate(-45deg); transition: transform .15s, color .15s; }
+      .ct-suggest-item:hover .ct-sug-fill { color: #1e3a8a; transform: rotate(-45deg) scale(1.1); }
 
       /* category chips */
       .ct-chips { display: flex; gap: 7px; padding: 10px 14px 13px; overflow-x: auto; scrollbar-width: none; }
@@ -404,22 +404,22 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-chip {
         flex-shrink: 0; padding: 7px 18px; border-radius: 100px;
         font-size: 11px; font-weight: 700; letter-spacing: .05em;
-        border: 1.5px solid rgba(124,58,237,.15);
+        border: 1.5px solid rgba(30,58,138,.15);
         background: white; color: #6b7280; cursor: pointer; 
         transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 2px 8px rgba(124,58,237,.04);
+        box-shadow: 0 2px 8px rgba(30,58,138,.04);
       }
       .ct-chip.on { 
-        background: #7c3aed; border-color: #7c3aed; color: white; 
-        box-shadow: 0 6px 16px rgba(124,58,237,.3);
+        background: #1e3a8a; border-color: #1e3a8a; color: white; 
+        box-shadow: 0 6px 16px rgba(30,58,138,.3);
         transform: translateY(-1px);
       }
       .ct-chip:not(.on):hover { 
-        border-color: rgba(124,58,237,.4); 
-        color: #7c3aed;
-        background: #fdfcff;
+        border-color: rgba(30,58,138,.4); 
+        color: #1e3a8a;
+        background: #f0f9ff;
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(124,58,237,.08);
+        box-shadow: 0 4px 12px rgba(30,58,138,.08);
       }
       .ct-chip:active { transform: translateY(0) scale(0.96); }
 
@@ -429,8 +429,8 @@ export default function Catalogue({ initialBrand, brandName }) {
         position: sticky; top: 0; z-index: 50;
         background: rgba(245,243,255,.93);
         backdrop-filter: blur(18px);
-        border-bottom: 1px solid rgba(139,92,246,.1);
-        box-shadow: 0 2px 24px rgba(124,58,237,.06);
+        border-bottom: 1px solid rgba(30,58,138,.1);
+        box-shadow: 0 2px 24px rgba(30,58,138,.06);
       }
       @media (min-width: 1024px) { .ct-topbar-desk { display: block; } }
       .ct-desk-inner {
@@ -440,30 +440,30 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-brand { flex-shrink: 0; }
       .ct-brand-ey {
         font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase;
-        color: #7c3aed; display: flex; align-items: center; gap: 6px; margin-bottom: 3px;
+        color: #1e3a8a; display: flex; align-items: center; gap: 6px; margin-bottom: 3px;
       }
       .ct-brand-dot {
-        width: 5px; height: 5px; border-radius: 50%; background: #7c3aed;
+        width: 5px; height: 5px; border-radius: 50%; background: #1e3a8a;
         animation: ctPulse 2s ease infinite;
       }
       .ct-brand-title {
         font-family: 'Bebas Neue', sans-serif; font-size: 26px;
         color: #1e1b2e; letter-spacing: .03em; line-height: 1;
       }
-      .ct-brand-title span { color: #7c3aed; }
+      .ct-brand-title span { color: #1e3a8a; }
       .ct-desk-search { flex: 1; max-width: 520px; position: relative; }
       .ct-sort-wrap { position: relative; flex-shrink: 0; }
       .ct-sort-sel {
         appearance: none; background: white;
-        border: 1.5px solid rgba(124,58,237,.2); border-radius: 14px;
+        border: 1.5px solid rgba(30,58,138,.2); border-radius: 14px;
         color: #1e1b2e; font-size: 13px; font-weight: 700;
         padding: 11px 40px 11px 16px; outline: none;
         cursor: pointer; font-family: 'DM Sans', sans-serif;
-        box-shadow: 0 2px 12px rgba(124,58,237,.06);
+        box-shadow: 0 2px 12px rgba(30,58,138,.06);
         transition: border-color .2s, box-shadow .2s;
       }
-      .ct-sort-sel:focus { border-color: rgba(124,58,237,.45); box-shadow: 0 0 0 3px rgba(124,58,237,.09); }
-      .ct-sort-arr { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #7c3aed; }
+      .ct-sort-sel:focus { border-color: rgba(30,58,138,.45); box-shadow: 0 0 0 3px rgba(30,58,138,.09); }
+      .ct-sort-arr { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #1e3a8a; }
 
       /* ─── MAIN LAYOUT ─── */
       .ct-layout { 
@@ -486,7 +486,7 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-sidebar {
         display: none;
         background: rgba(255,255,255,.65); backdrop-filter: blur(10px);
-        border-right: 1px solid rgba(124,58,237,.08);
+        border-right: 1px solid rgba(30,58,138,.08);
         min-height: calc(100vh - 68px);
       }
       @media (min-width: 1024px) { .ct-sidebar { display: block; border-right: none; } }
@@ -498,9 +498,9 @@ export default function Catalogue({ initialBrand, brandName }) {
 
       .ct-sb-label {
         font-size: 8px; font-weight: 700; letter-spacing: .24em; text-transform: uppercase;
-        color: #9ca3af; display: flex; align-items: center; gap: 7px; margin-bottom: 10px;
+        color: #6b7280; display: flex; align-items: center; gap: 7px; margin-bottom: 10px;
       }
-      .ct-sb-label::before { content: ''; width: 16px; height: 2px; background: rgba(124,58,237,.25); border-radius: 2px; }
+      .ct-sb-label::before { content: ''; width: 16px; height: 2px; background: rgba(30,58,138,.25); border-radius: 2px; }
 
       /* sort buttons */
       .ct-sb-sort-btn {
@@ -512,18 +512,18 @@ export default function Catalogue({ initialBrand, brandName }) {
         transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .ct-sb-sort-btn:hover:not(.on) { 
-        background: rgba(124,58,237,.06); 
-        color: #7c3aed;
+        background: rgba(30,58,138,.06); 
+        color: #1e3a8a;
         transform: translateX(4px);
       }
       .ct-sb-sort-btn.on { 
-        background: #7c3aed; color: white; 
-        box-shadow: 0 8px 20px rgba(124,58,237,.25);
+        background: #1e3a8a; color: white; 
+        box-shadow: 0 8px 20px rgba(30,58,138,.25);
         transform: scale(1.02);
       }
       .ct-sb-sort-ico { 
         width: 36px; height: 36px; border-radius: 10px; 
-        background: rgba(124,58,237,.08); 
+        background: rgba(30,58,138,.08); 
         display: flex; align-items: center; justify-content: center; 
         font-size: 15px; flex-shrink: 0; transition: all .25s; 
       }
@@ -532,7 +532,7 @@ export default function Catalogue({ initialBrand, brandName }) {
       /* category buttons */
       .ct-sb-cats { 
         max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; 
-        scrollbar-width: thin; scrollbar-color: rgba(124,58,237,.2) transparent; 
+        scrollbar-width: thin; scrollbar-color: rgba(30,58,138,.2) transparent; 
         padding-right: 4px;
       }
       .ct-sb-cat-btn {
@@ -545,21 +545,21 @@ export default function Catalogue({ initialBrand, brandName }) {
         box-shadow: 0 2px 6px rgba(0,0,0,.02);
       }
       .ct-sb-cat-btn:hover { 
-        background: #fdfcff; 
-        color: #7c3aed; 
-        border-color: rgba(124,58,237,.15);
+        background: #f0f9ff; 
+        color: #1e3a8a; 
+        border-color: rgba(30,58,138,.15);
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(124,58,237,.06);
+        box-shadow: 0 6px 16px rgba(30,58,138,.06);
       }
       .ct-sb-cat-btn.on { 
-        background: #f5f3ff; 
-        color: #7c3aed; 
-        border-color: rgba(124,58,237,.3); 
-        box-shadow: 0 4px 12px rgba(124,58,237,.08);
+        background: #f0f9ff; 
+        color: #1e3a8a; 
+        border-color: rgba(30,58,138,.3); 
+        box-shadow: 0 4px 12px rgba(30,58,138,.08);
       }
       .ct-sb-cat-img { 
         width: 40px; height: 40px; border-radius: 12px; 
-        background: #f9f8ff; border: 1px solid rgba(124,58,237,.08); 
+        background: #fff7ed; border: 1px solid rgba(30,58,138,.08); 
         overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
         transition: all .3s;
       }
@@ -567,38 +567,38 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-sb-cat-img img { width: 100%; height: 100%; object-fit: contain; padding: 4px; }
       .ct-sb-cat-check { 
         width: 20px; height: 20px; border-radius: 6px; 
-        background: #7c3aed; display: flex; align-items: center; justify-content: center; 
+        background: #1e3a8a; display: flex; align-items: center; justify-content: center; 
         margin-left: auto; flex-shrink: 0;
-        box-shadow: 0 4px 10px rgba(124,58,237,.3);
+        box-shadow: 0 4px 10px rgba(30,58,138,.3);
       }
 
       /* price inputs */
       .ct-price-row { display: flex; gap: 8px; }
       .ct-price-inp-w { position: relative; flex: 1; }
       .ct-price-inp {
-        width: 100%; background: white; border: 1.5px solid rgba(124,58,237,.15);
+        width: 100%; background: white; border: 1.5px solid rgba(30,58,138,.15);
         border-radius: 10px; padding: 10px 10px 10px 22px;
         font-size: 13px; font-weight: 600; color: #1e1b2e;
         outline: none; font-family: 'DM Sans', sans-serif; transition: all .2s;
       }
-      .ct-price-inp:focus { border-color: rgba(124,58,237,.45); box-shadow: 0 0 0 3px rgba(124,58,237,.08); }
+      .ct-price-inp:focus { border-color: rgba(30,58,138,.45); box-shadow: 0 0 0 3px rgba(30,58,138,.08); }
       .ct-price-inp:disabled { opacity: .4; cursor: not-allowed; }
-      .ct-price-pfx { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 700; color: #7c3aed; pointer-events: none; }
+      .ct-price-pfx { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); font-size: 12px; font-weight: 700; color: #1e3a8a; pointer-events: none; }
       .ct-price-lock {
-        font-size: 11px; color: #7c3aed; background: rgba(124,58,237,.07);
-        border: 1px solid rgba(124,58,237,.15); border-radius: 9px;
+        font-size: 11px; color: #1e3a8a; background: rgba(30,58,138,.07);
+        border: 1px solid rgba(30,58,138,.15); border-radius: 9px;
         padding: 7px 12px; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
       }
 
       /* sidebar stats box */
       .ct-sb-stats {
-        background: rgba(124,58,237,.06); border: 1px solid rgba(124,58,237,.12);
+        background: rgba(30,58,138,.06); border: 1px solid rgba(30,58,138,.12);
         border-radius: 14px; padding: 14px 16px;
       }
       .ct-sb-stat { display: flex; align-items: center; justify-content: space-between; }
       .ct-sb-stat + .ct-sb-stat { margin-top: 6px; }
       .ct-sb-stat-k { font-size: 12px; font-weight: 500; color: #6b7280; }
-      .ct-sb-stat-v { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #7c3aed; letter-spacing: .03em; }
+      .ct-sb-stat-v { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #1e3a8a; letter-spacing: .03em; }
       .ct-sb-stat-vs { font-size: 12px; font-weight: 700; color: #6b7280; }
 
       /* ─── MAIN AREA ─── */
@@ -612,13 +612,13 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-filter-btn {
         display: flex; align-items: center; gap: 8px;
         padding: 10px 18px; border-radius: 14px;
-        background: white; border: 1.5px solid rgba(124,58,237,.25);
-        color: #7c3aed; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+        background: white; border: 1.5px solid rgba(30,58,138,.25);
+        color: #1e3a8a; font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
         cursor: pointer; font-family: 'DM Sans', sans-serif; 
         transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 12px rgba(124,58,237,.08); white-space: nowrap;
+        box-shadow: 0 4px 12px rgba(30,58,138,.08); white-space: nowrap;
       }
-      .ct-filter-btn:hover { background: #fdfcff; border-color: #7c3aed; transform: translateY(-1px); }
+      .ct-filter-btn:hover { background: #f0f9ff; border-color: #1e3a8a; transform: translateY(-1px); }
       .ct-filter-btn:active { transform: translateY(0) scale(0.96); }
 
       .ct-mob-sorts { display: flex; gap: 8px; overflow-x: auto; flex: 1; scrollbar-width: none; padding-bottom: 4px; }
@@ -626,13 +626,13 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-mob-sort-chip {
         flex-shrink: 0; padding: 9px 15px; border-radius: 12px;
         font-size: 10px; font-weight: 700;
-        border: 1.5px solid rgba(124,58,237,.14);
+        border: 1.5px solid rgba(30,58,138,.14);
         background: white; color: #6b7280; cursor: pointer; 
         transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .ct-mob-sort-chip.on { 
-        background: #7c3aed; border-color: #7c3aed; color: white; 
-        box-shadow: 0 6px 16px rgba(124,58,237,.25); 
+        background: #1e3a8a; border-color: #1e3a8a; color: white; 
+        box-shadow: 0 6px 16px rgba(30,58,138,.25); 
         transform: translateY(-1px);
       }
       .ct-mob-sort-chip:active { transform: translateY(0) scale(0.96); }
@@ -640,9 +640,9 @@ export default function Catalogue({ initialBrand, brandName }) {
       /* desktop result bar */
       .ct-res-bar { display: none; align-items: center; justify-content: space-between; margin-bottom: 20px; }
       @media (min-width: 1024px) { .ct-res-bar { display: flex; } }
-      .ct-res-bar b { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #7c3aed; letter-spacing: .03em; margin-right: 5px; }
+      .ct-res-bar b { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #1e3a8a; letter-spacing: .03em; margin-right: 5px; }
       .ct-res-bar span { font-size: 13px; color: #6b7280; font-weight: 500; }
-      .ct-page-info { font-size: 11px; font-weight: 600; color: #9ca3af; }
+      .ct-page-info { font-size: 11px; font-weight: 600; color: #6b7280; }
 
       /* ─── PRODUCT GRID ─── */
       .ct-grid { 
@@ -656,15 +656,15 @@ export default function Catalogue({ initialBrand, brandName }) {
       @media (min-width: 1280px) { .ct-grid { grid-template-columns: repeat(4, 1fr); } }
 
       /* ─── SKELETON ─── */
-      .ct-skel { background: white; border-radius: 20px; overflow: hidden; border: 1px solid rgba(124,58,237,.07); }
-      .ct-skel-img { aspect-ratio: 1; animation: ctShim 1.5s ease infinite; background: linear-gradient(90deg, #f0ecff 25%, #e8e2ff 50%, #f0ecff 75%); background-size: 200% 100%; }
+      .ct-skel { background: white; border-radius: 20px; overflow: hidden; border: 1px solid rgba(30,58,138,.07); }
+      .ct-skel-img { aspect-ratio: 1; animation: ctShim 1.5s ease infinite; background: linear-gradient(90deg, #dbeafe 25%, #fed7aa 50%, #dbeafe 75%); background-size: 200% 100%; }
       .ct-skel-body { padding: 14px; }
-      .ct-skel-line { height: 10px; border-radius: 6px; margin-bottom: 8px; animation: ctShim 1.5s ease infinite; background: linear-gradient(90deg, #f0ecff 25%, #e8e2ff 50%, #f0ecff 75%); background-size: 200% 100%; }
+      .ct-skel-line { height: 10px; border-radius: 6px; margin-bottom: 8px; animation: ctShim 1.5s ease infinite; background: linear-gradient(90deg, #dbeafe 25%, #fed7aa 50%, #dbeafe 75%); background-size: 200% 100%; }
 
       /* ─── PRODUCT CARD ─── */
       .ct-card {
         background: white; border-radius: 16px; overflow: hidden;
-        border: 1px solid rgba(124,58,237,.08);
+        border: 1px solid rgba(30,58,138,.08);
         display: flex; flex-direction: column; cursor: pointer;
         transition: transform .3s cubic-bezier(.34,1.4,.64,1), box-shadow .3s, border-color .3s;
         position: relative;
@@ -673,13 +673,13 @@ export default function Catalogue({ initialBrand, brandName }) {
       }
       .ct-card:hover {
         transform: translateY(-6px);
-        box-shadow: 0 12px 32px rgba(124,58,237,.12);
-        border-color: rgba(124,58,237,.2);
+        box-shadow: 0 12px 32px rgba(30,58,138,.12);
+        border-color: rgba(30,58,138,.2);
       }
       /* top gradient accent */
       .ct-card::before {
         content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-        background: linear-gradient(90deg, #7c3aed, #a78bfa);
+        background: linear-gradient(90deg, #1e3a8a, #f97316);
         opacity: 0; transition: opacity .3s;
         z-index: 10;
       }
@@ -702,7 +702,7 @@ export default function Catalogue({ initialBrand, brandName }) {
       /* shimmer bottom bar on hover */
       .ct-card-bar {
         position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-        background: linear-gradient(90deg, #7c3aed, #a78bfa, #7c3aed);
+        background: linear-gradient(90deg, #1e3a8a, #f97316, #1e3a8a);
         background-size: 200% 100%;
         transform: scaleX(0); transform-origin: left;
         transition: transform .4s cubic-bezier(.34,1.56,.64,1);
@@ -716,12 +716,12 @@ export default function Catalogue({ initialBrand, brandName }) {
         padding: 4px 10px 4px 7px; border-radius: 100px;
         font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
         color: white;
-        background: linear-gradient(130deg, #7c3aed 0%, #5b21b6 60%, #4c1d95 100%);
-        box-shadow: 0 4px 16px rgba(124,58,237,.45), 0 0 0 1px rgba(255,255,255,.18) inset;
+        background: linear-gradient(130deg, #1e3a8a 0%, #1e40af 60%, #1e3a8a 100%);
+        box-shadow: 0 4px 16px rgba(30,58,138,.45), 0 0 0 1px rgba(255,255,255,.18) inset;
         animation: ctBulkIn .4s cubic-bezier(.34,1.56,.64,1) both;
       }
       .ct-bulk-dot {
-        width: 6px; height: 6px; border-radius: 50%; background: #c4b5fd; flex-shrink: 0;
+        width: 6px; height: 6px; border-radius: 50%; background: #fca5a5; flex-shrink: 0;
         animation: ctBulkDot 1.8s ease infinite;
         box-shadow: 0 0 5px rgba(196,181,253,.8);
       }
@@ -749,7 +749,7 @@ export default function Catalogue({ initialBrand, brandName }) {
         background: rgba(255,255,255,.92); backdrop-filter: blur(8px);
         box-shadow: 0 2px 8px rgba(0,0,0,.09);
         display: flex; align-items: center; justify-content: center;
-        cursor: pointer; transition: all .18s; color: #9ca3af;
+        cursor: pointer; transition: all .18s; color: #6b7280;
       }
       .ct-act-btn:hover { background: white; transform: scale(1.1); }
       .ct-act-btn.wished { color: #ef4444; }
@@ -759,12 +759,12 @@ export default function Catalogue({ initialBrand, brandName }) {
 
       /* top row */
       .ct-top-row { display: flex; align-items: center; justify-content: space-between; }
-      .ct-cat-pill { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #6b7280; background: #f5f3ff; border: 1px solid rgba(124,58,237,.1); padding: 2px 8px; border-radius: 100px; }
+      .ct-cat-pill { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: #6b7280; background: #f0f9ff; border: 1px solid rgba(30,58,138,.1); padding: 2px 8px; border-radius: 100px; }
       .ct-verified { 
         display: inline-flex; align-items: center; gap: 4px; 
         font-size: 8px; font-weight: 800; letter-spacing: .1em; 
-        color: #7c3aed; background: rgba(124,58,237,.06); 
-        border: 1px solid rgba(124,58,237,.12); 
+        color: #1e3a8a; background: rgba(30,58,138,.06); 
+        border: 1px solid rgba(30,58,138,.12); 
         padding: 3px 10px; border-radius: 100px;
         text-transform: uppercase;
       }
@@ -775,20 +775,20 @@ export default function Catalogue({ initialBrand, brandName }) {
         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         text-decoration: none; transition: color .15s;
       }
-      .ct-pname:hover { color: #7c3aed; }
+      .ct-pname:hover { color: #1e3a8a; }
 
       /* price row */
       .ct-price-area { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; gap: 6px; }
-      .ct-price-authed { font-family: 'Bebas Neue', sans-serif; font-size: 21px; color: #7c3aed; letter-spacing: .02em; line-height: 1; display: flex; align-items: center; gap: 6px; }
+      .ct-price-authed { font-family: 'Bebas Neue', sans-serif; font-size: 21px; color: #1e3a8a; letter-spacing: .02em; line-height: 1; display: flex; align-items: center; gap: 6px; }
       .ct-price-off { font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 800; color: #059669; background: rgba(5,150,105,.08); padding: 2px 6px; border-radius: 6px; letter-spacing: 0; }
-      .ct-price-mrp { font-size: 11px; color: #9ca3af; text-decoration: line-through; font-weight: 500; margin-top: 2px; }
+      .ct-price-mrp { font-size: 11px; color: #6b7280; text-decoration: line-through; font-weight: 500; margin-top: 2px; }
 
       /* ── MASKED PRICE (guest) ── */
       .ct-price-mask {
         display: inline-flex; align-items: center; gap: 5px;
         padding: 6px 11px; border-radius: 10px;
-        background: linear-gradient(135deg, rgba(124,58,237,.09), rgba(99,102,241,.07));
-        border: 1px solid rgba(124,58,237,.2);
+        background: linear-gradient(135deg, rgba(30,58,138,.09), rgba(249,115,22,.07));
+        border: 1px solid rgba(30,58,138,.2);
         cursor: pointer; text-decoration: none; transition: all .2s;
         position: relative; overflow: hidden;
       }
@@ -798,16 +798,16 @@ export default function Catalogue({ initialBrand, brandName }) {
         transform: translateX(-100%);
         animation: ctMaskSheen 3s ease infinite;
       }
-      .ct-price-mask:hover { background: rgba(124,58,237,.14); border-color: rgba(124,58,237,.35); transform: scale(1.03); }
-      .ct-rupee { font-size: 14px; font-weight: 800; color: #7c3aed; }
+      .ct-price-mask:hover { background: rgba(30,58,138,.14); border-color: rgba(30,58,138,.35); transform: scale(1.03); }
+      .ct-rupee { font-size: 14px; font-weight: 800; color: #1e3a8a; }
       .ct-stars-blur {
         font-family: monospace; font-size: 15px; font-weight: 900;
-        color: #7c3aed; letter-spacing: 4px;
+        color: #1e3a8a; letter-spacing: 4px;
         filter: blur(4px); user-select: none;
         animation: ctMaskPulse 3.5s ease infinite;
       }
-      .ct-eye { color: #7c3aed; flex-shrink: 0; }
-      .ct-mask-hint { font-size: 9px; font-weight: 700; letter-spacing: .09em; color: #7c3aed; margin-top: 3px; text-transform: uppercase; }
+      .ct-eye { color: #1e3a8a; flex-shrink: 0; }
+      .ct-mask-hint { font-size: 9px; font-weight: 700; letter-spacing: .09em; color: #1e3a8a; margin-top: 3px; text-transform: uppercase; }
 
       @keyframes ctMaskSheen { 0%,70%,100% { transform:translateX(-100%); } 35% { transform:translateX(200%); } }
       @keyframes ctMaskPulse { 0%,90%,100% { filter:blur(4px); } 94% { filter:blur(2.5px); } }
@@ -817,8 +817,8 @@ export default function Catalogue({ initialBrand, brandName }) {
         width: 42px; height: 42px; border-radius: 14px; border: none; flex-shrink: 0;
         display: flex; align-items: center; justify-content: center;
         cursor: pointer; transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        background: linear-gradient(135deg, #7c3aed, #6366f1);
-        color: white; box-shadow: 0 4px 12px rgba(124,58,237,0.25);
+        background: linear-gradient(135deg, #1e3a8a, #ea580c);
+        color: white; box-shadow: 0 4px 12px rgba(30,58,138,0.25);
         position: relative; overflow: hidden;
       }
       .ct-atc::after {
@@ -828,7 +828,7 @@ export default function Catalogue({ initialBrand, brandName }) {
       }
       .ct-atc:hover:not(:disabled) { 
         transform: scale(1.12) rotate(3deg); 
-        box-shadow: 0 8px 24px rgba(124,58,237,0.4); 
+        box-shadow: 0 8px 24px rgba(30,58,138,0.4); 
       }
       .ct-atc:hover::after { transform: translateX(100%); }
       .ct-atc:active:not(:disabled) { transform: scale(0.92); }
@@ -840,16 +840,16 @@ export default function Catalogue({ initialBrand, brandName }) {
 
       /* ─── EMPTY ─── */
       .ct-empty { padding: 80px 20px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
-      .ct-empty-ico { width: 96px; height: 96px; border-radius: 26px; background: #f5f3ff; border: 1px solid rgba(124,58,237,.14); display: flex; align-items: center; justify-content: center; font-size: 42px; box-shadow: 0 4px 24px rgba(124,58,237,.1); }
+      .ct-empty-ico { width: 96px; height: 96px; border-radius: 26px; background: #f0f9ff; border: 1px solid rgba(30,58,138,.14); display: flex; align-items: center; justify-content: center; font-size: 42px; box-shadow: 0 4px 24px rgba(30,58,138,.1); }
       .ct-empty-h { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: #1e1b2e; letter-spacing: .03em; }
-      .ct-empty-p { font-size: 13px; color: #9ca3af; max-width: 300px; line-height: 1.6; }
+      .ct-empty-p { font-size: 13px; color: #6b7280; max-width: 300px; line-height: 1.6; }
       .ct-empty-btn {
-        padding: 14px 32px; border-radius: 14px; background: #7c3aed; color: white; border: none;
+        padding: 14px 32px; border-radius: 14px; background: #1e3a8a; color: white; border: none;
         font-size: 11px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase;
         cursor: pointer; font-family: 'DM Sans', sans-serif;
-        box-shadow: 0 6px 20px rgba(124,58,237,.28); transition: all .25s;
+        box-shadow: 0 6px 20px rgba(30,58,138,.28); transition: all .25s;
       }
-      .ct-empty-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(124,58,237,.38); background: #6d28d9; }
+      .ct-empty-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(30,58,138,.38); background: #ea580c; }
       .ct-empty-btn:active { transform: translateY(0) scale(0.96); }
 
       /* ─── LOAD MORE ─── */
@@ -857,26 +857,26 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-lm-btn {
         display: flex; align-items: center; gap: 10px;
         padding: 14px 36px; border-radius: 16px;
-        background: white; border: 1.5px solid rgba(124,58,237,.2);
-        color: #7c3aed; font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase;
+        background: white; border: 1.5px solid rgba(30,58,138,.2);
+        color: #1e3a8a; font-size: 11px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase;
         cursor: pointer; font-family: 'DM Sans', sans-serif;
-        box-shadow: 0 4px 14px rgba(124,58,237,.06); 
+        box-shadow: 0 4px 14px rgba(30,58,138,.06); 
         transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .ct-lm-btn:hover { 
-        border-color: #7c3aed; 
-        background: #fdfcff;
-        box-shadow: 0 8px 24px rgba(124,58,237,.15); 
+        border-color: #1e3a8a; 
+        background: #f0f9ff;
+        box-shadow: 0 8px 24px rgba(30,58,138,.15); 
         transform: translateY(-3px); 
       }
       .ct-lm-btn:active { transform: translateY(-1px) scale(0.96); }
-      .ct-lm-sub { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #9ca3af; }
+      .ct-lm-sub { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #6b7280; }
       .ct-end { display: flex; justify-content: center; padding: 32px 0; }
       .ct-end-pill {
         display: inline-flex; align-items: center; gap: 7px;
         padding: 8px 20px; border-radius: 100px;
-        background: white; border: 1px solid rgba(124,58,237,.1);
-        font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #9ca3af;
+        background: white; border: 1px solid rgba(30,58,138,.1);
+        font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #6b7280;
       }
 
       /* ─── MOBILE FILTER SHEET ─── */
@@ -892,28 +892,28 @@ export default function Catalogue({ initialBrand, brandName }) {
       .ct-sheet-pill { width: 34px; height: 4px; border-radius: 100px; background: #e5e7eb; }
       .ct-sheet-head {
         display: flex; align-items: center; justify-content: space-between;
-        padding: 4px 20px 14px; border-bottom: 1px solid rgba(124,58,237,.08);
+        padding: 4px 20px 14px; border-bottom: 1px solid rgba(30,58,138,.08);
       }
       .ct-sheet-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #1e1b2e; letter-spacing: .03em; }
-      .ct-sheet-close { width: 30px; height: 30px; border-radius: 8px; background: #f5f3ff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #7c3aed; }
+      .ct-sheet-close { width: 30px; height: 30px; border-radius: 8px; background: #f0f9ff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #1e3a8a; }
       .ct-sheet-body { padding: 18px 18px 24px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 20px; }
-      .ct-sheet-lbl { font-size: 8px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: #9ca3af; margin-bottom: 10px; }
+      .ct-sheet-lbl { font-size: 8px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: #6b7280; margin-bottom: 10px; }
       .ct-sheet-cats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
       .ct-sheet-cat {
-        padding: 11px; border-radius: 12px; border: 1.5px solid rgba(124,58,237,.14);
+        padding: 11px; border-radius: 12px; border: 1.5px solid rgba(30,58,138,.14);
         background: white; font-size: 12px; font-weight: 700; color: #6b7280;
         cursor: pointer; font-family: 'DM Sans', sans-serif; text-align: center;
         transition: all .18s; text-transform: capitalize;
       }
-      .ct-sheet-cat.on { background: #7c3aed; border-color: #7c3aed; color: white; box-shadow: 0 4px 12px rgba(124,58,237,.25); }
+      .ct-sheet-cat.on { background: #1e3a8a; border-color: #1e3a8a; color: white; box-shadow: 0 4px 12px rgba(30,58,138,.25); }
       .ct-sheet-apply {
         padding: 14px; border-radius: 13px;
-        background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none;
+        background: linear-gradient(135deg, #1e3a8a, #ea580c); color: white; border: none;
         font-size: 11px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase;
         cursor: pointer; font-family: 'DM Sans', sans-serif; width: 100%;
-        box-shadow: 0 6px 20px rgba(124,58,237,.28); transition: all .22s;
+        box-shadow: 0 6px 20px rgba(30,58,138,.28); transition: all .22s;
       }
-      .ct-sheet-apply:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(124,58,237,.36); }
+      .ct-sheet-apply:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(30,58,138,.36); }
 
       @media (min-width: 480px) {
         .ct-sheet-cats {
@@ -959,11 +959,11 @@ export default function Catalogue({ initialBrand, brandName }) {
       @media (min-width: 640px) { .ct-skel-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; } }
       @media (min-width: 1024px) { .ct-skel-grid { grid-template-columns: repeat(4, 1fr); } }
       @media (min-width: 1280px) { .ct-skel-grid { grid-template-columns: repeat(5, 1fr); } }
-      .ct-skel-card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid rgba(124,58,237,.06); height: 320px; position: relative; }
+      .ct-skel-card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid rgba(30,58,138,.06); height: 320px; position: relative; }
       .ct-skel-img { height: 180px; background: #f9fafb; position: relative; overflow: hidden; }
       .ct-skel-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
       .ct-skel-line { height: 12px; background: #f3f4f6; border-radius: 6px; position: relative; overflow: hidden; }
-      .ct-skel-shim { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(124,58,237,0.05), transparent); transform: translateX(-100%); animation: ctSkelShim 1.5s infinite; }
+      .ct-skel-shim { position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.05), transparent); transform: translateX(-100%); animation: ctSkelShim 1.5s infinite; }
       @keyframes ctSkelShim { 100% { transform: translateX(100%); } }
 
       /* ─── ANIMATIONS ─── */
@@ -1014,8 +1014,8 @@ export default function Catalogue({ initialBrand, brandName }) {
         <div className="ct-topbar-desk">
           <div className="ct-desk-inner">
             <div className="ct-brand">
-              <div className="ct-brand-ey"><span className="ct-brand-dot" />B2B Catalogue</div>
-              <div className="ct-brand-title">Wholesale <span>Products</span></div>
+              <div className="ct-brand-ey"><span className="ct-brand-dot" />B2C Catalogue</div>
+              <div className="ct-brand-title">Quality <span>Products</span></div>
             </div>
             <div className="ct-desk-search">
               <div className="ct-searchbar">
@@ -1237,9 +1237,9 @@ export default function Catalogue({ initialBrand, brandName }) {
                   <style>{`
                   .ct-load-txt-wrap { text-align:center; padding:40px 0; animation:ctFadeUp .6s ease both; }
                   .ct-load-h { font-family:'Bebas Neue',sans-serif; font-size:24px; color:#1e1b2e; letter-spacing:.05em; margin-bottom:4px; }
-                  .ct-load-p { font-size:10px; font-weight:800; color:#7c3aed; text-transform:uppercase; letter-spacing:.25em; opacity:.5; animation:ctPulse 1.5s ease infinite; }
+                  .ct-load-p { font-size:10px; font-weight:800; color:#1e3a8a; text-transform:uppercase; letter-spacing:.25em; opacity:.5; animation:ctPulse 1.5s ease infinite; }
                 `}</style>
-                  <h2 className="ct-load-h">Wholesale Collection</h2>
+                  <h2 className="ct-load-h">Quality Collection</h2>
                   <p className="ct-load-p">Fetching products…</p>
                 </div>
               </>
@@ -1256,39 +1256,39 @@ export default function Catalogue({ initialBrand, brandName }) {
                 .ct-grid-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px; justify-content: center; }
                 
                 .ct-start-card { 
-                  background: white; border: 1px solid rgba(124,58,237,.1); border-radius: 32px; padding: 48px 32px; 
+                  background: white; border: 1px solid rgba(30,58,138,.1); border-radius: 32px; padding: 48px 32px; 
                   display: flex; flex-direction: column; align-items: center; text-align: center; gap: 24px;
                   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; position: relative; overflow: hidden;
                   box-shadow: 0 10px 40px rgba(0,0,0,0.03);
                 }
                 .ct-start-card:hover { 
                   transform: translateY(-10px); 
-                  box-shadow: 0 20px 60px rgba(124,58,237,0.15); 
-                  border-color: rgba(124,58,237,0.4); 
+                  box-shadow: 0 20px 60px rgba(30,58,138,0.15); 
+                  border-color: rgba(30,58,138,0.4); 
                 }
                 .ct-start-card::after {
-                  content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(124,58,237,0.05), transparent); opacity: 0; transition: opacity 0.4s;
+                  content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(30,58,138,0.05), transparent); opacity: 0; transition: opacity 0.4s;
                 }
                 .ct-start-card:hover::after { opacity: 1; }
                 
                 .ct-start-ico { 
-                  width: 80px; height: 80px; border-radius: 24px; background: #f5f3ff; 
+                  width: 80px; height: 80px; border-radius: 24px; background: #f0f9ff; 
                   display: flex; align-items: center; justify-content: center; font-size: 32px; 
-                  color: #7c3aed; transition: all 0.4s;
+                  color: #1e3a8a; transition: all 0.4s;
                 }
-                .ct-start-card:hover .ct-start-ico { background: #7c3aed; color: white; transform: scale(1.1) rotate(5deg); }
+                .ct-start-card:hover .ct-start-ico { background: #1e3a8a; color: white; transform: scale(1.1) rotate(5deg); }
                 
                 .ct-start-name { font-size: 20px; font-weight: 800; color: #1e1b2e; text-transform: uppercase; letter-spacing: 0.05em; }
                 .ct-start-sub { font-size: 13px; color: #6b7280; font-weight: 500; line-height: 1.6; }
                 .ct-start-btn { 
-                  margin-top: 8px; padding: 12px 28px; border-radius: 14px; background: #f5f3ff; 
-                  color: #7c3aed; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;
+                  margin-top: 8px; padding: 12px 28px; border-radius: 14px; background: #f0f9ff; 
+                  color: #1e3a8a; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;
                   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                  box-shadow: 0 4px 12px rgba(124,58,237,0.08);
+                  box-shadow: 0 4px 12px rgba(30,58,138,0.08);
                 }
                 .ct-start-card:hover .ct-start-btn { 
-                  background: #7c3aed; color: white; 
-                  box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+                  background: #1e3a8a; color: white; 
+                  box-shadow: 0 8px 24px rgba(30,58,138,0.3);
                   transform: translateY(-2px);
                 }
                 .ct-start-btn:active { transform: translateY(0) scale(0.96); }
@@ -1296,15 +1296,15 @@ export default function Catalogue({ initialBrand, brandName }) {
                 /* Inner grid for Brands/Categories */
                 .ct-inner-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
                 .ct-inner-card {
-                  background: white; border: 1.5px solid rgba(124,58,237,.08); border-radius: 24px; padding: 24px;
+                  background: white; border: 1.5px solid rgba(30,58,138,.08); border-radius: 24px; padding: 24px;
                   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
                   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; text-align: center;
                   box-shadow: 0 4px 12px rgba(0,0,0,0.02);
                 }
                 .ct-inner-card:hover { 
                   transform: translateY(-8px); 
-                  box-shadow: 0 16px 40px rgba(124,58,237,0.12); 
-                  border-color: rgba(124,58,237,0.3); 
+                  box-shadow: 0 16px 40px rgba(30,58,138,0.12); 
+                  border-color: rgba(30,58,138,0.3); 
                 }
                 .ct-inner-img { height: 50px; width: 100%; display: flex; align-items: center; justify-content: center; transition: transform 0.3s; }
                 .ct-inner-card:hover .ct-inner-img { transform: scale(1.15); }
@@ -1313,11 +1313,11 @@ export default function Catalogue({ initialBrand, brandName }) {
                 
                 .ct-bc-item { 
                   background: none; border: none; font-size: 11px; font-weight: 800; text-transform: uppercase; 
-                  letter-spacing: .12em; color: #9ca3af; cursor: pointer; transition: all .2s; 
+                  letter-spacing: .12em; color: #6b7280; cursor: pointer; transition: all .2s; 
                   padding: 4px 8px; border-radius: 8px;
                 }
-                .ct-bc-item:hover { color: #7c3aed; background: rgba(124,58,237,0.06); }
-                .ct-bc-item.active { color: #7c3aed; pointer-events: none; background: rgba(124,58,237,0.1); }
+                .ct-bc-item:hover { color: #1e3a8a; background: rgba(30,58,138,0.06); }
+                .ct-bc-item.active { color: #1e3a8a; pointer-events: none; background: rgba(30,58,138,0.1); }
                 .ct-bc-sep { color: #d1d5db; font-size: 14px; font-weight: 400; opacity: 0.6; }
                 .ct-breadcrumb { display: flex; align-items: center; gap: 4px; }
               `}</style>

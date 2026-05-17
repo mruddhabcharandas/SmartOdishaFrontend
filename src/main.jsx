@@ -5,6 +5,7 @@ import App from './App.jsx'
 import ToastProvider from './components/Toast.jsx'
 import { CartProvider } from './lib/CartContext.jsx'
 import { AuthProvider } from './lib/AuthContext.jsx'
+import { WishlistProvider } from './lib/WishlistContext.jsx'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
@@ -35,9 +36,11 @@ createRoot(document.getElementById('root')).render(
       <ToastProvider>
         <AuthProvider>
           <CartProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
+            <WishlistProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </WishlistProvider>
           </CartProvider>
         </AuthProvider>
       </ToastProvider>

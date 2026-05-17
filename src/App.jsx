@@ -37,6 +37,7 @@ import Profile from './pages/user/Profile.jsx'
 import ManualPayment from './pages/user/ManualPayment.jsx'
 import PrivacyPolicy from './pages/user/PrivacyPolicy.jsx'
 import TermsOfService from './pages/user/TermsOfService.jsx'
+import Wishlist from './pages/user/Wishlist.jsx'
 
 export default function App() {
   return (
@@ -87,6 +88,7 @@ export default function App() {
         <Route path="reset-password" element={<ResetPassword />} />
         <Route path="orders" element={<OrderHistory />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="wishlist" element={<Wishlist />} />
         <Route path="cart" element={<Cart />} />
         <Route path="manual-payment" element={<ManualPayment />} />
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
