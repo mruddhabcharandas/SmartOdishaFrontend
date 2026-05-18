@@ -52,7 +52,7 @@ function getStatusColor(status) {
   const s = status === 'PENDING_CASH_APPROVAL' ? 'NEW' : status
   if (s === 'FULFILLED' || s === 'DELIVERED') return { bg: 'rgba(5,150,105,0.1)', border: 'rgba(5,150,105,0.2)', color: '#059669' }
   if (s === 'CANCELLED') return { bg: 'rgba(220,38,38,0.1)', border: 'rgba(220,38,38,0.2)', color: '#dc2626' }
-  return { bg: 'rgba(139,92,246,0.1)', border: 'rgba(139,92,246,0.2)', color: '#7c3aed' }
+  return { bg: 'rgba(30,58,138,0.1)', border: 'rgba(30,58,138,0.2)', color: '#f97316' }
 }
 
 function getETA(createdAt) {
@@ -92,7 +92,7 @@ export default function OrderHistory() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;700&display=swap');
-        .oh-load-root { font-family:'DM Sans',sans-serif; background:#f5f3ff; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; position:relative; overflow:hidden; }
+        .oh-load-root { font-family:'DM Sans',sans-serif; background:#f0f9ff; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; position:relative; overflow:hidden; }
         .oh-load-root::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle at 2px 2px, rgba(124,58,237,.05) 1px, transparent 0); background-size:32px 32px; }
         
         .oh-load-box { position:relative; width:100px; height:100px; display:flex; align-items:center; justify-content:center; z-index:1; }
@@ -101,7 +101,7 @@ export default function OrderHistory() {
         
         .oh-load-txt-wrap { text-align:center; z-index:1; }
         .oh-load-h { font-family:'Bebas Neue',sans-serif; font-size:24px; color:#1e1b2e; letter-spacing:.05em; margin-bottom:4px; }
-        .oh-load-p { font-size:10px; font-weight:800; color:#7c3aed; text-transform:uppercase; letter-spacing:.2em; opacity:.6; }
+        .oh-load-p { font-size:10px; font-weight:800; color:#f97316; text-transform:uppercase; letter-spacing:.2em; opacity:.6; }
         
         @keyframes ohRotate { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
         @keyframes ohFloat { 0%, 100% { transform:translateY(0) rotate(0deg); } 50% { transform:translateY(-10px) rotate(5deg); } }
@@ -126,21 +126,21 @@ export default function OrderHistory() {
 
         .oh-root{
           font-family:'DM Sans',system-ui,sans-serif;
-          background:#f5f3ff; min-height:100vh; color:#1e1b2e;
+          background:#f0f9ff; min-height:100vh; color:#1e1b2e;
           position:relative; overflow-x:hidden;
           padding-bottom:env(safe-area-inset-bottom,0px);
         }
         .oh-root::before{
           content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
           background-image:
-            linear-gradient(rgba(139,92,246,0.04) 1px,transparent 1px),
-            linear-gradient(90deg,rgba(139,92,246,0.04) 1px,transparent 1px);
+            linear-gradient(rgba(30,58,138,0.04) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(30,58,138,0.04) 1px,transparent 1px);
           background-size:60px 60px;
         }
         .oh-blob{
           position:fixed; top:-180px; left:50%; transform:translateX(-50%);
           width:800px; height:500px; border-radius:50%; pointer-events:none; z-index:0;
-          background:radial-gradient(ellipse,rgba(139,92,246,0.08),transparent 65%);
+          background:radial-gradient(ellipse,rgba(30,58,138,0.08),transparent 65%);
         }
         .oh-blob2{
           position:fixed; bottom:-150px; right:-100px;
@@ -162,13 +162,13 @@ export default function OrderHistory() {
         .oh-eyebrow{
           display:inline-flex; align-items:center; gap:7px;
           padding:5px 14px; border-radius:100px;
-          background:rgba(139,92,246,0.1); border:1px solid rgba(139,92,246,0.22);
-          color:#7c3aed; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase;
+          background:rgba(30,58,138,0.1); border:1px solid rgba(30,58,138,0.22);
+          color:#f97316; font-size:9px; font-weight:700; letter-spacing:.22em; text-transform:uppercase;
           margin-bottom:10px;
         }
         .oh-edot{
           width:5px; height:5px; border-radius:50%;
-          background:#7c3aed; box-shadow:0 0 5px rgba(124,58,237,.5);
+          background:#f97316; box-shadow:0 0 5px rgba(124,58,237,.5);
           animation:ohpulse 2s ease infinite;
         }
         @keyframes ohpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
@@ -177,30 +177,30 @@ export default function OrderHistory() {
           font-size:clamp(34px,5vw,52px);
           color:#1e1b2e; letter-spacing:.02em; line-height:1; margin-bottom:6px;
         }
-        .oh-h1 span{color:#7c3aed;}
+        .oh-h1 span{color:#f97316;}
         .oh-sub{font-size:13px;color:#6b7280;font-weight:400;}
         .oh-count-pill{
           display:inline-flex; align-items:center; gap:7px;
           padding:8px 16px; border-radius:100px;
-          background:rgba(139,92,246,0.08); border:1px solid rgba(139,92,246,0.18);
-          color:#7c3aed; font-size:12px; font-weight:700; white-space:nowrap;
+          background:rgba(30,58,138,0.08); border:1px solid rgba(30,58,138,0.18);
+          color:#f97316; font-size:12px; font-weight:700; white-space:nowrap;
         }
 
         /* ── empty state ── */
         .oh-empty{
-          background:white; border:1px solid rgba(139,92,246,0.12);
+          background:white; border:1px solid rgba(30,58,138,0.12);
           border-radius:24px; padding:64px 24px; text-align:center;
-          box-shadow:0 4px 24px rgba(139,92,246,0.06);
+          box-shadow:0 4px 24px rgba(30,58,138,0.06);
           position:relative; overflow:hidden;
           animation:ohUp .6s .1s ease both;
         }
         .oh-empty::before{
           content:''; position:absolute; top:0; left:0; right:0; height:3px;
-          background:linear-gradient(90deg,transparent 10%,#7c3aed 50%,transparent 90%);
+          background:linear-gradient(90deg,transparent 10%,#f97316 50%,transparent 90%);
         }
         .oh-empty-ico{
           width:72px; height:72px; border-radius:20px; margin:0 auto 20px;
-          background:#f5f3ff; border:1px solid rgba(139,92,246,0.18);
+          background:#f0f9ff; border:1px solid rgba(30,58,138,0.18);
           display:flex; align-items:center; justify-content:center; font-size:30px;
         }
         .oh-empty-h{
@@ -210,7 +210,7 @@ export default function OrderHistory() {
         .oh-empty-p{font-size:14px;color:#9ca3af;margin-bottom:28px;}
         .oh-shop-btn{
           display:inline-flex; align-items:center; gap:8px;
-          background:#7c3aed; color:white;
+          background:#f97316; color:white;
           padding:13px 28px; border-radius:12px; border:none;
           font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.14em;
           cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .25s;
@@ -223,15 +223,15 @@ export default function OrderHistory() {
 
         /* ── order card ── */
         .oh-card{
-          background:white; border:1px solid rgba(139,92,246,0.12);
+          background:white; border:1px solid rgba(30,58,138,0.12);
           border-radius:20px; overflow:hidden;
-          box-shadow:0 2px 16px rgba(139,92,246,0.05);
+          box-shadow:0 2px 16px rgba(30,58,138,0.05);
           transition:all .3s; position:relative;
           animation:ohUp .5s ease both;
         }
         .oh-card::before{
           content:''; position:absolute; top:0; left:0; right:0; height:3px;
-          background:linear-gradient(90deg,transparent 10%,#7c3aed 50%,transparent 90%);
+          background:linear-gradient(90deg,transparent 10%,#f97316 50%,transparent 90%);
           opacity:0; transition:opacity .3s;
         }
         .oh-card:hover{box-shadow:0 8px 32px rgba(124,58,237,.1);border-color:rgba(124,58,237,.22);}
@@ -242,13 +242,13 @@ export default function OrderHistory() {
         /* card header row */
         .oh-card-hd{
           padding:18px 20px; cursor:pointer;
-          border-bottom:1px solid rgba(139,92,246,0.07);
-          background:#faf8ff;
+          border-bottom:1px solid rgba(30,58,138,0.07);
+          background:#f0f9ff;
           display:flex; align-items:center; justify-content:space-between;
           flex-wrap:wrap; gap:12px;
           transition:background .2s;
         }
-        .oh-card-hd:hover{background:#f5f0ff;}
+        .oh-card-hd:hover{background:#f0f9ff;}
         @media(max-width:480px){.oh-card-hd{padding:14px 16px;}}
 
         .oh-card-meta{display:flex;flex-wrap:wrap;gap:20px;align-items:center;}
@@ -278,7 +278,7 @@ export default function OrderHistory() {
 
         /* order id */
         .oh-oid{
-          font-size:10px; color:#c4b5fd; font-weight:600;
+          font-size:10px; color:#f97316; font-weight:600;
           font-family:monospace; letter-spacing:.05em;
         }
 
@@ -303,11 +303,11 @@ export default function OrderHistory() {
         .oh-step:not(:last-child)::after{
           content:''; position:absolute;
           top:14px; left:50%; width:100%; height:2px;
-          background:rgba(139,92,246,0.12);
+          background:rgba(30,58,138,0.12);
           z-index:0;
         }
         .oh-step.done:not(:last-child)::after{
-          background:linear-gradient(90deg,#7c3aed,rgba(139,92,246,0.3));
+          background:linear-gradient(90deg,#f97316,rgba(30,58,138,0.3));
         }
 
         .oh-step-circle{
@@ -316,27 +316,27 @@ export default function OrderHistory() {
           font-size:10px; font-weight:700; position:relative; z-index:1;
           transition:all .3s;
         }
-        .oh-step-circle.done{background:#7c3aed;color:white;box-shadow:0 3px 10px rgba(124,58,237,.3);}
+        .oh-step-circle.done{background:#f97316;color:white;box-shadow:0 3px 10px rgba(124,58,237,.3);}
         .oh-step-circle.done.last{background:#059669;box-shadow:0 3px 10px rgba(5,150,105,.3);}
-        .oh-step-circle.idle{background:#f5f3ff;color:#c4b5fd;border:2px solid rgba(139,92,246,.15);}
+        .oh-step-circle.idle{background:#f0f9ff;color:#f97316;border:2px solid rgba(30,58,138,.15);}
 
         .oh-step-label{
           margin-top:8px; font-size:9px; font-weight:700;
           letter-spacing:.12em; text-transform:uppercase; text-align:center;
           transition:color .3s;
         }
-        .oh-step-label.done{color:#7c3aed;}
+        .oh-step-label.done{color:#f97316;}
         .oh-step-label.done.last{color:#059669;}
-        .oh-step-label.idle{color:#c4b5fd;}
+        .oh-step-label.idle{color:#f97316;}
 
         /* eta */
         .oh-eta{
           display:inline-flex; align-items:center; gap:6px;
           font-size:11px; font-weight:600; color:#6b7280;
-          background:#f9f7ff; border:1px solid rgba(139,92,246,.1);
+          background:#f0f9ff; border:1px solid rgba(30,58,138,.1);
           padding:7px 14px; border-radius:10px; margin-top:12px;
         }
-        .oh-eta b{color:#7c3aed;}
+        .oh-eta b{color:#f97316;}
 
         /* ── info grid ── */
         .oh-info-grid{
@@ -346,18 +346,18 @@ export default function OrderHistory() {
         @media(min-width:540px){.oh-info-grid{grid-template-columns:1fr 1fr;}}
 
         .oh-info-card{
-          background:#f9f7ff; border:1px solid rgba(139,92,246,.08);
+          background:#f0f9ff; border:1px solid rgba(30,58,138,.08);
           border-radius:14px; padding:16px 18px;
           transition:all .2s;
         }
-        .oh-info-card:hover{background:white;border-color:rgba(139,92,246,.18);box-shadow:0 4px 16px rgba(124,58,237,.06);}
+        .oh-info-card:hover{background:white;border-color:rgba(30,58,138,.18);box-shadow:0 4px 16px rgba(124,58,237,.06);}
         .oh-info-title{
           font-size:9px; font-weight:700; letter-spacing:.2em;
           text-transform:uppercase; color:#9ca3af; margin-bottom:10px;
         }
         .oh-info-row{font-size:12px;color:#6b7280;line-height:1.6;}
         .oh-info-row b{color:#1e1b2e;font-weight:600;}
-        .oh-mono{font-family:monospace;font-size:11px;color:#7c3aed;}
+        .oh-mono{font-family:monospace;font-size:11px;color:#f97316;}
 
         /* ── items ── */
         .oh-items-label{
@@ -368,41 +368,41 @@ export default function OrderHistory() {
 
         .oh-item{
           display:flex; align-items:center; gap:14px;
-          background:#f9f7ff; border:1px solid rgba(139,92,246,.08);
+          background:#f0f9ff; border:1px solid rgba(30,58,138,.08);
           border-radius:14px; padding:12px 16px;
           transition:all .2s;
         }
-        .oh-item:hover{background:white;border-color:rgba(139,92,246,.18);}
+        .oh-item:hover{background:white;border-color:rgba(30,58,138,.18);}
 
         .oh-item-img{
           width:52px; height:52px; border-radius:10px;
-          background:white; border:1px solid rgba(139,92,246,.12);
+          background:white; border:1px solid rgba(30,58,138,.12);
           overflow:hidden; flex-shrink:0;
           display:flex; align-items:center; justify-content:center;
         }
         .oh-item-img img{width:100%;height:100%;object-fit:contain;}
-        .oh-item-placeholder{width:24px;height:24px;background:#f5f3ff;border-radius:6px;}
+        .oh-item-placeholder{width:24px;height:24px;background:#f0f9ff;border-radius:6px;}
         .oh-item-name{font-size:14px;font-weight:700;color:#1e1b2e;line-height:1.3;margin-bottom:4px;}
         .oh-item-meta{font-size:12px;color:#9ca3af;font-weight:500;}
         .oh-item-price{
           font-family:'Bebas Neue',sans-serif; font-size:18px;
-          color:#7c3aed; letter-spacing:.03em; flex-shrink:0; margin-left:auto;
+          color:#f97316; letter-spacing:.03em; flex-shrink:0; margin-left:auto;
         }
         .oh-item-row{display:flex;align-items:center;gap:12px;width:100%;cursor:pointer;}
         .oh-rate-row{
           margin-top:10px;padding-top:10px;
-          border-top:1px solid rgba(139,92,246,.1);
+          border-top:1px solid rgba(30,58,138,.1);
           display:flex;flex-wrap:wrap;align-items:center;gap:10px;
         }
         .oh-rate-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#9ca3af;}
         .oh-rate-stars{display:flex;gap:4px;}
         .oh-rate-star{
           width:28px;height:28px;border-radius:8px;
-          background:white;border:1px solid rgba(139,92,246,.12);
+          background:white;border:1px solid rgba(30,58,138,.12);
           display:flex;align-items:center;justify-content:center;
           cursor:pointer;transition:all .2s;padding:0;
         }
-        .oh-rate-star:hover{background:#f5f3ff;border-color:rgba(124,58,237,.35);}
+        .oh-rate-star:hover{background:#f0f9ff;border-color:rgba(124,58,237,.35);}
         .oh-rate-star svg{width:14px;height:14px;color:#f59e0b;}
         .oh-rate-done{font-size:11px;font-weight:700;color:#059669;}
 
@@ -428,24 +428,24 @@ export default function OrderHistory() {
           font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
           cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s;
         }
-        .oh-btn.violet{background:#7c3aed;color:white;box-shadow:0 4px 14px rgba(124,58,237,.25);}
+        .oh-btn.violet{background:#f97316;color:white;box-shadow:0 4px 14px rgba(124,58,237,.25);}
         .oh-btn.violet:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(124,58,237,.35);}
         .oh-btn.green{background:#059669;color:white;box-shadow:0 4px 14px rgba(5,150,105,.2);}
         .oh-btn.green:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(5,150,105,.3);}
         .oh-btn.blue{background:#2563eb;color:white;box-shadow:0 4px 14px rgba(37,99,235,.2);}
         .oh-btn.blue:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(37,99,235,.3);}
-        .oh-btn.outline{background:white;color:#7c3aed;border:1px solid rgba(139,92,246,.25);}
-        .oh-btn.outline:hover{background:#f5f3ff;border-color:rgba(124,58,237,.4);}
+        .oh-btn.outline{background:white;color:#f97316;border:1px solid rgba(30,58,138,.25);}
+        .oh-btn.outline:hover{background:#f0f9ff;border-color:rgba(124,58,237,.4);}
 
         /* ── star rating ── */
         .oh-stars{display:flex;gap:6px;flex-wrap:wrap;}
         .oh-star{
           width:36px; height:36px; border-radius:10px;
-          background:white; border:1px solid rgba(139,92,246,.15);
+          background:white; border:1px solid rgba(30,58,138,.15);
           display:flex; align-items:center; justify-content:center;
           cursor:pointer; transition:all .2s;
         }
-        .oh-star:hover{background:#f5f3ff;border-color:rgba(124,58,237,.4);transform:scale(1.1);}
+        .oh-star:hover{background:#f0f9ff;border-color:rgba(124,58,237,.4);transform:scale(1.1);}
         .oh-star svg{width:16px;height:16px;}
         .oh-star.low svg{color:#d1d5db;}
         .oh-star.high svg{color:#f59e0b;}
@@ -453,7 +453,7 @@ export default function OrderHistory() {
         /* divider */
         .oh-divider{
           height:1px; width:100%;
-          background:linear-gradient(90deg,transparent,rgba(139,92,246,.12),transparent);
+          background:linear-gradient(90deg,transparent,rgba(30,58,138,.12),transparent);
         }
 
         @keyframes ohUp{
@@ -525,7 +525,7 @@ export default function OrderHistory() {
 
                         <div className="oh-meta-item">
                           <div className="oh-meta-label">Total</div>
-                          <div className="oh-meta-val" style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:18, color:'#7c3aed', letterSpacing:'.03em' }}>
+                          <div className="oh-meta-val" style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:18, color:'#f97316', letterSpacing:'.03em' }}>
                             ₹{order.totalEstimate?.toLocaleString()}
                           </div>
                         </div>
