@@ -162,36 +162,7 @@ export default function UserLayout() {
             </div>
           </div>
 
-          {/* Category Navigation */}
-          <div className="hidden lg:flex items-center gap-1 py-3 border-t border-gray-100">
-            {[
-              { label: 'All Categories', to: '/products' },
-              { label: 'Men', to: '/products' },
-              { label: 'Women', to: '/products' },
-              { label: 'Electronics', to: '/products' },
-              { label: 'Home & Kitchen', to: '/products' },
-              { label: 'Beauty', to: '/products' },
-              { label: 'Baby & Kids', to: '/products' },
-              { label: 'Sports', to: '/products' },
-              { label: 'Offers', to: '/products' },
-              { label: 'More', to: '/products' }
-            ].map((item) => (
-              <NavLink
-                key={item.to + item.label}
-                to={item.to}
-                className={({ isActive }) =>
-                  classNames(
-                    'px-4 py-2 text-sm font-bold transition-colors',
-                    isActive
-                      ? 'nav-link-active text-orange-600'
-                      : 'text-gray-700 hover:text-orange-500'
-                  )
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </div>
+
         </div>
       </header>
 
