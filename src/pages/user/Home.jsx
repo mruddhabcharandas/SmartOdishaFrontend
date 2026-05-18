@@ -703,7 +703,9 @@ export default function Home() {
               </div>
             </div>
             <div className="flex flex-col items-center lg:items-end gap-6">
-              <div className="flex flex-wrap justify-center lg:justify-end gap-4">
+              <div className="flex flex-col items-center lg:items-end gap-3">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Follow Us</span>
+                <div className="flex flex-wrap justify-center lg:justify-end gap-4">
                 <a
                   href="https://facebook.com"
                   target="_blank"
