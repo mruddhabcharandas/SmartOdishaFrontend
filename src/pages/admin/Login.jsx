@@ -30,10 +30,10 @@ export default function Login() {
       <div className="max-w-md w-full">
         <div className="mb-8 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gray-200 bg-white text-[11px] text-gray-600 shadow-sm">
-            <span className="h-5 w-5 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-semibold text-white">
-              C2K
-            </span>
-            <span>Click2Kart Admin Console</span>
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
+            </div>
+            <span>SmartOdisha Admin Console</span>
           </div>
         </div>
         <form
@@ -74,7 +74,7 @@ export default function Login() {
             Login
           </button>
           <div className="text-[11px] text-gray-500 text-center pt-1">
-            Protected area • For Click2Kart staff only.
+            Protected area • For SmartOdisha staff only.
           </div>
         </form>
       </div>

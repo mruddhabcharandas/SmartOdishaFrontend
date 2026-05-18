@@ -10,7 +10,7 @@ import RecommendationModal from '../../components/RecommendationModal'
 import ProductCard from '../../components/ProductCard'
 
 /* ══════════════════════════════════════════
-   CATALOGUE  –  Click2Kart B2C
+   CATALOGUE  –  SmartOdisha B2C
 ══════════════════════════════════════════ */
 export default function Catalogue({ initialBrand, brandName }) {
   const { addToCart } = useCart()

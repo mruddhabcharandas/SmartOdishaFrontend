@@ -179,8 +179,8 @@ export default function Enquiry() {
     try { await ensureRazorpayLoaded() } catch { notify('Unable to load payment gateway. Please try again.','error'); return }
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID||"rzp_test_placeholder",
-      amount: amountPaise, currency:"INR", name:"Click2Kart", description:"B2B Order Payment",
-      image: logo, order_id: razorpayOrderId,
+      amount: amountPaise, currency:"INR", name:"SmartOdisha", description:"Order Payment",
+      image: '/logo.png', order_id: razorpayOrderId,
       handler: async (response) => {
         try {
           await api.post('/api/orders/create-after-verify', { razorpay_order_id:response.razorpay_order_id, razorpay_payment_id:response.razorpay_payment_id, razorpay_signature:response.razorpay_signature, items, paymentMethod })
@@ -1495,7 +1495,7 @@ export default function Enquiry() {
               Complete Your <span>Order</span> in this page
             </h1>
             <p className="eq-header-sub">
-              B2B checkout with exclusive bulk discounts
+              Checkout with exclusive discounts
             </p>
           </div>
 

@@ -27,7 +27,7 @@ export default function Settings() {
       <div>
         <h1 className="text-lg font-semibold text-gray-900">Store settings</h1>
         <p className="text-[11px] text-gray-500">
-          Key details used on Click2Kart bills and stock alerts.
+          Key details used on SmartOdisha bills and stock alerts.
         </p>
       </div>
 

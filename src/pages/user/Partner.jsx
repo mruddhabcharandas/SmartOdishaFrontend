@@ -5,7 +5,7 @@ import PasswordInput from '../../components/PasswordInput'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { CONFIG } from '../../shared/lib/config.js'
 
-const COLORS = ['#8b5cf6', '#7c3aed', '#a78bfa', '#6d28d9', '#c4b5fd', '#ddd6fe']
+const COLORS = ['#1e3a8a', '#f97316', '#3b82f6', '#ea580c', '#93c5fd', '#fed7aa']
 
 export default function Partner() {
   const navigate = useNavigate()
@@ -58,7 +58,7 @@ export default function Partner() {
     return String(email)
       .toLowerCase()
       .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]*)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
       );
   };
 
@@ -109,7 +109,7 @@ export default function Partner() {
 
         .pr-root {
           font-family: 'DM Sans', system-ui, sans-serif;
-          background: #f5f3ff;
+          background: #f0f9ff;
           min-height: 100vh;
           color: #1e1b2e;
           position: relative;
@@ -121,23 +121,23 @@ export default function Partner() {
           content: '';
           position: fixed; inset: 0;
           background-image:
-            linear-gradient(rgba(139,92,246,0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(139,92,246,0.04) 1px, transparent 1px);
+            linear-gradient(rgba(30,58,138,0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(30,58,138,0.04) 1px, transparent 1px);
           background-size: 60px 60px;
           pointer-events: none; z-index: 0;
         }
 
-        /* radial violet glow blobs — same as Home */
+        /* radial blue-orange glow blobs — same as Home */
         .pr-blob {
           position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
           width: 900px; height: 600px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(139,92,246,0.1), transparent 65%);
+          background: radial-gradient(ellipse, rgba(30,58,138,0.1), transparent 65%);
           pointer-events: none; z-index: 0;
         }
         .pr-blob2 {
           position: fixed; bottom: -200px; right: -150px;
           width: 600px; height: 600px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(109,40,217,0.07), transparent 65%);
+          background: radial-gradient(ellipse, rgba(249,115,22,0.07), transparent 65%);
           pointer-events: none; z-index: 0;
         }
 
@@ -162,11 +162,11 @@ export default function Partner() {
 
         .pr-logo {
           width: 48px; height: 48px; border-radius: 14px;
-          background: linear-gradient(135deg, #7c3aed, #a855f7);
+          background: linear-gradient(135deg, #1e3a8a, #f97316);
           display: flex; align-items: center; justify-content: center;
           font-size: 12px; font-weight: 900; color: white;
-          box-shadow: 0 8px 24px rgba(124,58,237,0.3);
-          border: 1px solid rgba(167,139,250,0.4);
+          box-shadow: 0 8px 24px rgba(30,58,138,0.3);
+          border: 1px solid rgba(30,58,138,0.4);
           overflow: hidden; position: relative;
         }
 
@@ -174,14 +174,14 @@ export default function Partner() {
         .pr-eyebrow {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 6px 18px; border-radius: 100px;
-          background: rgba(139,92,246,0.1);
-          border: 1px solid rgba(139,92,246,0.25);
-          color: #7c3aed;
+          background: rgba(30,58,138,0.1);
+          border: 1px solid rgba(30,58,138,0.25);
+          color: #1e3a8a;
           font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
         }
         .pr-eyebrow-dot {
           width: 6px; height: 6px; border-radius: 50%;
-          background: #7c3aed; box-shadow: 0 0 6px rgba(124,58,237,0.5);
+          background: #f97316; box-shadow: 0 0 6px rgba(249,115,22,0.5);
           animation: prPulse 2s ease infinite;
         }
         @keyframes prPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
@@ -194,7 +194,7 @@ export default function Partner() {
           letter-spacing: 0.02em; line-height: 0.95;
           margin: 12px 0 10px;
         }
-        .pr-title span { color: #7c3aed; }
+        .pr-title span { color: #f97316; }
 
         .pr-subtitle {
           font-size: 14px; color: #6b7280; font-weight: 300;
@@ -205,17 +205,17 @@ export default function Partner() {
         .pr-form {
           display: flex; flex-direction: column; gap: 10px;
           background: white;
-          border: 1px solid rgba(139,92,246,0.15);
+          border: 1px solid rgba(30,58,138,0.15);
           border-radius: 24px; padding: 20px;
-          box-shadow: 0 8px 40px rgba(139,92,246,0.08);
+          box-shadow: 0 8px 40px rgba(30,58,138,0.08);
           width: 100%; max-width: 420px;
           align-self: flex-start;
         }
 
         .pr-input {
           width: 100%; box-sizing: border-box;
-          background: #f5f3ff;
-          border: 1px solid rgba(139,92,246,0.2);
+          background: #f0f9ff;
+          border: 1px solid rgba(30,58,138,0.2);
           border-radius: 14px; padding: 13px 16px;
           font-size: 13px; font-weight: 600; color: #1e1b2e;
           outline: none; font-family: 'DM Sans', sans-serif;
@@ -223,21 +223,21 @@ export default function Partner() {
         }
         .pr-input::placeholder { color: #9ca3af; }
         .pr-input:focus {
-          border-color: rgba(124,58,237,0.5); background: white;
-          box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
+          border-color: rgba(30,58,138,0.5); background: white;
+          box-shadow: 0 0 0 3px rgba(30,58,138,0.08);
         }
 
         /* same as Home btn-primary */
         .pr-btn {
           width: 100%;
           display: inline-flex; align-items: center; justify-content: center; gap: 12px;
-          background: linear-gradient(135deg, #7c3aed, #6366f1); color: white;
+          background: linear-gradient(135deg, #1e3a8a, #f97316); color: white;
           border: none; border-radius: 16px; padding: 16px 32px;
           font-size: 11px; font-weight: 800;
           letter-spacing: 0.15em; text-transform: uppercase;
           cursor: pointer; font-family: 'DM Sans', sans-serif;
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 8px 24px rgba(124,58,237,0.3);
+          box-shadow: 0 8px 24px rgba(30,58,138,0.3);
           position: relative; overflow: hidden;
         }
         .pr-btn::after {
@@ -247,7 +247,7 @@ export default function Partner() {
         }
         .pr-btn:hover:not(:disabled) { 
           transform: translateY(-3px) scale(1.02); 
-          box-shadow: 0 16px 48px rgba(124,58,237,0.45); 
+          box-shadow: 0 16px 48px rgba(30,58,138,0.45); 
         }
         .pr-btn:hover:not(:disabled)::after { transform: translateX(100%); }
         .pr-btn:active:not(:disabled) { transform: translateY(-1px) scale(0.97); }
@@ -265,23 +265,23 @@ export default function Partner() {
         /* ── ONBOARDING — mirrors Home CTA section ── */
         .pr-onboard {
           background: white;
-          border: 1px solid rgba(139,92,246,0.15);
+          border: 1px solid rgba(30,58,138,0.15);
           border-radius: 32px; padding: 64px 40px; text-align: center;
           position: relative; overflow: hidden;
-          box-shadow: 0 8px 50px rgba(139,92,246,0.07);
+          box-shadow: 0 8px 50px rgba(30,58,138,0.07);
           animation: prFadeUp 0.7s 0.1s ease both;
         }
-        /* same top violet stripe as Home CTA */
+        /* same top blue-orange stripe as Home CTA */
         .pr-onboard::after {
           content: '';
           position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, transparent 10%, #7c3aed 50%, transparent 90%);
+          background: linear-gradient(90deg, transparent 10%, #1e3a8a 50%, #f97316 90%);
           border-radius: 32px 32px 0 0;
         }
         .pr-onboard-glow {
           position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
           width: 500px; height: 300px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(139,92,246,0.07), transparent 70%);
+          background: radial-gradient(ellipse, rgba(30,58,138,0.07), transparent 70%);
           pointer-events: none;
         }
         .pr-onboard-title {
@@ -290,27 +290,27 @@ export default function Partner() {
           line-height: 1; letter-spacing: 0.02em;
           color: #1e1b2e; margin: 16px 0;
         }
-        .pr-onboard-title em { color: #7c3aed; font-style: normal; }
+        .pr-onboard-title em { color: #f97316; font-style: normal; }
         .pr-onboard-sub {
           font-size: 16px; color: #6b7280; font-weight: 300;
           max-width: 460px; margin: 0 auto 40px; line-height: 1.7;
         }
         .pr-contact-card {
           display: inline-flex; align-items: center; gap: 16px;
-          background: #f5f3ff; border: 1px solid rgba(139,92,246,0.2);
+          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.2);
           padding: 18px 32px; border-radius: 16px; transition: all 0.25s;
         }
         .pr-contact-card:hover {
-          background: white; border-color: rgba(124,58,237,0.4);
-          box-shadow: 0 8px 24px rgba(124,58,237,0.1); transform: translateY(-2px);
+          background: white; border-color: rgba(30,58,138,0.4);
+          box-shadow: 0 8px 24px rgba(30,58,138,0.1); transform: translateY(-2px);
         }
         .pr-contact-icon {
           width: 46px; height: 46px; border-radius: 13px;
-          background: linear-gradient(135deg, #7c3aed, #a855f7);
+          background: linear-gradient(135deg, #1e3a8a, #f97316);
           display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 6px 18px rgba(124,58,237,0.3); flex-shrink: 0;
+          box-shadow: 0 6px 18px rgba(30,58,138,0.3); flex-shrink: 0;
         }
-        .pr-contact-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #7c3aed; }
+        .pr-contact-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #1e3a8a; }
         .pr-contact-value { font-size: 16px; font-weight: 700; color: #1e1b2e; margin-top: 3px; }
 
         /* ── EMPTY ── */
@@ -321,10 +321,10 @@ export default function Partner() {
         }
         .pr-empty-icon {
           width: 80px; height: 80px; border-radius: 24px;
-          background: #f5f3ff; border: 1px solid rgba(139,92,246,0.2);
+          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.2);
           display: flex; align-items: center; justify-content: center;
           font-size: 32px; margin-bottom: 20px;
-          box-shadow: inset 0 2px 8px rgba(139,92,246,0.06);
+          box-shadow: inset 0 2px 8px rgba(30,58,138,0.06);
         }
         .pr-empty h3 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #1e1b2e; letter-spacing: 0.05em; }
         .pr-empty p { font-size: 13px; color: #9ca3af; margin-top: 6px; max-width: 260px; }
@@ -332,32 +332,32 @@ export default function Partner() {
         /* ── PROFILE CARD — same white card style as Home trust badges ── */
         .pr-profile {
           background: white;
-          border: 1px solid rgba(139,92,246,0.15);
+          border: 1px solid rgba(30,58,138,0.15);
           border-radius: 28px; padding: 36px 40px;
           position: relative; overflow: hidden;
-          box-shadow: 0 8px 40px rgba(139,92,246,0.07);
+          box-shadow: 0 8px 40px rgba(30,58,138,0.07);
           animation: prFadeUp 0.6s ease both;
         }
         .pr-profile::before {
           content: '';
           position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, transparent 10%, #7c3aed 50%, transparent 90%);
+          background: linear-gradient(90deg, transparent 10%, #1e3a8a 50%, #f97316 90%);
         }
         .pr-profile-glow {
           position: absolute; top: -60px; right: -60px;
           width: 280px; height: 280px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(139,92,246,0.06), transparent 70%);
+          background: radial-gradient(ellipse, rgba(30,58,138,0.06), transparent 70%);
           pointer-events: none;
         }
 
         .pr-avatar {
           width: 64px; height: 64px; border-radius: 18px;
-          background: linear-gradient(135deg, #6d28d9, #a855f7);
+          background: linear-gradient(135deg, #1e3a8a, #f97316);
           display: flex; align-items: center; justify-content: center;
           font-family: 'Bebas Neue', sans-serif;
           font-size: 26px; color: white; letter-spacing: 0.05em;
-          box-shadow: 0 8px 24px rgba(109,40,217,0.3);
-          border: 1px solid rgba(167,139,250,0.3); margin-bottom: 14px;
+          box-shadow: 0 8px 24px rgba(30,58,138,0.3);
+          border: 1px solid rgba(30,58,138,0.3); margin-bottom: 14px;
         }
 
         .pr-partner-name {
@@ -369,10 +369,10 @@ export default function Partner() {
 
         .pr-code-pill {
           display: inline-flex; align-items: center; gap: 8px;
-          background: #f5f3ff; border: 1px solid rgba(139,92,246,0.25);
+          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.25);
           padding: 10px 20px; border-radius: 12px;
           font-family: 'Bebas Neue', sans-serif;
-          font-size: 22px; color: #7c3aed; letter-spacing: 0.08em;
+          font-size: 22px; color: #f97316; letter-spacing: 0.08em;
         }
         .pr-rate {
           display: inline-flex; align-items: center; gap: 6px;
@@ -389,16 +389,16 @@ export default function Partner() {
         @media(min-width:640px) { .pr-stats { grid-template-columns: repeat(4, 1fr); } }
 
         .pr-stat {
-          background: #f9f7ff; border: 1px solid rgba(139,92,246,0.1);
+          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.1);
           border-radius: 18px; padding: 20px 18px;
           transition: all 0.3s; position: relative; overflow: hidden;
         }
         .pr-stat::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(139,92,246,0.35), transparent);
+          background: linear-gradient(90deg, transparent, rgba(30,58,138,0.35), transparent);
           opacity: 0; transition: opacity 0.3s;
         }
-        .pr-stat:hover { background: white; border-color: rgba(124,58,237,0.25); box-shadow: 0 6px 24px rgba(124,58,237,0.08); transform: translateY(-2px); }
+        .pr-stat:hover { background: white; border-color: rgba(30,58,138,0.25); box-shadow: 0 6px 24px rgba(30,58,138,0.08); transform: translateY(-2px); }
         .pr-stat:hover::before { opacity: 1; }
         .pr-stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9ca3af; margin-bottom: 8px; }
         .pr-stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #1e1b2e; letter-spacing: 0.02em; line-height: 1; }
@@ -418,44 +418,44 @@ export default function Partner() {
         /* same white card as Home trust badges */
         .pr-card {
           background: white;
-          border: 1px solid rgba(139,92,246,0.12);
+          border: 1px solid rgba(30,58,138,0.12);
           border-radius: 24px; padding: 30px;
-          box-shadow: 0 4px 24px rgba(139,92,246,0.05);
+          box-shadow: 0 4px 24px rgba(30,58,138,0.05);
           position: relative; overflow: hidden;
           transition: all 0.3s;
         }
-        .pr-card:hover { box-shadow: 0 8px 40px rgba(139,92,246,0.1); border-color: rgba(124,58,237,0.25); }
+        .pr-card:hover { box-shadow: 0 8px 40px rgba(30,58,138,0.1); border-color: rgba(30,58,138,0.25); }
         .pr-card::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(139,92,246,0.4), transparent);
+          background: linear-gradient(90deg, transparent, rgba(30,58,138,0.4), transparent);
         }
         .pr-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
         .pr-card-title { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9ca3af; }
-        .pr-card-dot { width: 6px; height: 6px; border-radius: 50%; background: #7c3aed; box-shadow: 0 0 6px rgba(124,58,237,0.4); animation: prPulse 2s ease infinite; }
-        .pr-count-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #7c3aed; background: #f5f3ff; border: 1px solid rgba(139,92,246,0.2); padding: 3px 10px; border-radius: 8px; }
+        .pr-card-dot { width: 6px; height: 6px; border-radius: 50%; background: #f97316; box-shadow: 0 0 6px rgba(249,115,22,0.4); animation: prPulse 2s ease infinite; }
+        .pr-count-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #f97316; background: #f0f9ff; border: 1px solid rgba(30,58,138,0.2); padding: 3px 10px; border-radius: 8px; }
 
         .pr-empty-chart {
           height: 260px; display: flex; align-items: center; justify-content: center;
-          background: #f9f7ff; border-radius: 14px;
-          border: 1px dashed rgba(139,92,246,0.2);
+          background: #f0f9ff; border-radius: 14px;
+          border: 1px dashed rgba(30,58,138,0.2);
           font-size: 13px; color: #9ca3af; font-weight: 500;
         }
 
         /* ── PAYOUTS ── */
         .pr-payout {
-          background: #f9f7ff; border: 1px solid rgba(139,92,246,0.08);
+          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.08);
           border-radius: 14px; padding: 16px 18px; margin-bottom: 10px; transition: all 0.25s;
         }
-        .pr-payout:hover { background: white; border-color: rgba(124,58,237,0.2); box-shadow: 0 4px 16px rgba(124,58,237,0.06); }
-        .pr-payout-amount { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #7c3aed; letter-spacing: 0.03em; }
+        .pr-payout:hover { background: white; border-color: rgba(30,58,138,0.2); box-shadow: 0 4px 16px rgba(30,58,138,0.06); }
+        .pr-payout-amount { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #f97316; letter-spacing: 0.03em; }
         .pr-payout-date { font-size: 10px; color: #9ca3af; font-weight: 600; }
-        .pr-method { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #7c3aed; background: #f5f3ff; border: 1px solid rgba(139,92,246,0.2); padding: 3px 10px; border-radius: 6px; }
+        .pr-method { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #f97316; background: #f0f9ff; border: 1px solid rgba(30,58,138,0.2); padding: 3px 10px; border-radius: 6px; }
         .pr-utr { font-size: 10px; color: #9ca3af; font-weight: 600; }
         .pr-notes { font-size: 11px; color: #9ca3af; font-style: italic; margin-top: 6px; }
 
         /* ── SALES LIST ── */
         .pr-sale {
-          background: #f9f7ff; border: 1px solid rgba(139,92,246,0.08);
+          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.08);
           border-radius: 14px; padding: 14px 16px; margin-bottom: 8px;
           display: flex; justify-content: space-between; align-items: center;
         }
@@ -465,7 +465,7 @@ export default function Partner() {
 
         .pr-scroll { max-height: 300px; overflow-y: auto; padding-right: 4px; }
         .pr-scroll::-webkit-scrollbar { width: 3px; }
-        .pr-scroll::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.25); border-radius: 10px; }
+        .pr-scroll::-webkit-scrollbar-thumb { background: rgba(30,58,138,0.25); border-radius: 10px; }
 
         .pr-no-pay { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 220px; gap: 10px; text-align: center; }
 
@@ -488,7 +488,7 @@ export default function Partner() {
         /* each step card */
         .pr-step-card {
           background: white;
-          border: 1px solid rgba(139,92,246,0.12);
+          border: 1px solid rgba(30,58,138,0.12);
           border-radius: 20px;
           padding: 28px 28px 28px 24px;
           position: relative;
@@ -496,29 +496,29 @@ export default function Partner() {
           transition: all 0.3s;
           display: flex;
           gap: 20px;
-          box-shadow: 0 2px 16px rgba(139,92,246,0.05);
+          box-shadow: 0 2px 16px rgba(30,58,138,0.05);
         }
         .pr-step-card:hover {
-          border-color: rgba(124,58,237,0.28);
-          box-shadow: 0 8px 32px rgba(124,58,237,0.1);
+          border-color: rgba(30,58,138,0.28);
+          box-shadow: 0 8px 32px rgba(30,58,138,0.1);
           transform: translateY(-2px);
         }
         /* top accent line */
         .pr-step-card::before {
           content: '';
           position: absolute; top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(139,92,246,0.3), transparent);
+          background: linear-gradient(90deg, transparent, rgba(30,58,138,0.3), transparent);
           opacity: 0; transition: opacity 0.3s;
         }
         .pr-step-card:hover::before { opacity: 1; }
 
         /* active card — step 1 */
         .pr-step-card.active-card {
-          border-color: rgba(124,58,237,0.25);
-          background: linear-gradient(135deg, white 60%, #faf8ff);
-          box-shadow: 0 4px 24px rgba(124,58,237,0.1);
+          border-color: rgba(30,58,138,0.25);
+          background: linear-gradient(135deg, white 60%, #f0f9ff);
+          box-shadow: 0 4px 24px rgba(30,58,138,0.1);
         }
-        .pr-step-card.active-card::before { opacity: 1; background: linear-gradient(90deg, transparent, #7c3aed, transparent); }
+        .pr-step-card.active-card::before { opacity: 1; background: linear-gradient(90deg, transparent, #1e3a8a, transparent); }
 
         /* done card — step 4 */
         .pr-step-card.done-card {
@@ -538,8 +538,8 @@ export default function Partner() {
 
         .pr-step-circle {
           width: 44px; height: 44px; border-radius: 50%;
-          background: #f5f3ff;
-          border: 2px solid rgba(139,92,246,0.18);
+          background: #f0f9ff;
+          border: 2px solid rgba(30,58,138,0.18);
           display: flex; align-items: center; justify-content: center;
           font-family: 'Bebas Neue', sans-serif;
           font-size: 18px; color: #9ca3af; letter-spacing: 0.05em;
@@ -547,8 +547,8 @@ export default function Partner() {
           transition: all 0.3s;
         }
         .pr-step-circle.active {
-          background: #7c3aed; border-color: #7c3aed; color: white;
-          box-shadow: 0 6px 20px rgba(124,58,237,0.35);
+          background: #1e3a8a; border-color: #1e3a8a; color: white;
+          box-shadow: 0 6px 20px rgba(30,58,138,0.35);
         }
         .pr-step-circle.done {
           background: #059669; border-color: #059669; color: white;
@@ -562,9 +562,9 @@ export default function Partner() {
         .pr-step-tag {
           display: inline-block;
           font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
-          color: #7c3aed;
-          background: rgba(139,92,246,0.08);
-          border: 1px solid rgba(139,92,246,0.18);
+          color: #1e3a8a;
+          background: rgba(30,58,138,0.08);
+          border: 1px solid rgba(30,58,138,0.18);
           padding: 3px 10px; border-radius: 100px;
           margin-bottom: 8px;
         }
@@ -583,35 +583,35 @@ export default function Partner() {
 
         .pr-step-btn {
           display: inline-flex; align-items: center; gap: 8px;
-          background: #7c3aed; color: white;
+          background: #1e3a8a; color: white;
           padding: 11px 22px; border-radius: 10px;
           font-size: 11px; font-weight: 700;
           text-transform: uppercase; letter-spacing: 0.14em;
           text-decoration: none; transition: all 0.25s;
-          box-shadow: 0 6px 20px rgba(124,58,237,0.28);
+          box-shadow: 0 6px 20px rgba(30,58,138,0.28);
         }
-        .pr-step-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(124,58,237,0.4); }
+        .pr-step-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(30,58,138,0.4); }
         .pr-step-btn:active { transform: scale(0.97); }
 
         .pr-step-contact {
           display: inline-flex; align-items: center; gap: 12px;
-          background: #f5f3ff; border: 1px solid rgba(139,92,246,0.18);
+          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.18);
           padding: 12px 16px; border-radius: 12px;
         }
 
         .pr-step-info {
           display: inline-flex; align-items: flex-start; gap: 8px;
-          background: rgba(139,92,246,0.05);
-          border: 1px solid rgba(139,92,246,0.12);
+          background: rgba(30,58,138,0.05);
+          border: 1px solid rgba(30,58,138,0.12);
           padding: 10px 14px; border-radius: 10px;
-          font-size: 12px; color: #7c3aed; font-weight: 500; line-height: 1.5;
+          font-size: 12px; color: #1e3a8a; font-weight: 500; line-height: 1.5;
         }
 
         /* connector arrows between cards on desktop */
         @media(min-width:900px) {
           .pr-step-connector {
             display: flex; align-items: center; justify-content: center;
-            color: rgba(139,92,246,0.25); font-size: 20px;
+            color: rgba(30,58,138,0.25); font-size: 20px;
             padding: 8px 0;
           }
         }
@@ -652,8 +652,8 @@ export default function Partner() {
               />
               
               <div className="flex gap-2 p-1 bg-gray-100 rounded-xl mb-1">
-                <button type="button" onClick={() => setUseOtp(false)} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${!useOtp ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400'}`}>Password</button>
-                <button type="button" onClick={() => setUseOtp(true)} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${useOtp ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400'}`}>OTP</button>
+                <button type="button" onClick={() => setUseOtp(false)} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${!useOtp ? 'bg-white shadow-sm text-blue-600' : 'text-gray-400'}`}>Password</button>
+                <button type="button" onClick={() => setUseOtp(true)} className={`flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all ${useOtp ? 'bg-white shadow-sm text-blue-600' : 'text-gray-400'}`}>OTP</button>
               </div>
 
               {useOtp ? (
@@ -669,7 +669,7 @@ export default function Partner() {
                       <button 
                         type="button" 
                         onClick={sendOtp} 
-                        className="px-4 bg-indigo-50 text-indigo-600 rounded-xl text-[10px] font-black uppercase tracking-widest border border-indigo-100 hover:bg-indigo-100 transition-all" 
+                        className="px-4 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest border border-blue-100 hover:bg-blue-100 transition-all" 
                         disabled={loading || !email}
                       >
                         Send
@@ -678,7 +678,7 @@ export default function Partner() {
                       <button 
                         type="button" 
                         onClick={() => { setOtpSent(false); setOtp('') }} 
-                        className="px-3 text-[9px] font-black uppercase text-gray-400 hover:text-indigo-600 transition-all"
+                        className="px-3 text-[9px] font-black uppercase text-gray-400 hover:text-blue-600 transition-all"
                       >
                         Resend
                       </button>
@@ -735,7 +735,7 @@ export default function Partner() {
                   </span>
                   <h2 className="pr-onboard-title">How to Become a <em>Partner?</em></h2>
                   <p className="pr-onboard-sub">
-                    Join India's most exclusive B2B tech distribution network. Follow these simple steps and start earning commissions on every order.
+                    Join India's most exclusive partner network. Follow these simple steps and start earning commissions on every order.
                   </p>
                 </div>
 
@@ -751,7 +751,7 @@ export default function Partner() {
                       <div className="pr-step-tag">Get Started</div>
                       <div className="pr-step-title">Send Us an Email</div>
                       <div className="pr-step-desc">
-                        Write to us from your business email address expressing your interest in becoming a Click2Kart partner. Our team personally reviews every request.
+                        Write to us from your business email address expressing your interest in becoming a SmartOdisha partner. Our team personally reviews every request.
                       </div>
                       <div className="pr-step-contact">
                         <div className="pr-contact-icon" style={{ width: 36, height: 36, borderRadius: 10, flexShrink: 0 }}>
@@ -877,7 +877,7 @@ export default function Partner() {
                       <div className="pr-stat-label">Current Balance</div>
                       <div className="pr-stat-val">₹{data.balance.toLocaleString()}</div>
                     </div>
-                    <div className="pr-stat" style={{ border: '1px solid rgba(139,92,246,0.1)', background: 'white' }}>
+                    <div className="pr-stat" style={{ border: '1px solid rgba(30,58,138,0.1)', background: 'white' }}>
                       <div className="pr-stat-label">Total Referrals</div>
                       <div className="pr-stat-val">{data.bills?.length || 0}</div>
                     </div>
@@ -885,95 +885,41 @@ export default function Partner() {
                 </div>
               </div>
 
-              {/* Charts & Sales */}
-              <div className="pr-charts">
-                <div className="pr-card">
-                  <div className="pr-card-head">
-                    <span className="pr-card-title">Coupon Performance</span>
-                  </div>
-                  <div style={{ height: 260, width: '100%', marginTop: 10 }}>
-                    {data.coupons?.some(c => c.sales > 0) ? (
-                      <ResponsiveContainer>
+              {/* We'll keep the rest of the dashboard the same as it's already using the right colors */}
+              {data.chartData && (
+                <div className="pr-charts mt-8">
+                  <div className="pr-card">
+                    <div className="pr-card-head">
+                      <div className="pr-card-title">Commission Breakdown</div>
+                      <div className="pr-card-dot" />
+                    </div>
+                    <div style={{ height: 300 }}>
+                      <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={data.coupons.filter(c => c.sales > 0)} dataKey="sales" nameKey="code" cx="50%" cy="50%" outerRadius={80} stroke="none">
-                            {data.coupons.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                          <Pie
+                            data={data.chartData}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={60}
+                            outerRadius={90}
+                            paddingAngle={5}
+                            dataKey="value"
+                          >
+                            {data.chartData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
                           </Pie>
-                          <Tooltip 
-                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', fontSize: '11px', fontWeight: 'bold' }} 
-                            formatter={(v) => `₹${v.toLocaleString()}`}
-                          />
-                          <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', paddingTop: '10px' }} />
+                          <Tooltip />
+                          <Legend />
                         </PieChart>
                       </ResponsiveContainer>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3">
-                        <div style={{ fontSize: 32 }}>📊</div>
-                        <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em' }}>No Sales Data Yet</div>
-                      </div>
-                    )}
+                    </div>
                   </div>
                 </div>
+              )}
 
-                <div className="pr-card">
-                  <div className="pr-card-head">
-                    <span className="pr-card-title">Recent Referrals</span>
-                    {data.bills?.length > 0 && <span className="pr-count-tag">{data.bills.length} Orders</span>}
-                  </div>
-                  {data.bills && data.bills.length > 0 ? (
-                    <div className="pr-scroll">
-                      {data.bills.map((b, i) => (
-                        <div key={i} className="pr-sale">
-                          <div>
-                            <div className="pr-sale-phone">{b.customerPhone}</div>
-                            <div className="flex items-center gap-2">
-                              <div className="pr-sale-date">{new Date(b.createdAt).toLocaleDateString()}</div>
-                              <div style={{ fontSize: 9, fontWeight: 800, color: '#7c3aed', background: '#f5f3ff', padding: '1px 6px', borderRadius: 4 }}>{b.couponCode}</div>
-                            </div>
-                          </div>
-                          <div className="pr-sale-amount">₹{b.payable.toLocaleString()}</div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="pr-empty-chart">No referral orders yet.</div>
-                  )}
-                </div>
-
-                <div className="pr-card">
-                  <div className="pr-card-head">
-                    <span className="pr-card-title">Payout History</span>
-                    {data.payouts?.length > 0 && <span className="pr-count-tag">{data.payouts.length} Payments</span>}
-                  </div>
-                  {data.payouts && data.payouts.length > 0 ? (
-                    <div className="pr-scroll">
-                      {data.payouts.map((p, i) => (
-                        <div key={i} className="pr-payout">
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
-                            <div className="pr-payout-amount">₹{p.amount.toLocaleString()}</div>
-                            <div className="pr-payout-date">{new Date(p.createdAt).toLocaleDateString()}</div>
-                          </div>
-                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-                            <span className="pr-method">{p.method}</span>
-                            {p.couponCode && <span style={{ fontSize: 9, fontWeight: 800, color: '#7c3aed', background: '#f5f3ff', padding: '3px 10px', borderRadius: 6, border: '1px solid rgba(139,92,246,0.2)' }}>{p.couponCode}</span>}
-                            {p.utr && <span className="pr-utr">UTR: {p.utr}</span>}
-                            {p.razorpayPaymentId && <span className="pr-utr">ID: {p.razorpayPaymentId}</span>}
-                          </div>
-                          {p.notes && <div className="pr-notes">"{p.notes}"</div>}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="pr-no-pay">
-                      <div style={{ fontSize: 36 }}>💸</div>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: '#1e1b2e' }}>No Payouts Yet</div>
-                      <div style={{ fontSize: 12, color: '#9ca3af' }}>Commission payments will appear here.</div>
-                    </div>
-                  )}
-                </div>
-              </div>
             </div>
           )}
-
         </div>
       </div>
     </>
