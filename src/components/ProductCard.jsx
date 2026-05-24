@@ -75,65 +75,31 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.05 }}
-      whileHover={{ y: -4, scale: 1.02 }}
-      className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer group flex flex-col"
-      onClick={() => navigate(`/products/${productIdOrSlug}`)}
+      whileHover={{ y: -2 }}
+      className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col"
       onMouseEnter={prefetchProduct}
     >
-      <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-        <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start">
-          <div className="flex flex-col gap-2">
-            {discount >= 10 && (
-              <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-md">
-                {discount}% OFF
-              </div>
-            )}
-            {authed && hasBulk && (
-              <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-md">
-                BULK OFFER
-              </div>
-            )}
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              const productId = p._id || p.id;
-              if (isInWishlist(productId)) {
-                removeFromWishlist(productId);
-              } else {
-                addToWishlist(p);
-              }
-            }}
-            className="w-10 h-10 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-lg hover:bg-orange-50 hover:border-orange-300 transition-all"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill={isInWishlist(p._id || p.id) ? '#ff4343' : 'none'}
-              stroke="#64748b"
-              strokeWidth="2"
-              className="transition-all"
-            >
-              <path
-                d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </motion.button>
+      <div className="relative aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden p-4">
+        <div className="absolute top-3 left-3 z-20 flex flex-col gap-2">
+          {discount >= 10 && (
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-md">
+              {discount}% OFF
+            </div>
+          )}
+          {authed && hasBulk && (
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-md">
+              BULK OFFER
+            </div>
+          )}
         </div>
 
-        <div className="w-full h-full p-8 flex items-center justify-center">
+        <div className="w-full h-full flex items-center justify-center">
           {p.images?.length ? (
             <img 
               src={getCloudinaryUrl(p.images[0].url, 400)} 
               alt={p.name}
               loading="lazy" 
-              className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
+              className="max-w-full max-h-full object-contain transition-transform duration-500 hover:scale-105"
             />
           ) : (
             <span className="text-5xl opacity-20">📦</span>
@@ -141,50 +107,67 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
         </div>
       </div>
 
-      <div className="p-5 flex-1 flex flex-col gap-3">
-        <div className="flex items-center gap-2 mb-1">
+      <div className="p-5 flex-1 flex flex-col gap-4">
+        <div className="flex items-center gap-2">
           {p.category?.name && (
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-purple-600 uppercase tracking-wider">
               {p.category.name}
             </span>
           )}
         </div>
 
-        <Link 
-          to={`/products/${productIdOrSlug}`} 
-          onClick={e => e.stopPropagation()} 
-          className="text-base font-semibold text-gray-900 line-clamp-2 leading-snug hover:text-blue-600 transition-colors"
-        >
+        <h3 className="text-lg font-semibold text-gray-900 line-clamp-2 leading-snug">
           {p.name}
-        </Link>
+        </h3>
 
-        <div className="mt-auto flex flex-col gap-2">
-          <div className="flex items-baseline gap-3 flex-wrap">
+        <div className="mt-auto flex items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
             <span className="text-2xl font-extrabold text-gray-900">
               ₹{Number(minPrice).toLocaleString('en-IN')}
             </span>
             {displayMrp > minPrice && (
-              <>
-                <span className="text-sm text-gray-500 line-through">
-                  ₹{Number(displayMrp).toLocaleString('en-IN')}
-                </span>
-                <span className="text-sm font-bold text-green-600">
-                  Save ₹{Number(displayMrp - minPrice).toLocaleString('en-IN')}
-                </span>
-              </>
+              <span className="text-sm text-gray-500 line-through">
+                ₹{Number(displayMrp).toLocaleString('en-IN')}
+              </span>
             )}
           </div>
+          
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/products/${productIdOrSlug}`);
+            }}
+            className="w-14 h-14 bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-2xl flex items-center justify-center shadow-xl hover:shadow-2xl transition-all"
+          >
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </motion.button>
+        </div>
 
+        <div className="flex items-center gap-3 text-xs text-gray-600">
           {totalStock > 0 ? (
-            <div className="flex items-center gap-2 text-sm text-green-700 font-semibold">
-              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-              <span>Free Delivery • Pan India</span>
-            </div>
+            <>
+              <span className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full bg-green-600"></span>
+                IN STOCK
+              </span>
+              <span>•</span>
+            </>
           ) : (
-            <div className="text-sm text-red-600 font-bold">
-              Out of Stock
-            </div>
+            <>
+              <span className="flex items-center gap-1 text-red-600">
+                <span className="w-2 h-2 rounded-full bg-red-600"></span>
+                OUT OF STOCK
+              </span>
+              <span>•</span>
+            </>
           )}
+          <span>FAST</span>
+          <span>•</span>
+          <span>GST</span>
         </div>
       </div>
     </motion.div>
