@@ -253,7 +253,6 @@ export default function ProductDetail() {
                       </svg>
                       <div>
                         <p className="font-bold text-green-800">In Stock</p>
-                        <p className="text-sm text-green-700">{totalStock} units available</p>
                       </div>
                     </div>
                   ) : (
@@ -274,7 +273,7 @@ export default function ProductDetail() {
                     </svg>
                     <div>
                       <p className="font-bold text-blue-800">Free Delivery</p>
-                      <p className="text-sm text-blue-700">Across Odisha</p>
+                      <p className="text-sm text-blue-700">Pan India</p>
                     </div>
                   </div>
                 </div>

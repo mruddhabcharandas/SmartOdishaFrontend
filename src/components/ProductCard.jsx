@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
+import { motion } from 'framer-motion';
 import api from '../lib/api';
 import { getCloudinaryUrl } from '../lib/cloudinary';
 import { getStockStatus, useCart } from '../lib/CartContext'
@@ -70,76 +71,32 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
   }
 
   return (
-    <div 
-      className="product-card group" 
-      style={{ 
-        animationDelay: `${index * 38}ms`,
-        background: 'white',
-        borderRadius: '8px',
-        border: '1px solid #e2e8f0',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'all 0.2s ease',
-        cursor: 'pointer',
-        position: 'relative'
-      }}
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.05 }}
+      whileHover={{ y: -4, scale: 1.02 }}
+      className="bg-white rounded-2xl shadow-lg overflow-hidden cursor-pointer group flex flex-col"
       onClick={() => navigate(`/products/${productIdOrSlug}`)}
       onMouseEnter={prefetchProduct}
     >
-      <style>{`
-        .product-card:hover {
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-          transform: translateY(-2px);
-        }
-        @media (max-width: 640px) {
-          .product-card { border-radius: 6px; }
-        }
-      `}</style>
-
-      <div style={{ 
-        position: 'relative', 
-        aspectRatio: '1', 
-        background: '#f8fafc', 
-        overflow: 'hidden'
-      }}>
-        <div style={{ 
-          position: 'absolute', top: 8, left: 8, right: 8, 
-          display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', 
-          zIndex: 10 
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div className="relative aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
+        <div className="absolute top-4 left-4 right-4 z-20 flex justify-between items-start">
+          <div className="flex flex-col gap-2">
             {discount >= 10 && (
-              <div style={{ 
-                background: '#2874f0', 
-                color: 'white', 
-                padding: '4px 8px', 
-                borderRadius: '2px',
-                fontSize: '11px', 
-                fontWeight: 700, 
-                textTransform: 'uppercase',
-                letterSpacing: '0.02em'
-              }}>
+              <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-md">
                 {discount}% OFF
               </div>
             )}
             {authed && hasBulk && (
-              <div style={{ 
-                background: '#ff9f00', 
-                color: 'white', 
-                padding: '4px 8px', 
-                borderRadius: '2px',
-                fontSize: '10px', 
-                fontWeight: 700, 
-                textTransform: 'uppercase',
-                letterSpacing: '0.02em'
-              }}>
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-md">
                 BULK OFFER
               </div>
             )}
           </div>
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -150,29 +107,16 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
                 addToWishlist(p);
               }
             }}
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              background: 'white',
-              border: '1px solid #e2e8f0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-              transition: 'all 0.2s',
-            }}
-            className="hover:bg-orange-50 hover:border-orange-200"
+            className="w-10 h-10 rounded-full bg-white border-2 border-gray-200 flex items-center justify-center shadow-lg hover:bg-orange-50 hover:border-orange-300 transition-all"
           >
             <svg
-              width="18"
-              height="18"
+              width="20"
+              height="20"
               viewBox="0 0 24 24"
               fill={isInWishlist(p._id || p.id) ? '#ff4343' : 'none'}
               stroke="#64748b"
               strokeWidth="2"
-              style={{ transition: 'all 0.2s' }}
+              className="transition-all"
             >
               <path
                 d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z"
@@ -180,34 +124,27 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
                 strokeLinejoin="round"
               />
             </svg>
-          </button>
+          </motion.button>
         </div>
 
-        <div style={{ width: '100%', height: '100%', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="w-full h-full p-8 flex items-center justify-center">
           {p.images?.length ? (
             <img 
               src={getCloudinaryUrl(p.images[0].url, 400)} 
               alt={p.name}
               loading="lazy" 
-              style={{ width: '100%', height: '100%', objectFit: 'contain', transition: 'transform 0.3s ease' }}
-              className="group-hover:scale-105"
+              className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
             />
           ) : (
-            <span style={{ fontSize: '40px', opacity: 0.1 }}>📦</span>
+            <span className="text-5xl opacity-20">📦</span>
           )}
         </div>
       </div>
 
-      <div style={{ padding: '12px 16px 16px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
+      <div className="p-5 flex-1 flex flex-col gap-3">
+        <div className="flex items-center gap-2 mb-1">
           {p.category?.name && (
-            <span style={{ 
-              fontSize: '10px', 
-              fontWeight: 600, 
-              color: '#878787', 
-              textTransform: 'uppercase', 
-              letterSpacing: '0.04em' 
-            }}>
+            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
               {p.category.name}
             </span>
           )}
@@ -216,53 +153,40 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
         <Link 
           to={`/products/${productIdOrSlug}`} 
           onClick={e => e.stopPropagation()} 
-          style={{ 
-            fontSize: '14px', 
-            fontWeight: 500, 
-            color: '#212121', 
-            lineHeight: 1.4, 
-            display: '-webkit-box', 
-            WebkitLineClamp: 2, 
-            WebkitBoxOrient: 'vertical', 
-            overflow: 'hidden',
-            minHeight: '2.8em', 
-            textDecoration: 'none', 
-            transition: 'color 0.2s'
-          }}
-          className="hover:text-blue-600"
+          className="text-base font-semibold text-gray-900 line-clamp-2 leading-snug hover:text-blue-600 transition-colors"
         >
           {p.name}
         </Link>
 
-        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '20px', fontWeight: 700, color: '#212121', letterSpacing: '-0.02em' }}>
-              ₹{Number(minPrice).toLocaleString()}
+        <div className="mt-auto flex flex-col gap-2">
+          <div className="flex items-baseline gap-3 flex-wrap">
+            <span className="text-2xl font-extrabold text-gray-900">
+              ₹{Number(minPrice).toLocaleString('en-IN')}
             </span>
             {displayMrp > minPrice && (
               <>
-                <span style={{ fontSize: '14px', color: '#878787', textDecoration: 'line-through' }}>
-                  ₹{Number(displayMrp).toLocaleString()}
+                <span className="text-sm text-gray-500 line-through">
+                  ₹{Number(displayMrp).toLocaleString('en-IN')}
                 </span>
-                <span style={{ fontSize: '13px', fontWeight: 600, color: '#388e3c' }}>
-                  Save ₹{Number(displayMrp - minPrice).toLocaleString()}
+                <span className="text-sm font-bold text-green-600">
+                  Save ₹{Number(displayMrp - minPrice).toLocaleString('en-IN')}
                 </span>
               </>
             )}
           </div>
 
           {totalStock > 0 ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '12px', color: '#388e3c', fontWeight: 600 }}>
-              <span>✓</span>
-              <span>Free Delivery</span>
+            <div className="flex items-center gap-2 text-sm text-green-700 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-green-500"></span>
+              <span>Free Delivery • Pan India</span>
             </div>
           ) : (
-            <div style={{ fontSize: '12px', color: '#ff4343', fontWeight: 600 }}>
+            <div className="text-sm text-red-600 font-bold">
               Out of Stock
             </div>
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
