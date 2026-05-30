@@ -841,40 +841,24 @@ export default function ProductDetail() {
 
               {/* Price Block */}
               <div className="pd-price-block">
-                {authed ? (
-                  <>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap', marginBottom: '4px' }}>
-                      <span className="pd-price-main">
-                        ₹{Number(currentPrice || minPrice).toLocaleString()}
-                      </span>
-                      {Number(currentMrp || displayMrp) > Number(currentPrice || minPrice) && (
-                        <>
-                          <span className="pd-price-mrp">₹{Number(currentMrp || displayMrp).toLocaleString()}</span>
-                          <span className="pd-price-save">Save ₹{(Number(currentMrp || displayMrp) - Number(currentPrice || minPrice)).toLocaleString()}</span>
-                        </>
-                      )}
-                    </div>
-                    {p.gst > 0 && (
-                      <div style={{ fontSize: '11px', color: '#059669', fontWeight: 600, marginTop: '4px' }}>
-                        Inclusive of all taxes
-                      </div>
+                <>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap', marginBottom: '4px' }}>
+                    <span className="pd-price-main">
+                      ₹{Number(currentPrice || minPrice).toLocaleString()}
+                    </span>
+                    {Number(currentMrp || displayMrp) > Number(currentPrice || minPrice) && (
+                      <>
+                        <span className="pd-price-mrp">₹{Number(currentMrp || displayMrp).toLocaleString()}</span>
+                        <span className="pd-price-save">Save ₹{(Number(currentMrp || displayMrp) - Number(currentPrice || minPrice)).toLocaleString()}</span>
+                      </>
                     )}
-                  </>
-                ) : (
-                  <Link to="/login" style={{ textDecoration: 'none' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '10px 16px', borderRadius: '12px', background: 'linear-gradient(135deg, rgba(124,58,237,.09), rgba(99,102,241,.07))', border: '1px solid rgba(124,58,237,.2)', cursor: 'pointer', marginBottom: '4px' }}>
-                      <span style={{ fontSize: '18px', fontWeight: 800, color: '#7c3aed' }}>₹</span>
-                      <span style={{ fontFamily: 'monospace', fontSize: '20px', fontWeight: 900, color: '#7c3aed', letterSpacing: '4px', filter: 'blur(5px)', userSelect: 'none' }}>****</span>
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" strokeWidth="2">
-                        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z" />
-                      </svg>
+                  </div>
+                  {p.gst > 0 && (
+                    <div style={{ fontSize: '11px', color: '#059669', fontWeight: 600, marginTop: '4px' }}>
+                      Inclusive of all taxes
                     </div>
-                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#7c3aed', marginTop: '6px', textTransform: 'uppercase' }}>
-                      Login to view price
-                    </div>
-                  </Link>
-                )}
+                  )}
+                </>
               </div>
 
               {/* Stock */}
