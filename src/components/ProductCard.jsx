@@ -21,9 +21,9 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
   } 
 
   // Calculate overall stock status based on variants 
-  const totalStock = Array.isArray(p.variants) && p.variants.length > 0 
+  const totalStock = p && Array.isArray(p.variants) && p.variants.length > 0 
     ? p.variants.filter(v => v.isActive !== false).reduce((sum, v) => sum + (v.stock || 0), 0) 
-    : (p.stock || 0) 
+    : (p?.stock || 0) 
 
   // Find the lowest price among active variants 
   const minPrice = useMemo(() => { 
@@ -31,11 +31,11 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
       const num = Number(val); 
       return isNaN(num) || !isFinite(num) ? 0 : num; 
     }; 
-    if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.price || 0); 
+    if (!p || !Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p?.price || 0); 
     const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.price || 0) > 0); 
-    if (activeVariants.length === 0) return safeNumber(p.price || 0); 
+    if (activeVariants.length === 0) return safeNumber(p?.price || 0); 
     return Math.min(...activeVariants.map(v => safeNumber(v.price || 0))); 
-  }, [p.variants, p.price]); 
+  }, [p]); 
 
   // Find the MRP corresponding to the min price or the highest MRP 
   const displayMrp = useMemo(() => { 
@@ -43,23 +43,23 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
       const num = Number(val); 
       return isNaN(num) || !isFinite(num) ? 0 : num; 
     }; 
-    if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.mrp || p.price || 0); 
+    if (!p || !Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p?.mrp || p?.price || 0); 
     const variantWithMinPrice = p.variants.find(v => v.isActive !== false && safeNumber(v.price || 0) === minPrice); 
-    return safeNumber(variantWithMinPrice?.mrp || p.mrp || minPrice || 0); 
-  }, [p.variants, minPrice, p.mrp]); 
+    return safeNumber(variantWithMinPrice?.mrp || p?.mrp || minPrice || 0); 
+  }, [p, minPrice]); 
 
   const hasMultiplePrices = useMemo(() => { 
     const safeNumber = (val) => { 
       const num = Number(val); 
       return isNaN(num) || !isFinite(num) ? 0 : num; 
     }; 
-    if (!Array.isArray(p.variants) || p.variants.length <= 1) return false; 
+    if (!p || !Array.isArray(p.variants) || p.variants.length <= 1) return false; 
     const prices = new Set(p.variants.filter(v => v.isActive !== false && safeNumber(v.price) > 0).map(v => safeNumber(v.price))); 
     return prices.size > 1; 
-  }, [p.variants]); 
+  }, [p]); 
 
   const status = getStockStatus(totalStock) 
-  const hasBulk = p.bulkDiscountQuantity > 0 
+  const hasBulk = p?.bulkDiscountQuantity > 0 
   const discount = displayMrp > minPrice 
     ? Math.round(((displayMrp - minPrice) / displayMrp) * 100) : 0 
 

@@ -493,15 +493,15 @@ export default function ProductDetail() {
 
   const discount = displayMrp > minPrice ? Math.round(((displayMrp - minPrice) / displayMrp) * 100) : 0
 
-  const totalStock = Array.isArray(p.variants) && p.variants.length > 0
+  const totalStock = p && Array.isArray(p.variants) && p.variants.length > 0
     ? p.variants.filter(v => v.isActive !== false).reduce((sum, v) => sum + (v.stock || 0), 0)
-    : (p.stock || 0)
+    : (p?.stock || 0)
 
   const stockStRaw = getStockStatus(currentStock ?? totalStock)
   const stockSt = { ...stockStRaw, text: stockStRaw.text.includes('Only') ? 'Limited Stock' : stockStRaw.text }
 
-  const hasHighlights = Array.isArray(p.highlights) && p.highlights.length > 0
-  const hasSpecifications = Array.isArray(p.specifications) && p.specifications.length > 0
+  const hasHighlights = p && Array.isArray(p.highlights) && p.highlights.length > 0
+  const hasSpecifications = p && Array.isArray(p.specifications) && p.specifications.length > 0
   const showHighlightsBlock = hasHighlights && (hlSpecTab === 'highlights' || !hasSpecifications)
   const showSpecificationsBlock = hasSpecifications && (hlSpecTab === 'specs' || !hasHighlights)
 
