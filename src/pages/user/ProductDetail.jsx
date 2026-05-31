@@ -603,6 +603,7 @@ export default function ProductDetail() {
           color: #1f2937;
           min-height: 100vh;
           overflow-x: hidden;
+          width: 100%;
         }
         
         .pd::before {
@@ -654,7 +655,7 @@ export default function ProductDetail() {
         .pd-img-main {
           background: linear-gradient(145deg, #ffffff 0%, #faf9ff 50%, #f5f3ff 100%);
           border: 1px solid rgba(124, 58, 237, 0.1);
-          border-radius: 24px;
+          border-radius: 20px;
           overflow: hidden;
           aspect-ratio: 1;
           position: relative;
@@ -663,9 +664,26 @@ export default function ProductDetail() {
           align-items: center;
           justify-content: center;
           box-shadow: 
-            0 12px 40px -8px rgba(76, 29, 149, 0.15),
-            0 4px 16px -4px rgba(124, 58, 237, 0.1);
+            0 10px 32px -8px rgba(76, 29, 149, 0.15),
+            0 4px 12px -4px rgba(124, 58, 237, 0.1);
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          width: 100%;
+        }
+        
+        .pd-img-main img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          padding: 24px;
+        }
+        
+        @media (min-width: 640px) {
+          .pd-img-main {
+            border-radius: 24px;
+          }
+          .pd-img-main img {
+            padding: 28px;
+          }
         }
         
         @media (min-width: 768px) {
@@ -674,6 +692,9 @@ export default function ProductDetail() {
             box-shadow: 
               0 20px 60px -12px rgba(76, 29, 149, 0.15),
               0 8px 24px -8px rgba(124, 58, 237, 0.1);
+          }
+          .pd-img-main img {
+            padding: 32px;
           }
         }
         
@@ -859,17 +880,18 @@ export default function ProductDetail() {
         .pd-var-opts {
           display: flex;
           flex-wrap: wrap;
-          gap: 12px;
+          gap: 10px;
           align-items: stretch;
         }
         
         .pd-var-opts.has-many {
           flex-wrap: nowrap;
           overflow-x: auto;
-          gap: 12px;
+          gap: 10px;
           padding: 4px 2px 12px;
           margin: 0 -2px;
           scroll-snap-type: x proximity;
+          -webkit-overflow-scrolling: touch;
         }
         
         .pd-var-btn {
@@ -966,6 +988,10 @@ export default function ProductDetail() {
           pointer-events: none;
         }
         
+        .pd-info {
+          margin-top: 12px;
+        }
+        
         @media (min-width: 1024px) {
           .pd-info {
             background: rgba(255, 255, 255, 0.78);
@@ -973,6 +999,7 @@ export default function ProductDetail() {
             border: 1px solid rgba(255, 255, 255, 0.85);
             border-radius: 32px;
             padding: 40px 36px 48px;
+            margin-top: 0;
             box-shadow: 
               0 24px 60px -16px rgba(76, 29, 149, 0.15),
               0 8px 24px -8px rgba(15, 23, 42, 0.06);
@@ -1026,7 +1053,7 @@ export default function ProductDetail() {
         }
         
         .pd-name {
-          font-size: clamp(26px, 5vw, 40px);
+          font-size: clamp(22px, 5vw, 40px);
           font-weight: 800;
           line-height: 1.15;
           background: linear-gradient(135deg, #1f2937 0%, #4b5563 100%);
@@ -1085,7 +1112,7 @@ export default function ProductDetail() {
         }
         
         .pd-price-main {
-          font-size: clamp(40px, 7vw, 56px);
+          font-size: clamp(32px, 6vw, 56px);
           font-weight: 800;
           background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
           background-clip: text;
@@ -1162,17 +1189,30 @@ export default function ProductDetail() {
         
         .pd-countdown-item {
           background: rgba(124, 58, 237, 0.08);
-          padding: 10px 14px;
+          padding: 8px 12px;
           border-radius: 12px;
           border: 1px solid rgba(124, 58, 237, 0.15);
-          min-width: 64px;
+          min-width: 56px;
           text-align: center;
         }
         
+        @media (min-width: 640px) {
+          .pd-countdown-item {
+            padding: 10px 14px;
+            min-width: 64px;
+          }
+        }
+        
         .pd-countdown-num {
-          font-size: 20px;
+          font-size: 18px;
           font-weight: 800;
           color: #7c3aed;
+        }
+        
+        @media (min-width: 640px) {
+          .pd-countdown-num {
+            font-size: 20px;
+          }
         }
         
         .pd-countdown-label {
@@ -1297,26 +1337,38 @@ export default function ProductDetail() {
         
         .pd-btn-primary {
           flex: 1;
-          min-width: 160px;
+          min-width: 140px;
           background: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
           color: white;
           border: none;
-          padding: 18px 32px;
-          border-radius: 20px;
-          font-size: 13px;
+          padding: 16px 28px;
+          border-radius: 18px;
+          font-size: 12px;
           font-weight: 800;
           letter-spacing: 0.14em;
           text-transform: uppercase;
           cursor: pointer;
           font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
           transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 12px 32px rgba(124, 58, 237, 0.35);
+          box-shadow: 0 10px 28px rgba(124, 58, 237, 0.3);
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 10px;
+          gap: 8px;
           position: relative;
           overflow: hidden;
+          width: 100%;
+        }
+        
+        @media (min-width: 640px) {
+          .pd-btn-primary {
+            min-width: 160px;
+            padding: 18px 32px;
+            border-radius: 20px;
+            font-size: 13px;
+            gap: 10px;
+            box-shadow: 0 12px 32px rgba(124, 58, 237, 0.35);
+          }
         }
         
         .pd-btn-primary::after {
@@ -1353,9 +1405,9 @@ export default function ProductDetail() {
           background: white;
           color: #7c3aed;
           border: 2px solid rgba(124, 58, 237, 0.2);
-          padding: 18px 24px;
-          border-radius: 20px;
-          font-size: 13px;
+          padding: 16px 20px;
+          border-radius: 18px;
+          font-size: 12px;
           font-weight: 800;
           letter-spacing: 0.12em;
           text-transform: uppercase;
@@ -1366,7 +1418,18 @@ export default function ProductDetail() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
+          gap: 6px;
+          width: 100%;
+        }
+        
+        @media (min-width: 640px) {
+          .pd-btn-secondary {
+            padding: 18px 24px;
+            border-radius: 20px;
+            font-size: 13px;
+            gap: 8px;
+            width: auto;
+          }
         }
         
         .pd-btn-secondary:hover {
@@ -1641,26 +1704,25 @@ export default function ProductDetail() {
                     src={getCloudinaryUrl(imgs[activeImg].url || imgs[activeImg], 1000)}
                     alt={p.name}
                     className="pd-main-photo"
-                    style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '32px' }}
                     onLoad={() => setImgLoading(false)}
                     onError={() => setImgLoading(false)}
                   />
                 )}
                 {discount > 0 && (
-                  <div style={{ position: 'absolute', top: '16px', left: '16px', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div className="pd-discount-badge" style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     <div style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '8px',
-                      padding: '8px 18px',
-                      borderRadius: '14px',
-                      fontSize: '12px',
+                      gap: '6px',
+                      padding: '6px 14px',
+                      borderRadius: '12px',
+                      fontSize: '11px',
                       fontWeight: 900,
                       letterSpacing: '0.1em',
                       textTransform: 'uppercase',
                       color: 'white',
                       background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-                      boxShadow: '0 8px 24px rgba(5, 150, 105, 0.3)'
+                      boxShadow: '0 6px 20px rgba(5, 150, 105, 0.25)'
                     }}>
                       {discount}% OFF
                     </div>
