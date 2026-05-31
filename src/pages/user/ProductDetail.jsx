@@ -620,13 +620,21 @@ export default function ProductDetail() {
         .pd-wrap {
           max-width: 1280px;
           margin: 0 auto;
-          padding: 32px 16px 80px;
+          padding: 20px 12px 60px;
           position: relative;
           z-index: 1;
         }
         
+        @media (min-width: 640px) {
+          .pd-wrap { padding: 24px 16px 80px; }
+        }
+        
         @media (min-width: 768px) {
-          .pd-wrap { padding: 40px 24px 120px; }
+          .pd-wrap { padding: 32px 24px 100px; }
+        }
+        
+        @media (min-width: 1024px) {
+          .pd-wrap { padding: 40px 32px 120px; }
         }
         
         .pd-grid {
@@ -646,7 +654,7 @@ export default function ProductDetail() {
         .pd-img-main {
           background: linear-gradient(145deg, #ffffff 0%, #faf9ff 50%, #f5f3ff 100%);
           border: 1px solid rgba(124, 58, 237, 0.1);
-          border-radius: 32px;
+          border-radius: 24px;
           overflow: hidden;
           aspect-ratio: 1;
           position: relative;
@@ -655,9 +663,18 @@ export default function ProductDetail() {
           align-items: center;
           justify-content: center;
           box-shadow: 
-            0 20px 60px -12px rgba(76, 29, 149, 0.15),
-            0 8px 24px -8px rgba(124, 58, 237, 0.1);
+            0 12px 40px -8px rgba(76, 29, 149, 0.15),
+            0 4px 16px -4px rgba(124, 58, 237, 0.1);
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @media (min-width: 768px) {
+          .pd-img-main {
+            border-radius: 32px;
+            box-shadow: 
+              0 20px 60px -12px rgba(76, 29, 149, 0.15),
+              0 8px 24px -8px rgba(124, 58, 237, 0.1);
+          }
         }
         
         .pd-img-main:hover {
@@ -670,11 +687,18 @@ export default function ProductDetail() {
         
         .pd-thumbs {
           display: flex;
-          gap: 12px;
-          padding: 20px 0 32px;
+          gap: 8px;
+          padding: 16px 0 24px;
           overflow-x: auto;
           scrollbar-width: thin;
           scrollbar-color: rgba(124, 58, 237, 0.2) transparent;
+        }
+        
+        @media (min-width: 768px) {
+          .pd-thumbs {
+            gap: 12px;
+            padding: 20px 0 32px;
+          }
         }
         
         .pd-thumbs::-webkit-scrollbar {
@@ -691,12 +715,12 @@ export default function ProductDetail() {
         }
         
         .pd-thumb {
-          width: 80px;
-          height: 80px;
+          width: 64px;
+          height: 64px;
           flex-shrink: 0;
           background: white;
           border: 2px solid rgba(124, 58, 237, 0.1);
-          border-radius: 20px;
+          border-radius: 16px;
           overflow: hidden;
           cursor: pointer;
           display: flex;
@@ -704,6 +728,22 @@ export default function ProductDetail() {
           justify-content: center;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        
+        @media (min-width: 640px) {
+          .pd-thumb {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+          }
+        }
+        
+        @media (min-width: 768px) {
+          .pd-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+          }
         }
         
         .pd-thumb:hover {
@@ -728,19 +768,27 @@ export default function ProductDetail() {
         .pd-variants {
           display: flex;
           flex-direction: column;
-          gap: 28px;
-          margin-top: 24px;
-          padding: 32px 28px;
+          gap: 20px;
+          margin-top: 20px;
+          padding: 24px 20px;
           background: rgba(255, 255, 255, 0.7);
           backdrop-filter: blur(24px);
-          border-radius: 28px;
+          border-radius: 24px;
           border: 1px solid rgba(255, 255, 255, 0.85);
           box-shadow: 
-            0 16px 40px -12px rgba(124, 58, 237, 0.12),
+            0 12px 32px -10px rgba(124, 58, 237, 0.12),
             inset 0 1px 1px rgba(255, 255, 255, 1);
           position: relative;
           z-index: 10;
           overflow: hidden;
+        }
+        
+        @media (min-width: 768px) {
+          .pd-variants {
+            gap: 28px;
+            padding: 32px 28px;
+            border-radius: 28px;
+          }
         }
         
         .pd-variants::before {
@@ -825,20 +873,37 @@ export default function ProductDetail() {
         }
         
         .pd-var-btn {
-          min-width: 90px;
-          padding: 16px 24px;
+          min-width: 80px;
+          padding: 12px 16px;
           background: rgba(255, 255, 255, 0.85);
           border: 2px solid rgba(124, 58, 237, 0.12);
-          border-radius: 20px;
+          border-radius: 16px;
           transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+          gap: 4px;
           position: relative;
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        }
+        
+        @media (min-width: 640px) {
+          .pd-var-btn {
+            min-width: 90px;
+            padding: 14px 20px;
+            border-radius: 18px;
+          }
+        }
+        
+        @media (min-width: 768px) {
+          .pd-var-btn {
+            min-width: 90px;
+            padding: 16px 24px;
+            border-radius: 20px;
+            gap: 6px;
+          }
         }
         
         .pd-var-btn:hover:not(.disabled):not(.on) {
@@ -993,12 +1058,20 @@ export default function ProductDetail() {
         .pd-price-block {
           background: linear-gradient(165deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 245, 255, 0.92) 100%);
           border: 1px solid rgba(124, 58, 237, 0.14);
-          border-radius: 28px;
-          padding: 28px 32px 24px;
-          margin-bottom: 24px;
+          border-radius: 24px;
+          padding: 20px 20px 16px;
+          margin-bottom: 20px;
           position: relative;
           overflow: hidden;
-          box-shadow: 0 20px 48px -16px rgba(76, 29, 149, 0.12);
+          box-shadow: 0 12px 36px -12px rgba(76, 29, 149, 0.12);
+        }
+        
+        @media (min-width: 768px) {
+          .pd-price-block {
+            border-radius: 28px;
+            padding: 28px 32px 24px;
+            margin-bottom: 24px;
+          }
         }
         
         .pd-price-block::before {
@@ -1058,10 +1131,19 @@ export default function ProductDetail() {
         }
         
         .pd-countdown {
-          margin-top: 20px;
+          margin-top: 16px;
           display: flex;
-          align-items: center;
-          gap: 16px;
+          flex-direction: column;
+          gap: 12px;
+          align-items: stretch;
+        }
+        
+        @media (min-width: 640px) {
+          .pd-countdown {
+            flex-direction: row;
+            align-items: center;
+            gap: 16px;
+          }
         }
         
         .pd-countdown-lbl {
@@ -1103,11 +1185,18 @@ export default function ProductDetail() {
         }
         
         .pd-delivery {
-          margin-top: 28px;
+          margin-top: 24px;
           background: rgba(255, 255, 255, 0.7);
-          border-radius: 24px;
+          border-radius: 20px;
           border: 1px solid rgba(124, 58, 237, 0.12);
           overflow: hidden;
+        }
+        
+        @media (min-width: 768px) {
+          .pd-delivery {
+            margin-top: 28px;
+            border-radius: 24px;
+          }
         }
         
         .pd-delivery-head {
@@ -1119,10 +1208,23 @@ export default function ProductDetail() {
         }
         
         .pd-delivery-form {
-          padding: 18px 20px;
+          padding: 14px 16px;
           display: flex;
-          gap: 12px;
+          gap: 10px;
           align-items: center;
+        }
+        
+        @media (min-width: 640px) {
+          .pd-delivery-form {
+            padding: 16px 20px;
+            gap: 12px;
+          }
+        }
+        
+        @media (min-width: 768px) {
+          .pd-delivery-form {
+            padding: 18px 20px;
+          }
         }
         
         .pd-del-inp {
@@ -1174,9 +1276,23 @@ export default function ProductDetail() {
         
         .pd-cta {
           display: flex;
-          gap: 12px;
-          flex-wrap: wrap;
-          margin-top: 28px;
+          gap: 10px;
+          flex-direction: column;
+          margin-top: 24px;
+        }
+        
+        @media (min-width: 640px) {
+          .pd-cta {
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 12px;
+          }
+        }
+        
+        @media (min-width: 768px) {
+          .pd-cta {
+            margin-top: 28px;
+          }
         }
         
         .pd-btn-primary {
@@ -1278,22 +1394,38 @@ export default function ProductDetail() {
         .pd-trust-item {
           display: flex;
           align-items: center;
-          gap: 10px;
-          font-size: 12px;
+          gap: 8px;
+          font-size: 11px;
           color: #4b5563;
           font-weight: 700;
           background: rgba(255, 255, 255, 0.7);
-          padding: 12px 16px;
-          border-radius: 16px;
+          padding: 10px 12px;
+          border-radius: 14px;
           border: 1px solid rgba(124, 58, 237, 0.08);
         }
         
+        @media (min-width: 640px) {
+          .pd-trust-item {
+            gap: 10px;
+            font-size: 12px;
+            padding: 12px 16px;
+            border-radius: 16px;
+          }
+        }
+        
         .pd-hl-spec-card {
-          margin-top: 32px;
+          margin-top: 24px;
           background: rgba(255, 255, 255, 0.7);
-          border-radius: 28px;
+          border-radius: 24px;
           border: 1px solid rgba(124, 58, 237, 0.12);
           overflow: hidden;
+        }
+        
+        @media (min-width: 768px) {
+          .pd-hl-spec-card {
+            margin-top: 32px;
+            border-radius: 28px;
+          }
         }
         
         .pd-hl-spec-tabs {
@@ -1388,7 +1520,13 @@ export default function ProductDetail() {
         }
         
         .pd-description {
-          margin-top: 32px;
+          margin-top: 24px;
+        }
+        
+        @media (min-width: 768px) {
+          .pd-description {
+            margin-top: 32px;
+          }
         }
         
         .pd-desc-title {
@@ -1402,9 +1540,16 @@ export default function ProductDetail() {
         
         .pd-desc-content {
           background: rgba(255, 255, 255, 0.7);
-          border-radius: 24px;
+          border-radius: 20px;
           border: 1px solid rgba(124, 58, 237, 0.1);
-          padding: 24px 28px;
+          padding: 20px 20px;
+        }
+        
+        @media (min-width: 768px) {
+          .pd-desc-content {
+            border-radius: 24px;
+            padding: 24px 28px;
+          }
         }
         
         .pd-desc-content p {
@@ -1415,7 +1560,13 @@ export default function ProductDetail() {
         }
         
         .pd-similar {
-          margin-top: 64px;
+          margin-top: 48px;
+        }
+        
+        @media (min-width: 768px) {
+          .pd-similar {
+            margin-top: 64px;
+          }
         }
         
         .pd-similar-header {
