@@ -156,6 +156,7 @@ export default function Home() {
           text-decoration: none;
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 12px;
           box-shadow: 0 16px 50px -12px rgba(59, 130, 246, 0.6);
           transition: all 0.3s ease;
@@ -182,6 +183,7 @@ export default function Home() {
           text-decoration: none;
           display: inline-flex;
           align-items: center;
+          justify-content: center;
           gap: 10px;
           transition: all 0.3s ease;
           backdrop-filter: blur(20px);
@@ -202,11 +204,10 @@ export default function Home() {
           height: auto;
           border-radius: 32px;
           box-shadow: 0 40px 100px -30px rgba(0,0,0,0.6);
-          transform: rotate(-2deg);
           transition: transform 0.5s ease;
         }
         .hero-image:hover {
-          transform: rotate(0deg) scale(1.02);
+          transform: scale(1.03);
         }
 
         .features {
