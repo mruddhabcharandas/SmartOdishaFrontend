@@ -157,148 +157,285 @@ export default function Catalogue() {
     return list
   }, [items, minPrice, maxPrice])
 
+  // Capitalize function for categories
+  const capitalizeText = (text) => {
+    if (!text) return ''
+    return text.replace(/\w\S*/g, (txt) => {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    })
+  }
+
   if (loadingProducts && items.length === 0) return (
-    <div style={{ padding: '20px', maxWidth: '1280px', margin: '0 auto' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '16px' }}>
+    <div className="ct-loading">
+      <div className="ct-loading-grid">
         {[...Array(8)].map((_, i) => (
-          <div key={i} style={{ background: 'white', borderRadius: '8px', height: '320px' }}></div>
+          <div key={i} className="ct-loading-card"></div>
         ))}
       </div>
     </div>
   )
 
   return (
-    <div style={{ background: '#f1f3f6', minHeight: '100vh', padding: '16px' }}>
-      <style>{`
-        .search-bar {
-          max-width: 600px;
-          margin: 0 auto 24px;
+    <div className="ct-wrapper">
+      <style jsx>{`
+        .ct-wrapper {
+          font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+          background: linear-gradient(180deg, #0f172a 0%, #020617 120px, #f8fafc 120px);
+          color: #0f172a;
+          min-height: 100vh;
+          overflow-x: hidden;
+        }
+
+        .ct-container {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 16px 12px 48px;
+        }
+
+        @media (min-width: 768px) {
+          .ct-container {
+            padding: 32px 24px 64px;
+          }
+        }
+
+        .ct-search-wrap {
+          max-width: 640px;
+          margin: 0 auto 32px;
           position: relative;
         }
-        .search-input {
+
+        .ct-search-input {
           width: 100%;
-          padding: 14px 20px;
-          border: 1px solid #e0e0e0;
-          border-radius: 8px;
-          font-size: 14px;
+          padding: 16px 24px;
+          border: 2px solid rgba(255,255,255,0.15);
+          border-radius: 20px;
+          font-size: 15px;
+          font-weight: 600;
           outline: none;
-          background: white;
+          background: rgba(255,255,255,0.1);
+          color: white;
+          backdrop-filter: blur(12px);
+          transition: all 0.3s;
         }
-        .search-input:focus {
-          border-color: #2874f0;
-          box-shadow: 0 0 0 3px rgba(40,116,240,0.1);
+
+        .ct-search-input::placeholder {
+          color: rgba(255,255,255,0.6);
         }
-        .category-chips {
+
+        .ct-search-input:focus {
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 4px rgba(59,130,246,0.2);
+          background: rgba(255,255,255,0.15);
+        }
+
+        .ct-categories {
           display: flex;
-          gap: 8px;
+          gap: 12px;
           overflow-x: auto;
-          margin-bottom: 20px;
-          padding-bottom: 4px;
+          margin-bottom: 28px;
+          padding: 4px 0;
+          scrollbar-width: none;
         }
-        .category-chip {
-          padding: 10px 18px;
-          border: 1px solid #e0e0e0;
+
+        .ct-categories::-webkit-scrollbar {
+          display: none;
+        }
+
+        .ct-category-chip {
+          padding: 12px 24px;
+          border: 2px solid rgba(15,23,42,0.08);
           border-radius: 20px;
           background: white;
           font-size: 13px;
-          font-weight: 500;
+          font-weight: 800;
           cursor: pointer;
           white-space: nowrap;
-          transition: all 0.15s;
+          transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          color: #475569;
+          box-shadow: 0 4px 12px rgba(15,23,42,0.03);
         }
-        .category-chip:hover {
-          border-color: #2874f0;
-          color: #2874f0;
+
+        .ct-category-chip:hover {
+          border-color: #3b82f6;
+          color: #3b82f6;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(59,130,246,0.15);
         }
-        .category-chip.active {
-          background: #2874f0;
+
+        .ct-category-chip.active {
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
           color: white;
-          border-color: #2874f0;
+          border-color: transparent;
+          box-shadow: 0 12px 36px rgba(59,130,246,0.3);
+          transform: translateY(-3px);
         }
-        .product-grid {
+
+        .ct-header {
+          margin-bottom: 24px;
+        }
+
+        .ct-title {
+          font-size: clamp(20px, 4vw, 32px);
+          font-weight: 900;
+          background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          letter-spacing: -0.02em;
+        }
+
+        .ct-count {
+          font-size: 14px;
+          color: #64748b;
+          font-weight: 600;
+          margin-top: 6px;
+        }
+
+        .ct-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 12px;
         }
-        @media (min-width: 640px) {
-          .product-grid {
+
+        @media (min-width: 550px) {
+          .ct-grid {
             grid-template-columns: repeat(3, 1fr);
             gap: 16px;
           }
         }
-        @media (min-width: 1024px) {
-          .product-grid {
+
+        @media (min-width: 900px) {
+          .ct-grid {
             grid-template-columns: repeat(4, 1fr);
           }
         }
-        @media (min-width: 1280px) {
-          .product-grid {
+
+        @media (min-width: 1200px) {
+          .ct-grid {
             grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
           }
         }
-        .page-header {
-          max-width: 1280px;
-          margin: 0 auto 16px;
+
+        .ct-loading {
+          font-family: 'Inter', system-ui, sans-serif;
+          background: linear-gradient(180deg, #0f172a 0%, #020617 120px, #f8fafc 120px);
+          min-height: 100vh;
+          padding: 40px 12px;
         }
-        .page-title {
-          font-size: 20px;
-          font-weight: 600;
-          color: #212121;
-          margin-bottom: 8px;
+
+        .ct-loading-grid {
+          max-width: 1400px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
         }
-        .results-count {
-          font-size: 14px;
-          color: #878787;
+
+        @media (min-width: 550px) {
+          .ct-loading-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+          }
         }
-        .load-more {
+
+        @media (min-width: 900px) {
+          .ct-loading-grid {
+            grid-template-columns: repeat(4, 1fr);
+          }
+        }
+
+        @media (min-width: 1200px) {
+          .ct-loading-grid {
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+          }
+        }
+
+        .ct-loading-card {
+          aspect-ratio: 1;
+          background: white;
+          border-radius: 20px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+          animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
+
+        .ct-load-more {
           text-align: center;
-          margin: 32px 0;
+          margin: 48px 0 24px;
         }
-        .load-more-btn {
-          padding: 12px 40px;
-          background: #2874f0;
+
+        .ct-load-btn {
+          padding: 16px 48px;
+          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
           color: white;
           border: none;
-          border-radius: 4px;
+          border-radius: 16px;
           font-size: 14px;
-          font-weight: 600;
+          font-weight: 900;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
           cursor: pointer;
+          transition: all 0.35s;
+          box-shadow: 0 10px 32px rgba(59,130,246,0.3);
         }
-        .load-more-btn:hover {
-          background: #1e5fcc;
+
+        .ct-load-btn:hover:not(:disabled) {
+          transform: translateY(-4px);
+          box-shadow: 0 18px 48px rgba(59,130,246,0.4);
         }
-        .load-more-btn:disabled {
-          background: #e0e0e0;
+
+        .ct-load-btn:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
           cursor: not-allowed;
+          box-shadow: none;
+          transform: none;
         }
-        .empty-state {
+
+        .ct-empty {
           text-align: center;
           padding: 80px 20px;
+          background: rgba(255,255,255,0.8);
+          border-radius: 24px;
+          margin-top: 24px;
+          border: 1px solid rgba(255,255,255,0.9);
         }
-        .empty-ico {
-          font-size: 64px;
-          margin-bottom: 16px;
+
+        .ct-empty-icon {
+          font-size: 72px;
+          margin-bottom: 20px;
         }
-        .empty-title {
-          font-size: 20px;
-          font-weight: 600;
-          color: #212121;
-          margin-bottom: 8px;
+
+        .ct-empty-title {
+          font-size: 22px;
+          font-weight: 900;
+          background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin-bottom: 10px;
         }
-        .empty-desc {
+
+        .ct-empty-desc {
           font-size: 14px;
-          color: #878787;
-          margin-bottom: 24px;
+          color: #64748b;
         }
       `}</style>
 
-      <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-        <div className="search-bar">
+      <div className="ct-container">
+        {/* Search */}
+        <div className="ct-search-wrap">
           <div style={{ position: 'relative' }}>
             <input
               ref={searchRef}
-              className="search-input"
-              placeholder="Search for products..."
+              className="ct-search-input"
+              placeholder="🔍 Search for products, brands..."
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
@@ -306,42 +443,45 @@ export default function Catalogue() {
           </div>
         </div>
 
-        <div className="category-chips">
+        {/* Categories */}
+        <div className="ct-categories">
           <button
-            className={`category-chip${category === '' ? ' active' : ''}`}
+            className={`ct-category-chip${category === '' ? ' active' : ''}`}
             onClick={() => { setCategory(''); setSubCategory('') }}
           >
-            All
+            ✨ All Products
           </button>
           {categories.map((c) => (
             <button
               key={c._id}
-              className={`category-chip${category === c._id ? ' active' : ''}`}
+              className={`ct-category-chip${category === c._id ? ' active' : ''}`}
               onClick={() => { setCategory(c._id); setSubCategory('') }}
             >
-              {c.name}
+              {capitalizeText(c.name)}
             </button>
           ))}
         </div>
 
-        <div className="page-header">
-          <h2 className="page-title">
-            {q ? `Search results for "${q}"` : 'All Products'}
-          </h2>
-          <div className="results-count">
-            {total} {total === 1 ? 'product' : 'products'} found
+        {/* Header */}
+        <div className="ct-header">
+          <h1 className="ct-title">
+            {q ? `Search: "${q}"` : (category ? categories.find(c => c._id === category)?.name : 'All Products')}
+          </h1>
+          <div className="ct-count">
+            {total} {total === 1 ? 'product' : 'products'} available
           </div>
         </div>
 
+        {/* Products */}
         {filteredSorted.length === 0 && !loadingProducts ? (
-          <div className="empty-state">
-            <div className="empty-ico">📦</div>
-            <div className="empty-title">No products found</div>
-            <div className="empty-desc">Try adjusting your search or filters</div>
+          <div className="ct-empty">
+            <div className="ct-empty-icon">📦</div>
+            <div className="ct-empty-title">No products found</div>
+            <div className="ct-empty-desc">Try adjusting your search or filters to find what you're looking for</div>
           </div>
         ) : (
           <>
-            <div className="product-grid">
+            <div className="ct-grid">
               {filteredSorted.map((product, idx) => (
                 <ProductCard
                   key={product._id || idx}
@@ -354,9 +494,9 @@ export default function Catalogue() {
               ))}
             </div>
             {hasNextPage && (
-              <div className="load-more">
+              <div className="ct-load-more">
                 <button
-                  className="load-more-btn"
+                  className="ct-load-btn"
                   onClick={() => fetchNextPage()}
                   disabled={isFetchingNextPage}
                 >
