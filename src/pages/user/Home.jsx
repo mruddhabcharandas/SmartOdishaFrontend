@@ -6,8 +6,6 @@ import api from '../../lib/api'
 import { getCloudinaryUrl } from '../../lib/cloudinary'
 
 export default function Home() {
-  const [cats, setCats] = useState([])
-  const [brands, setBrands] = useState([])
   const [offers, setOffers] = useState([])
   const [stores, setStores] = useState([])
 
@@ -21,28 +19,9 @@ export default function Home() {
       "logo": window.location.origin + "/logo.png",
       "description": "Your one-stop destination for quality products at the best prices in Odisha."
     })
-    api.get('/api/public/categories').then(({ data }) => setCats(data || [])).catch(() => setCats([]))
-    api.get('/api/brands', { params: { active: true } }).then(({ data }) => setBrands(data || [])).catch(() => setBrands([]))
     api.get('/api/offers?activeOnly=true').then(({ data }) => setOffers(data || [])).catch(() => setOffers([]))
     api.get('/api/public/stores').then(({ data }) => setStores(data || [])).catch(() => setStores([]))
   }, [])
-
-  const displayCats = useMemo(() => {
-    const defaultCats = [
-      { name: 'Electronics', icon: '🎧' },
-      { name: 'Fashion', icon: '👕' },
-      { name: 'Home & Kitchen', icon: '🍳' },
-      { name: 'Beauty', icon: '💄' },
-      { name: 'Sports', icon: '🏏' },
-      { name: 'Baby & Kids', icon: '🧸' }
-    ]
-    if (cats.length === 0) return defaultCats
-    return cats.slice(0, 8).map(c => ({
-      name: c.name,
-      icon: c.image ? null : '📦',
-      image: c.image
-    }))
-  }, [cats])
 
   const tickerLoop = useMemo(() => {
     const neutral = [
@@ -57,22 +36,22 @@ export default function Home() {
   return (
     <div className="home-root bg-gray-50 min-h-screen">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         * { box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
         
         .home-root {
-          font-family: 'DM Sans', sans-serif;
-          background: #f3f4f6;
-          color: #1f2937;
+          font-family: 'Inter', sans-serif;
+          background: linear-gradient(180deg, #0f172a 0%, #020617 25%, #f8fafc 25%, #f8fafc 100%);
+          color: #0f172a;
         }
 
         .top-ticker {
-          background: linear-gradient(135deg, #1e3a8a, #0f172a);
+          background: linear-gradient(135deg, #1d4ed8, #0f172a);
           color: white;
-          padding: 8px 16px;
-          font-size: 11px;
-          font-weight: 700;
+          padding: 10px 16px;
+          font-size: 12px;
+          font-weight: 600;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -83,15 +62,23 @@ export default function Home() {
           .top-ticker { justify-content: center; text-align: center; }
         }
         .ticker-right { display: flex; gap: 16px; }
-        .ticker-link { color: white; text-decoration: none; font-weight: 600; }
-        .ticker-link:hover { text-decoration: underline; }
+        .ticker-link { color: white; text-decoration: none; font-weight: 600; transition: opacity 0.2s; }
+        .ticker-link:hover { opacity: 0.8; }
 
         .hero {
-          background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #0f172a 100%);
           color: white;
-          padding: 48px 20px 60px;
+          padding: 60px 20px 80px;
           position: relative;
           overflow: hidden;
+        }
+        .hero::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image: 
+            radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+            radial-gradient(circle at 100% 0%, rgba(244, 63, 94, 0.15) 0%, transparent 50%);
+          pointer-events: none;
         }
         .hero-inner {
           max-width: 1280px;
@@ -100,31 +87,52 @@ export default function Home() {
           grid-template-columns: 1fr;
           gap: 40px;
           align-items: center;
+          position: relative;
+          z-index: 1;
         }
         @media (min-width: 1024px) {
           .hero-inner {
-            grid-template-columns: 1fr 1fr;
-            padding: 24px 0;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 60px;
           }
         }
         .hero-left {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 24px;
+        }
+        .hero-eyebrow {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          background: rgba(255,255,255,0.1);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 600;
+          width: fit-content;
         }
         .hero-title {
-          font-size: 36px;
-          line-height: 1.1;
-          font-weight: 800;
-          letter-spacing: -0.02em;
+          font-size: 42px;
+          line-height: 1.05;
+          font-weight: 900;
+          letter-spacing: -0.03em;
         }
-        @media (min-width: 768px) { .hero-title { font-size: 48px; } }
-        .hero-title .accent { color: #f97316; }
+        @media (min-width: 768px) { .hero-title { font-size: 56px; } }
+        @media (min-width: 1024px) { .hero-title { font-size: 64px; } }
+        .hero-title .accent {
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
         .hero-desc {
-          font-size: 16px;
+          font-size: 18px;
           line-height: 1.7;
           color: #cbd5e1;
-          max-width: 400px;
+          max-width: 500px;
         }
         .hero-cta {
           display: flex;
@@ -132,30 +140,26 @@ export default function Home() {
           gap: 12px;
         }
         .btn-primary {
-          background: linear-gradient(135deg, #f97316, #ea580c, #f97316);
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
           background-size: 200% 200%;
           color: white;
           border: none;
-          padding: 16px 32px;
+          padding: 18px 32px;
           border-radius: 16px;
-          font-weight: 800;
-          font-size: 14px;
+          font-weight: 700;
+          font-size: 15px;
           cursor: pointer;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
           gap: 10px;
-          box-shadow: 
-            0 8px 30px rgba(249,115,22,0.4),
-            0 2px 10px rgba(249,115,22,0.2);
+          box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.6);
           transition: all 0.3s ease;
           animation: gradient-shift 4s ease infinite;
         }
         .btn-primary:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 
-            0 16px 40px rgba(249,115,22,0.5),
-            0 4px 16px rgba(249,115,22,0.25);
+          transform: translateY(-4px);
+          box-shadow: 0 20px 60px -15px rgba(59, 130, 246, 0.7);
         }
         @keyframes gradient-shift {
           0%, 100% { background-position: 0% 50%; }
@@ -164,11 +168,11 @@ export default function Home() {
         .btn-secondary {
           background: rgba(255,255,255,0.08);
           color: white;
-          border: 1px solid rgba(255,255,255,0.25);
-          padding: 14px 26px;
+          border: 1px solid rgba(255,255,255,0.2);
+          padding: 16px 28px;
           border-radius: 16px;
-          font-weight: 700;
-          font-size: 14px;
+          font-weight: 600;
+          font-size: 15px;
           cursor: pointer;
           text-decoration: none;
           display: inline-flex;
@@ -178,10 +182,9 @@ export default function Home() {
           backdrop-filter: blur(10px);
         }
         .btn-secondary:hover {
-          background: rgba(255,255,255,0.15);
-          border-color: rgba(255,255,255,0.4);
+          background: rgba(255,255,255,0.12);
+          border-color: rgba(255,255,255,0.3);
           transform: translateY(-2px);
-          box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
         .hero-right {
           display: flex;
@@ -192,250 +195,231 @@ export default function Home() {
         .hero-image {
           max-width: 100%;
           height: auto;
-          border-radius: 24px;
-          box-shadow: 0 24px 60px rgba(0,0,0,0.35);
+          border-radius: 32px;
+          box-shadow: 0 30px 80px -20px rgba(0,0,0,0.5);
         }
 
         .features {
           max-width: 1280px;
-          margin: 0 auto;
-          padding: 20px;
+          margin: -30px auto 0;
+          padding: 0 20px;
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 12px;
+          position: relative;
+          z-index: 10;
         }
         @media (min-width: 768px) {
           .features {
             grid-template-columns: repeat(4, 1fr);
             gap: 16px;
+            margin-top: -40px;
           }
         }
         .feature-card {
           background: white;
-          border-radius: 16px;
-          padding: 16px;
+          border-radius: 20px;
+          padding: 24px 20px;
           display: flex;
+          flex-direction: column;
           align-items: center;
           gap: 12px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-        }
-        @media (max-width: 480px) {
-          .feature-card { flex-direction: column; text-align: center; }
+          box-shadow: 0 10px 40px -10px rgba(15,23,42,0.1);
+          border: 1px solid rgba(15,23,42,0.05);
+          text-align: center;
         }
         .feature-icon {
-          width: 40px;
-          height: 40px;
-          background: #eff6ff;
-          border-radius: 12px;
+          width: 48px;
+          height: 48px;
+          background: linear-gradient(135deg, #eff6ff, #e0e7ff);
+          border-radius: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 20px;
+          font-size: 24px;
         }
         .feature-text h4 {
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 700;
-          color: #1e293b;
+          color: #0f172a;
           margin: 0;
         }
         .feature-text p {
-          font-size: 11px;
-          color: #6b7280;
+          font-size: 13px;
+          color: #64748b;
           margin: 4px 0 0 0;
         }
 
-        .section-title {
-          max-width: 1280px;
-          margin: 40px auto 20px;
-          padding: 0 20px;
-          font-size: 20px;
-          font-weight: 800;
-          color: #1e293b;
-        }
-
-        .categories {
+        .section-wrapper {
           max-width: 1280px;
           margin: 0 auto;
-          padding: 0 20px 32px;
+          padding: 60px 20px;
+        }
+        .section-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin-bottom: 32px;
+          gap: 20px;
+        }
+        .section-title-group {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .section-eyebrow {
+          font-size: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.15em;
+          color: #3b82f6;
+        }
+        .section-title {
+          font-size: 28px;
+          font-weight: 800;
+          color: #0f172a;
+          letter-spacing: -0.02em;
+          margin: 0;
+        }
+        @media (min-width: 768px) {
+          .section-title { font-size: 32px; }
+        }
+        .section-subtitle {
+          font-size: 15px;
+          color: #64748b;
+          margin: 0;
+        }
+
+        .stores-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 14px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
         }
         @media (min-width: 640px) {
-          .categories { grid-template-columns: repeat(4, 1fr); }
+          .stores-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (min-width: 1024px) {
-          .categories { grid-template-columns: repeat(6, 1fr); }
+          .stores-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
         }
-        .category-card {
+        .store-card {
           background: white;
-          border-radius: 16px;
-          padding: 20px 12px;
+          border-radius: 24px;
+          padding: 28px 20px;
           text-align: center;
           cursor: pointer;
           text-decoration: none;
-          color: #1e293b;
-          transition: all 0.2s;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+          color: #0f172a;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 20px -8px rgba(15,23,42,0.08);
+          border: 1px solid rgba(15,23,42,0.05);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 16px;
         }
-        .category-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        .store-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 60px -20px rgba(15,23,42,0.2);
+          border-color: rgba(59, 130, 246, 0.2);
         }
-        .category-icon {
+        .store-icon {
+          width: 72px;
+          height: 72px;
+          background: linear-gradient(135deg, #eff6ff, #e0e7ff);
+          border-radius: 24px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           font-size: 32px;
-          margin-bottom: 10px;
+          box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
         }
-        .category-name {
-          font-size: 13px;
+        .store-name {
+          font-size: 16px;
           font-weight: 700;
-          color: #334155;
+          color: #0f172a;
         }
 
         .offers {
-          max-width: 1280px;
-          margin: 0 auto;
-          padding: 0 20px 40px;
+          background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        .offers-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 16px;
+          gap: 20px;
         }
-        @media (min-width: 768px) { .offers { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 768px) { .offers-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; } }
         .offer-card {
           position: relative;
-          border-radius: 20px;
+          border-radius: 28px;
           overflow: hidden;
-          aspect-ratio: 16/9;
-          background: linear-gradient(135deg, #dbeafe, #fed7aa);
-          box-shadow: 0 8px 24px rgba(30,58,138,0.15);
+          aspect-ratio: 16/10;
+          background: linear-gradient(135deg, #1e3a8a, #0f172a);
+          box-shadow: 0 20px 60px -20px rgba(15,23,42,0.3);
+        }
+        .offer-card::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image: 
+            radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.3) 0%, transparent 50%);
+          pointer-events: none;
         }
         .offer-content {
           position: absolute;
           inset: 0;
-          padding: 28px;
+          padding: 32px;
           display: flex;
           flex-direction: column;
           justify-content: center;
-          background: linear-gradient(to right, rgba(15,23,42,0.85), rgba(15,23,42,0.45), transparent);
           color: white;
         }
         .offer-tag {
           display: inline-flex;
-          background: #f97316;
-          padding: 4px 12px;
-          border-radius: 8px;
-          font-size: 10px;
+          background: rgba(255,255,255,0.15);
+          backdrop-filter: blur(10px);
+          padding: 8px 16px;
+          border-radius: 999px;
+          font-size: 11px;
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.12em;
           width: fit-content;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
         }
         .offer-title {
-          font-size: 28px;
+          font-size: 32px;
           font-weight: 800;
           margin: 0 0 8px 0;
-          line-height: 1.2;
+          line-height: 1.15;
+          letter-spacing: -0.02em;
         }
+        @media (min-width: 768px) { .offer-title { font-size: 36px; } }
         .offer-btn {
           width: fit-content;
-          margin-top: 20px;
+          margin-top: 24px;
           background: white;
-          color: #1e293b;
+          color: #0f172a;
           border: none;
-          padding: 10px 22px;
-          border-radius: 10px;
+          padding: 14px 28px;
+          border-radius: 14px;
           font-weight: 700;
-          font-size: 12px;
+          font-size: 14px;
           cursor: pointer;
           text-decoration: none;
-          transition: all 0.2s;
+          transition: all 0.3s;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
         }
         .offer-btn:hover {
-          background: #f97316;
-          color: white;
-        }
-
-        .brands {
-          background: white;
-          padding: 40px 20px;
-          margin: 20px 0;
-        }
-        .brands-inner {
-          max-width: 1280px;
-          margin: 0 auto;
-        }
-        .brands-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 16px;
-        }
-        @media (min-width: 640px) {
-          .brands-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-        @media (min-width: 1024px) {
-          .brands-grid { grid-template-columns: repeat(6, 1fr); }
-        }
-        .brand-card {
-          background: #f9fafb;
-          border: 1px solid #e5e7eb;
-          border-radius: 14px;
-          padding: 16px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-decoration: none;
-          color: #374151;
-          font-weight: 700;
-          font-size: 13px;
-          transition: all 0.2s;
-          aspect-ratio: 1;
-        }
-        .brand-card:hover {
-          background: white;
-          border-color: #1e3a8a;
           transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(30,58,138,0.1);
-        }
-        .brand-card img {
-          max-width: 80%;
-          max-height: 60px;
-          object-fit: contain;
-        }
-
-        .stats {
-          background: linear-gradient(135deg, #1e3a8a, #0f172a);
-          color: white;
-          padding: 40px 20px;
-        }
-        .stats-inner {
-          max-width: 1280px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 24px;
-        }
-        @media (min-width: 768px) {
-          .stats-inner { grid-template-columns: repeat(4, 1fr); }
-        }
-        .stat-item { text-align: center; }
-        .stat-num {
-          font-family: 'Bebas Neue', sans-serif;
-          font-size: 40px;
-          line-height: 1;
-          margin-bottom: 6px;
-        }
-        .stat-label {
-          font-size: 12px;
-          font-weight: 600;
-          color: #cbd5e1;
-          text-transform: uppercase;
-          letter-spacing: 0.12em;
+          box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
         }
 
         .ticker {
-          background: linear-gradient(135deg, #1e3a8a, #f97316);
-          padding: 10px 0;
+          background: linear-gradient(135deg, #0f172a, #1e293b);
+          padding: 14px 0;
           overflow: hidden;
         }
         .ticker-inner {
@@ -451,29 +435,64 @@ export default function Home() {
           display: flex;
           align-items: center;
           gap: 16px;
-          padding: 0 40px;
+          padding: 0 48px;
           color: white;
           font-weight: 700;
-          font-size: 11px;
+          font-size: 12px;
           text-transform: uppercase;
           letter-spacing: 0.15em;
           white-space: nowrap;
         }
         .ticker-highlight {
-          background: white;
-          color: #1e3a8a;
-          padding: 3px 12px;
-          border-radius: 6px;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          color: white;
+          padding: 6px 16px;
+          border-radius: 999px;
+          font-weight: 800;
+        }
+
+        .stats {
+          background: linear-gradient(135deg, #0f172a, #1e293b);
+          color: white;
+          padding: 80px 20px;
+        }
+        .stats-inner {
+          max-width: 1280px;
+          margin: 0 auto;
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 32px;
+        }
+        @media (min-width: 768px) {
+          .stats-inner { grid-template-columns: repeat(4, 1fr); gap: 40px; }
+        }
+        .stat-item { text-align: center; }
+        .stat-num {
+          font-size: 48px;
+          font-weight: 900;
+          line-height: 1;
+          margin-bottom: 8px;
+          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        @media (min-width: 768px) { .stat-num { font-size: 56px; } }
+        .stat-label {
+          font-size: 13px;
+          font-weight: 600;
+          color: #94a3b8;
+          text-transform: uppercase;
+          letter-spacing: 0.12em;
         }
       `}</style>
 
       {/* Top Ticker */}
       <div className="top-ticker">
-        <span>📦 Free Delivery on Select Products</span>
+        <span>✨ Free Delivery on Select Products</span>
         <div className="ticker-right">
           <a href="/orders" className="ticker-link">Track Order</a>
           <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="ticker-link">Help Center</a>
-          <a href="/" className="ticker-link">Sell on SmartOdisha</a>
         </div>
       </div>
 
@@ -481,27 +500,31 @@ export default function Home() {
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-left">
+            <div className="hero-eyebrow">
+              <span>🛍️</span>
+              <span>Smart Shopping, Smart Living</span>
+            </div>
             <h1 className="hero-title">
-              Smart Choice,<br /><span className="accent">Smart Life</span>
+              Discover the Best of <span className="accent">Odisha</span>
             </h1>
             <p className="hero-desc">
-              Your one-stop destination for quality products at the best prices. Shop smart, live smart!
+              Your premium destination for quality products from trusted local stores. Shop smart, live better.
             </p>
             <div className="hero-cta">
               <Link to="/products" className="btn-primary">
-                Shop Now
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                Explore Products
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
               <Link to="/products" className="btn-secondary">
-                Browse Catalogue
+                Browse All
               </Link>
             </div>
           </div>
           <div className="hero-right">
             <img
-              src="https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=1000&q=80"
+              src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1000&q=80"
               alt="Shopping"
               className="hero-image"
             />
@@ -522,92 +545,88 @@ export default function Home() {
           <div className="feature-icon">🔄</div>
           <div className="feature-text">
             <h4>Easy Returns</h4>
-            <p>Easy return policy</p>
+            <p>Hassle-free returns</p>
           </div>
         </div>
         <div className="feature-card">
           <div className="feature-icon">🔒</div>
           <div className="feature-text">
             <h4>Secure Payments</h4>
-            <p>100% secure payments</p>
+            <p>100% secure checkout</p>
           </div>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">✅</div>
+          <div className="feature-icon">🏪</div>
           <div className="feature-text">
-            <h4>Best Prices</h4>
-            <p>Guaranteed best prices</p>
+            <h4>Local Stores</h4>
+            <p>Trusted local sellers</p>
           </div>
         </div>
-      </section>
-
-      {/* Categories */}
-      <h2 className="section-title">Shop by Category</h2>
-      <section className="categories">
-        {displayCats.map((cat, i) => (
-          <Link
-            key={i}
-            to="/products"
-            className="category-card"
-          >
-            {cat.image ? (
-              <img
-                src={getCloudinaryUrl(cat.image, 80)}
-                alt={cat.name}
-                style={{ maxWidth: 60, maxHeight: 60, objectFit: 'contain', marginBottom: 8 }}
-              />
-            ) : (
-              <div className="category-icon">{cat.icon}</div>
-            )}
-            <div className="category-name">{cat.name}</div>
-          </Link>
-        ))}
       </section>
 
       {/* Popular Stores */}
       {stores.length > 0 && (
-        <>
-          <h2 className="section-title">Popular Stores</h2>
-          <section className="categories">
+        <section className="section-wrapper">
+          <div className="section-header">
+            <div className="section-title-group">
+              <span className="section-eyebrow">Shop By</span>
+              <h2 className="section-title">Popular Stores</h2>
+              <p className="section-subtitle">Discover products from trusted local stores near you</p>
+            </div>
+          </div>
+          <div className="stores-grid">
             {stores.map((store, i) => (
               <Link
                 key={store._id}
                 to={`/products?store=${encodeURIComponent(store.name)}`}
-                className="category-card"
+                className="store-card"
               >
-                <div className="category-icon">🏪</div>
-                <div className="category-name">{store.name}</div>
+                <div className="store-icon">🏪</div>
+                <div className="store-name">{store.name}</div>
               </Link>
             ))}
-          </section>
-        </>
+          </div>
+        </section>
       )}
 
       {/* Offers */}
       {offers.length > 0 && (
-        <>
-          <h2 className="section-title">🔥 Special Offers</h2>
-          <section className="offers">
-            {offers.map((offer, i) => (
-              <div key={i} className="offer-card">
-                {offer.bannerImage && (
-                  <img
-                    src={getCloudinaryUrl(offer.bannerImage, 800)}
-                    alt={offer.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
-                  />
-                )}
-                <div className="offer-content">
-                  {offer.discountPercent && (
-                    <div className="offer-tag">{offer.discountPercent}% OFF</div>
-                  )}
-                  <h3 className="offer-title">{offer.title || 'Amazing Deal'}</h3>
-                  <Link to="/products" className="offer-btn">Shop Now</Link>
-                </div>
+        <section className="offers">
+          <div className="section-wrapper">
+            <div className="section-header">
+              <div className="section-title-group">
+                <span className="section-eyebrow">Special</span>
+                <h2 className="section-title">Hot Offers</h2>
+                <p className="section-subtitle">Limited-time deals you don't want to miss</p>
               </div>
-            ))}
-          </section>
-        </>
+            </div>
+            <div className="offers-grid">
+              {offers.map((offer, i) => (
+                <div key={i} className="offer-card">
+                  {offer.bannerImage && (
+                    <img
+                      src={getCloudinaryUrl(offer.bannerImage, 1000)}
+                      alt={offer.title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, opacity: 0.3 }}
+                    />
+                  )}
+                  <div className="offer-content">
+                    {offer.discountPercent && (
+                      <div className="offer-tag">{offer.discountPercent}% OFF</div>
+                    )}
+                    <h3 className="offer-title">{offer.title || 'Amazing Deal'}</h3>
+                    <Link to="/products" className="offer-btn">
+                      Shop Now
+                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       )}
 
       {/* Ticker */}
@@ -623,32 +642,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Brands */}
-      {brands.length > 0 && (
-        <section className="brands">
-          <div className="brands-inner">
-            <h2 className="section-title" style={{ marginTop: 0, marginBottom: 24, padding: 0 }}>
-              Trusted Brands
-            </h2>
-            <div className="brands-grid">
-              {brands.map((b, i) => (
-                <Link
-                  key={i}
-                  to={`/brand/${b.slug || b._id}`}
-                  className="brand-card"
-                >
-                  {b.logo ? (
-                    <img src={getCloudinaryUrl(b.logo, 100)} alt={b.name} loading="lazy" />
-                  ) : (
-                    <span>{b.name}</span>
-                  )}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
       {/* Stats */}
       <section className="stats">
         <div className="stats-inner">
@@ -662,7 +655,7 @@ export default function Home() {
           </div>
           <div className="stat-item">
             <div className="stat-num">50+</div>
-            <div className="stat-label">Brands</div>
+            <div className="stat-label">Stores</div>
           </div>
           <div className="stat-item">
             <div className="stat-num">24/7</div>
@@ -671,91 +664,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer - only on Home */}
-      <footer className="bg-gradient-to-br from-slate-50 via-white to-blue-50 border-t border-slate-200 py-12 lg:py-16">
-        <style>{`
-          .footer-wave {
-            background-image: 
-              radial-gradient(circle at top, rgba(30,58,138,0.06) 0, transparent 55%),
-              radial-gradient(circle at bottom right, rgba(249,115,22,0.06) 0, transparent 50%);
-          }
-        `}</style>
-        <div className="footer-wave max-w-7xl mx-auto px-4 sm:px-6 md:px-10">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
+      {/* Footer */}
+      <footer className="bg-slate-900 text-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             <div className="flex flex-col items-center lg:items-start gap-6">
               <div className="flex items-center gap-5">
-                <div className="h-16 w-16 sm:h-18 sm:w-18 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden shadow-lg shadow-blue-100">
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center overflow-hidden shadow-lg shadow-blue-900/50">
                   <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-xl font-black tracking-tighter leading-none">
-                    <span className="text-blue-700">SMART</span>
-                    <span className="text-orange-500">ODISHA</span>
+                  <span className="text-2xl font-black tracking-tighter leading-none">
+                    <span className="text-blue-400">SMART</span>
+                    <span className="text-purple-400">ODISHA</span>
                   </span>
-                  <span className="text-sm font-bold text-gray-500 tracking-widest mt-1.5">SMART CHOICE, SMART LIFE</span>
-                  <span className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-3">© {new Date().getFullYear()} SmartOdisha</span>
+                  <span className="text-sm font-semibold text-slate-400 tracking-widest mt-1.5">SMART CHOICE, SMART LIFE</span>
                 </div>
               </div>
-              <div className="flex items-center gap-3 px-4 py-2.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+              <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-800 rounded-xl border border-slate-700">
                 <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-ping absolute"></span>
                 <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                <span className="text-xs font-bold text-green-700 uppercase tracking-widest ml-1">Store Status: Online</span>
+                <span className="text-xs font-bold text-green-400 uppercase tracking-widest ml-1">Store Status: Online</span>
               </div>
             </div>
-            <div className="flex flex-col items-center lg:items-end gap-6">
-              <div className="flex flex-col items-center lg:items-end gap-3">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Follow Us</span>
-                <div className="flex flex-wrap justify-center lg:justify-end gap-4">
-                <a
-                  href="https://facebook.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:shadow-xl hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 transition-all duration-300"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                </a>
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:shadow-xl hover:-translate-y-0.5 hover:border-pink-200 hover:bg-gradient-to-br hover:from-pink-50 hover:to-purple-50 transition-all duration-300"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="3" width="18" height="18" rx="5" stroke="#E4405F" strokeWidth="2"/>
-                    <circle cx="12" cy="12" r="4" stroke="#E4405F" strokeWidth="2"/>
-                    <circle cx="18" cy="6" r="1" fill="#E4405F"/>
-                  </svg>
-                </a>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:shadow-xl hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 transition-all duration-300"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#0A66C2">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                </a>
-                <a
-                  href="https://youtube.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-700 hover:shadow-xl hover:-translate-y-0.5 hover:border-red-200 hover:bg-red-50 transition-all duration-300"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#FF0000">
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                  </svg>
-                </a>
-                </div>
-              </div>
-              <div className="flex flex-wrap justify-center lg:justify-end gap-4">
+            <div className="flex flex-col items-center lg:items-end gap-8">
+              <div className="flex flex-wrap justify-center lg:justify-end gap-3">
                 <a
                   href={`mailto:${CONFIG.SUPPORT_EMAIL}`}
-                  className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-black uppercase tracking-widest text-slate-700 hover:shadow-xl hover:-translate-y-0.5 hover:border-slate-300 hover:bg-gradient-to-br hover:from-blue-50 hover:to-orange-50 transition-all duration-300"
+                  className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-sm font-bold uppercase tracking-widest hover:bg-slate-700 hover:border-slate-600 transition-all"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3a8a">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" strokeWidth="2" />
                     <polyline points="22,6 12,13 2,6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -765,19 +703,19 @@ export default function Home() {
                   href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 px-5 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-black uppercase tracking-widest text-slate-700 hover:shadow-xl hover:-translate-y-0.5 hover:border-green-200 hover:bg-green-50 transition-all duration-300"
+                  className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-sm font-bold uppercase tracking-widest hover:bg-slate-700 hover:border-slate-600 transition-all"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#22c55e">
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
                   </svg>
                   Message Us
                 </a>
               </div>
-              <div className="flex flex-col sm:flex-row gap-5 sm:gap-8 w-full sm:w-auto">
-                <Link to="/privacy-policy" className="text-sm font-bold text-slate-600 uppercase tracking-widest hover:text-blue-600 transition-all hover:underline-offset-8 hover:underline transition-colors text-center sm:text-right">
+              <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 w-full sm:w-auto">
+                <Link to="/privacy-policy" className="text-sm font-semibold text-slate-400 uppercase tracking-widest hover:text-white transition-colors text-center sm:text-right">
                   Privacy Policy
                 </Link>
-                <Link to="/terms-of-service" className="text-sm font-bold text-slate-600 uppercase tracking-widest hover:text-orange-500 transition-all hover:underline-offset-8 hover:underline transition-colors text-center sm:text-right">
+                <Link to="/terms-of-service" className="text-sm font-semibold text-slate-400 uppercase tracking-widest hover:text-white transition-colors text-center sm:text-right">
                   Terms of Service
                 </Link>
               </div>
