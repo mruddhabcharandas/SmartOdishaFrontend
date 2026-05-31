@@ -100,16 +100,12 @@ export default function ProductDetail() {
   const [activeVariant, setActiveVariant] = useState(null);
   const [activeImg, setActiveImg] = useState(0);
   const [lightbox, setLightbox] = useState(false);
-  const [zoom, setZoom] = useState({ on: false, x: 50, y: 50 });
   const [recOpen, setRecOpen] = useState(false);
   const [recItems, setRecItems] = useState([]);
-  const [qty, setQty] = useState(1);
-  const [pincode, setPincode] = useState('');
   const [deliveryDate, setDeliveryDate] = useState(null);
   const [countdown, setCountdown] = useState({ h: 0, m: 0, s: 0 });
-  const [kycData, setKycData] = useState(null);
-  const [kycLoading, setKycLoading] = useState(false);
   const [hlSpecTab, setHlSpecTab] = useState('highlights');
+  const [pincode, setPincode] = useState('');
   const authed = !!localStorage.getItem('token');
 
   const variantAttrs = useMemo(() => {
@@ -219,22 +215,6 @@ export default function ProductDetail() {
   }, []);
 
   useEffect(() => {
-    if (!authed) return;
-    setKycLoading(true);
-    api.get('/api/user/me').then(({ data }) => {
-      const kyc = data.kyc || {};
-      if (kyc.pincode) {
-        setPincode(kyc.pincode);
-        setKycData(kyc);
-        const days = 2 + (Number(kyc.pincode[0]) % 4);
-        const d = new Date();
-        d.setDate(d.getDate() + days);
-        setDeliveryDate(d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', weekday: 'short' }));
-      }
-    }).catch(() => { }).finally(() => setKycLoading(false));
-  }, [authed]);
-
-  useEffect(() => {
     const t = setInterval(() => {
       const now = new Date(), co = new Date();
       co.setHours(18, 0, 0, 0);
@@ -260,10 +240,6 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (p) {
-      const packSize = Number(p.packSize || 1);
-      const minQty = Math.max(1, Number(p.minOrderQty || 1));
-      const initialQty = Math.ceil(minQty / packSize) * packSize;
-      setQty(initialQty);
       setError(null);
     }
     if (queryError) {
@@ -472,7 +448,6 @@ export default function ProductDetail() {
   const currentPrice = matchedVariant?.price ?? p?.price;
   const currentMrp = matchedVariant?.mrp ?? p?.mrp;
   const currentStock = matchedVariant?.stock ?? p?.stock;
-  const currentSku = matchedVariant?.sku;
   const isAvailable = currentStock > 0;
 
   const canAddToCart = variantAttrs.every(attr => !!selected[attr.toLowerCase().trim()]) && !!matchedVariant && isAvailable;
@@ -539,22 +514,22 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 py-6 px-4 sm:py-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-            <div className="space-y-4">
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 py-4 px-3 sm:py-6 sm:px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <div className="space-y-3 sm:space-y-4">
               <div className="aspect-square bg-white/5 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl animate-pulse border border-white/10"></div>
               <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
                 {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="w-16 h-16 sm:w-20 sm:h-20 bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-lg animate-pulse border border-white/10 flex-shrink-0"></div>
+                  <div key={i} className="w-14 h-14 sm:w-16 sm:h-16 bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-lg animate-pulse border border-white/10 flex-shrink-0"></div>
                 ))}
               </div>
             </div>
-            <div className="space-y-6">
-              <div className="h-8 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-3/4 animate-pulse border border-white/10"></div>
-              <div className="h-6 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-1/2 animate-pulse border border-white/10"></div>
-              <div className="h-10 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-1/3 animate-pulse border border-white/10"></div>
-              <div className="space-y-3">
+            <div className="space-y-4 sm:space-y-6">
+              <div className="h-7 sm:h-8 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-3/4 animate-pulse border border-white/10"></div>
+              <div className="h-5 sm:h-6 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-1/2 animate-pulse border border-white/10"></div>
+              <div className="h-9 sm:h-10 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-1/3 animate-pulse border border-white/10"></div>
+              <div className="space-y-2 sm:space-y-3">
                 {[1, 2, 3, 4, 5].map(i => (
                   <div key={i} className="h-4 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-full animate-pulse border border-white/10"></div>
                 ))}
@@ -568,18 +543,18 @@ export default function ProductDetail() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 flex items-center justify-center py-12 px-4">
-        <div className="max-w-md w-full bg-white/80 backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl p-8 sm:p-12 text-center border border-white/80">
-          <div className="text-5xl sm:text-7xl mb-6 bg-gradient-to-br from-blue-100 to-purple-100 w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center rounded-full mx-auto">
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 flex items-center justify-center py-8 px-3 sm:py-12 sm:px-4">
+        <div className="max-w-md w-full bg-white/80 backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-12 text-center border border-white/80">
+          <div className="text-4xl sm:text-5xl lg:text-7xl mb-4 sm:mb-6 bg-gradient-to-br from-blue-100 to-purple-100 w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 flex items-center justify-center rounded-full mx-auto">
             😔
           </div>
-          <h2 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-3">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2 sm:mb-3">
             Oops!
           </h2>
-          <p className="text-slate-600 mb-8 sm:mb-10 text-base sm:text-lg leading-relaxed">{error}</p>
+          <p className="text-slate-600 mb-6 sm:mb-8 lg:mb-10 text-sm sm:text-base lg:text-lg leading-relaxed">{error}</p>
           <Link
             to="/products"
-            className="inline-flex items-center gap-3 px-8 sm:px-10 py-4 sm:py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+            className="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 text-sm sm:text-base"
           >
             Back to Products
           </Link>
@@ -591,15 +566,11 @@ export default function ProductDetail() {
   if (!p) return null;
 
   return (
-    <>
-      <style>{`
-        * {
-          box-sizing: border-box;
-        }
-        
+    <div className="pd">
+      <style jsx>{`
         .pd {
-          font-family: 'Inter', system-ui, -apple-system, sans-serif;
-          background: linear-gradient(180deg, #0f172a 0%, #020617 30%, #f8fafc 30%, #f8fafc 100%);
+          font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+          background: linear-gradient(180deg, #0f172a 0%, #020617 25%, #f8fafc 25%, #f8fafc 100%);
           color: #0f172a;
           min-height: 100vh;
           overflow-x: hidden;
@@ -609,13 +580,17 @@ export default function ProductDetail() {
         .pd-wrap {
           max-width: 1200px;
           margin: 0 auto;
-          padding: 24px 16px 48px;
+          padding: 16px 12px 40px;
           position: relative;
           z-index: 1;
         }
         
-        @media (min-width: 640px) {
-          .pd-wrap { padding: 32px 20px 60px; }
+        @media (min-width: 480px) {
+          .pd-wrap { padding: 20px 16px 48px; }
+        }
+        
+        @media (min-width: 768px) {
+          .pd-wrap { padding: 32px 24px 64px; }
         }
         
         @media (min-width: 1024px) {
@@ -625,12 +600,12 @@ export default function ProductDetail() {
         .pd-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 32px;
+          gap: 24px;
         }
         
         @media (min-width: 1024px) {
           .pd-grid {
-            grid-template-columns: 480px 1fr;
+            grid-template-columns: 440px 1fr;
             gap: 48px;
             align-items: start;
           }
@@ -639,7 +614,7 @@ export default function ProductDetail() {
         .pd-img-main {
           background: linear-gradient(145deg, #ffffff 0%, #f0f4ff 50%, #e8eafc 100%);
           border: 1px solid rgba(59, 130, 246, 0.1);
-          border-radius: 24px;
+          border-radius: 20px;
           overflow: hidden;
           aspect-ratio: 1;
           position: relative;
@@ -647,20 +622,20 @@ export default function ProductDetail() {
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 16px 48px -16px rgba(15, 23, 42, 0.2);
+          box-shadow: 0 12px 40px -16px rgba(15, 23, 42, 0.2);
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
           width: 100%;
         }
         
         @media (min-width: 640px) {
-          .pd-img-main { border-radius: 32px; }
+          .pd-img-main { border-radius: 28px; }
         }
         
         .pd-img-main img {
           width: 100%;
           height: 100%;
           object-fit: contain;
-          padding: 24px;
+          padding: 20px;
         }
         
         @media (min-width: 768px) {
@@ -669,26 +644,26 @@ export default function ProductDetail() {
         
         .pd-img-main:hover {
           transform: translateY(-4px);
-          box-shadow: 0 24px 64px -24px rgba(15, 23, 42, 0.3);
+          box-shadow: 0 20px 56px -20px rgba(15, 23, 42, 0.3);
           border-color: rgba(59, 130, 246, 0.25);
         }
         
         .pd-thumbs {
           display: flex;
-          gap: 10px;
-          padding: 16px 0 24px;
+          gap: 8px;
+          padding: 12px 0 20px;
           overflow-x: auto;
           scrollbar-width: thin;
           scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
           -webkit-overflow-scrolling: touch;
         }
         
-        .pd-thumbs::-webkit-scrollbar {
-          height: 4px;
+        @media (min-width: 640px) {
+          .pd-thumbs { gap: 10px; padding: 16px 0 24px; }
         }
         
-        .pd-thumbs::-webkit-scrollbar-track {
-          background: transparent;
+        .pd-thumbs::-webkit-scrollbar {
+          height: 4px;
         }
         
         .pd-thumbs::-webkit-scrollbar-thumb {
@@ -697,38 +672,38 @@ export default function ProductDetail() {
         }
         
         .pd-thumb {
-          width: 70px;
-          height: 70px;
+          width: 60px;
+          height: 60px;
           flex-shrink: 0;
           background: white;
           border: 2px solid rgba(59, 130, 246, 0.12);
-          border-radius: 16px;
+          border-radius: 14px;
           overflow: hidden;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+        }
+        
+        @media (min-width: 480px) {
+          .pd-thumb { width: 68px; height: 68px; border-radius: 16px; }
         }
         
         @media (min-width: 640px) {
-          .pd-thumb {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-          }
+          .pd-thumb { width: 76px; height: 76px; border-radius: 18px; }
         }
         
         .pd-thumb:hover {
           border-color: rgba(59, 130, 246, 0.35);
           transform: translateY(-2px);
-          box-shadow: 0 10px 28px rgba(59, 130, 246, 0.15);
+          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
         }
         
         .pd-thumb.on {
           border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 10px 32px rgba(59, 130, 246, 0.25);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 8px 28px rgba(59, 130, 246, 0.25);
           transform: translateY(-3px) scale(1.02);
         }
         
@@ -736,39 +711,47 @@ export default function ProductDetail() {
           width: 100%;
           height: 100%;
           object-fit: contain;
-          padding: 12px;
+          padding: 10px;
+        }
+        
+        @media (min-width: 640px) {
+          .pd-thumb img { padding: 12px; }
         }
         
         .pd-variants {
           display: flex;
           flex-direction: column;
-          gap: 20px;
-          margin-top: 20px;
-          padding: 24px 20px;
+          gap: 16px;
+          margin-top: 16px;
+          padding: 18px 14px;
           background: rgba(255, 255, 255, 0.9);
           backdrop-filter: blur(24px);
-          border-radius: 24px;
+          border-radius: 20px;
           border: 1px solid rgba(255, 255, 255, 0.95);
-          box-shadow: 0 12px 40px -16px rgba(15, 23, 42, 0.12);
+          box-shadow: 0 10px 32px -16px rgba(15, 23, 42, 0.12);
           position: relative;
           z-index: 10;
           overflow: hidden;
         }
         
+        @media (min-width: 480px) {
+          .pd-variants { padding: 20px 16px; gap: 18px; }
+        }
+        
         @media (min-width: 640px) {
-          .pd-variants { padding: 28px 24px; gap: 24px; }
+          .pd-variants { padding: 24px 20px; gap: 20px; border-radius: 24px; }
         }
         
         .pd-var-sec {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
           position: relative;
           z-index: 1;
         }
         
         @media (min-width: 640px) {
-          .pd-var-sec { gap: 16px; }
+          .pd-var-sec { gap: 12px; }
         }
         
         .pd-var-header {
@@ -776,41 +759,37 @@ export default function ProductDetail() {
           align-items: center;
           justify-content: space-between;
           flex-wrap: wrap;
-          gap: 10px;
+          gap: 8px;
         }
         
         .pd-var-lbl {
           display: flex;
           align-items: center;
-          gap: 10px;
-          font-size: 13px;
+          gap: 8px;
+          font-size: 12px;
           font-weight: 700;
           letter-spacing: 0.02em;
           color: #374151;
         }
         
         @media (min-width: 640px) {
-          .pd-var-lbl { gap: 12px; }
+          .pd-var-lbl { gap: 10px; font-size: 13px; }
         }
         
         .pd-var-icon {
-          width: 34px;
-          height: 34px;
+          width: 32px;
+          height: 32px;
           background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
           border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 16px;
-          box-shadow: 0 4px 14px rgba(59, 130, 246, 0.12);
+          font-size: 15px;
+          box-shadow: 0 3px 12px rgba(59, 130, 246, 0.12);
         }
         
         @media (min-width: 640px) {
-          .pd-var-icon {
-            width: 38px;
-            height: 38px;
-            font-size: 18px;
-          }
+          .pd-var-icon { width: 36px; height: 36px; font-size: 17px; border-radius: 14px; }
         }
         
         .pd-var-name {
@@ -828,78 +807,73 @@ export default function ProductDetail() {
         .pd-var-selected {
           color: #3b82f6;
           font-weight: 800;
-          padding: 6px 12px;
-          border-radius: 14px;
+          padding: 5px 10px;
+          border-radius: 12px;
           background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-          font-size: 12px;
+          font-size: 11px;
         }
         
         @media (min-width: 640px) {
-          .pd-var-selected {
-            padding: 8px 16px;
-            font-size: 13px;
-            border-radius: 16px;
-          }
+          .pd-var-selected { padding: 6px 14px; font-size: 12px; border-radius: 14px; }
         }
         
         .pd-var-opts {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 6px;
           align-items: stretch;
         }
         
         @media (min-width: 640px) {
-          .pd-var-opts { gap: 10px; }
+          .pd-var-opts { gap: 8px; }
         }
         
         .pd-var-opts.has-many {
           flex-wrap: nowrap;
           overflow-x: auto;
-          gap: 10px;
-          padding: 4px 4px 12px;
-          margin: 0 -4px;
+          gap: 8px;
+          padding: 2px 2px 10px;
+          margin: 0 -2px;
           scroll-snap-type: x proximity;
           -webkit-overflow-scrolling: touch;
         }
         
         .pd-var-btn {
-          min-width: 74px;
-          padding: 12px 14px;
+          min-width: 64px;
+          padding: 10px 12px;
           background: white;
           border: 2px solid rgba(59, 130, 246, 0.15);
-          border-radius: 14px;
+          border-radius: 12px;
           transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 4px;
+          gap: 3px;
           position: relative;
-          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+          box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+        }
+        
+        @media (min-width: 480px) {
+          .pd-var-btn { min-width: 72px; padding: 12px 14px; border-radius: 14px; gap: 4px; }
         }
         
         @media (min-width: 640px) {
-          .pd-var-btn {
-            min-width: 84px;
-            padding: 14px 18px;
-            border-radius: 18px;
-            gap: 5px;
-          }
+          .pd-var-btn { min-width: 80px; padding: 14px 16px; border-radius: 16px; gap: 5px; }
         }
         
         .pd-var-btn:hover:not(.disabled):not(.on) {
           border-color: rgba(59, 130, 246, 0.4);
           background: linear-gradient(135deg, #f8fafc 0%, #f0f4ff 100%);
-          transform: translateY(-3px);
-          box-shadow: 0 12px 32px -8px rgba(59, 130, 246, 0.25);
+          transform: translateY(-2px);
+          box-shadow: 0 10px 28px -8px rgba(59, 130, 246, 0.25);
         }
         
         .pd-var-btn.on {
           background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
           border-color: #3b82f6;
-          box-shadow: 0 14px 40px -12px rgba(59, 130, 246, 0.4);
+          box-shadow: 0 12px 36px -12px rgba(59, 130, 246, 0.4);
           transform: translateY(-3px);
         }
         
@@ -913,7 +887,7 @@ export default function ProductDetail() {
         }
         
         .pd-var-val {
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 800;
           color: #0f172a;
           transition: color 0.3s;
@@ -922,11 +896,11 @@ export default function ProductDetail() {
         }
         
         @media (min-width: 640px) {
-          .pd-var-val { font-size: 14px; }
+          .pd-var-val { font-size: 13px; }
         }
         
         .pd-var-price {
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 700;
           color: #3b82f6;
           letter-spacing: 0.02em;
@@ -935,7 +909,7 @@ export default function ProductDetail() {
         }
         
         @media (min-width: 640px) {
-          .pd-var-price { font-size: 12px; }
+          .pd-var-price { font-size: 11px; }
         }
         
         .pd-var-btn.disabled {
@@ -966,10 +940,10 @@ export default function ProductDetail() {
             background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.95);
-            border-radius: 32px;
-            padding: 40px 36px 48px;
+            border-radius: 28px;
+            padding: 32px 28px 40px;
             margin-top: 0;
-            box-shadow: 0 20px 64px -24px rgba(15, 23, 42, 0.12);
+            box-shadow: 0 18px 56px -24px rgba(15, 23, 42, 0.12);
           }
         }
         
@@ -977,40 +951,40 @@ export default function ProductDetail() {
           display: flex;
           flex-wrap: wrap;
           align-items: center;
-          gap: 8px;
-          margin-bottom: 16px;
+          gap: 6px;
+          margin-bottom: 12px;
         }
         
         @media (min-width: 640px) {
-          .pd-meta-compact { gap: 10px; margin-bottom: 20px; }
+          .pd-meta-compact { gap: 8px; margin-bottom: 16px; }
         }
         
         .pd-badges {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 6px;
           margin-bottom: 0;
           align-items: center;
         }
         
         @media (min-width: 640px) {
-          .pd-badges { gap: 10px; }
+          .pd-badges { gap: 8px; }
         }
         
         .pd-badge {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
+          gap: 5px;
           font-size: 10px;
           font-weight: 800;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          padding: 6px 12px;
+          padding: 5px 10px;
           border-radius: 999px;
         }
         
         @media (min-width: 640px) {
-          .pd-badge { font-size: 11px; padding: 8px 14px; }
+          .pd-badge { font-size: 11px; padding: 6px 12px; }
         }
         
         .pd-badge-v {
@@ -1032,31 +1006,31 @@ export default function ProductDetail() {
         }
         
         .pd-name {
-          font-size: clamp(22px, 6vw, 44px);
+          font-size: clamp(20px, 5vw, 36px);
           font-weight: 900;
-          line-height: 1.1;
+          line-height: 1.15;
           background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          margin-bottom: 14px;
+          margin-bottom: 10px;
           letter-spacing: -0.03em;
         }
         
         @media (min-width: 640px) {
-          .pd-name { margin-bottom: 16px; }
+          .pd-name { margin-bottom: 14px; }
         }
         
         .pd-rating-row {
           display: flex;
           align-items: center;
-          gap: 12px;
-          margin-bottom: 20px;
+          gap: 10px;
+          margin-bottom: 18px;
           flex-wrap: wrap;
         }
         
         @media (min-width: 640px) {
-          .pd-rating-row { gap: 14px; margin-bottom: 24px; }
+          .pd-rating-row { gap: 12px; margin-bottom: 22px; }
         }
         
         .pd-rating {
@@ -1065,32 +1039,33 @@ export default function ProductDetail() {
           gap: 6px;
           background: linear-gradient(135deg, #059669 0%, #10b981 100%);
           color: white;
-          padding: 8px 14px;
+          padding: 7px 14px;
           border-radius: 999px;
           font-weight: 800;
-          box-shadow: 0 8px 24px -8px rgba(5, 150, 105, 0.4);
+          box-shadow: 0 6px 20px -8px rgba(5, 150, 105, 0.4);
+          font-size: 13px;
         }
         
         @media (min-width: 640px) {
-          .pd-rating { padding: 10px 18px; gap: 8px; }
+          .pd-rating { padding: 8px 16px; gap: 8px; font-size: 14px; }
         }
         
         .pd-price-block {
           background: linear-gradient(165deg, #ffffff 0%, #f8fafc 50%, #f0f4ff 100%);
           border: 1px solid rgba(59, 130, 246, 0.15);
-          border-radius: 24px;
-          padding: 24px 20px 20px;
-          margin-bottom: 20px;
+          border-radius: 20px;
+          padding: 18px 16px 16px;
+          margin-bottom: 18px;
           position: relative;
           overflow: hidden;
-          box-shadow: 0 16px 48px -20px rgba(59, 130, 246, 0.18);
+          box-shadow: 0 14px 44px -20px rgba(59, 130, 246, 0.18);
         }
         
         @media (min-width: 640px) {
           .pd-price-block {
-            border-radius: 28px;
-            padding: 32px 28px 24px;
-            margin-bottom: 24px;
+            border-radius: 24px;
+            padding: 24px 20px 20px;
+            margin-bottom: 22px;
           }
         }
         
@@ -1105,7 +1080,7 @@ export default function ProductDetail() {
         }
         
         .pd-price-main {
-          font-size: clamp(32px, 8vw, 60px);
+          font-size: clamp(28px, 7vw, 48px);
           font-weight: 900;
           background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
           background-clip: text;
@@ -1115,69 +1090,62 @@ export default function ProductDetail() {
         }
         
         .pd-price-mrp {
-          font-size: 16px;
+          font-size: 14px;
           color: #94a3b8;
           text-decoration: line-through;
           font-weight: 600;
         }
         
         @media (min-width: 640px) {
-          .pd-price-mrp { font-size: 18px; }
+          .pd-price-mrp { font-size: 16px; }
         }
         
         .pd-price-save {
-          font-size: 13px;
+          font-size: 11px;
           color: #059669;
           font-weight: 800;
           background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%);
           border: 1px solid rgba(16, 185, 129, 0.2);
-          padding: 6px 12px;
+          padding: 5px 10px;
           border-radius: 999px;
         }
         
         @media (min-width: 640px) {
-          .pd-price-save {
-            font-size: 15px;
-            padding: 8px 16px;
-          }
+          .pd-price-save { font-size: 12px; padding: 6px 14px; }
         }
         
         .pd-stock {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          font-size: 12px;
+          gap: 6px;
+          font-size: 11px;
           font-weight: 800;
           letter-spacing: 0.1em;
           text-transform: uppercase;
-          padding: 8px 14px;
+          padding: 6px 12px;
           border-radius: 999px;
         }
         
         @media (min-width: 640px) {
-          .pd-stock {
-            gap: 10px;
-            font-size: 13px;
-            padding: 10px 18px;
-          }
+          .pd-stock { gap: 8px; font-size: 12px; padding: 8px 14px; }
         }
         
         .pd-stock-dot {
-          width: 8px;
-          height: 8px;
+          width: 7px;
+          height: 7px;
           border-radius: 50%;
           flex-shrink: 0;
         }
         
         @media (min-width: 640px) {
-          .pd-stock-dot { width: 10px; height: 10px; }
+          .pd-stock-dot { width: 9px; height: 9px; }
         }
         
         .pd-countdown {
-          margin-top: 16px;
+          margin-top: 14px;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
           align-items: stretch;
         }
         
@@ -1185,13 +1153,13 @@ export default function ProductDetail() {
           .pd-countdown {
             flex-direction: row;
             align-items: center;
-            gap: 16px;
-            margin-top: 20px;
+            gap: 14px;
+            margin-top: 18px;
           }
         }
         
         .pd-countdown-lbl {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
           color: #64748b;
           text-transform: uppercase;
@@ -1199,39 +1167,35 @@ export default function ProductDetail() {
         }
         
         @media (min-width: 640px) {
-          .pd-countdown-lbl { font-size: 13px; }
+          .pd-countdown-lbl { font-size: 12px; }
         }
         
         .pd-countdown-val {
           display: flex;
-          gap: 8px;
+          gap: 6px;
           font-family: 'Inter', system-ui, sans-serif;
         }
         
         @media (min-width: 640px) {
-          .pd-countdown-val { gap: 10px; }
+          .pd-countdown-val { gap: 8px; }
         }
         
         .pd-countdown-item {
           background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
-          padding: 8px 12px;
-          border-radius: 14px;
+          padding: 6px 10px;
+          border-radius: 12px;
           border: 1px solid rgba(59, 130, 246, 0.18);
-          min-width: 56px;
+          min-width: 48px;
           text-align: center;
-          box-shadow: 0 4px 16px rgba(59, 130, 246, 0.1);
+          box-shadow: 0 3px 12px rgba(59, 130, 246, 0.1);
         }
         
         @media (min-width: 640px) {
-          .pd-countdown-item {
-            padding: 10px 16px;
-            min-width: 64px;
-            border-radius: 16px;
-          }
+          .pd-countdown-item { padding: 8px 14px; min-width: 56px; border-radius: 14px; }
         }
         
         .pd-countdown-num {
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 900;
           background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
           background-clip: text;
@@ -1240,11 +1204,11 @@ export default function ProductDetail() {
         }
         
         @media (min-width: 640px) {
-          .pd-countdown-num { font-size: 20px; }
+          .pd-countdown-num { font-size: 18px; }
         }
         
         .pd-countdown-label {
-          font-size: 10px;
+          font-size: 9px;
           color: #64748b;
           font-weight: 700;
           letter-spacing: 0.1em;
@@ -1253,27 +1217,24 @@ export default function ProductDetail() {
         }
         
         .pd-delivery {
-          margin-top: 24px;
+          margin-top: 20px;
           background: rgba(255, 255, 255, 0.92);
-          border-radius: 20px;
+          border-radius: 18px;
           border: 1px solid rgba(59, 130, 246, 0.12);
           overflow: hidden;
-          box-shadow: 0 10px 28px -14px rgba(15, 23, 42, 0.1);
+          box-shadow: 0 8px 28px -14px rgba(15, 23, 42, 0.1);
         }
         
         @media (min-width: 640px) {
-          .pd-delivery {
-            margin-top: 28px;
-            border-radius: 24px;
-          }
+          .pd-delivery { margin-top: 24px; border-radius: 20px; }
         }
         
         .pd-delivery-head {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 6px;
           align-items: flex-start;
-          padding: 16px 18px;
+          padding: 14px 14px;
           background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%);
         }
         
@@ -1282,21 +1243,21 @@ export default function ProductDetail() {
             flex-direction: row;
             align-items: center;
             justify-content: space-between;
-            padding: 18px 24px;
-            gap: 12px;
+            padding: 16px 18px;
+            gap: 10px;
           }
         }
         
         .pd-delivery-form {
-          padding: 16px 18px;
+          padding: 14px 14px;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
         }
         
         @media (min-width: 480px) {
           .pd-delivery-form {
-            padding: 18px 20px;
+            padding: 16px 18px;
             flex-direction: row;
             align-items: center;
             gap: 12px;
@@ -1305,11 +1266,11 @@ export default function ProductDetail() {
         
         .pd-del-inp {
           width: 100%;
-          padding: 14px 18px;
-          border-radius: 16px;
+          padding: 12px 16px;
+          border-radius: 14px;
           border: 2px solid rgba(59, 130, 246, 0.18);
           background: white;
-          font-size: 14px;
+          font-size: 13px;
           font-weight: 700;
           letter-spacing: 0.1em;
           text-transform: uppercase;
@@ -1322,9 +1283,9 @@ export default function ProductDetail() {
           .pd-del-inp {
             flex: 1;
             min-width: 120px;
-            padding: 16px 20px;
-            border-radius: 18px;
-            font-size: 15px;
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 14px;
           }
         }
         
@@ -1338,29 +1299,29 @@ export default function ProductDetail() {
           background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
           color: white;
           border: none;
-          padding: 14px 20px;
-          border-radius: 16px;
-          font-size: 12px;
+          padding: 12px 18px;
+          border-radius: 14px;
+          font-size: 11px;
           font-weight: 800;
           letter-spacing: 0.12em;
           text-transform: uppercase;
           cursor: pointer;
           transition: all 0.3s;
-          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
         }
         
         @media (min-width: 480px) {
           .pd-del-check {
             width: auto;
-            padding: 16px 28px;
-            border-radius: 18px;
-            font-size: 13px;
+            padding: 14px 22px;
+            border-radius: 16px;
+            font-size: 12px;
           }
         }
         
         .pd-del-check:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 14px 36px rgba(59, 130, 246, 0.4);
+          box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
         }
         
         .pd-del-check:disabled {
@@ -1371,17 +1332,17 @@ export default function ProductDetail() {
         
         .pd-cta {
           display: flex;
-          gap: 12px;
+          gap: 10px;
           flex-direction: column;
-          margin-top: 24px;
+          margin-top: 20px;
         }
         
         @media (min-width: 640px) {
           .pd-cta {
             flex-direction: row;
             flex-wrap: wrap;
-            gap: 14px;
-            margin-top: 28px;
+            gap: 12px;
+            margin-top: 24px;
           }
         }
         
@@ -1392,16 +1353,16 @@ export default function ProductDetail() {
           background-size: 200% 200%;
           color: white;
           border: none;
-          padding: 16px 28px;
-          border-radius: 18px;
-          font-size: 13px;
+          padding: 14px 28px;
+          border-radius: 16px;
+          font-size: 12px;
           font-weight: 900;
           letter-spacing: 0.14em;
           text-transform: uppercase;
           cursor: pointer;
           font-family: 'Inter', system-ui, sans-serif;
           transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 12px 36px -10px rgba(59, 130, 246, 0.4);
+          box-shadow: 0 10px 32px -10px rgba(59, 130, 246, 0.4);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1413,10 +1374,9 @@ export default function ProductDetail() {
         
         @media (min-width: 640px) {
           .pd-btn-primary {
-            min-width: 160px;
-            padding: 18px 32px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 16px 32px;
+            border-radius: 18px;
+            font-size: 13px;
             gap: 10px;
           }
         }
@@ -1432,7 +1392,7 @@ export default function ProductDetail() {
         
         .pd-btn-primary:hover:not(:disabled) {
           transform: translateY(-4px);
-          box-shadow: 0 20px 48px -12px rgba(59, 130, 246, 0.5);
+          box-shadow: 0 18px 48px -12px rgba(59, 130, 246, 0.5);
         }
         
         .pd-btn-primary:hover:not(:disabled)::after {
@@ -1455,16 +1415,16 @@ export default function ProductDetail() {
           background: white;
           color: #3b82f6;
           border: 2px solid rgba(59, 130, 246, 0.2);
-          padding: 16px 20px;
-          border-radius: 18px;
-          font-size: 13px;
+          padding: 14px 20px;
+          border-radius: 16px;
+          font-size: 12px;
           font-weight: 900;
           letter-spacing: 0.12em;
           text-transform: uppercase;
           cursor: pointer;
           font-family: 'Inter', system-ui, sans-serif;
           transition: all 0.3s;
-          box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1474,9 +1434,9 @@ export default function ProductDetail() {
         
         @media (min-width: 640px) {
           .pd-btn-secondary {
-            padding: 18px 24px;
-            border-radius: 20px;
-            font-size: 13px;
+            padding: 16px 24px;
+            border-radius: 18px;
+            font-size: 12px;
             gap: 8px;
             width: auto;
           }
@@ -1486,87 +1446,85 @@ export default function ProductDetail() {
           border-color: #3b82f6;
           background: linear-gradient(135deg, #f8fafc 0%, #f0f4ff 100%);
           transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(59, 130, 246, 0.18);
+          box-shadow: 0 10px 28px rgba(59, 130, 246, 0.18);
         }
         
         .pd-trust {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-          padding-top: 20px;
+          gap: 8px;
+          padding-top: 18px;
           border-top: 1px solid rgba(59, 130, 246, 0.08);
-          margin-top: 20px;
+          margin-top: 18px;
         }
         
-        @media (min-width: 500px) {
-          .pd-trust {
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-          }
+        @media (min-width: 480px) {
+          .pd-trust { grid-template-columns: repeat(5, 1fr); gap: 8px; }
         }
         
         .pd-trust-item {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 6px;
-          font-size: 10px;
+          gap: 5px;
+          font-size: 9px;
           color: #475569;
           font-weight: 700;
           background: white;
-          padding: 12px 10px;
-          border-radius: 14px;
+          padding: 10px 8px;
+          border-radius: 12px;
           border: 1px solid rgba(59, 130, 246, 0.1);
           text-align: center;
         }
         
-        @media (min-width: 500px) {
+        @media (min-width: 480px) {
           .pd-trust-item {
             flex-direction: row;
-            gap: 8px;
-            font-size: 11px;
-            padding: 12px 16px;
-            border-radius: 16px;
+            gap: 6px;
+            font-size: 10px;
+            padding: 10px 14px;
+            border-radius: 14px;
             text-align: left;
           }
         }
         
         @media (min-width: 640px) {
-          .pd-trust-item { font-size: 12px; }
+          .pd-trust-item { font-size: 11px; }
         }
         
         .pd-hl-spec-card {
-          margin-top: 28px;
+          margin-top: 24px;
           background: white;
-          border-radius: 24px;
+          border-radius: 20px;
           border: 1px solid rgba(59, 130, 246, 0.12);
           overflow: hidden;
-          box-shadow: 0 14px 40px -20px rgba(15, 23, 42, 0.1);
+          box-shadow: 0 12px 40px -20px rgba(15, 23, 42, 0.1);
         }
         
         @media (min-width: 640px) {
-          .pd-hl-spec-card {
-            margin-top: 32px;
-            border-radius: 28px;
-          }
+          .pd-hl-spec-card { margin-top: 32px; border-radius: 24px; }
         }
         
         .pd-hl-spec-tabs {
           display: flex;
           gap: 0;
-          padding: 0 16px;
+          padding: 0 12px;
           border-bottom: 1px solid rgba(59, 130, 246, 0.08);
           background: linear-gradient(180deg, rgba(59, 130, 246, 0.03), transparent);
         }
         
+        @media (min-width: 640px) {
+          .pd-hl-spec-tabs { padding: 0 16px; }
+        }
+        
         .pd-hl-spec-tabs button {
           flex: 1;
-          padding: 14px 20px;
+          padding: 12px 16px;
           border: none;
           background: transparent;
           cursor: pointer;
           font-family: 'Inter', system-ui, sans-serif;
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 800;
           letter-spacing: 0.12em;
           text-transform: uppercase;
@@ -1577,7 +1535,7 @@ export default function ProductDetail() {
         }
         
         @media (min-width: 640px) {
-          .pd-hl-spec-tabs button { font-size: 13px; }
+          .pd-hl-spec-tabs button { font-size: 12px; padding: 14px 20px; }
         }
         
         .pd-hl-spec-tabs button:hover {
@@ -1590,28 +1548,24 @@ export default function ProductDetail() {
         }
         
         .pd-card-body {
-          padding: 24px 20px 28px;
+          padding: 18px 16px 22px;
         }
         
         @media (min-width: 640px) {
-          .pd-card-body { padding: 32px 32px 36px; }
+          .pd-card-body { padding: 24px 24px 28px; }
         }
         
         .pd-hl-item {
           display: flex;
-          gap: 12px;
+          gap: 10px;
           align-items: flex-start;
-          padding: 12px 0;
-          font-size: 14px;
+          padding: 10px 0;
+          font-size: 13px;
           color: #374151;
         }
         
         @media (min-width: 640px) {
-          .pd-hl-item {
-            gap: 16px;
-            padding: 14px 0;
-            font-size: 15px;
-          }
+          .pd-hl-item { gap: 12px; padding: 12px 0; font-size: 14px; }
         }
         
         .pd-hl-item + .pd-hl-item {
@@ -1619,13 +1573,17 @@ export default function ProductDetail() {
         }
         
         .pd-hl-dot {
-          width: 10px;
-          height: 10px;
+          width: 9px;
+          height: 9px;
           border-radius: 50%;
           background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-          margin-top: 4px;
+          margin-top: 3px;
           flex-shrink: 0;
-          box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        @media (min-width: 640px) {
+          .pd-hl-dot { width: 10px; height: 10px; margin-top: 4px; }
         }
         
         .pd-spec-table {
@@ -1642,97 +1600,98 @@ export default function ProductDetail() {
         }
         
         .pd-spec-table td {
-          padding: 14px 0;
+          padding: 12px 0;
         }
         
         @media (min-width: 640px) {
-          .pd-spec-table td { padding: 16px 0; }
+          .pd-spec-table td { padding: 14px 0; }
         }
         
         .pd-spec-table td:first-child {
-          font-size: 13px;
+          font-size: 12px;
           color: #64748b;
           width: 40%;
           font-weight: 600;
         }
         
+        @media (min-width: 640px) {
+          .pd-spec-table td:first-child { font-size: 13px; }
+        }
+        
         .pd-spec-table td:last-child {
-          font-size: 14px;
+          font-size: 13px;
           color: #0f172a;
           font-weight: 700;
         }
         
         @media (min-width: 640px) {
-          .pd-spec-table td:last-child { font-size: 15px; }
+          .pd-spec-table td:last-child { font-size: 14px; }
         }
         
         .pd-description {
-          margin-top: 24px;
+          margin-top: 20px;
         }
         
         @media (min-width: 640px) {
-          .pd-description { margin-top: 32px; }
+          .pd-description { margin-top: 28px; }
         }
         
         .pd-desc-title {
-          font-size: 13px;
+          font-size: 11px;
           font-weight: 900;
           color: #0f172a;
-          margin-bottom: 12px;
+          margin-bottom: 10px;
           text-transform: uppercase;
           letter-spacing: 0.12em;
         }
         
         @media (min-width: 640px) {
-          .pd-desc-title { font-size: 14px; margin-bottom: 16px; }
+          .pd-desc-title { font-size: 12px; margin-bottom: 14px; }
         }
         
         .pd-desc-content {
           background: white;
-          border-radius: 20px;
+          border-radius: 16px;
           border: 1px solid rgba(59, 130, 246, 0.1);
-          padding: 20px 20px;
+          padding: 16px 16px;
         }
         
         @media (min-width: 640px) {
-          .pd-desc-content {
-            border-radius: 24px;
-            padding: 28px 28px;
-          }
+          .pd-desc-content { border-radius: 20px; padding: 24px 24px; }
         }
         
         .pd-desc-content p {
           color: #475569;
-          font-size: 14px;
+          font-size: 13px;
           line-height: 1.8;
           margin: 0;
         }
         
         @media (min-width: 640px) {
-          .pd-desc-content p { font-size: 15px; }
+          .pd-desc-content p { font-size: 14px; }
         }
         
         .pd-similar {
-          margin-top: 40px;
+          margin-top: 32px;
         }
         
         @media (min-width: 640px) {
-          .pd-similar { margin-top: 56px; }
+          .pd-similar { margin-top: 48px; }
         }
         
         .pd-similar-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          margin-bottom: 20px;
+          margin-bottom: 16px;
         }
         
         @media (min-width: 640px) {
-          .pd-similar-header { margin-bottom: 28px; }
+          .pd-similar-header { margin-bottom: 24px; }
         }
         
         .pd-similar-title {
-          font-size: 20px;
+          font-size: 18px;
           font-weight: 900;
           background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
           background-clip: text;
@@ -1740,16 +1699,16 @@ export default function ProductDetail() {
           -webkit-text-fill-color: transparent;
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 8px;
           letter-spacing: -0.02em;
         }
         
         @media (min-width: 640px) {
-          .pd-similar-title { font-size: 26px; gap: 12px; }
+          .pd-similar-title { font-size: 24px; gap: 10px; }
         }
         
         .pd-view-all {
-          font-size: 12px;
+          font-size: 10px;
           font-weight: 800;
           color: #3b82f6;
           text-transform: uppercase;
@@ -1757,37 +1716,31 @@ export default function ProductDetail() {
           text-decoration: none;
           display: inline-flex;
           align-items: center;
-          gap: 6px;
+          gap: 5px;
           transition: all 0.2s;
         }
         
         @media (min-width: 640px) {
-          .pd-view-all { font-size: 13px; }
+          .pd-view-all { font-size: 12px; gap: 6px; }
         }
         
         .pd-view-all:hover {
           color: #8b5cf6;
-          gap: 10px;
+          gap: 8px;
         }
         
         .pd-similar-grid {
           display: grid;
-          grid-template-columns: repeat(1, 1fr);
-          gap: 16px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
         }
         
         @media (min-width: 550px) {
-          .pd-similar-grid {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-          }
+          .pd-similar-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
         }
         
-        @media (min-width: 900px) {
-          .pd-similar-grid {
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
-          }
+        @media (min-width: 768px) {
+          .pd-similar-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
         }
         
         @keyframes pdStockPulse {
@@ -1796,409 +1749,407 @@ export default function ProductDetail() {
         }
       `}</style>
 
-      <div className="pd">
-        <div className="pd-wrap">
-          <div className="pd-grid">
-            {/* Image Panel */}
-            <div>
-              <div
-                className="pd-img-main"
-                onClick={onMainImgClick}
-                onTouchStart={onMainImgTouchStart}
-                onTouchEnd={onMainImgTouchEnd}
-                onTouchCancel={onMainImgTouchCancel}
-              >
-                {imgs.length > 0 && (
-                  <img
-                    src={getCloudinaryUrl(imgs[activeImg].url || imgs[activeImg], 1000)}
-                    alt={p.name}
-                    className="pd-main-photo"
-                    onLoad={() => setImgLoading(false)}
-                    onError={() => setImgLoading(false)}
-                  />
-                )}
-                {discount > 0 && (
-                  <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '6px 12px',
-                      borderRadius: '12px',
-                      fontSize: '10px',
-                      fontWeight: 900,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      color: 'white',
-                      background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-                      boxShadow: '0 6px 20px rgba(5, 150, 105, 0.25)'
-                    }}>
-                      {discount}% OFF
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Thumbnails */}
-              {imgs.length > 1 && (
-                <div className="pd-thumbs">
-                  {imgs.map((img, idx) => (
-                    <button
-                      key={idx}
-                      className={`pd-thumb ${activeImg === idx ? 'on' : ''}`}
-                      onClick={() => setActiveImg(idx)}
-                    >
-                      <img
-                        src={getCloudinaryUrl(img.url || img, 160)}
-                        alt=""
-                      />
-                    </button>
-                  ))}
-                </div>
+      <div className="pd-wrap">
+        <div className="pd-grid">
+          {/* Image Panel */}
+          <div>
+            <div
+              className="pd-img-main"
+              onClick={onMainImgClick}
+              onTouchStart={onMainImgTouchStart}
+              onTouchEnd={onMainImgTouchEnd}
+              onTouchCancel={onMainImgTouchCancel}
+            >
+              {imgs.length > 0 && (
+                <img
+                  src={getCloudinaryUrl(imgs[activeImg].url || imgs[activeImg], 1000)}
+                  alt={p.name}
+                  className="pd-main-photo"
+                  onLoad={() => setImgLoading(false)}
+                  onError={() => setImgLoading(false)}
+                />
               )}
-
-              {/* Variants Selector */}
-              {variantAttrs.length > 0 && (
-                <div className="pd-variants">
-                  {variantAttrs.map((attr, attrIdx) => {
-                    const lowAttr = attr.toLowerCase().trim();
-                    const opts = variantOpts(attr);
-                    const isMany = opts.length >= 6;
-                    return (
-                      <div key={attrIdx} className="pd-var-sec">
-                        <div className="pd-var-header">
-                          <div className="pd-var-lbl">
-                            <span className="pd-var-icon">{variantAttrIconEmoji(lowAttr)}</span>
-                            <span className="pd-var-name">{attr}</span>
-                          </div>
-                          {selected[lowAttr] && (
-                            <span className="pd-var-selected">
-                              {selected[lowAttr]}
-                            </span>
-                          )}
-                        </div>
-                        <div className={`pd-var-opts ${isMany ? 'has-many' : ''}`}>
-                          {opts.map((optVal, optIdx) => {
-                            const enabled = isOptEnabled(attr, optVal);
-                            const isOn = selected[lowAttr]?.toLowerCase() === String(optVal).toLowerCase();
-                            const thisVariant = p.variants?.find(v => {
-                              const vAttrs = normalizeAttrs(v.attributes, v.sku, p.attributes);
-                              return v.isActive !== false && Object.entries(vAttrs).some(([k, vv]) => k.toLowerCase() === lowAttr && String(vv).toLowerCase() === String(optVal).toLowerCase());
-                            });
-                            const vPrice = thisVariant?.price;
-                            return (
-                              <button
-                                key={optIdx}
-                                className={`pd-var-btn ${!enabled ? 'disabled' : ''} ${isOn ? 'on' : ''}`}
-                                onClick={() => {
-                                  if (!enabled) return;
-                                  setSelected(s => ({ ...s, [lowAttr]: String(optVal) }));
-                                }}
-                                disabled={!enabled}
-                              >
-                                <span className="pd-var-val">{optVal}</span>
-                                {vPrice && <span className="pd-var-price">₹{Number(vPrice).toLocaleString()}</span>}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
+              {discount > 0 && (
+                <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 2, display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    padding: '5px 12px',
+                    borderRadius: '999px',
+                    fontSize: '10px',
+                    fontWeight: 900,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    color: 'white',
+                    background: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
+                    boxShadow: '0 5px 16px rgba(5, 150, 105, 0.25)'
+                  }}>
+                    {discount}% OFF
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Info Panel */}
-            <div className="pd-info">
-              <div className="pd-meta-compact">
-                <div className="pd-badges">
-                  <span className="pd-badge pd-badge-v">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                    </svg>
-                    VERIFIED
-                  </span>
-                  {p.gst > 0 && (
-                    <span className="pd-badge pd-badge-g">
-                      GST Included
-                    </span>
-                  )}
-                  <span className="pd-badge pd-badge-a">
-                    ⚡ Express Dispatch
-                  </span>
-                </div>
-              </div>
-
-              <h1 className="pd-name">{p.name}</h1>
-
-              <div className="pd-rating-row">
-                <div className="pd-rating">
-                  <span>{Number(p.ratingAvg || 4.3).toFixed(1)}</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                  </svg>
-                </div>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
-                  {Number(p.ratingCount || 128).toLocaleString()} Ratings
-                </span>
-              </div>
-
-              {/* Price Block */}
-              <div className="pd-price-block">
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '16px', flexWrap: 'wrap', marginBottom: '6px' }}>
-                  <span className="pd-price-main">
-                    ₹{Number(currentPrice || minPrice).toLocaleString()}
-                  </span>
-                  {Number(currentMrp || displayMrp) > Number(currentPrice || minPrice) && (
-                    <>
-                      <span className="pd-price-mrp">MRP ₹{Number(currentMrp || displayMrp).toLocaleString()}</span>
-                      <span className="pd-price-save">Save ₹{(Number(currentMrp || displayMrp) - Number(currentPrice || minPrice)).toLocaleString()}</span>
-                    </>
-                  )}
-                </div>
-                {p.gst > 0 && (
-                  <div style={{ fontSize: '13px', color: '#059669', fontWeight: 800, marginTop: '6px' }}>
-                    Inclusive of all taxes
-                  </div>
-                )}
-              </div>
-
-              {/* Stock */}
-              <div>
-                <span
-                  className="pd-stock"
-                  style={{
-                    background: isAvailable ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%)' : 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.08) 100%)',
-                    color: isAvailable ? '#059669' : '#dc2626',
-                    border: isAvailable ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)',
-                    boxShadow: isAvailable ? '0 6px 18px rgba(5, 150, 105, 0.15)' : '0 6px 18px rgba(239, 68, 68, 0.15)'
-                  }}
-                >
-                  <span className="pd-stock-dot" style={{ background: isAvailable ? '#059669' : '#dc2626', animation: isAvailable ? 'none' : 'pdStockPulse 1.2s infinite ease-in-out' }}></span>
-                  {stockSt.text}
-                </span>
-              </div>
-
-              {/* Express Dispatch Countdown */}
-              <div className="pd-countdown">
-                <span className="pd-countdown-lbl">Express Dispatch</span>
-                <div className="pd-countdown-val">
-                  <div className="pd-countdown-item">
-                    <div className="pd-countdown-num">{String(countdown.h).padStart(2, '0')}</div>
-                    <div className="pd-countdown-label">Hours</div>
-                  </div>
-                  <div className="pd-countdown-item">
-                    <div className="pd-countdown-num">{String(countdown.m).padStart(2, '0')}</div>
-                    <div className="pd-countdown-label">Mins</div>
-                  </div>
-                  <div className="pd-countdown-item">
-                    <div className="pd-countdown-num">{String(countdown.s).padStart(2, '0')}</div>
-                    <div className="pd-countdown-label">Secs</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Delivery Check */}
-              <div className="pd-delivery">
-                <div className="pd-delivery-head">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
-                      <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z" />
-                    </svg>
-                    <span style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Check Delivery</span>
-                  </div>
-                  {deliveryDate && (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#059669', fontSize: '13px', fontWeight: 800 }}>
-                      <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Ships</span>
-                      <span>{deliveryDate}</span>
-                    </div>
-                  )}
-                </div>
-                <form className="pd-delivery-form" onSubmit={checkDelivery}>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={6}
-                    className="pd-del-inp"
-                    value={pincode}
-                    onChange={e => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    placeholder="Enter Pincode"
-                  />
-                  <button type="submit" className="pd-del-check" disabled={pincode.length !== 6}>
-                    Check
-                  </button>
-                </form>
-              </div>
-
-              {/* CTA Buttons */}
-              <div className="pd-cta">
-                <button
-                  className="pd-btn-secondary"
-                  onClick={() => {
-                    const productId = p._id || p.id;
-                    if (isInWishlist(productId)) {
-                      removeFromWishlist(productId);
-                      notify('Removed from wishlist', 'success');
-                    } else {
-                      addToWishlist(p);
-                      notify('Added to wishlist', 'success');
-                    }
-                  }}
-                >
-                  {isInWishlist(p._id || p.id) ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                    </svg>
-                  )}
-                  {isInWishlist(p._id || p.id) ? 'Saved' : 'Wishlist'}
-                </button>
-
-                {authed ? (
+            {/* Thumbnails */}
+            {imgs.length > 1 && (
+              <div className="pd-thumbs">
+                {imgs.map((img, idx) => (
                   <button
-                    className="pd-btn-primary"
-                    onClick={handleAddToCart}
-                    disabled={!canAddToCart}
+                    key={idx}
+                    className={`pd-thumb ${activeImg === idx ? 'on' : ''}`}
+                    onClick={() => setActiveImg(idx)}
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M6 6h15l-1.5 9h-12z" />
-                      <path d="M6 6l-1-3H3" />
-                      <circle cx="9" cy="21" r="1" />
-                      <circle cx="18" cy="21" r="1" />
-                    </svg>
-                    {totalStock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                    <img
+                      src={getCloudinaryUrl(img.url || img, 160)}
+                      alt=""
+                    />
                   </button>
-                ) : (
-                  <button
-                    className="pd-btn-primary"
-                    onClick={() => navigate('/login', { state: { from: location.pathname + location.search } })}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                      <polyline points="10 17 15 12 10 7" />
-                      <line x1="15" y1="12" x2="3" y2="12" />
-                    </svg>
-                    Login to Buy
-                  </button>
-                )}
-              </div>
-
-              {/* Trust Badges */}
-              <div className="pd-trust">
-                <div className="pd-trust-item">
-                  <span>🔒</span> Secure Payment
-                </div>
-                <div className="pd-trust-item">
-                  <span>✅</span> Verified
-                </div>
-                <div className="pd-trust-item">
-                  <span>🧾</span> GST Invoice
-                </div>
-                <div className="pd-trust-item">
-                  <span>⚡</span> Fast Dispatch
-                </div>
-                <div className="pd-trust-item">
-                  <span>📦</span> Pan India
-                </div>
-              </div>
-
-              {/* Highlights / Specs Tabs */}
-              {(hasHighlights || hasSpecifications) && (
-                <div className="pd-hl-spec-card">
-                  <div className="pd-hl-spec-tabs">
-                    {hasHighlights && (
-                      <button
-                        className={hlSpecTab === 'highlights' ? 'on' : ''}
-                        onClick={() => setHlSpecTab('highlights')}
-                      >
-                        Highlights
-                      </button>
-                    )}
-                    {hasSpecifications && (
-                      <button
-                        className={hlSpecTab === 'specs' ? 'on' : ''}
-                        onClick={() => setHlSpecTab('specs')}
-                      >
-                        Specifications
-                      </button>
-                    )}
-                  </div>
-                  <div className="pd-card-body">
-                    {showHighlightsBlock && (
-                      <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-                        {p.highlights.map((hl, i) => (
-                          <li key={i} className="pd-hl-item">
-                            <div className="pd-hl-dot"></div>
-                            <span>{hl}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {showSpecificationsBlock && (
-                      <table className="pd-spec-table">
-                        <tbody>
-                          {p.specifications.map((spec, i) => (
-                            <tr key={i}>
-                              <td>{spec.key}</td>
-                              <td>{spec.value}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Description */}
-              {p.description && (
-                <div className="pd-description">
-                  <h3 className="pd-desc-title">Details</h3>
-                  <div className="pd-desc-content">
-                    <p style={{ whiteSpace: 'pre-wrap' }}>
-                      {p.description}
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Similar Products */}
-          {similarProducts.length > 0 && (
-            <div className="pd-similar">
-              <div className="pd-similar-header">
-                <h2 className="pd-similar-title">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="#3b82f6">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                  </svg>
-                  Similar Products
-                </h2>
-                <Link to="/products" className="pd-view-all">
-                  View All →
-                </Link>
-              </div>
-              <div className="pd-similar-grid">
-                {similarProducts.slice(0, 4).map((product, idx) => (
-                  <ProductCard
-                    key={product._id || idx}
-                    p={product}
-                    authed={authed}
-                    addToCart={addToCart}
-                    navigate={navigate}
-                    index={idx}
-                    setRecOpen={setRecOpen}
-                    setRecItems={setRecItems}
-                  />
                 ))}
               </div>
+            )}
+
+            {/* Variants Selector */}
+            {variantAttrs.length > 0 && (
+              <div className="pd-variants">
+                {variantAttrs.map((attr, attrIdx) => {
+                  const lowAttr = attr.toLowerCase().trim();
+                  const opts = variantOpts(attr);
+                  const isMany = opts.length >= 6;
+                  return (
+                    <div key={attrIdx} className="pd-var-sec">
+                      <div className="pd-var-header">
+                        <div className="pd-var-lbl">
+                          <span className="pd-var-icon">{variantAttrIconEmoji(lowAttr)}</span>
+                          <span className="pd-var-name">{attr}</span>
+                        </div>
+                        {selected[lowAttr] && (
+                          <span className="pd-var-selected">
+                            {selected[lowAttr]}
+                          </span>
+                        )}
+                      </div>
+                      <div className={`pd-var-opts ${isMany ? 'has-many' : ''}`}>
+                        {opts.map((optVal, optIdx) => {
+                          const enabled = isOptEnabled(attr, optVal);
+                          const isOn = selected[lowAttr]?.toLowerCase() === String(optVal).toLowerCase();
+                          const thisVariant = p.variants?.find(v => {
+                            const vAttrs = normalizeAttrs(v.attributes, v.sku, p.attributes);
+                            return v.isActive !== false && Object.entries(vAttrs).some(([k, vv]) => k.toLowerCase() === lowAttr && String(vv).toLowerCase() === String(optVal).toLowerCase());
+                          });
+                          const vPrice = thisVariant?.price;
+                          return (
+                            <button
+                              key={optIdx}
+                              className={`pd-var-btn ${!enabled ? 'disabled' : ''} ${isOn ? 'on' : ''}`}
+                              onClick={() => {
+                                if (!enabled) return;
+                                setSelected(s => ({ ...s, [lowAttr]: String(optVal) }));
+                              }}
+                              disabled={!enabled}
+                            >
+                              <span className="pd-var-val">{optVal}</span>
+                              {vPrice && <span className="pd-var-price">₹{Number(vPrice).toLocaleString()}</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Info Panel */}
+          <div className="pd-info">
+            <div className="pd-meta-compact">
+              <div className="pd-badges">
+                <span className="pd-badge pd-badge-v">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+                  VERIFIED
+                </span>
+                {p.gst > 0 && (
+                  <span className="pd-badge pd-badge-g">
+                    GST Included
+                  </span>
+                )}
+                <span className="pd-badge pd-badge-a">
+                  ⚡ Express Dispatch
+                </span>
+              </div>
             </div>
-          )}
+
+            <h1 className="pd-name">{p.name}</h1>
+
+            <div className="pd-rating-row">
+              <div className="pd-rating">
+                <span>{Number(p.ratingAvg || 4.3).toFixed(1)}</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                </svg>
+              </div>
+              <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 700 }}>
+                {Number(p.ratingCount || 128).toLocaleString()} Ratings
+              </span>
+            </div>
+
+            {/* Price Block */}
+            <div className="pd-price-block">
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', flexWrap: 'wrap', marginBottom: '5px' }}>
+                <span className="pd-price-main">
+                  ₹{Number(currentPrice || minPrice).toLocaleString()}
+                </span>
+                {Number(currentMrp || displayMrp) > Number(currentPrice || minPrice) && (
+                  <>
+                    <span className="pd-price-mrp">MRP ₹{Number(currentMrp || displayMrp).toLocaleString()}</span>
+                    <span className="pd-price-save">Save ₹{(Number(currentMrp || displayMrp) - Number(currentPrice || minPrice)).toLocaleString()}</span>
+                  </>
+                )}
+              </div>
+              {p.gst > 0 && (
+                <div style={{ fontSize: '12px', color: '#059669', fontWeight: 800, marginTop: '5px' }}>
+                  Inclusive of all taxes
+                </div>
+              )}
+            </div>
+
+            {/* Stock */}
+            <div>
+              <span
+                className="pd-stock"
+                style={{
+                  background: isAvailable ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%)' : 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.08) 100%)',
+                  color: isAvailable ? '#059669' : '#dc2626',
+                  border: isAvailable ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid rgba(239, 68, 68, 0.2)',
+                  boxShadow: isAvailable ? '0 5px 16px rgba(5, 150, 105, 0.15)' : '0 5px 16px rgba(239, 68, 68, 0.15)'
+                }}
+              >
+                <span className="pd-stock-dot" style={{ background: isAvailable ? '#059669' : '#dc2626', animation: isAvailable ? 'none' : 'pdStockPulse 1.2s infinite ease-in-out' }}></span>
+                {stockSt.text}
+              </span>
+            </div>
+
+            {/* Express Dispatch Countdown */}
+            <div className="pd-countdown">
+              <span className="pd-countdown-lbl">Express Dispatch</span>
+              <div className="pd-countdown-val">
+                <div className="pd-countdown-item">
+                  <div className="pd-countdown-num">{String(countdown.h).padStart(2, '0')}</div>
+                  <div className="pd-countdown-label">Hours</div>
+                </div>
+                <div className="pd-countdown-item">
+                  <div className="pd-countdown-num">{String(countdown.m).padStart(2, '0')}</div>
+                  <div className="pd-countdown-label">Mins</div>
+                </div>
+                <div className="pd-countdown-item">
+                  <div className="pd-countdown-num">{String(countdown.s).padStart(2, '0')}</div>
+                  <div className="pd-countdown-label">Secs</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Delivery Check */}
+            <div className="pd-delivery">
+              <div className="pd-delivery-head">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
+                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z" />
+                  </svg>
+                  <span style={{ fontSize: '10px', fontWeight: 800, color: '#64748b', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Check Delivery</span>
+                </div>
+                {deliveryDate && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#059669', fontSize: '12px', fontWeight: 800 }}>
+                    <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Ships</span>
+                    <span>{deliveryDate}</span>
+                  </div>
+                )}
+              </div>
+              <form className="pd-delivery-form" onSubmit={checkDelivery}>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  className="pd-del-inp"
+                  value={pincode}
+                  onChange={e => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  placeholder="Enter Pincode"
+                />
+                <button type="submit" className="pd-del-check" disabled={pincode.length !== 6}>
+                  Check
+                </button>
+              </form>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="pd-cta">
+              <button
+                className="pd-btn-secondary"
+                onClick={() => {
+                  const productId = p._id || p.id;
+                  if (isInWishlist(productId)) {
+                    removeFromWishlist(productId);
+                    notify('Removed from wishlist', 'success');
+                  } else {
+                    addToWishlist(p);
+                    notify('Added to wishlist', 'success');
+                  }
+                }}
+              >
+                {isInWishlist(p._id || p.id) ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                )}
+                {isInWishlist(p._id || p.id) ? 'Saved' : 'Wishlist'}
+              </button>
+
+              {authed ? (
+                <button
+                  className="pd-btn-primary"
+                  onClick={handleAddToCart}
+                  disabled={!canAddToCart}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M6 6h15l-1.5 9h-12z" />
+                    <path d="M6 6l-1-3H3" />
+                    <circle cx="9" cy="21" r="1" />
+                    <circle cx="18" cy="21" r="1" />
+                  </svg>
+                  {totalStock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                </button>
+              ) : (
+                <button
+                  className="pd-btn-primary"
+                  onClick={() => navigate('/login', { state: { from: location.pathname + location.search } })}
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                    <polyline points="10 17 15 12 10 7" />
+                    <line x1="15" y1="12" x2="3" y2="12" />
+                  </svg>
+                  Login to Buy
+                </button>
+              )}
+            </div>
+
+            {/* Trust Badges */}
+            <div className="pd-trust">
+              <div className="pd-trust-item">
+                <span>🔒</span> Secure Payment
+              </div>
+              <div className="pd-trust-item">
+                <span>✅</span> Verified
+              </div>
+              <div className="pd-trust-item">
+                <span>🧾</span> GST Invoice
+              </div>
+              <div className="pd-trust-item">
+                <span>⚡</span> Fast Dispatch
+              </div>
+              <div className="pd-trust-item">
+                <span>📦</span> Pan India
+              </div>
+            </div>
+
+            {/* Highlights / Specs Tabs */}
+            {(hasHighlights || hasSpecifications) && (
+              <div className="pd-hl-spec-card">
+                <div className="pd-hl-spec-tabs">
+                  {hasHighlights && (
+                    <button
+                      className={hlSpecTab === 'highlights' ? 'on' : ''}
+                      onClick={() => setHlSpecTab('highlights')}
+                    >
+                      Highlights
+                    </button>
+                  )}
+                  {hasSpecifications && (
+                    <button
+                      className={hlSpecTab === 'specs' ? 'on' : ''}
+                      onClick={() => setHlSpecTab('specs')}
+                    >
+                      Specifications
+                    </button>
+                  )}
+                </div>
+                <div className="pd-card-body">
+                  {showHighlightsBlock && (
+                    <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                      {p.highlights.map((hl, i) => (
+                        <li key={i} className="pd-hl-item">
+                          <div className="pd-hl-dot"></div>
+                          <span>{hl}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {showSpecificationsBlock && (
+                    <table className="pd-spec-table">
+                      <tbody>
+                        {p.specifications.map((spec, i) => (
+                          <tr key={i}>
+                            <td>{spec.key}</td>
+                            <td>{spec.value}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            {p.description && (
+              <div className="pd-description">
+                <h3 className="pd-desc-title">Details</h3>
+                <div className="pd-desc-content">
+                  <p style={{ whiteSpace: 'pre-wrap' }}>
+                    {p.description}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Similar Products */}
+        {similarProducts.length > 0 && (
+          <div className="pd-similar">
+            <div className="pd-similar-header">
+              <h2 className="pd-similar-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                </svg>
+                Similar Products
+              </h2>
+              <Link to="/products" className="pd-view-all">
+                View All →
+              </Link>
+            </div>
+            <div className="pd-similar-grid">
+              {similarProducts.slice(0, 4).map((product, idx) => (
+                <ProductCard
+                  key={product._id || idx}
+                  p={product}
+                  authed={authed}
+                  addToCart={addToCart}
+                  navigate={navigate}
+                  index={idx}
+                  setRecOpen={setRecOpen}
+                  setRecItems={setRecItems}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <RecommendationModal
@@ -2210,6 +2161,6 @@ export default function ProductDetail() {
         authed={authed}
         navigate={navigate}
       />
-    </>
+    </div>
   );
 }
