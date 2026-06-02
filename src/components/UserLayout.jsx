@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { useCart } from '../lib/CartContext'
 import { useWishlist } from '../lib/WishlistContext'
+import { useAuth } from '../lib/AuthContext'
 import { CONFIG } from '../shared/lib/config.js'
 
 function classNames(...classes) {
@@ -12,7 +13,7 @@ export default function UserLayout() {
   const location = useLocation()
   const { cartCount } = useCart()
   const { wishlistCount } = useWishlist()
-  const user = JSON.parse(localStorage.getItem('user') || 'null')
+  const { user, logout } = useAuth()
   const [searchQuery, setSearchQuery] = useState('')
 
   const bottomNavItems = [
@@ -23,8 +24,7 @@ export default function UserLayout() {
   ]
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    logout()
     window.location.reload()
   }
 
@@ -103,14 +103,19 @@ export default function UserLayout() {
               {/* Login/Sign Up or User Profile */}
               <div className="hidden sm:flex items-center gap-3">
                 {user ? (
-                  <div className="flex items-center gap-2">
-                    <Link to="/profile" className="text-sm font-bold text-gray-700 hover:text-blue-600">
-                      Hi, {user.name?.split(' ')[0] || 'User'}
-                    </Link>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                        {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
+                      <Link to="/profile" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">
+                        Hi, {user.name?.split(' ')[0] || 'User'}
+                      </Link>
+                    </div>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="text-sm font-bold text-gray-500 hover:text-red-600"
+                      className="text-sm font-semibold text-slate-500 hover:text-red-600 transition-colors"
                     >
                       Logout
                     </button>
@@ -120,7 +125,7 @@ export default function UserLayout() {
                     <Link
                       to="/login"
                       state={{ from: location.pathname + location.search }}
-                      className="text-sm font-bold text-gray-700 hover:text-blue-600"
+                      className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors"
                     >
                       Login / Sign Up
                     </Link>

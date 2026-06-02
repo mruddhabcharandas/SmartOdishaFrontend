@@ -1,179 +1,182 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { useGoogleLogin } from '@react-oauth/google'
-import api from '../../lib/api'
-import { useToast } from '../../components/Toast'
-import PasswordInput from '../../components/PasswordInput'
-import { useAuth } from '../../lib/AuthContext'
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
+import api from '../../lib/api';
+import { useToast } from '../../components/Toast';
+import PasswordInput from '../../components/PasswordInput';
+import { useAuth } from '../../lib/AuthContext';
 
 export default function Signup() {
-  const { notify } = useToast()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const { setAuth, refreshProfile } = useAuth()
+  const { notify } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setAuth, refreshProfile } = useAuth();
 
   const [from] = useState(() => {
-    const stateFrom = location.state?.from
+    const stateFrom = location.state?.from;
     if (stateFrom && typeof stateFrom === 'string' && !stateFrom.includes('/login') && !stateFrom.includes('/signup')) {
-      sessionStorage.setItem('login_redirect', stateFrom)
-      return stateFrom
+      sessionStorage.setItem('login_redirect', stateFrom);
+      return stateFrom;
     }
-    return sessionStorage.getItem('login_redirect') || '/'
-  })
+    return sessionStorage.getItem('login_redirect') || '/';
+  });
 
-  const googleData = location.state?.googleData
+  const googleData = location.state?.googleData;
 
-  const [step, setStep] = useState(googleData ? 'phone' : 1)
-  const [loading, setLoading] = useState(false)
-  const [googleLoading, setGoogleLoading] = useState(false)
+  const [step, setStep] = useState(googleData ? 'phone' : 1);
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: googleData?.name || '',
     phone: '',
     email: googleData?.email || '',
     password: ''
-  })
-  const [otp, setOtp] = useState('')
+  });
+  const [otp, setOtp] = useState('');
 
   const handleGoogleSignup = useGoogleLogin({
     onSuccess: async (response) => {
-      setGoogleLoading(true)
+      setGoogleLoading(true);
       try {
         const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: {
             Authorization: `Bearer ${response.access_token}`
           }
-        })
-        const userInfo = await userInfoResponse.json()
+        });
+        const userInfo = await userInfoResponse.json();
         
         try {
           const { data } = await api.post('/api/auth/customer/google', { 
             email: userInfo.email,
             name: userInfo.name
-          })
-          setAuth(data.token, { ...data.user, role: 'customer' })
+          });
+          setAuth(data.token, { ...data.user, role: 'customer' });
           try { await refreshProfile() } catch {}
-          sessionStorage.removeItem('login_redirect')
-          notify('Welcome!', 'success')
-          navigate(from)
+          sessionStorage.removeItem('login_redirect');
+          notify('Welcome!', 'success');
+          navigate(from);
         } catch (err) {
           if (err?.response?.data?.error === 'phone_required') {
-            setStep('phone')
+            setStep('phone');
             setFormData({
               name: err.response.data.name,
               phone: '',
               email: err.response.data.email,
               password: ''
-            })
+            });
           } else {
-            throw err
+            throw err;
           }
         }
       } catch (err) {
-        console.error('Google signup error:', err)
-        let errorMessage = 'Google login failed'
-        const error = err?.response?.data?.error
+        console.error('Google signup error:', err);
+        let errorMessage = 'Google login failed';
+        const error = err?.response?.data?.error;
         if (error) {
-          if (error === 'phone_already_used') errorMessage = 'This phone number is already in use'
-          else if (error === 'user_already_exists') errorMessage = 'An account with this email or phone already exists'
-          else errorMessage = error
+          if (error === 'phone_already_used') errorMessage = 'This phone number is already in use';
+          else if (error === 'user_already_exists') errorMessage = 'An account with this email or phone already exists';
+          else if (error === 'invalid_phone') errorMessage = 'Please enter a valid 10-digit phone number';
+          else errorMessage = error;
         }
-        notify(errorMessage, 'error')
+        notify(errorMessage, 'error');
       } finally {
-        setGoogleLoading(false)
+        setGoogleLoading(false);
       }
     },
     onError: () => {
-      notify('Google login failed', 'error')
+      notify('Google login failed', 'error');
     },
-  })
+  });
 
   const handleGooglePhoneSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     try {
       const { data } = await api.post('/api/auth/customer/google/signup', { 
         email: formData.email,
         name: formData.name,
         phone: formData.phone 
-      })
-      setAuth(data.token, { ...data.user, role: 'customer' })
+      });
+      setAuth(data.token, { ...data.user, role: 'customer' });
       try { await refreshProfile() } catch {}
-      sessionStorage.removeItem('login_redirect')
-      notify('Account created successfully!', 'success')
-      navigate(from)
+      sessionStorage.removeItem('login_redirect');
+      notify('Account created successfully!', 'success');
+      navigate(from);
     } catch (err) {
-      let errorMessage = 'Failed to create account'
-      const error = err?.response?.data?.error
+      let errorMessage = 'Failed to create account';
+      const error = err?.response?.data?.error;
       if (error) {
-        if (error === 'phone_already_used') errorMessage = 'This phone number is already registered'
-        else if (error === 'user_already_exists') errorMessage = 'Account already exists'
-        else if (error === 'missing_fields') errorMessage = 'Please fill all required fields'
-        else errorMessage = error
+        if (error === 'phone_already_used') errorMessage = 'This phone number is already registered';
+        else if (error === 'user_already_exists') errorMessage = 'Account already exists';
+        else if (error === 'missing_fields') errorMessage = 'Please fill all required fields';
+        else if (error === 'invalid_phone') errorMessage = 'Please enter a valid 10-digit phone number';
+        else errorMessage = error;
       }
-      notify(errorMessage, 'error')
+      notify(errorMessage, 'error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSendOTP = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     try {
-      await api.post('/api/auth/customer/signup', formData)
-      notify('OTP sent to your email', 'success')
-      setStep(2)
+      await api.post('/api/auth/customer/signup', formData);
+      notify('OTP sent to your email', 'success');
+      setStep(2);
     } catch (err) {
-      let errorMessage = 'Failed to send OTP'
-      const error = err?.response?.data?.error
+      let errorMessage = 'Failed to send OTP';
+      const error = err?.response?.data?.error;
       if (error) {
-        if (error === 'user_already_exists') errorMessage = 'Account already exists with this email or phone'
-        else if (error === 'invalid_email_format') errorMessage = 'Please enter a valid email address'
-        else if (error === 'missing_fields') errorMessage = 'Please fill all required fields'
-        else errorMessage = error
+        if (error === 'user_already_exists') errorMessage = 'Account already exists with this email or phone';
+        else if (error === 'invalid_email_format') errorMessage = 'Please enter a valid email address';
+        else if (error === 'invalid_phone') errorMessage = 'Please enter a valid 10-digit phone number';
+        else if (error === 'missing_fields') errorMessage = 'Please fill all required fields';
+        else errorMessage = error;
       }
-      notify(errorMessage, 'error')
+      notify(errorMessage, 'error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleVerifyOTP = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
     try {
       const { data } = await api.post('/api/auth/customer/verify-otp', {
         email: formData.email,
         otp
-      })
-      setAuth(data.token, { ...data.user, role: 'customer' })
+      });
+      setAuth(data.token, { ...data.user, role: 'customer' });
       try { await refreshProfile() } catch {}
-      sessionStorage.removeItem('login_redirect')
-      notify('Account created successfully!', 'success')
-      navigate(from)
+      sessionStorage.removeItem('login_redirect');
+      notify('Account created successfully!', 'success');
+      navigate(from);
     } catch (err) {
-      let errorMessage = 'Invalid OTP'
-      const error = err?.response?.data?.error
+      let errorMessage = 'Invalid OTP';
+      const error = err?.response?.data?.error;
       if (error) {
-        if (error === 'invalid_otp') errorMessage = 'The OTP you entered is invalid'
-        else if (error === 'missing_fields') errorMessage = 'Please enter the OTP'
-        else errorMessage = error
+        if (error === 'invalid_otp') errorMessage = 'The OTP you entered is invalid';
+        else if (error === 'missing_fields') errorMessage = 'Please enter the OTP';
+        else errorMessage = error;
       }
-      notify(errorMessage, 'error')
+      notify(errorMessage, 'error');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleChange = (e) => {
     if (e.target.name === 'phone') {
-      const digitsOnly = e.target.value.replace(/\D/g, '')
-      const limited = digitsOnly.slice(0, 10)
-      setFormData({ ...formData, [e.target.name]: limited })
+      const digitsOnly = e.target.value.replace(/\D/g, '');
+      const limited = digitsOnly.slice(0, 10);
+      setFormData({ ...formData, [e.target.name]: limited });
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value })
+      setFormData({ ...formData, [e.target.name]: e.target.value });
     }
-  }
+  };
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-50 to-blue-50">
@@ -190,7 +193,7 @@ export default function Signup() {
               ? 'Enter your phone number to complete your account' 
               : (step === 1 
                 ? 'Join thousands of customers shopping with SmartOdisha' 
-                : `We've sent a 6-digit code to ${formData.email}`)}
+                : 'We have sent a 6-digit code to ' + formData.email)}
           </p>
         </div>
 
@@ -297,7 +300,7 @@ export default function Signup() {
         )}
 
         {step === 'phone' && (
-          <form className="mt-8 space-y-6" onSubmit={handleGooglePhoneSubmit">
+          <form className="mt-8 space-y-6" onSubmit={handleGooglePhoneSubmit}>
             <div className="group">
               <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Phone Number</label>
               <input
@@ -368,5 +371,5 @@ export default function Signup() {
         )}
       </div>
     </div>
-  )
+  );
 }
