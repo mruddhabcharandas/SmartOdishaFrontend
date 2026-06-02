@@ -585,13 +585,13 @@ export default function Home() {
             </p>
             <div className="hero-cta">
               <Link to="/products" className="btn-primary">
-                Explore Products
+                Shop Now
                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
-              <Link to="/products" className="btn-secondary">
-                Browse All
+              <Link to="/about" className="btn-secondary">
+                Learn More
               </Link>
             </div>
           </div>

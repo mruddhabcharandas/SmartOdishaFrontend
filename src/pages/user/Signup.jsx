@@ -23,7 +23,7 @@ export default function Signup() {
 
   const googleData = location.state?.googleData
 
-  const [step, setStep] = useState(googleData ? 'phone' : 1) // 1: Details, 2: OTP, 'phone': google signup phone step
+  const [step, setStep] = useState(googleData ? 'phone' : 1)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -38,7 +38,6 @@ export default function Signup() {
     onSuccess: async (response) => {
       setGoogleLoading(true)
       try {
-        // Get user info from Google using the access token
         const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: {
             Authorization: `Bearer ${response.access_token}`
@@ -71,7 +70,14 @@ export default function Signup() {
         }
       } catch (err) {
         console.error('Google signup error:', err)
-        notify(err?.response?.data?.error || 'Google login failed', 'error')
+        let errorMessage = 'Google login failed'
+        const error = err?.response?.data?.error
+        if (error) {
+          if (error === 'phone_already_used') errorMessage = 'This phone number is already in use'
+          else if (error === 'user_already_exists') errorMessage = 'An account with this email or phone already exists'
+          else errorMessage = error
+        }
+        notify(errorMessage, 'error')
       } finally {
         setGoogleLoading(false)
       }
@@ -96,7 +102,15 @@ export default function Signup() {
       notify('Account created successfully!', 'success')
       navigate(from)
     } catch (err) {
-      notify(err?.response?.data?.error || 'Failed to create account', 'error')
+      let errorMessage = 'Failed to create account'
+      const error = err?.response?.data?.error
+      if (error) {
+        if (error === 'phone_already_used') errorMessage = 'This phone number is already registered'
+        else if (error === 'user_already_exists') errorMessage = 'Account already exists'
+        else if (error === 'missing_fields') errorMessage = 'Please fill all required fields'
+        else errorMessage = error
+      }
+      notify(errorMessage, 'error')
     } finally {
       setLoading(false)
     }
@@ -110,7 +124,15 @@ export default function Signup() {
       notify('OTP sent to your email', 'success')
       setStep(2)
     } catch (err) {
-      notify(err?.response?.data?.error || 'Failed to send OTP', 'error')
+      let errorMessage = 'Failed to send OTP'
+      const error = err?.response?.data?.error
+      if (error) {
+        if (error === 'user_already_exists') errorMessage = 'Account already exists with this email or phone'
+        else if (error === 'invalid_email_format') errorMessage = 'Please enter a valid email address'
+        else if (error === 'missing_fields') errorMessage = 'Please fill all required fields'
+        else errorMessage = error
+      }
+      notify(errorMessage, 'error')
     } finally {
       setLoading(false)
     }
@@ -130,31 +152,44 @@ export default function Signup() {
       notify('Account created successfully!', 'success')
       navigate(from)
     } catch (err) {
-      notify(err?.response?.data?.error || 'Invalid OTP', 'error')
+      let errorMessage = 'Invalid OTP'
+      const error = err?.response?.data?.error
+      if (error) {
+        if (error === 'invalid_otp') errorMessage = 'The OTP you entered is invalid'
+        else if (error === 'missing_fields') errorMessage = 'Please enter the OTP'
+        else errorMessage = error
+      }
+      notify(errorMessage, 'error')
     } finally {
       setLoading(false)
     }
   }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    if (e.target.name === 'phone') {
+      const digitsOnly = e.target.value.replace(/\D/g, '')
+      const limited = digitsOnly.slice(0, 10)
+      setFormData({ ...formData, [e.target.name]: limited })
+    } else {
+      setFormData({ ...formData, [e.target.name]: e.target.value })
+    }
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 bg-gray-50">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[2.5rem] shadow-xl border border-blue-100 animate-in fade-in zoom-in-95 duration-500">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 bg-gradient-to-br from-slate-50 to-blue-50">
+      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[32px] shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-500">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center h-20 w-20 rounded-3xl bg-gradient-to-br from-blue-50 to-orange-50 overflow-hidden mb-4">
+          <div className="inline-flex items-center justify-center h-24 w-24 rounded-[28px] bg-gradient-to-br from-blue-50 to-indigo-50 overflow-hidden mb-4 shadow-lg shadow-blue-100">
             <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
           </div>
-          <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-            {step === 'phone' ? 'Complete Your Account' : (step === 1 ? 'Create Account' : 'Verify Email')}
+          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+            {step === 'phone' ? 'One Step Away' : (step === 1 ? 'Create Account' : 'Verify Email')}
           </h2>
-          <p className="text-sm text-gray-500 font-medium">
+          <p className="text-base text-slate-500 font-medium">
             {step === 'phone' 
-              ? 'Please provide your phone number to complete signup' 
+              ? 'Enter your phone number to complete your account' 
               : (step === 1 
-                ? 'Join thousands of customers shopping with SmartOdisha.' 
+                ? 'Join thousands of customers shopping with SmartOdisha' 
                 : `We've sent a 6-digit code to ${formData.email}`)}
           </p>
         </div>
@@ -165,10 +200,10 @@ export default function Signup() {
               type="button"
               onClick={handleGoogleSignup}
               disabled={googleLoading}
-              className="w-full flex items-center justify-center gap-3 py-4 rounded-3xl border-2 border-blue-100 bg-white hover:bg-gradient-to-br from-blue-50 to-orange-50 transition-all text-sm font-bold text-gray-700 disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-3 py-4 rounded-[24px] border-2 border-slate-200 bg-white hover:bg-gradient-to-br from-blue-50 to-indigo-50 transition-all text-sm font-semibold text-slate-700 hover:text-slate-900 disabled:opacity-50 shadow-sm"
             >
               {googleLoading ? (
-                <div className="w-5 h-5 border-2 border-gray-700 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-5 h-5 border-2 border-slate-700 border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -182,59 +217,60 @@ export default function Signup() {
 
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-blue-100"></div>
+                <div className="w-full border-t border-slate-200"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-[10px] font-black uppercase tracking-widest text-gray-400">Or continue with</span>
+                <span className="px-4 bg-white text-[11px] font-bold uppercase tracking-widest text-slate-400">Or continue with</span>
               </div>
             </div>
 
             <form className="space-y-5" onSubmit={handleSendOTP}>
               <div className="space-y-4">
                 <div className="group">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block">Full Name</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Full Name</label>
                   <input
                     name="name"
                     type="text"
                     required
-                    className="w-full bg-gradient-to-br from-blue-50 to-orange-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-4 text-base font-medium text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     placeholder="Uddhab Das"
                     value={formData.name}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="group">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block">Email Address</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Email Address</label>
                   <input
                     name="email"
                     type="email"
                     required
-                    className="w-full bg-gradient-to-br from-blue-50 to-orange-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-4 text-base font-medium text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     placeholder="support@smartodisha.in"
                     value={formData.email}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="group">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block">Phone Number</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Phone Number</label>
                   <input
                     name="phone"
                     type="tel"
                     required
-                    className="w-full bg-gradient-to-br from-blue-50 to-orange-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                    placeholder="+91 98270 58262"
+                    maxLength={10}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-4 text-base font-medium text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                    placeholder="9827058262"
                     value={formData.phone}
                     onChange={handleChange}
                   />
                 </div>
                 <div className="group">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block">Create Password</label>
+                  <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Create Password</label>
                   <PasswordInput
                     name="password"
                     required
                     minLength={6}
                     autoComplete="new-password"
-                    inputClassName="w-full bg-gradient-to-br from-blue-50 to-orange-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    inputClassName="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-4 text-base font-medium text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={handleChange}
@@ -245,14 +281,14 @@ export default function Signup() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-orange-500 text-white py-5 rounded-3xl text-sm font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 disabled:opacity-50"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 rounded-[28px] text-sm font-bold uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50"
               >
                 {loading ? 'Sending OTP...' : 'Send Verification Code'}
               </button>
 
-              <p className="text-center text-xs text-gray-400 font-bold mt-6 uppercase tracking-widest">
+              <p className="text-center text-sm text-slate-500 font-medium mt-6">
                 Already have an account?{' '}
-                <Link to="/login" state={{ from }} className="text-blue-700 hover:text-orange-600">
+                <Link to="/login" state={{ from }} className="text-blue-700 hover:text-indigo-700 font-semibold">
                   Login
                 </Link>
               </p>
@@ -261,35 +297,16 @@ export default function Signup() {
         )}
 
         {step === 'phone' && (
-          <form className="mt-8 space-y-5" onSubmit={handleGooglePhoneSubmit}>
+          <form className="mt-8 space-y-6" onSubmit={handleGooglePhoneSubmit">
             <div className="group">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block">Full Name</label>
-              <input
-                name="name"
-                type="text"
-                disabled
-                className="w-full bg-gray-100 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-500 placeholder-gray-400 outline-none"
-                value={formData.name}
-              />
-            </div>
-            <div className="group">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block">Email Address</label>
-              <input
-                name="email"
-                type="email"
-                disabled
-                className="w-full bg-gray-100 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-500 placeholder-gray-400 outline-none"
-                value={formData.email}
-              />
-            </div>
-            <div className="group">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block">Phone Number</label>
+              <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Phone Number</label>
               <input
                 name="phone"
                 type="tel"
                 required
-                className="w-full bg-gradient-to-br from-blue-50 to-orange-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                placeholder="+91 98270 58262"
+                maxLength={10}
+                className="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-4 text-base font-medium text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                placeholder="9827058262"
                 value={formData.phone}
                 onChange={handleChange}
               />
@@ -297,8 +314,8 @@ export default function Signup() {
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-orange-500 text-white py-5 rounded-3xl text-sm font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 disabled:opacity-50"
+              disabled={loading || formData.phone.length < 10}
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 rounded-[28px] text-sm font-bold uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50"
             >
               {loading ? 'Creating Account...' : 'Complete Signup'}
             </button>
@@ -307,7 +324,7 @@ export default function Signup() {
               <button 
                 type="button"
                 onClick={() => { setStep(1); }}
-                className="text-xs text-gray-400 font-bold uppercase tracking-widest hover:text-gray-600"
+                className="text-sm text-slate-500 font-medium hover:text-slate-700"
               >
                 Back to signup options
               </button>
@@ -318,12 +335,12 @@ export default function Signup() {
         {step === 2 && (
           <form className="mt-8 space-y-6" onSubmit={handleVerifyOTP}>
             <div className="group text-center">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4 block">Enter 6-Digit OTP</label>
+              <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 mb-4 block">Enter 6-Digit OTP</label>
               <input
                 type="text"
                 required
                 maxLength="6"
-                className="w-full bg-gradient-to-br from-blue-50 to-orange-50 border-none rounded-2xl px-5 py-6 text-3xl font-black text-center text-gray-900 tracking-[0.5em] placeholder-gray-300 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-6 text-4xl font-bold text-center text-slate-900 tracking-[0.5em] placeholder-slate-300 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 placeholder="000000"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
@@ -333,7 +350,7 @@ export default function Signup() {
             <button
               type="submit"
               disabled={loading || otp.length < 6}
-              className="w-full bg-gradient-to-r from-blue-600 to-orange-500 text-white py-5 rounded-3xl text-sm font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 rounded-[28px] text-sm font-bold uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50"
             >
               {loading ? 'Verifying...' : 'Complete Registration'}
             </button>
@@ -342,7 +359,7 @@ export default function Signup() {
               <button 
                 type="button"
                 onClick={() => setStep(1)}
-                className="text-xs text-gray-400 font-bold uppercase tracking-widest hover:text-gray-600"
+                className="text-sm text-slate-500 font-medium hover:text-slate-700"
               >
                 Change Details
               </button>
