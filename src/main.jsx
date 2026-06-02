@@ -1,6 +1,7 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import App from './App.jsx'
 import ToastProvider from './components/Toast.jsx'
 import { CartProvider } from './lib/CartContext.jsx'
@@ -29,22 +30,24 @@ const persister = createSyncStoragePersister({
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{ persister }}
-    >
-      <ToastProvider>
-        <AuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <BrowserRouter>
-                <App />
-              </BrowserRouter>
-            </WishlistProvider>
-          </CartProvider>
-        </AuthProvider>
-      </ToastProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </PersistQueryClientProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={{ persister }}
+      >
+        <ToastProvider>
+          <AuthProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <BrowserRouter>
+                  <App />
+                </BrowserRouter>
+              </WishlistProvider>
+            </CartProvider>
+          </AuthProvider>
+        </ToastProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </PersistQueryClientProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>
 )

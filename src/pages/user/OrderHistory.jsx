@@ -4,6 +4,7 @@ import api from '../../lib/api'
 import { getCloudinaryUrl } from '../../lib/cloudinary'
 import { useAuth } from '../../lib/AuthContext'
 import { useToast } from '../../components/Toast'
+import LoadingSpinner from '../../components/LoadingSpinner'
 
 const REVIEWED_PIDS_KEY = 'c2k_reviewed_product_ids'
 
@@ -94,27 +95,9 @@ export default function OrderHistory() {
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;700&display=swap');
         .oh-load-root { font-family:'DM Sans',sans-serif; background:#f0f9ff; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; position:relative; overflow:hidden; }
         .oh-load-root::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle at 2px 2px, rgba(124,58,237,.05) 1px, transparent 0); background-size:32px 32px; }
-        
-        .oh-load-box { position:relative; width:100px; height:100px; display:flex; align-items:center; justify-content:center; z-index:1; }
-        .oh-load-circle { position:absolute; inset:0; border:2px dashed rgba(124,58,237,.2); border-radius:50%; animation:ohRotate 8s linear infinite; }
-        .oh-load-inner { width:60px; height:60px; background:white; border-radius:20px; box-shadow:0 10px 30px rgba(124,58,237,.15); display:flex; align-items:center; justify-content:center; font-size:28px; border:1px solid rgba(124,58,237,.1); animation:ohFloat 2s ease-in-out infinite; }
-        
-        .oh-load-txt-wrap { text-align:center; z-index:1; }
-        .oh-load-h { font-family:'Bebas Neue',sans-serif; font-size:24px; color:#1e1b2e; letter-spacing:.05em; margin-bottom:4px; }
-        .oh-load-p { font-size:10px; font-weight:800; color:#f97316; text-transform:uppercase; letter-spacing:.2em; opacity:.6; }
-        
-        @keyframes ohRotate { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
-        @keyframes ohFloat { 0%, 100% { transform:translateY(0) rotate(0deg); } 50% { transform:translateY(-10px) rotate(5deg); } }
       `}</style>
       <div className="oh-load-root">
-        <div className="oh-load-box">
-          <div className="oh-load-circle" />
-          <div className="oh-load-inner">📜</div>
-        </div>
-        <div className="oh-load-txt-wrap">
-          <h2 className="oh-load-h">Order History</h2>
-          <p className="oh-load-p">Retrieving your purchases…</p>
-        </div>
+        <LoadingSpinner text="Retrieving your orders..." />
       </div>
     </>
   )

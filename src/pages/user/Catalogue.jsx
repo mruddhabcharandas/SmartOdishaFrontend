@@ -7,6 +7,7 @@ import { useCart } from '../../lib/CartContext'
 import { useAuth } from '../../lib/AuthContext'
 import { setSEO } from '../../shared/lib/seo.js'
 import ProductCard from '../../components/ProductCard'
+import LoadingSpinner from '../../components/LoadingSpinner'
 
 function SuggestList({ items, setQ }) {
   const navigate = useNavigate()
@@ -166,12 +167,8 @@ export default function Catalogue() {
   }
 
   if (loadingProducts && items.length === 0) return (
-    <div className="ct-loading">
-      <div className="ct-loading-grid">
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="ct-loading-card"></div>
-        ))}
-      </div>
+    <div className="ct-loading flex items-center justify-center min-h-screen">
+      <LoadingSpinner text="Loading products..." />
     </div>
   )
 

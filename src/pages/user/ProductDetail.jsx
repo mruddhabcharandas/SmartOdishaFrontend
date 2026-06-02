@@ -9,6 +9,7 @@ import { setSEO, injectJsonLd } from '../../shared/lib/seo.js';
 import { useToast } from '../../components/Toast';
 import RecommendationModal from '../../components/RecommendationModal';
 import ProductCard from '../../components/ProductCard';
+import LoadingSpinner from '../../components/LoadingSpinner';
 import { useAuth } from '../../lib/AuthContext';
 
 function sortVariantValues(lowKey, values) {
@@ -514,29 +515,8 @@ export default function ProductDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 py-4 px-3 sm:py-6 sm:px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-            <div className="space-y-3 sm:space-y-4">
-              <div className="aspect-square bg-white/5 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-xl animate-pulse border border-white/10"></div>
-              <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2">
-                {[1, 2, 3, 4].map(i => (
-                  <div key={i} className="w-14 h-14 sm:w-16 sm:h-16 bg-white/5 backdrop-blur-xl rounded-xl sm:rounded-2xl shadow-lg animate-pulse border border-white/10 flex-shrink-0"></div>
-                ))}
-              </div>
-            </div>
-            <div className="space-y-4 sm:space-y-6">
-              <div className="h-7 sm:h-8 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-3/4 animate-pulse border border-white/10"></div>
-              <div className="h-5 sm:h-6 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-1/2 animate-pulse border border-white/10"></div>
-              <div className="h-9 sm:h-10 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-1/3 animate-pulse border border-white/10"></div>
-              <div className="space-y-2 sm:space-y-3">
-                {[1, 2, 3, 4, 5].map(i => (
-                  <div key={i} className="h-4 bg-white/5 backdrop-blur-xl rounded-xl shadow-lg w-full animate-pulse border border-white/10"></div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 flex items-center justify-center py-8 px-3 sm:py-12 sm:px-4">
+        <LoadingSpinner text="Fetching product details..." />
       </div>
     );
   }
