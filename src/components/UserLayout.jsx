@@ -167,14 +167,6 @@ export default function UserLayout() {
       </header>
 
       <main className="flex-1 min-h-0 pb-36 lg:pb-8 animate-in fade-in duration-700">
-        {user && user.isKycComplete === false && (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-10 mt-4">
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 text-amber-800 px-4 py-3 text-[12px] font-bold flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-              <div>Complete your KYC to place orders.</div>
-              <Link to="/profile" className="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-[10px] uppercase tracking-widest">Update KYC</Link>
-            </div>
-          </div>
-        )}
         <Outlet />
       </main>
 

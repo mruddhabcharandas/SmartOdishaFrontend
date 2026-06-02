@@ -15,7 +15,6 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [locLoading, setLocLoading] = useState(false);
-  const [userData, setUserData] = useState(null);
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -27,7 +26,6 @@ export default function Profile() {
     pincode: '',
   });
 
-  // Indian states for dropdown
   const INDIAN_STATES = [
     "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
     "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
@@ -50,7 +48,6 @@ export default function Profile() {
   const loadProfile = async () => {
     try {
       const { data } = await api.get('/api/user/me');
-      setUserData(data);
       const kyc = data.kyc || {};
       setFormData({
         fullName: kyc.fullName || data.name || '',
@@ -164,7 +161,7 @@ export default function Profile() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <LoadingSpinner text="Loading your profile..." />
     </div>
   );
@@ -178,29 +175,28 @@ export default function Profile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent mb-2">
-            My Account
+          <h1 className="text-3xl md:text-4xl font-black mb-2">
+            <span className="text-blue-700">MY</span>
+            <span className="text-orange-500"> ACCOUNT</span>
           </h1>
-          <p className="text-slate-600">
-            Welcome back, {user?.name || 'User'}! Manage your account and preferences here.
+          <p className="text-gray-600 font-semibold">
+            Welcome back, {user?.name || 'User'}! Manage your account details here.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-3xl shadow-2xl overflow-hidden sticky top-8 border border-white/50">
-              <div className="p-6 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white">
+            <div className="bg-white rounded-3xl shadow-xl overflow-hidden sticky top-8 border border-gray-100">
+              <div className="p-6 bg-gradient-to-br from-blue-700 to-blue-600 text-white">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl font-bold shadow-lg">
                     {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                   <div>
-                    <p className="font-semibold text-lg">{user?.name || 'User'}</p>
+                    <p className="font-bold text-lg">{user?.name || 'User'}</p>
                     <p className="text-white/80 text-sm">{user?.email}</p>
                   </div>
                 </div>
@@ -213,51 +209,49 @@ export default function Profile() {
                     onClick={() => setActiveTab(item.id)}
                     className={`w-full text-left px-4 py-4 rounded-2xl mb-2 flex items-center gap-3 transition-all duration-300 ${
                       activeTab === item.id
-                        ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white shadow-xl shadow-purple-200'
-                        : 'text-slate-700 hover:bg-gradient-to-r from-slate-50 to-purple-50 hover:text-purple-700'
+                        ? 'bg-gradient-to-r from-blue-700 to-blue-600 text-white shadow-xl shadow-blue-200'
+                        : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700'
                     }`}
                   >
                     <span className="text-xl">{item.icon}</span>
-                    <span className="font-semibold">{item.label}</span>
+                    <span className="font-bold">{item.label}</span>
                   </button>
                 ))}
 
-                <div className="border-t border-slate-100 my-4 pt-4">
+                <div className="border-t border-gray-100 my-4 pt-4">
                   <button
                     onClick={() => {
                       localStorage.removeItem('token');
                       localStorage.removeItem('user');
                       navigate('/');
                     }}
-                    className="w-full text-left px-4 py-4 rounded-2xl flex items-center gap-3 text-red-600 hover:bg-gradient-to-r from-red-50 to-orange-50 transition-all"
+                    className="w-full text-left px-4 py-4 rounded-2xl flex items-center gap-3 text-red-600 hover:bg-red-50 transition-all"
                   >
                     <span className="text-xl">🚪</span>
-                    <span className="font-semibold">Logout</span>
+                    <span className="font-bold">Logout</span>
                   </button>
                 </div>
               </nav>
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="lg:col-span-3 space-y-6">
-            {/* Personal Information */}
             {activeTab === 'personal' && (
-              <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-white/50">
-                <div className="p-6 border-b border-slate-100 bg-gradient-to-r from-white to-slate-50">
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-blue-50">
                   <div className="flex items-center justify-between flex-wrap gap-4">
                     <div>
-                      <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent flex items-center gap-3">
+                      <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
                         <span>👤</span> Personal Information
                       </h2>
-                      <p className="text-slate-600 mt-1">Update your personal details here</p>
+                      <p className="text-gray-600 mt-1 font-semibold">Update your personal details here</p>
                     </div>
                     
                     <button
                       type="button"
                       onClick={detectLocation}
                       disabled={locLoading}
-                      className="group relative overflow-hidden flex items-center gap-3 bg-gradient-to-r from-slate-900 to-purple-900 text-white px-6 py-3 rounded-2xl font-bold uppercase tracking-widest transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 shadow-xl"
+                      className="group relative overflow-hidden flex items-center gap-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-2xl font-black uppercase tracking-widest transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 shadow-xl"
                     >
                       <span className="relative z-10 flex items-center gap-2">
                         {locLoading ? (
@@ -267,7 +261,6 @@ export default function Profile() {
                         )}
                         Auto Fill Address
                       </span>
-                      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </button>
                   </div>
                 </div>
@@ -276,7 +269,7 @@ export default function Profile() {
                   <form onSubmit={handleSaveProfile} className="space-y-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-3">
-                        <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <label className="text-sm font-black text-gray-800 flex items-center gap-2">
                           Full Name <span className="text-orange-500 text-lg">*</span>
                         </label>
                         <input
@@ -284,13 +277,13 @@ export default function Profile() {
                           name="fullName"
                           value={formData.fullName}
                           onChange={handleInputChange}
-                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 focus:outline-none transition-all duration-300 bg-slate-50/50 text-slate-800"
+                          className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-gray-50/50 text-gray-800 font-semibold"
                           placeholder="Enter your full name"
                         />
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <label className="text-sm font-black text-gray-800 flex items-center gap-2">
                           Email Address
                         </label>
                         <input
@@ -298,12 +291,12 @@ export default function Profile() {
                           name="email"
                           value={formData.email}
                           disabled
-                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl bg-slate-100 text-slate-500 cursor-not-allowed"
+                          className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl bg-gray-100 text-gray-500 cursor-not-allowed font-semibold"
                         />
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <label className="text-sm font-black text-gray-800 flex items-center gap-2">
                           Phone Number
                         </label>
                         <input
@@ -311,12 +304,12 @@ export default function Profile() {
                           name="phone"
                           value={formData.phone}
                           disabled
-                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl bg-slate-100 text-slate-500 cursor-not-allowed"
+                          className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl bg-gray-100 text-gray-500 cursor-not-allowed font-semibold"
                         />
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <label className="text-sm font-black text-gray-800 flex items-center gap-2">
                           Pincode <span className="text-orange-500 text-lg">*</span>
                         </label>
                         <input
@@ -324,20 +317,20 @@ export default function Profile() {
                           name="pincode"
                           value={formData.pincode}
                           onChange={handleInputChange}
-                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 focus:outline-none transition-all duration-300 bg-slate-50/50 text-slate-800"
+                          className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-gray-50/50 text-gray-800 font-semibold"
                           placeholder="Enter 6-digit pincode"
                         />
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <label className="text-sm font-black text-gray-800 flex items-center gap-2">
                           State <span className="text-orange-500 text-lg">*</span>
                         </label>
                         <select
                           name="state"
                           value={formData.state}
                           onChange={handleInputChange}
-                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 focus:outline-none transition-all duration-300 bg-slate-50/50 text-slate-800"
+                          className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-gray-50/50 text-gray-800 font-semibold"
                         >
                           <option value="">Select State</option>
                           {INDIAN_STATES.map((state) => (
@@ -347,7 +340,7 @@ export default function Profile() {
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        <label className="text-sm font-black text-gray-800 flex items-center gap-2">
                           City <span className="text-orange-500 text-lg">*</span>
                         </label>
                         <input
@@ -355,14 +348,14 @@ export default function Profile() {
                           name="city"
                           value={formData.city}
                           onChange={handleInputChange}
-                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 focus:outline-none transition-all duration-300 bg-slate-50/50 text-slate-800"
+                          className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-gray-50/50 text-gray-800 font-semibold"
                           placeholder="Enter your city"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-3">
-                      <label className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                      <label className="text-sm font-black text-gray-800 flex items-center gap-2">
                         Address Line 1 <span className="text-orange-500 text-lg">*</span>
                       </label>
                       <input
@@ -370,13 +363,13 @@ export default function Profile() {
                         name="addressLine1"
                         value={formData.addressLine1}
                         onChange={handleInputChange}
-                        className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 focus:outline-none transition-all duration-300 bg-slate-50/50 text-slate-800"
+                        className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-gray-50/50 text-gray-800 font-semibold"
                         placeholder="House number, street name, etc."
                       />
                     </div>
 
                     <div className="space-y-3">
-                      <label className="text-sm font-bold text-slate-800">
+                      <label className="text-sm font-black text-gray-800">
                         Address Line 2 (Optional)
                       </label>
                       <input
@@ -384,16 +377,16 @@ export default function Profile() {
                         name="addressLine2"
                         value={formData.addressLine2}
                         onChange={handleInputChange}
-                        className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-purple-500 focus:ring-4 focus:ring-purple-100 focus:outline-none transition-all duration-300 bg-slate-50/50 text-slate-800"
+                        className="w-full px-5 py-4 border-2 border-gray-200 rounded-2xl focus:border-blue-600 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-gray-50/50 text-gray-800 font-semibold"
                         placeholder="Landmark, area, etc."
                       />
                     </div>
 
-                    <div className="pt-8 border-t border-slate-100 flex justify-end">
+                    <div className="pt-8 border-t border-gray-100 flex justify-end">
                       <button
                         type="submit"
                         disabled={saving}
-                        className="w-full md:w-auto px-12 py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white font-black text-lg rounded-2xl shadow-2xl shadow-purple-200 hover:shadow-purple-300 transform hover:-translate-y-2 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:scale-100"
+                        className="w-full md:w-auto px-12 py-5 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-black text-lg rounded-2xl shadow-xl shadow-orange-200 hover:shadow-orange-300 transform hover:-translate-y-2 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:scale-100"
                       >
                         {saving ? (
                           <span className="flex items-center gap-2">
@@ -401,10 +394,7 @@ export default function Profile() {
                             Saving...
                           </span>
                         ) : (
-                          <span className="flex items-center gap-2">
-                            <span>Save Changes</span>
-                            <span>✅</span>
-                          </span>
+                          'Save Changes'
                         )}
                       </button>
                     </div>
@@ -413,18 +403,17 @@ export default function Profile() {
               </div>
             )}
 
-            {/* My Orders */}
             {activeTab === 'orders' && (
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-gray-50">
-                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-blue-50">
+                  <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
                     <span>📦</span> My Orders
                   </h2>
                 </div>
-                <div className="p-6">
+                <div className="p-8">
                   <Link
                     to="/orders"
-                    className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-700 to-blue-600 text-white font-black text-lg rounded-2xl hover:shadow-xl transform hover:-translate-y-2 transition-all"
                   >
                     View All Orders →
                   </Link>
@@ -432,18 +421,17 @@ export default function Profile() {
               </div>
             )}
 
-            {/* My Wishlist */}
             {activeTab === 'wishlist' && (
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-gray-50">
-                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-blue-50">
+                  <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
                     <span>❤️</span> My Wishlist
                   </h2>
                 </div>
-                <div className="p-6">
+                <div className="p-8">
                   <Link
                     to="/wishlist"
-                    className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-700 to-blue-600 text-white font-black text-lg rounded-2xl hover:shadow-xl transform hover:-translate-y-2 transition-all"
                   >
                     View My Wishlist →
                   </Link>
@@ -451,43 +439,41 @@ export default function Profile() {
               </div>
             )}
 
-            {/* My Activity */}
             {activeTab === 'activity' && (
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-gray-50">
-                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-blue-50">
+                  <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
                     <span>📋</span> My Activity
                   </h2>
                 </div>
                 <div className="p-8 text-center">
                   <div className="text-6xl mb-4">📖</div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Your activity will appear here</h3>
-                  <p className="text-gray-600">Keep shopping to see your browsing history!</p>
+                  <h3 className="text-xl font-black text-gray-900 mb-2">Your activity will appear here</h3>
+                  <p className="text-gray-600 font-semibold">Keep shopping to see your browsing history!</p>
                 </div>
               </div>
             )}
 
-            {/* Account Settings */}
             {activeTab === 'settings' && (
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-gray-50">
-                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-white to-blue-50">
+                  <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
                     <span>⚙️</span> Account Settings
                   </h2>
                 </div>
                 <div className="p-8">
                   <div className="space-y-4">
-                    <div className="p-4 border-2 border-gray-100 rounded-xl hover:border-indigo-200 transition-all">
-                      <h3 className="font-semibold text-lg text-gray-900 mb-2">Password</h3>
-                      <p className="text-gray-600 mb-3">Change your password to keep your account secure</p>
-                      <button className="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">
+                    <div className="p-6 border-2 border-gray-100 rounded-2xl hover:border-blue-200 transition-all">
+                      <h3 className="font-black text-xl text-gray-900 mb-2">Password</h3>
+                      <p className="text-gray-600 mb-4 font-semibold">Change your password to keep your account secure</p>
+                      <button className="text-blue-700 font-black hover:text-blue-800 transition-colors">
                         Change Password →
                       </button>
                     </div>
-                    <div className="p-4 border-2 border-gray-100 rounded-xl hover:border-indigo-200 transition-all">
-                      <h3 className="font-semibold text-lg text-gray-900 mb-2">Notifications</h3>
-                      <p className="text-gray-600 mb-3">Manage your email and SMS notifications</p>
-                      <button className="text-indigo-600 font-semibold hover:text-indigo-800 transition-colors">
+                    <div className="p-6 border-2 border-gray-100 rounded-2xl hover:border-blue-200 transition-all">
+                      <h3 className="font-black text-xl text-gray-900 mb-2">Notifications</h3>
+                      <p className="text-gray-600 mb-4 font-semibold">Manage your email and SMS notifications</p>
+                      <button className="text-blue-700 font-black hover:text-blue-800 transition-colors">
                         Notification Settings →
                       </button>
                     </div>
