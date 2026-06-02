@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart, getStockStatus } from '../../lib/CartContext'
+import { useAuth } from '../../lib/AuthContext'
+import { useToast } from '../../components/Toast'
 import api from '../../lib/api'
 import { getCloudinaryUrl } from '../../lib/cloudinary'
 
 export default function Cart() {
   const { cart, removeFromCart, updateQuantity, cartTotal, addToCart } = useCart()
+  const { user, isAuthenticated } = useAuth()
+  const { notify } = useToast()
   const navigate = useNavigate()
   const [suggestions, setSuggestions] = useState([])
   const [couponCode, setCouponCode] = useState('')
@@ -13,6 +17,19 @@ export default function Cart() {
   const [couponError, setCouponError] = useState('')
   const [isApplying, setIsApplying] = useState(false)
   const minAmount = Number(import.meta.env.VITE_MIN_ORDER_AMOUNT || 5000)
+
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/cart' } })
+      return
+    }
+    if (!user?.isKycComplete) {
+      notify('Complete your KYC first to place an order!', 'error')
+      navigate('/profile')
+      return
+    }
+    navigate('/order', { state: { appliedCoupon } })
+  }
 
   /* ── price helpers ── */
   const getBulkTiers = (item) => {
@@ -743,7 +760,7 @@ export default function Cart() {
               <button
                 className={`ct-checkout-btn ${totalPayable >= minAmount ? 'ready' : 'disabled'}`}
                 disabled={totalPayable < minAmount || cart.every(item => (item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock)) <= 0)}
-                onClick={() => navigate('/order', { state: { appliedCoupon } })}
+                onClick={handleCheckout}
               >
                 {totalPayable < minAmount
                   ? `Need ₹${minLeft.toLocaleString()} more`
@@ -776,7 +793,7 @@ export default function Cart() {
           <button
             className={`ct-mobile-btn ${totalPayable >= minAmount && !cart.every(item => (item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock)) <= 0) ? '' : 'disabled'}`}
             disabled={totalPayable < minAmount || cart.every(item => (item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock)) <= 0)}
-            onClick={() => navigate('/order', { state: { appliedCoupon } })}
+            onClick={handleCheckout}
           >
             {totalPayable < minAmount ? `₹${minLeft.toLocaleString()} more needed` : 'Place Order →'}
           </button>

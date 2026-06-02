@@ -571,33 +571,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* User Greeting */}
-      {user && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8 pb-4">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-3xl p-6 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-md">
-                {user.name?.charAt(0)?.toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-extrabold text-slate-900">
-                  Welcome back, {user.name?.split(' ')[0] || 'User'}! 👋
-                </h3>
-                <p className="text-slate-600 font-medium mt-1">
-                  Ready to explore our latest products and deals?
-                </p>
-              </div>
-              <Link
-                to="/products"
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3 rounded-2xl font-bold shadow-md hover:shadow-lg transition-all hover:-translate-y-1"
-              >
-                Shop Now
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Hero */}
       <section className="hero">
         <div className="hero-inner">
