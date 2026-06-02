@@ -47,7 +47,7 @@ export function AuthProvider({ children }) {
         name: data.name,
         email: data.email,
         phone: data.phone,
-        defaultAddress: data.defaultAddress,
+        address: data.address,
         isKycComplete: !!data.isKycComplete,
         role: data.role || (data.phone ? 'customer' : 'admin')
       }

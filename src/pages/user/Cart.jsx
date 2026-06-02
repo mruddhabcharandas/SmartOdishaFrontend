@@ -23,11 +23,6 @@ export default function Cart() {
       navigate('/login', { state: { from: '/cart' } })
       return
     }
-    if (!user?.isKycComplete) {
-      notify('Complete your KYC first to place an order!', 'error')
-      navigate('/profile')
-      return
-    }
     navigate('/order', { state: { appliedCoupon } })
   }
 

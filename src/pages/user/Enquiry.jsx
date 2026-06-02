@@ -94,10 +94,9 @@ export default function Enquiry() {
     (async () => {
       try {
         const { data } = await api.get('/api/user/me')
-        if (!data.isKycComplete) { notify('Complete your KYC to place orders', 'error'); navigate('/profile'); return }
-        const prof = { name: data.name || '', phone: data.phone || '', email: data.email || '', kyc: data.kyc || {} }
+        const prof = { name: data.name || '', phone: data.phone || '', email: data.email || '', address: data.address || '', kyc: data.kyc || {} }
         setProfile(prof)
-        const pin = String(prof?.kyc?.pincode || '').trim()
+        const pin = String(prof.address?.split(',').pop() || prof.kyc?.pincode || '').trim()
         if (pin) loadServiceability(pin)
       } catch { navigate('/login') }
     })()
@@ -196,8 +195,8 @@ export default function Enquiry() {
     e.preventDefault()
     if (cartTotal < minAmount) { notify(`Minimum order amount is ₹${minAmount.toLocaleString()}`, 'error'); return }
     try {
-      const pin = String(profile?.kyc?.pincode || '').trim()
-      if (!pin) { notify('Please add delivery pincode in KYC', 'error'); navigate('/profile'); return }
+      const pin = String(profile.address?.split(',').pop() || profile.kyc?.pincode || '').trim()
+      if (!pin) { notify('Please add delivery address in your profile', 'error'); navigate('/profile'); return }
       const { data: svcData } = await api.get('/api/shipping/check-pincode', { params: { pincode: pin } })
       if (!svcData?.delivery_available) { notify('Delivery not available for your pincode', 'error'); return }
     } catch { notify('Unable to verify serviceability right now', 'error'); return }
@@ -282,16 +281,19 @@ export default function Enquiry() {
                 </div>
                 <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
                   <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">Pincode</div>
-                  <div className="text-lg font-semibold text-slate-900">{profile.kyc?.pincode}</div>
+                  <div className="text-lg font-semibold text-slate-900">
+                    {profile.address?.split(',').pop() || profile.kyc?.pincode || ''}
+                  </div>
                 </div>
               </div>
 
-              {profile.kyc && (
+              {(profile.address || profile.kyc?.addressLine1) && (
                 <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-100">
                   <h4 className="font-semibold text-slate-900 mb-3">Delivery Address</h4>
                   <p className="text-slate-700 leading-relaxed">
-                    {profile.kyc.addressLine1}{profile.kyc.addressLine2 ? `, ${profile.kyc.addressLine2}` : ''}<br />
-                    {profile.kyc.city}, {profile.kyc.district}, {profile.kyc.state} - {profile.kyc.pincode}
+                    {profile.address || 
+                     `${profile.kyc.addressLine1}${profile.kyc.addressLine2 ? `, ${profile.kyc.addressLine2}` : ''}<br />
+                      ${profile.kyc.city}, ${profile.kyc.district}, ${profile.kyc.state} - ${profile.kyc.pincode}`}
                   </p>
                 </div>
               )}
