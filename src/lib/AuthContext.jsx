@@ -48,6 +48,7 @@ export function AuthProvider({ children }) {
         email: data.email,
         phone: data.phone,
         address: data.address,
+        avatar: data.avatar || '',
         isKycComplete: !!data.isKycComplete,
         role: data.role || (data.phone ? 'customer' : 'admin')
       }
@@ -58,8 +59,10 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const isAuthenticated = !!token;
+  
   return (
-    <AuthContext.Provider value={{ token, user, setAuth, logout, refreshProfile }}>
+    <AuthContext.Provider value={{ token, user, isAuthenticated, setAuth, logout, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   )

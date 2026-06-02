@@ -47,7 +47,7 @@ export default function ProductDetail() {
   const { addToCart, refreshCart } = useCart();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { notify } = useToast();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   const { data: p, isLoading: loading, error: queryError } = useQuery({
     queryKey: ['product', idOrSlug, user?._id],
@@ -103,10 +103,11 @@ export default function ProductDetail() {
   const [lightbox, setLightbox] = useState(false);
   const [recOpen, setRecOpen] = useState(false);
   const [recItems, setRecItems] = useState([]);
-  const [deliveryDate, setDeliveryDate] = useState(null);
+  const [deliveryInfo, setDeliveryInfo] = useState(null);
   const [countdown, setCountdown] = useState({ h: 0, m: 0, s: 0 });
   const [hlSpecTab, setHlSpecTab] = useState('highlights');
   const [pincode, setPincode] = useState('');
+  const [checkingDelivery, setCheckingDelivery] = useState(false);
   const authed = !!localStorage.getItem('token');
 
   const variantAttrs = useMemo(() => {
@@ -230,13 +231,34 @@ export default function ProductDetail() {
     return () => clearInterval(t);
   }, []);
 
+  // Set initial pincode from user address
+  useEffect(() => {
+    if (user?.address) {
+      const pincodeMatch = user.address.match(/\b(\d{6})\b/);
+      if (pincodeMatch) {
+        setPincode(pincodeMatch[1]);
+        checkDeliveryImpl(pincodeMatch[1]);
+      }
+    }
+  }, [user?.address]);
+
+  const checkDeliveryImpl = async (code) => {
+    if (code.length !== 6) return;
+    setCheckingDelivery(true);
+    try {
+      const { data } = await api.get(`/api/shipping/serviceability?pincode=${code}`);
+      setDeliveryInfo(data);
+    } catch (err) {
+      console.error(err);
+      setDeliveryInfo({ serviceable: false, message: 'Unable to check delivery for this pincode' });
+    } finally {
+      setCheckingDelivery(false);
+    }
+  };
+
   const checkDelivery = (e) => {
     e?.preventDefault();
-    if (pincode.length !== 6) return;
-    const days = 2 + (Number(pincode[0]) % 4);
-    const d = new Date();
-    d.setDate(d.getDate() + days);
-    setDeliveryDate(d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', weekday: 'short' }));
+    checkDeliveryImpl(pincode);
   };
 
   useEffect(() => {
@@ -491,7 +513,7 @@ export default function ProductDetail() {
   const showSpecificationsBlock = hasSpecifications && (hlSpecTab === 'specs' || !hasHighlights);
 
   const handleAddToCart = async () => {
-    if (!authed) { navigate('/login', { state: { from: location.pathname + location.search } }); return; }
+    if (!isAuthenticated) { navigate('/login', { state: { from: location.pathname + location.search } }); return; }
     if (variantAttrs.length > 0 && !matchedVariant) {
       notify('Please select all options', 'error');
       return;
@@ -1940,10 +1962,10 @@ export default function ProductDetail() {
                   </svg>
                   <span style={{ fontSize: '10px', fontWeight: 800, color: '#64748b', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Check Delivery</span>
                 </div>
-                {deliveryDate && (
+                {deliveryInfo?.serviceable && deliveryInfo?.deliveryDays && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#059669', fontSize: '12px', fontWeight: 800 }}>
                     <span style={{ fontSize: '9px', color: '#64748b', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Ships</span>
-                    <span>{deliveryDate}</span>
+                    <span>{deliveryInfo.deliveryDays} days</span>
                   </div>
                 )}
               </div>
@@ -1957,10 +1979,42 @@ export default function ProductDetail() {
                   onChange={e => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder="Enter Pincode"
                 />
-                <button type="submit" className="pd-del-check" disabled={pincode.length !== 6}>
-                  Check
+                <button type="submit" className="pd-del-check" disabled={pincode.length !== 6 || checkingDelivery}>
+                  {checkingDelivery ? 'Checking...' : 'Check'}
                 </button>
               </form>
+              {deliveryInfo && (
+                <div style={{
+                  padding: '12px 16px',
+                  borderTop: '1px solid rgba(59, 130, 246, 0.1)',
+                  fontSize: '13px',
+                  color: deliveryInfo.serviceable ? '#059669' : '#dc2626',
+                  fontWeight: 700
+                }}>
+                  {deliveryInfo.serviceable ? (
+                    <div>
+                      <div style={{ marginBottom: '4px' }}>✓ Available for delivery</div>
+                      {deliveryInfo.deliveryCharge !== undefined && (
+                        <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600 }}>
+                          Delivery charge: {deliveryInfo.deliveryCharge === 0 ? 'Free' : `₹${deliveryInfo.deliveryCharge.toLocaleString()}`}
+                        </div>
+                      )}
+                      {deliveryInfo.codAvailable && (
+                        <div style={{ fontSize: '12px', color: '#3b82f6', fontWeight: 700, marginTop: '4px' }}>
+                          📦 Cash on Delivery available
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      ✗ Not available for delivery in this pincode
+                      {deliveryInfo.message && (
+                        <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 600, marginTop: '4px' }}>{deliveryInfo.message}</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* CTA Buttons */}
