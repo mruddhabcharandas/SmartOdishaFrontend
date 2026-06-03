@@ -25,7 +25,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [activeTab, setActiveTab] = useState('personal');
+  const [activeTab, setActiveTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -343,18 +343,18 @@ export default function Profile() {
   }
 
   const menuItems = [
-    { id: 'personal', label: 'Personal Information' },
-    { id: 'addresses', label: 'Saved Addresses' },
-    { id: 'orders', label: 'My Orders' },
-    { id: 'wishlist', label: 'My Wishlist' },
-    { id: 'activity', label: 'My Activity' },
-    { id: 'support', label: 'Support & Tickets' },
-    { id: 'settings', label: 'Account Settings' }
+    { id: 'personal', label: 'Personal Information', desc: 'Update your name, email, and phone number', icon: '👤' },
+    { id: 'addresses', label: 'Saved Addresses', desc: 'Manage your delivery and billing addresses', icon: '🏠' },
+    { id: 'orders', label: 'My Orders', desc: 'Track, cancel or reorder items', icon: '📦' },
+    { id: 'wishlist', label: 'My Wishlist', desc: 'View items saved to your wishlist', icon: '❤️' },
+    { id: 'activity', label: 'My Activity', desc: 'Check your search history and activity', icon: '⚡' },
+    { id: 'support', label: 'Support & Tickets', desc: 'Create and view your support requests', icon: '🎫' },
+    { id: 'settings', label: 'Account Settings', desc: 'Manage your password and security', icon: '⚙️' }
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50/30 to-slate-50/30 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto animate-fade-in-up">
         <div className="mb-10">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
             My Account
@@ -362,130 +362,72 @@ export default function Profile() {
           <p className="text-slate-600 text-lg">Manage your profile, orders, and preferences</p>
         </div>
 
-        {/* Mobile Tab Navigation */}
-        <div className="lg:hidden flex gap-2 overflow-x-auto pb-4 scrollbar-none mb-6">
-          {menuItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`px-5 py-3 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
-                activeTab === item.id
-                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-200'
-                  : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
-              }`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="hidden lg:block lg:col-span-1">
-            <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden sticky top-8">
-                <div className="p-8 border-b border-slate-200 bg-gradient-to-br from-blue-50 to-indigo-50">
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg overflow-hidden">
-                    {user?.avatar && (
-                      <img 
-                        src={getCloudinaryUrl(user.avatar)} 
-                        alt={user.name} 
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          const fallback = e.target.parentElement.querySelector('.avatar-fallback');
-                          if (fallback) fallback.style.display = 'flex';
-                        }}
-                      />
-                    )}
-                    <span 
-                      className="avatar-fallback"
-                      style={{ display: user?.avatar ? 'none' : 'flex' }}
-                    >
-                      {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-slate-900 text-lg leading-tight">{user?.name || 'User'}</p>
-                    <p className="text-slate-500 text-sm truncate">{user?.email}</p>
-                  </div>
+        {activeTab === 'dashboard' ? (
+          <div className="space-y-8">
+            {/* User Profile Header Card */}
+            <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-200 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-4xl shadow-xl overflow-hidden">
+                  {user?.avatar ? (
+                    <img 
+                      src={getCloudinaryUrl(user.avatar)} 
+                      alt={user.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
+                  )}
+                </div>
+                <div className="text-center md:text-left space-y-1">
+                  <h2 className="text-2xl font-black text-slate-900">{user?.name || 'User'}</h2>
+                  <p className="text-slate-500 font-semibold">{user?.email}</p>
+                  <p className="text-slate-500 font-medium">{user?.phone || 'No phone number added'}</p>
                 </div>
               </div>
-              
-              <nav className="p-4 space-y-2">
-                {menuItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveTab(item.id)}
-                    className={`w-full text-left px-5 py-4 rounded-2xl flex items-center gap-4 transition-all duration-300 group ${
-                      activeTab === item.id
-                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-200'
-                        : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700'
-                    }`}
-                  >
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                      activeTab === item.id ? 'bg-white/20' : 'bg-slate-100 group-hover:bg-blue-100'
-                    }`}>
-                      {item.id === 'personal' && (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                      )}
-                      {item.id === 'addresses' && (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                      )}
-                      {item.id === 'orders' && (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                        </svg>
-                      )}
-                      {item.id === 'wishlist' && (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      )}
-                      {item.id === 'activity' && (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                        </svg>
-                      )}
-                      {item.id === 'support' && (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      )}
-                      {item.id === 'settings' && (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31-2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                      )}
-                    </div>
-                    <span className="text-sm font-semibold">{item.label}</span>
-                  </button>
-                    ))}
+              <button
+                onClick={handleLogout}
+                className="px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-2xl transition-all duration-300 flex items-center gap-2 border border-red-100"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout Account
+              </button>
+            </div>
 
-                    <div className="border-t border-slate-200 my-4 pt-4">
-                  <button
-                    onClick={handleLogout}
-                    className="w-full text-left px-5 py-4 rounded-2xl flex items-center gap-4 text-red-600 hover:bg-red-50 transition-all duration-300 group"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-red-100 group-hover:bg-red-200 flex items-center justify-center transition-all duration-300">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                    </div>
-                    <span className="text-sm font-semibold">Logout</span>
-                  </button>
-                </div>
-              </nav>
+            {/* Menu Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {menuItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className="p-8 bg-white border border-slate-200 rounded-3xl hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-100/50 hover:-translate-y-1 transition-all duration-300 text-left flex gap-5 group"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-blue-50 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center text-2xl transition-all duration-300 shadow-inner">
+                    {item.icon}
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <h3 className="font-bold text-lg text-slate-900 group-hover:text-blue-600 transition-colors">{item.label}</h3>
+                    <p className="text-sm text-slate-500 font-medium leading-relaxed">{item.desc}</p>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
+        ) : (
+          <div className="space-y-6 animate-fade-in-up">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className="inline-flex items-center gap-3 px-6 py-3.5 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 hover:text-blue-600 hover:border-blue-300 shadow-sm transition-all group"
+            >
+              <svg className="w-5 h-5 text-slate-500 group-hover:text-blue-600 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to My Account
+            </button>
 
-          <div className="lg:col-span-3 space-y-6">
-            {activeTab === 'personal' && (
+            <div className="w-full space-y-6">
+              {activeTab === 'personal' && (
               <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
                 <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                   <div className="flex items-center gap-4">
@@ -604,7 +546,7 @@ export default function Profile() {
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {savedAddresses.map((address) => (
                         <div key={address._id} className={`p-6 border-2 rounded-2xl transition-all duration-300 ${address.isDefault ? 'border-blue-300 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-md' : 'border-slate-200 hover:border-blue-200 hover:shadow-md'}`}>
                           <div className="flex items-start justify-between mb-4">
@@ -973,9 +915,11 @@ export default function Profile() {
                 </div>
               </div>
             )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
+    </div>
 
       {showAddressModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
