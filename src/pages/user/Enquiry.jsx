@@ -61,6 +61,7 @@ export default function Enquiry() {
   const [appliedCoupon, setAppliedCoupon] = useState(location.state?.appliedCoupon || null)
   const [couponError, setCouponError] = useState('')
   const [isApplying, setIsApplying] = useState(false)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('COD') // 'COD' or 'CASHFREE'
   const cashfreeSdkLoaded = useRef(false)
   
   // Address management
@@ -375,7 +376,7 @@ export default function Enquiry() {
       // Prepare payment
       const { data } = await api.post('/api/orders/prepare-payment', {
         items: cleanItems,
-        paymentMethod: 'CASHFREE',
+        paymentMethod: selectedPaymentMethod,
         couponCode: appliedCoupon?.code || '',
         deliveryAddress: selectedAddress
       })
@@ -520,9 +521,21 @@ export default function Enquiry() {
               </h2>
 
               <div className="space-y-3">
-                <div className="border-2 border-orange-500 bg-orange-50 rounded-lg p-4 flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full border-2 border-orange-500 flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                {/* COD Option */}
+                <div 
+                  onClick={() => setSelectedPaymentMethod('COD')}
+                  className={`border-2 rounded-lg p-4 flex items-center gap-4 cursor-pointer transition-all ${
+                    selectedPaymentMethod === 'COD' 
+                      ? 'border-orange-500 bg-orange-50' 
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                    selectedPaymentMethod === 'COD' 
+                      ? 'border-orange-500' 
+                      : 'border-slate-300'
+                  }`}>
+                    {selectedPaymentMethod === 'COD' && <div className="w-3 h-3 rounded-full bg-orange-500"></div>}
                   </div>
                   <div className="flex-1">
                     <div className="font-semibold text-slate-900 flex items-center gap-2">
@@ -533,6 +546,35 @@ export default function Enquiry() {
                     </div>
                     <div className="text-xs text-slate-500 mt-1">
                       Pay the remaining 75% upon delivery
+                    </div>
+                  </div>
+                </div>
+
+                {/* Prepaid Option */}
+                <div 
+                  onClick={() => setSelectedPaymentMethod('CASHFREE')}
+                  className={`border-2 rounded-lg p-4 flex items-center gap-4 cursor-pointer transition-all ${
+                    selectedPaymentMethod === 'CASHFREE' 
+                      ? 'border-blue-500 bg-blue-50' 
+                      : 'border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                    selectedPaymentMethod === 'CASHFREE' 
+                      ? 'border-blue-500' 
+                      : 'border-slate-300'
+                  }`}>
+                    {selectedPaymentMethod === 'CASHFREE' && <div className="w-3 h-3 rounded-full bg-blue-500"></div>}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-slate-900 flex items-center gap-2">
+                      Pay Online (Prepaid)
+                    </div>
+                    <div className="text-sm text-blue-700 font-medium">
+                      Pay 100% amount now
+                    </div>
+                    <div className="text-xs text-slate-500 mt-1">
+                      Secure payment via UPI/Card/NetBanking
                     </div>
                   </div>
                 </div>
@@ -567,13 +609,24 @@ export default function Enquiry() {
                   <span className="font-semibold text-lg text-slate-900">Total Amount</span>
                   <span className="text-xl font-bold text-slate-900">₹{totalPayable.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between items-center bg-orange-50 p-3 rounded-lg border border-orange-200">
-                  <span className="font-semibold text-orange-700 text-sm">25% Advance to Pay Now</span>
-                  <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.25).toLocaleString()}</span>
-                </div>
-                <div className="text-xs text-slate-500">
-                  Remaining 75% (₹{Math.round(totalPayable * 0.75).toLocaleString()}) to be paid on delivery
-                </div>
+                
+                {selectedPaymentMethod === 'COD' ? (
+                  <>
+                    <div className="flex justify-between items-center bg-orange-50 p-3 rounded-lg border border-orange-200">
+                      <span className="font-semibold text-orange-700 text-sm">25% Advance to Pay Now</span>
+                      <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.25).toLocaleString()}</span>
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      Remaining 75% (₹{Math.round(totalPayable * 0.75).toLocaleString()}) to be paid on delivery
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between items-center bg-blue-50 p-3 rounded-lg border border-blue-200">
+                    <span className="font-semibold text-blue-700 text-sm">Pay Now</span>
+                    <span className="text-xl font-bold text-blue-600">₹{totalPayable.toLocaleString()}</span>
+                  </div>
+                )}
+
                 {totalSavings > 0 && (
                   <div className="text-green-700 font-medium text-sm mt-2">
                     You will save ₹{totalSavings.toLocaleString()} on this order
@@ -588,12 +641,16 @@ export default function Enquiry() {
                 className={`w-full mt-6 py-4 rounded-lg font-bold text-lg transition-all ${
                   loading || visibleTotal < minAmount || !svc.available || !selectedAddress
                     ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg'
+                    : selectedPaymentMethod === 'COD'
+                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg'
+                    : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg'
                 }`}
               >
                 {loading ? 'Processing...' :
                   visibleTotal < minAmount ? `Add ₹${minLeft.toLocaleString()} More` :
-                  `Pay ₹${Math.round(totalPayable * 0.25).toLocaleString()} & Place Order`}
+                  selectedPaymentMethod === 'COD'
+                  ? `Pay ₹${Math.round(totalPayable * 0.25).toLocaleString()} & Place Order`
+                  : `Pay ₹${totalPayable.toLocaleString()} & Place Order`}
               </button>
             </div>
           </div>
@@ -629,13 +686,24 @@ export default function Enquiry() {
                   <span className="font-semibold text-lg text-slate-900">Total Amount</span>
                   <span className="text-xl font-bold text-slate-900">₹{totalPayable.toLocaleString()}</span>
                 </div>
-                <div className="flex justify-between items-center bg-orange-50 p-3 rounded-lg border border-orange-200">
-                  <span className="font-semibold text-orange-700 text-sm">25% Advance to Pay Now</span>
-                  <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.25).toLocaleString()}</span>
-                </div>
-                <div className="text-xs text-slate-500">
-                  Remaining 75% (₹{Math.round(totalPayable * 0.75).toLocaleString()}) to be paid on delivery
-                </div>
+                
+                {selectedPaymentMethod === 'COD' ? (
+                  <>
+                    <div className="flex justify-between items-center bg-orange-50 p-3 rounded-lg border border-orange-200">
+                      <span className="font-semibold text-orange-700 text-sm">25% Advance to Pay Now</span>
+                      <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.25).toLocaleString()}</span>
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      Remaining 75% (₹{Math.round(totalPayable * 0.75).toLocaleString()}) to be paid on delivery
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex justify-between items-center bg-blue-50 p-3 rounded-lg border border-blue-200">
+                    <span className="font-semibold text-blue-700 text-sm">Pay Now</span>
+                    <span className="text-xl font-bold text-blue-600">₹{totalPayable.toLocaleString()}</span>
+                  </div>
+                )}
+
                 {totalSavings > 0 && (
                   <div className="text-green-700 font-medium text-sm">
                     You will save ₹{totalSavings.toLocaleString()} on this order
@@ -690,12 +758,16 @@ export default function Enquiry() {
                   className={`w-full py-4 rounded-lg font-bold text-lg transition-all mt-4 ${
                     loading || visibleTotal < minAmount || !svc.available || !selectedAddress
                       ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg'
+                      : selectedPaymentMethod === 'COD'
+                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg'
+                      : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg'
                   }`}
                 >
                   {loading ? 'Processing...' :
                     visibleTotal < minAmount ? `Add ₹${minLeft.toLocaleString()} More` :
-                    `Pay ₹${Math.round(totalPayable * 0.25).toLocaleString()} & Place Order`}
+                    selectedPaymentMethod === 'COD'
+                    ? `Pay ₹${Math.round(totalPayable * 0.25).toLocaleString()} & Place Order`
+                    : `Pay ₹${totalPayable.toLocaleString()} & Place Order`}
                 </button>
               </div>
 
