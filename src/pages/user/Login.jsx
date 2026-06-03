@@ -49,7 +49,8 @@ export default function Login() {
           // For existing customer check, send email
           const { data } = await api.post('/api/auth/customer/google', { 
             email: userInfo.email,
-            name: userInfo.name
+            name: userInfo.name,
+            avatar: userInfo.picture
           })
           setAuth(data.token, { ...data.user, role: 'customer' })
           try { await refreshProfile() } catch {}
@@ -65,7 +66,8 @@ export default function Login() {
                 googleData: { 
                   accessToken: response.access_token, 
                   email: userInfo.email, 
-                  name: userInfo.name 
+                  name: userInfo.name,
+                  avatar: userInfo.picture
                 } 
               } 
             })

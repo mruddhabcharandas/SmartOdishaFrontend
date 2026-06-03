@@ -194,9 +194,22 @@ export default function Enquiry() {
   const submit = async (e) => {
     e.preventDefault()
     if (cartTotal < minAmount) { notify(`Minimum order amount is ₹${minAmount.toLocaleString()}`, 'error'); return }
+    
+    // Check for missing details
+    const missingDetails = []
+    if (!profile.name || !profile.name.trim()) missingDetails.push('Full Name')
+    if (!profile.phone) missingDetails.push('Phone Number')
+    if (!profile.address || !profile.address.trim()) missingDetails.push('Delivery Address')
+    const pin = String(profile.address?.split(',').pop() || profile.kyc?.pincode || '').trim()
+    if (!pin) missingDetails.push('Pincode')
+    
+    if (missingDetails.length > 0) {
+      notify(`Please fill in missing details: ${missingDetails.join(', ')}`, 'error')
+      navigate('/profile')
+      return
+    }
+    
     try {
-      const pin = String(profile.address?.split(',').pop() || profile.kyc?.pincode || '').trim()
-      if (!pin) { notify('Please add delivery address in your profile', 'error'); navigate('/profile'); return }
       const { data: svcData } = await api.get('/api/shipping/check-pincode', { params: { pincode: pin } })
       if (!svcData?.delivery_available) { notify('Delivery not available for your pincode', 'error'); return }
     } catch { notify('Unable to verify serviceability right now', 'error'); return }
@@ -261,6 +274,28 @@ export default function Enquiry() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
+            {/* Missing Details Warning */}
+            {(
+              (!profile.name || !profile.name.trim()) ||
+              (!profile.phone) ||
+              (!profile.address || !profile.address.trim()) ||
+              (!String(profile.address?.split(',').pop() || profile.kyc?.pincode || '').trim())
+            ) && (
+              <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 flex items-start gap-4">
+                <div className="text-3xl text-red-600">⚠️</div>
+                <div className="flex-1">
+                  <h4 className="font-bold text-red-900 text-lg mb-2">Missing Order Details</h4>
+                  <p className="text-red-800 mb-3">Please complete your profile to place an order.</p>
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                  >
+                    Complete Profile →
+                  </button>
+                </div>
+              </div>
+            )}
+            
             <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-8">
               <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
                 <span className="text-3xl">👤</span> Customer Details
@@ -309,8 +344,12 @@ export default function Enquiry() {
                   type="button"
                   className="w-full text-left p-6 rounded-2xl border-2 transition-all flex items-center gap-4 border-blue-600 bg-gradient-to-r from-blue-50 to-indigo-50"
                 >
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-2xl text-white shadow-md">
-                    💳
+                  <div className="w-16 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-200 overflow-hidden">
+                    <img 
+                      src="https://images.crunchbase.com/image/upload/c_lpad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/dzgyedhczoapqcdpsb1j" 
+                      alt="Cashfree" 
+                      className="h-8 w-auto object-contain"
+                    />
                   </div>
                   <div className="flex-1">
                     <div className="text-lg font-bold text-slate-900">Cashfree Payments</div>

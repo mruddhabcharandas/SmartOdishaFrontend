@@ -30,7 +30,8 @@ export default function Signup() {
     name: googleData?.name || '',
     phone: '',
     email: googleData?.email || '',
-    password: ''
+    password: '',
+    avatar: googleData?.avatar || ''
   });
   const [otp, setOtp] = useState('');
 
@@ -48,7 +49,8 @@ export default function Signup() {
         try {
           const { data } = await api.post('/api/auth/customer/google', { 
             email: userInfo.email,
-            name: userInfo.name
+            name: userInfo.name,
+            avatar: userInfo.picture
           });
           setAuth(data.token, { ...data.user, role: 'customer' });
           try { await refreshProfile() } catch {}
@@ -95,7 +97,8 @@ export default function Signup() {
       const { data } = await api.post('/api/auth/customer/google/signup', { 
         email: formData.email,
         name: formData.name,
-        phone: formData.phone 
+        phone: formData.phone,
+        avatar: formData.avatar
       });
       setAuth(data.token, { ...data.user, role: 'customer' });
       try { await refreshProfile() } catch {}
