@@ -195,7 +195,7 @@ export default function Catalogue() {
       <style jsx>{`
         .ct-wrapper {
           font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-          background: linear-gradient(180deg, #0f172a 0%, #1e293b 150px, #f1f5f9 150px);
+          background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 150px, #f8fafc 150px);
           color: #0f172a;
           min-height: 100vh;
           overflow-x: hidden;
@@ -206,6 +206,7 @@ export default function Catalogue() {
           margin: 0 -12px;
           position: relative;
           overflow: hidden;
+          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         }
 
         @media (min-width: 768px) {
@@ -213,22 +214,6 @@ export default function Catalogue() {
             padding: 56px 40px 56px;
             margin: 0 -24px;
           }
-        }
-
-        .ct-hero::before {
-          content: '';
-          position: absolute;
-          top: -60%;
-          left: -40%;
-          width: 150%;
-          height: 200%;
-          background: radial-gradient(circle, rgba(249, 115, 22, 0.15) 0%, transparent 60%);
-          animation: rotate 45s linear infinite;
-        }
-
-        @keyframes rotate {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
         }
 
         .ct-container {
@@ -254,26 +239,25 @@ export default function Catalogue() {
         .ct-search-input {
           width: 100%;
           padding: 18px 26px;
-          border: 2px solid rgba(255,255,255,0.12);
+          border: 2px solid #e2e8f0;
           border-radius: 24px;
           font-size: 16px;
           font-weight: 600;
           outline: none;
-          background: rgba(255,255,255,0.08);
-          color: white;
-          backdrop-filter: blur(24px);
+          background: white;
+          color: #0f172a;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
         }
 
         .ct-search-input::placeholder {
-          color: rgba(255,255,255,0.65);
+          color: #64748b;
         }
 
         .ct-search-input:focus {
-          border-color: #f97316;
-          box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.25), 0 12px 48px rgba(0,0,0,0.25);
-          background: rgba(255,255,255,0.12);
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.1), 0 12px 48px rgba(0,0,0,0.1);
+          background: white;
         }
 
         .ct-suggest {
@@ -356,7 +340,7 @@ export default function Catalogue() {
           padding: 14px 26px;
           border: 2px solid rgba(15,23,42,0.06);
           border-radius: 20px;
-          background: linear-gradient(180deg, #ffffff 0%, #fef9f5 100%);
+          background: white;
           font-size: 13px;
           font-weight: 900;
           cursor: pointer;
@@ -368,17 +352,17 @@ export default function Catalogue() {
         }
 
         .ct-category-chip:hover {
-          border-color: #f97316;
-          color: #f97316;
+          border-color: #3b82f6;
+          color: #3b82f6;
           transform: translateY(-3px);
-          box-shadow: 0 16px 40px rgba(249,115,22,0.18);
+          box-shadow: 0 16px 40px rgba(59,130,246,0.18);
         }
 
         .ct-category-chip.active {
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
           color: white;
           border-color: transparent;
-          box-shadow: 0 18px 52px rgba(249,115,22,0.35);
+          box-shadow: 0 18px 52px rgba(59,130,246,0.35);
           transform: translateY(-4px);
         }
 
@@ -525,7 +509,7 @@ export default function Catalogue() {
 
         .ct-load-btn {
           padding: 18px 56px;
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
           color: white;
           border: none;
           border-radius: 20px;
@@ -535,12 +519,12 @@ export default function Catalogue() {
           text-transform: uppercase;
           cursor: pointer;
           transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 14px 44px rgba(249,115,22,0.35);
+          box-shadow: 0 14px 44px rgba(59,130,246,0.35);
         }
 
         .ct-load-btn:hover:not(:disabled) {
           transform: translateY(-5px) scale(1.02);
-          box-shadow: 0 22px 60px rgba(249,115,22,0.5);
+          box-shadow: 0 22px 60px rgba(59,130,246,0.5);
         }
 
         .ct-load-btn:disabled {
@@ -587,25 +571,23 @@ export default function Catalogue() {
       <div className="ct-container">
         <div className="ct-hero">
           <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-            <h2 style={{ 
-              fontSize: 'clamp(24px, 3.5vw, 40px)', 
-              fontWeight: 900, 
-              background: 'linear-gradient(135deg, #ffffff 0%, #fed7aa 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              marginBottom: 10,
-              letterSpacing: '-0.04em'
-            }}>
-              Discover Premium Products for Odisha
-            </h2>
-            <p style={{ 
-              fontSize: 'clamp(13px, 1.8vw, 16px)', 
-              color: 'rgba(255,255,255,0.7)', 
-              fontWeight: 600,
-              letterSpacing: '0.05em'
-            }}>
-              Quality you can trust, fast delivery across Odisha
-            </p>
+                  <h2 style={{ 
+                    fontSize: 'clamp(24px, 3.5vw, 40px)', 
+                    fontWeight: 900, 
+                    color: '#0f172a',
+                    marginBottom: 10,
+                    letterSpacing: '-0.04em'
+                  }}>
+                    Discover Premium Products for Odisha
+                  </h2>
+                  <p style={{ 
+                    fontSize: 'clamp(13px, 1.8vw, 16px)', 
+                    color: '#64748b', 
+                    fontWeight: 600,
+                    letterSpacing: '0.05em'
+                  }}>
+                    Quality you can trust, fast delivery across Odisha
+                  </p>
           </div>
 
           <div className="ct-search-wrap">

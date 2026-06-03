@@ -31,7 +31,8 @@ export default function Profile() {
   const [changingPassword, setChangingPassword] = useState(false);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [formData, setFormData] = useState({
-    name: ''
+    name: '',
+    phone: ''
   });
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
@@ -82,7 +83,8 @@ export default function Profile() {
     try {
       const { data } = await api.get('/api/user/me');
       setFormData({
-        name: data.name || ''
+        name: data.name || '',
+        phone: data.phone || ''
       });
     } catch (err) {
       console.error('Failed to load profile:', err);
@@ -351,10 +353,10 @@ export default function Profile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50/30 to-orange-50/30 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50/30 to-slate-50/30 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-10">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
             My Account
           </h1>
           <p className="text-slate-600 text-lg">Manage your profile, orders, and preferences</p>
@@ -362,10 +364,10 @@ export default function Profile() {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden sticky top-8">
-              <div className="p-8 border-b border-orange-100 bg-gradient-to-br from-orange-50 to-amber-50">
-                <div className="flex items-center gap-5">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg overflow-hidden">
+            <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden sticky top-8">
+                <div className="p-8 border-b border-slate-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+                  <div className="flex items-center gap-5">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-2xl shadow-lg overflow-hidden">
                     {user?.avatar && (
                       <img 
                         src={getCloudinaryUrl(user.avatar)} 
@@ -399,12 +401,12 @@ export default function Profile() {
                     onClick={() => setActiveTab(item.id)}
                     className={`w-full text-left px-5 py-4 rounded-2xl flex items-center gap-4 transition-all duration-300 group ${
                       activeTab === item.id
-                        ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-lg shadow-orange-200'
-                        : 'text-slate-600 hover:bg-orange-50 hover:text-orange-700'
+                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-200'
+                        : 'text-slate-600 hover:bg-blue-50 hover:text-blue-700'
                     }`}
                   >
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                      activeTab === item.id ? 'bg-white/20' : 'bg-slate-100 group-hover:bg-orange-100'
+                      activeTab === item.id ? 'bg-white/20' : 'bg-slate-100 group-hover:bg-blue-100'
                     }`}>
                       {item.id === 'personal' && (
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -446,9 +448,9 @@ export default function Profile() {
                     </div>
                     <span className="text-sm font-semibold">{item.label}</span>
                   </button>
-                ))}
+                    ))}
 
-                <div className="border-t border-orange-100 my-4 pt-4">
+                    <div className="border-t border-slate-200 my-4 pt-4">
                   <button
                     onClick={handleLogout}
                     className="w-full text-left px-5 py-4 rounded-2xl flex items-center gap-4 text-red-600 hover:bg-red-50 transition-all duration-300 group"
@@ -493,7 +495,7 @@ export default function Profile() {
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300 bg-white text-slate-900 placeholder-slate-400"
+                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white text-slate-900 placeholder-slate-400"
                           placeholder="Enter your full name"
                         />
                       </div>
@@ -504,7 +506,7 @@ export default function Profile() {
                           name="email"
                           value={user?.email || ''}
                           disabled
-                          className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl bg-orange-50 text-slate-500 cursor-not-allowed"
+                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl bg-slate-50 text-slate-500 cursor-not-allowed"
                         />
                       </div>
                       <div className="space-y-2">
@@ -512,9 +514,10 @@ export default function Profile() {
                         <input
                           type="tel"
                           name="phone"
-                          value={user?.phone || ''}
-                          disabled
-                          className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl bg-orange-50 text-slate-500 cursor-not-allowed"
+                          value={formData.phone}
+                          onChange={handleInputChange}
+                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white text-slate-900 placeholder-slate-400"
+                          placeholder="Enter your phone number"
                         />
                       </div>
                     </div>
@@ -523,7 +526,7 @@ export default function Profile() {
                       <button
                         type="submit"
                         disabled={saving}
-                        className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold rounded-2xl shadow-xl shadow-orange-200 hover:shadow-2xl hover:shadow-orange-300 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-xl flex items-center gap-3"
+                        className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-blue-200 hover:shadow-2xl hover:shadow-blue-300 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-xl flex items-center gap-3"
                       >
                         {saving ? (
                           <>
@@ -541,10 +544,10 @@ export default function Profile() {
             )}
 
             {activeTab === 'addresses' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden">
-                <div className="p-8 border-b border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50 flex items-center justify-between flex-wrap gap-4">
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-between flex-wrap gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white shadow-lg">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -557,7 +560,7 @@ export default function Profile() {
                   </div>
                   <button
                     onClick={handleAddAddress}
-                    className="px-6 py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-2xl shadow-lg shadow-orange-200 hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300 flex items-center gap-2"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -568,8 +571,8 @@ export default function Profile() {
                 <div className="p-8">
                   {savedAddresses.length === 0 ? (
                     <div className="text-center py-16">
-                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-orange-100 to-amber-100 rounded-full flex items-center justify-center">
-                        <svg className="w-12 h-12 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
+                        <svg className="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
@@ -578,7 +581,7 @@ export default function Profile() {
                       <p className="text-slate-500 mb-8 max-w-md mx-auto">Add your first address to get started with faster checkout</p>
                       <button
                         onClick={handleAddAddress}
-                        className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-2xl shadow-lg shadow-orange-200 hover:shadow-xl transition-all duration-300"
+                        className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
                       >
                         Add Your First Address
                       </button>
@@ -586,13 +589,13 @@ export default function Profile() {
                   ) : (
                     <div className="space-y-5">
                       {savedAddresses.map((address) => (
-                        <div key={address._id} className={`p-6 border-2 rounded-2xl transition-all duration-300 ${address.isDefault ? 'border-orange-300 bg-gradient-to-r from-orange-50 to-amber-50 shadow-md' : 'border-slate-200 hover:border-orange-200 hover:shadow-md'}`}>
+                        <div key={address._id} className={`p-6 border-2 rounded-2xl transition-all duration-300 ${address.isDefault ? 'border-blue-300 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-md' : 'border-slate-200 hover:border-blue-200 hover:shadow-md'}`}>
                           <div className="flex items-start justify-between mb-4">
                             <div>
                               <div className="flex items-center gap-3 mb-2">
                                 <h4 className="font-bold text-lg text-slate-900">{address.fullName}</h4>
                                 {address.isDefault && (
-                                  <span className="px-3 py-1 bg-gradient-to-r from-orange-500 to-amber-600 text-white text-xs font-bold rounded-full shadow">Default</span>
+                                  <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-bold rounded-full shadow">Default</span>
                                 )}
                               </div>
                               <p className="text-slate-600 text-sm font-medium">{address.phone}</p>
@@ -600,7 +603,7 @@ export default function Profile() {
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleEditAddress(address)}
-                                className="p-3 text-slate-500 hover:text-orange-600 hover:bg-orange-100 rounded-xl transition-all duration-300"
+                                className="p-3 text-slate-500 hover:text-blue-600 hover:bg-blue-100 rounded-xl transition-all duration-300"
                                 title="Edit"
                               >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -626,7 +629,7 @@ export default function Profile() {
                           {!address.isDefault && (
                             <button
                               onClick={() => handleSetDefault(address._id)}
-                              className="text-sm font-semibold text-orange-600 hover:text-orange-700 transition-colors duration-300"
+                              className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-300"
                             >
                               Set as Default
                             </button>
@@ -640,10 +643,10 @@ export default function Profile() {
             )}
 
             {activeTab === 'orders' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden">
-                <div className="p-8 border-b border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50">
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white shadow-lg">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
@@ -654,7 +657,7 @@ export default function Profile() {
                 <div className="p-8">
                   <Link
                     to="/orders"
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-2xl shadow-lg shadow-orange-200 hover:shadow-xl transition-all duration-300"
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
                   >
                     View All Orders
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -666,10 +669,10 @@ export default function Profile() {
             )}
 
             {activeTab === 'wishlist' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden">
-                <div className="p-8 border-b border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50">
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white shadow-lg">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
@@ -680,7 +683,7 @@ export default function Profile() {
                 <div className="p-8">
                   <Link
                     to="/wishlist"
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-2xl shadow-lg shadow-orange-200 hover:shadow-xl transition-all duration-300"
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
                   >
                     View My Wishlist
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
