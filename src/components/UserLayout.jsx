@@ -85,12 +85,7 @@ export default function UserLayout() {
                     src="/logo.png"
                     alt="SmartOdisha"
                     className="h-full w-full object-contain"
-                    onError={(e) => {
-                      e.target.style.display = 'none'
-                      e.target.nextElementSibling.style.display = 'flex'
-                    }}
                   />
-                  <span className="text-lg sm:text-xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" style={{ display: 'none' }}>SO</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-base sm:text-xl font-black tracking-tighter leading-none">

@@ -771,12 +771,7 @@ export default function Home() {
                     src="/logo.png" 
                     alt="SmartOdisha" 
                     className="h-full w-full object-contain" 
-                    onError={(e) => {
-                      e.target.style.display = 'none'
-                      e.target.nextElementSibling.style.display = 'flex'
-                    }} 
                   />
-                  <span className="text-2xl font-bold text-white" style={{ display: 'none' }}>SO</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-2xl font-black tracking-tighter leading-none">

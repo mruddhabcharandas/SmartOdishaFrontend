@@ -1448,7 +1448,7 @@ export default function ProductDetail() {
         .pd-btn-buy-now {
           flex: 1;
           min-width: 140px;
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           background-size: 200% 200%;
           color: white;
           border: none;
@@ -1461,7 +1461,7 @@ export default function ProductDetail() {
           cursor: pointer;
           font-family: 'Inter', system-ui, sans-serif;
           transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 10px 32px -10px rgba(249, 115, 22, 0.4);
+          box-shadow: 0 10px 32px -10px rgba(16, 185, 129, 0.4);
           display: flex;
           align-items: center;
           justify-content: center;

@@ -291,7 +291,7 @@ export default function Catalogue() {
           width: 50px;
           height: 50px;
           border-radius: 14px;
-          background: linear-gradient(135deg, #fef3c7, #f97316);
+          background: linear-gradient(135deg, #dbeafe, #3b82f6);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -320,7 +320,7 @@ export default function Catalogue() {
 
         .ct-sug-fill {
           margin-left: auto;
-          color: #f97316;
+          color: #3b82f6;
         }
 
         .ct-categories {
@@ -390,7 +390,7 @@ export default function Catalogue() {
         .ct-title {
           font-size: clamp(22px, 4vw, 36px);
           font-weight: 900;
-          background: linear-gradient(135deg, #0f172a 0%, #f97316 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
@@ -424,8 +424,8 @@ export default function Catalogue() {
         }
 
         .ct-filter-select:focus, .ct-filter-select:hover {
-          border-color: #f97316;
-          color: #f97316;
+          border-color: #2563eb;
+          color: #2563eb;
         }
 
         .ct-grid {
@@ -553,7 +553,7 @@ export default function Catalogue() {
         .ct-empty-title {
           font-size: 26px;
           font-weight: 900;
-          background: linear-gradient(135deg, #0f172a 0%, #f97316 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
