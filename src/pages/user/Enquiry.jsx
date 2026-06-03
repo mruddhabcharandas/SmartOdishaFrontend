@@ -520,18 +520,20 @@ export default function Enquiry() {
               </h2>
 
               <div className="space-y-3">
-                <div className="border-2 border-blue-600 bg-blue-50 rounded-lg p-4 flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full border-2 border-blue-600 flex items-center justify-center">
-                    <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+                <div className="border-2 border-orange-500 bg-orange-50 rounded-lg p-4 flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full border-2 border-orange-500 flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-orange-500"></div>
                   </div>
                   <div className="flex-1">
                     <div className="font-semibold text-slate-900 flex items-center gap-2">
-                      Cashfree Payments
-                      <div className="flex items-center gap-1">
-                        <img src="https://images.crunchbase.com/image/upload/c_lpad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/dzgyedhczoapqcdpsb1j" alt="Cashfree" className="h-5 w-auto" />
-                      </div>
+                      Cash on Delivery (COD)
                     </div>
-                    <div className="text-sm text-slate-600">UPI, Cards, Netbanking, Wallets</div>
+                    <div className="text-sm text-orange-700 font-medium">
+                      25% advance required to place order
+                    </div>
+                    <div className="text-xs text-slate-500 mt-1">
+                      Pay the remaining 75% upon delivery
+                    </div>
                   </div>
                 </div>
               </div>
@@ -565,6 +567,13 @@ export default function Enquiry() {
                   <span className="font-semibold text-lg text-slate-900">Total Amount</span>
                   <span className="text-xl font-bold text-slate-900">₹{totalPayable.toLocaleString()}</span>
                 </div>
+                <div className="flex justify-between items-center bg-orange-50 p-3 rounded-lg border border-orange-200">
+                  <span className="font-semibold text-orange-700 text-sm">25% Advance to Pay Now</span>
+                  <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.25).toLocaleString()}</span>
+                </div>
+                <div className="text-xs text-slate-500">
+                  Remaining 75% (₹{Math.round(totalPayable * 0.75).toLocaleString()}) to be paid on delivery
+                </div>
                 {totalSavings > 0 && (
                   <div className="text-green-700 font-medium text-sm mt-2">
                     You will save ₹{totalSavings.toLocaleString()} on this order
@@ -579,12 +588,12 @@ export default function Enquiry() {
                 className={`w-full mt-6 py-4 rounded-lg font-bold text-lg transition-all ${
                   loading || visibleTotal < minAmount || !svc.available || !selectedAddress
                     ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
+                    : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg'
                 }`}
               >
                 {loading ? 'Processing...' :
                   visibleTotal < minAmount ? `Add ₹${minLeft.toLocaleString()} More` :
-                  `Place Order`}
+                  `Pay ₹${Math.round(totalPayable * 0.25).toLocaleString()} & Place Order`}
               </button>
             </div>
           </div>
@@ -619,6 +628,13 @@ export default function Enquiry() {
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-lg text-slate-900">Total Amount</span>
                   <span className="text-xl font-bold text-slate-900">₹{totalPayable.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center bg-orange-50 p-3 rounded-lg border border-orange-200">
+                  <span className="font-semibold text-orange-700 text-sm">25% Advance to Pay Now</span>
+                  <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.25).toLocaleString()}</span>
+                </div>
+                <div className="text-xs text-slate-500">
+                  Remaining 75% (₹{Math.round(totalPayable * 0.75).toLocaleString()}) to be paid on delivery
                 </div>
                 {totalSavings > 0 && (
                   <div className="text-green-700 font-medium text-sm">
@@ -674,12 +690,12 @@ export default function Enquiry() {
                   className={`w-full py-4 rounded-lg font-bold text-lg transition-all mt-4 ${
                     loading || visibleTotal < minAmount || !svc.available || !selectedAddress
                       ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
+                      : 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg'
                   }`}
                 >
                   {loading ? 'Processing...' :
                     visibleTotal < minAmount ? `Add ₹${minLeft.toLocaleString()} More` :
-                    `Place Order`}
+                    `Pay ₹${Math.round(totalPayable * 0.25).toLocaleString()} & Place Order`}
                 </button>
               </div>
 

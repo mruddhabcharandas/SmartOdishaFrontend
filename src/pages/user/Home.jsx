@@ -817,6 +817,12 @@ export default function Home() {
                 </a>
               </div>
               <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 w-full sm:w-auto">
+                <Link to="/business/request" className="text-sm font-semibold text-orange-400 uppercase tracking-widest hover:text-orange-300 transition-colors text-center sm:text-right">
+                  Become a Seller
+                </Link>
+                <Link to="/business/login" className="text-sm font-semibold text-slate-400 uppercase tracking-widest hover:text-white transition-colors text-center sm:text-right">
+                  Store Login
+                </Link>
                 <Link to="/privacy-policy" className="text-sm font-semibold text-slate-400 uppercase tracking-widest hover:text-white transition-colors text-center sm:text-right">
                   Privacy Policy
                 </Link>

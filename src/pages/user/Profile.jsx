@@ -53,6 +53,18 @@ export default function Profile() {
     isDefault: false
   });
   const [pincodeLoading, setPincodeLoading] = useState(false);
+  
+  // Support Ticket State
+  const [tickets, setTickets] = useState([]);
+  const [ticketsLoading, setTicketsLoading] = useState(false);
+  const [showNewTicketModal, setShowNewTicketModal] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [newTicketForm, setNewTicketForm] = useState({
+    subject: '',
+    description: '',
+    category: 'Other'
+  });
+  const [messageInput, setMessageInput] = useState('');
 
   useEffect(() => {
     if (!token) {
@@ -61,7 +73,10 @@ export default function Profile() {
     }
     loadProfile();
     loadAddresses();
-  }, [token]);
+    if (activeTab === 'support') {
+      loadTickets();
+    }
+  }, [token, activeTab]);
 
   const loadProfile = async () => {
     try {
@@ -82,6 +97,54 @@ export default function Profile() {
       setSavedAddresses(data);
     } catch (err) {
       console.error('Failed to load addresses:', err);
+    }
+  };
+
+  const loadTickets = async () => {
+    try {
+      setTicketsLoading(true);
+      const { data } = await api.get('/api/support-tickets/my-tickets');
+      setTickets(data);
+    } catch (err) {
+      console.error('Failed to load tickets:', err);
+    } finally {
+      setTicketsLoading(false);
+    }
+  };
+
+  const handleCreateTicket = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await api.post('/api/support-tickets', newTicketForm);
+      notify('Ticket created successfully!', 'success');
+      setShowNewTicketModal(false);
+      setNewTicketForm({ subject: '', description: '', category: 'Other' });
+      loadTickets();
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to create ticket', 'error');
+    }
+  };
+
+  const handleAddMessage = async (ticketId) => {
+    if (!messageInput.trim()) return;
+    try {
+      const { data } = await api.post(`/api/support-tickets/${ticketId}/messages`, { message: messageInput });
+      setSelectedTicket(data);
+      setMessageInput('');
+      loadTickets();
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to send message', 'error');
+    }
+  };
+
+  const handleResolveTicket = async (ticketId) => {
+    try {
+      await api.put(`/api/support-tickets/${ticketId}/resolve`);
+      notify('Ticket resolved!', 'success');
+      setSelectedTicket(null);
+      loadTickets();
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to resolve ticket', 'error');
     }
   };
 
@@ -283,6 +346,7 @@ export default function Profile() {
     { id: 'orders', label: 'My Orders' },
     { id: 'wishlist', label: 'My Wishlist' },
     { id: 'activity', label: 'My Activity' },
+    { id: 'support', label: 'Support & Tickets' },
     { id: 'settings', label: 'Account Settings' }
   ];
 
@@ -366,6 +430,11 @@ export default function Profile() {
                       {item.id === 'activity' && (
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                      )}
+                      {item.id === 'support' && (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                       )}
                       {item.id === 'settings' && (
@@ -890,6 +959,84 @@ export default function Profile() {
                     className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-2xl shadow-lg shadow-orange-200 hover:shadow-xl transition-all duration-300"
                   >
                     Save Address
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showNewTicketModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-8 border-b border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-slate-900">Create New Support Ticket</h2>
+              <button
+                onClick={() => setShowNewTicketModal(false)}
+                className="p-2 hover:bg-orange-100 rounded-xl transition-all duration-300"
+              >
+                <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-8">
+              <form onSubmit={handleCreateTicket} className="space-y-5">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Subject *</label>
+                  <input
+                    type="text"
+                    name="subject"
+                    value={newTicketForm.subject}
+                    onChange={(e) => setNewTicketForm(prev => ({ ...prev, subject: e.target.value }))}
+                    required
+                    className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300"
+                    placeholder="Brief description of your issue"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Category *</label>
+                  <select
+                    name="category"
+                    value={newTicketForm.category}
+                    onChange={(e) => setNewTicketForm(prev => ({ ...prev, category: e.target.value }))}
+                    required
+                    className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300"
+                  >
+                    <option value="Order Issue">Order Issue</option>
+                    <option value="Product Issue">Product Issue</option>
+                    <option value="Payment Issue">Payment Issue</option>
+                    <option value="Return/Refund">Return/Refund</option>
+                    <option value="General Query">General Query</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold text-slate-700">Description *</label>
+                  <textarea
+                    name="description"
+                    value={newTicketForm.description}
+                    onChange={(e) => setNewTicketForm(prev => ({ ...prev, description: e.target.value }))}
+                    required
+                    rows={6}
+                    className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300 resize-none"
+                    placeholder="Please provide details about your issue..."
+                  />
+                </div>
+                <div className="pt-4 flex gap-4 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setShowNewTicketModal(false)}
+                    className="px-6 py-4 text-slate-700 font-semibold rounded-2xl hover:bg-orange-50 transition-all duration-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-2xl shadow-lg shadow-orange-200 hover:shadow-xl transition-all duration-300"
+                  >
+                    Create Ticket
                   </button>
                 </div>
               </form>

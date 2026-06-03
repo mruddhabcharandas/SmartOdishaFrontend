@@ -39,6 +39,12 @@ import ManualPayment from './pages/user/ManualPayment.jsx'
 import PrivacyPolicy from './pages/user/PrivacyPolicy.jsx'
 import TermsOfService from './pages/user/TermsOfService.jsx'
 import Wishlist from './pages/user/Wishlist.jsx'
+import BusinessLogin from './pages/business/Login.jsx'
+import BusinessForgotPassword from './pages/business/ForgotPassword.jsx'
+import BusinessResetPassword from './pages/business/ResetPassword.jsx'
+import BusinessDashboard from './pages/business/Dashboard.jsx'
+import BusinessRequest from './pages/business/Request.jsx'
+import BusinessProtectedRoute from './components/BusinessProtectedRoute.jsx'
 
 export default function App() {
   return (
@@ -70,6 +76,16 @@ export default function App() {
         <Route path="stores" element={<Stores />} />
         <Route path="offers" element={<Offers />} />
       </Route>
+
+      <Route path="/business/login" element={<BusinessLogin />} />
+      <Route path="/business/forgot-password" element={<BusinessForgotPassword />} />
+      <Route path="/business/reset-password" element={<BusinessResetPassword />} />
+      <Route path="/business/request" element={<BusinessRequest />} />
+      <Route path="/business/dashboard" element={
+        <BusinessProtectedRoute>
+          <BusinessDashboard />
+        </BusinessProtectedRoute>
+      } />
 
       <Route path="/" element={<UserLayout />}>
         <Route index element={<Home />} />
