@@ -80,7 +80,7 @@ export default function UserLayout() {
                 </button>
               )}
               <Link to="/" className="flex items-center gap-3 sm:gap-4 group flex-shrink-0">
-                <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
+                <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
                   <img
                     src="/logo.png"
                     alt="SmartOdisha"
@@ -90,7 +90,7 @@ export default function UserLayout() {
                 <div className="flex flex-col">
                   <span className="text-base sm:text-xl font-black tracking-tighter leading-none">
                     <span className="text-blue-700">SMART</span>
-                    <span className="text-orange-500">ODISHA</span>
+                    <span className="text-indigo-600">ODISHA</span>
                   </span>
                   <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">
                     SMART CHOICE, SMART LIFE
@@ -111,7 +111,7 @@ export default function UserLayout() {
                 />
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3 text-white font-bold"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-white font-bold"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <circle cx="11" cy="11" r="7" strokeWidth="2" />
@@ -128,7 +128,7 @@ export default function UserLayout() {
                 {user ? (
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
                         {user?.avatar && (
                           <img
                             src={getCloudinaryUrl(user.avatar)}
@@ -181,11 +181,11 @@ export default function UserLayout() {
                 to="/wishlist"
                 className="group relative p-2 sm:p-3 rounded-xl hover:bg-gray-50 transition-all"
               >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-orange-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-blue-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 {wishlistCount > 0 && (
-                  <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-orange-500 rounded-full">
+                  <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-blue-600 rounded-full">
                     {wishlistCount}
                   </span>
                 )}
@@ -196,13 +196,13 @@ export default function UserLayout() {
                 to="/cart"
                 className="group relative p-2 sm:p-3 rounded-xl hover:bg-gray-50 transition-all"
               >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-orange-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-blue-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M7 6h13l-1.2 7H9.2L7 6Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   <circle cx="10" cy="19" r="1.4" fill="currentColor" />
                   <circle cx="17" cy="19" r="1.4" fill="currentColor" />
                 </svg>
                 {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-orange-500 rounded-full">
+                  <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-blue-600 rounded-full">
                     {cartCount}
                   </span>
                 )}
@@ -229,12 +229,12 @@ export default function UserLayout() {
               className={({ isActive }) =>
                 classNames(
                   'flex flex-col items-center justify-center gap-0.5 transition-all px-3 py-2 rounded-2xl relative',
-                  isActive ? 'text-orange-500 bg-orange-50 scale-105' : 'text-gray-600 hover:text-blue-600'
+                  isActive ? 'text-blue-600 bg-blue-50 scale-105' : 'text-gray-600 hover:text-blue-600'
                 )
               }
             >
               {item.showCount && item.count > 0 && (
-                <span className="absolute top-1 right-1 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-orange-500 rounded-full">
+                <span className="absolute top-1 right-1 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-blue-600 rounded-full">
                   {item.count}
                 </span>
               )}

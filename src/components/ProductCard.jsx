@@ -77,8 +77,8 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
       <style jsx>{`
         .pc-card:hover {
           transform: translateY(-8px);
-          box-shadow: 0 24px 64px -28px rgba(249,115,22,0.45);
-          border-color: rgba(249,115,22,0.25);
+          box-shadow: 0 24px 64px -28px rgba(37, 99, 235, 0.3);
+          border-color: rgba(37, 99, 235, 0.25);
         }
 
         @media (max-width: 640px) {
@@ -94,7 +94,7 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
       <div style={{
         position: 'relative',
         aspectRatio: '1',
-        background: 'linear-gradient(135deg, #fef3c7 0%, #f97316 100%)',
+        background: 'linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%)',
         overflow: 'hidden'
       }}>
         {discount >= 10 && (
@@ -102,7 +102,7 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
             position: 'absolute',
             top: '10px',
             left: '10px',
-            background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
             color: 'white',
             padding: '6px 14px',
             borderRadius: '14px',
@@ -110,7 +110,7 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
             fontWeight: 900,
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            boxShadow: '0 6px 20px rgba(249,115,22,0.35)',
+            boxShadow: '0 6px 20px rgba(59,130,246,0.25)',
             zIndex: 10
           }}>
             {discount}% OFF
@@ -149,7 +149,7 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
           left: '12px',
           background: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(249,115,22,0.18)',
+          border: '1px solid rgba(59, 130, 246, 0.15)',
           padding: '6px 14px',
           borderRadius: '14px',
           display: 'flex',
@@ -158,13 +158,13 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
           zIndex: 5,
           boxShadow: '0 8px 28px rgba(15,23,42,0.08)'
         }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#f97316">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb">
             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
           </svg>
           <span style={{
             fontSize: '11px',
             fontWeight: 900,
-            color: '#f97316',
+            color: '#2563eb',
             letterSpacing: '0.08em',
             textTransform: 'uppercase'
           }}>Verified</span>
@@ -181,8 +181,8 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
           <span style={{
             fontSize: '11px',
             fontWeight: 900,
-            color: '#f97316',
-            background: 'rgba(249,115,22,0.08)',
+            color: '#2563eb',
+            background: 'rgba(37, 99, 235, 0.08)',
             padding: '5px 12px',
             borderRadius: '10px',
             textTransform: 'uppercase',
@@ -232,7 +232,7 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
               <span className="pc-price" style={{
                 fontSize: '22px',
                 fontWeight: 900,
-                background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent'
               }}>
@@ -252,7 +252,7 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
             {displayMrp > minPrice && (
               <div style={{
                 fontSize: '11px',
-                color: '#f97316',
+                color: '#2563eb',
                 fontWeight: 800
               }}>
                 Save ₹{Number(displayMrp - minPrice).toLocaleString()}
@@ -266,14 +266,14 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
               width: '52px',
               height: '52px',
               borderRadius: '18px',
-              background: totalStock <= 0 ? '#e2e8f0' : 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+              background: totalStock <= 0 ? '#e2e8f0' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
               color: totalStock <= 0 ? '#94a3b8' : 'white',
               border: 'none',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: totalStock <= 0 ? 'not-allowed' : 'pointer',
-              boxShadow: totalStock <= 0 ? 'none' : '0 10px 32px rgba(249,115,22,0.4)',
+              boxShadow: totalStock <= 0 ? 'none' : '0 10px 32px rgba(37, 99, 235, 0.3)',
               transition: 'all 0.3s'
             }}
             onClick={async e => {
@@ -318,13 +318,13 @@ export default function ProductCard({ p, authed, addToCart, navigate, index, set
           <div style={{
             width: '7px',
             height: '7px',
-            background: totalStock > 0 ? '#f97316' : '#dc2626',
+            background: totalStock > 0 ? '#10b981' : '#dc2626',
             borderRadius: '50%'
           }} />
           <span style={{
             fontSize: '11px',
             fontWeight: 800,
-            color: totalStock > 0 ? '#f97316' : '#dc2626',
+            color: totalStock > 0 ? '#10b981' : '#dc2626',
             textTransform: 'uppercase',
             letterSpacing: '0.08em'
           }}>

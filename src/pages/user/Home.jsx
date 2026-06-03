@@ -49,7 +49,7 @@ export default function Home() {
         }
 
         .top-ticker {
-          background: linear-gradient(90deg, #3b82f6 0%, #f97316 50%, #c2410c 100%);
+          background: linear-gradient(90deg, #3b82f6 0%, #4f46e5 50%, #2563eb 100%);
           color: white;
           padding: 12px 16px;
           font-size: 12px;
@@ -80,7 +80,7 @@ export default function Home() {
           inset: 0;
           background-image: 
             radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 100% 0%, rgba(249, 115, 22, 0.25) 0%, transparent 50%),
+            radial-gradient(circle at 100% 0%, rgba(99, 102, 241, 0.25) 0%, transparent 50%),
             radial-gradient(circle at 50% 100%, rgba(37, 99, 235, 0.15) 0%, transparent 50%);
           pointer-events: none;
         }
@@ -126,7 +126,7 @@ export default function Home() {
           letter-spacing: -0.04em;
         }
         .hero-title .accent {
-          background: linear-gradient(135deg, #3b82f6 0%, #f97316 50%, #fbbf24 100%);
+          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 50%, #10b981 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
@@ -146,7 +146,7 @@ export default function Home() {
           gap: 14px;
         }
         .btn-primary {
-          background: linear-gradient(135deg, #3b82f6, #f97316);
+          background: linear-gradient(135deg, #3b82f6, #4f46e5);
           background-size: 200% 200%;
           color: white;
           border: none;
@@ -250,7 +250,7 @@ export default function Home() {
         .feature-icon {
           width: 64px;
           height: 64px;
-          background: linear-gradient(135deg, #dbeafe 0%, #fed7aa 100%);
+          background: linear-gradient(135deg, #dbeafe 0%, #a5b4fc 100%);
           border-radius: 20px;
           display: flex;
           align-items: center;
@@ -348,7 +348,7 @@ export default function Home() {
         .store-image-container {
           width: 100%;
           aspect-ratio: 4/3;
-          background: linear-gradient(135deg, #dbeafe 0%, #fed7aa 50%, #fef3c7 100%);
+          background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 50%, #eff6ff 100%);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -381,7 +381,7 @@ export default function Home() {
           gap: 6px;
           font-size: 11px;
           font-weight: 800;
-          color: #3b82f6;
+          color: #10b981;
           text-transform: uppercase;
           letter-spacing: 0.1em;
         }
@@ -400,7 +400,7 @@ export default function Home() {
           border-radius: 32px;
           overflow: hidden;
           aspect-ratio: 16/10;
-          background: linear-gradient(135deg, #3b82f6, #f97316, #c2410c);
+          background: linear-gradient(135deg, #3b82f6, #4f46e5, #1e1b4b);
           box-shadow: 0 30px 80px -30px rgba(59,130,246,0.4);
           transition: all 0.4s ease;
         }
@@ -500,7 +500,7 @@ export default function Home() {
           white-space: nowrap;
         }
         .ticker-highlight {
-          background: linear-gradient(135deg, #3b82f6, #f97316);
+          background: linear-gradient(135deg, #3b82f6, #4f46e5);
           color: white;
           padding: 8px 20px;
           border-radius: 999px;
@@ -521,7 +521,7 @@ export default function Home() {
           inset: 0;
           background-image: 
             radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-            radial-gradient(circle at 80% 50%, rgba(249, 115, 22, 0.15) 0%, transparent 40%);
+            radial-gradient(circle at 80% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 40%);
           pointer-events: none;
         }
         .stats-inner {
@@ -548,7 +548,7 @@ export default function Home() {
           font-weight: 900;
           line-height: 1;
           margin-bottom: 12px;
-          background: linear-gradient(135deg, #3b82f6 0%, #f97316 100%);
+          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
@@ -673,7 +673,7 @@ export default function Home() {
                 <div className="store-content">
                   <div className="store-name">{store.name}</div>
                   <div className="store-badge">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     Verified Store
@@ -766,7 +766,7 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             <div className="flex flex-col items-center lg:items-start gap-6">
               <div className="flex items-center gap-5">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center overflow-hidden shadow-lg shadow-orange-900/50">
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center overflow-hidden shadow-lg shadow-indigo-900/50">
                   <img 
                     src="/logo.png" 
                     alt="SmartOdisha" 
@@ -775,8 +775,8 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-2xl font-black tracking-tighter leading-none">
-                    <span className="text-orange-400">SMART</span>
-                    <span className="text-orange-300">ODISHA</span>
+                    <span className="text-blue-400">SMART</span>
+                    <span className="text-indigo-400">ODISHA</span>
                   </span>
                   <span className="text-sm font-semibold text-slate-400 tracking-widest mt-1.5">SMART CHOICE, SMART LIFE</span>
                 </div>
@@ -812,7 +812,7 @@ export default function Home() {
                 </a>
               </div>
               <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 w-full sm:w-auto">
-                <Link to="/business/request" className="text-sm font-semibold text-orange-400 uppercase tracking-widest hover:text-orange-300 transition-colors text-center sm:text-right">
+                <Link to="/business/request" className="text-sm font-semibold text-indigo-400 uppercase tracking-widest hover:text-indigo-300 transition-colors text-center sm:text-right">
                   Become a Seller
                 </Link>
                 <Link to="/business/login" className="text-sm font-semibold text-slate-400 uppercase tracking-widest hover:text-white transition-colors text-center sm:text-right">
@@ -826,6 +826,10 @@ export default function Home() {
                 </Link>
               </div>
             </div>
+          </div>
+          <div className="border-t border-slate-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-400 uppercase tracking-widest">
+            <span>© {new Date().getFullYear()} SmartOdisha. All rights reserved.</span>
+            <span>Designed for Odisha, by Google DeepMind team.</span>
           </div>
         </div>
       </footer>
