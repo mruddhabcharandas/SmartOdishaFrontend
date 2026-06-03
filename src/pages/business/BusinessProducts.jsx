@@ -786,7 +786,7 @@ export default function BusinessProducts() {
               editingVariant={editingVariant}
               setEditingVariant={setEditingVariant}
               onChanged={() => { 
-                api.get(`/api/products/${managingVariants._id}`).then(({data}) => {
+                api.get(`/api/stores/products/${managingVariants._id}`).then(({data}) => {
                   setManagingVariants(data)
                   load(page)
                 })
@@ -946,7 +946,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
 
   const toggleActive = async (v) => {
     try {
-      await api.put(`/api/products/${product._id}/variants/${v._id}`, { isActive: !v.isActive })
+      await api.put(`/api/stores/products/${product._id}/variants/${v._id}`, { isActive: !v.isActive })
       notify('Variant updated','success')
       onChanged && onChanged()
     } catch { notify('Update failed','error') }
@@ -955,7 +955,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
   const deleteVariant = async (v) => {
     if (!window.confirm('Delete variant?')) return
     try {
-      await api.delete(`/api/products/${product._id}/variants/${v._id}`)
+      await api.delete(`/api/stores/products/${product._id}/variants/${v._id}`)
       notify('Variant deleted','success')
       onChanged && onChanged()
     } catch { notify('Delete failed','error') }
@@ -963,7 +963,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
 
   const updateAttributes = async (next) => {
     try {
-      await api.put(`/api/products/${product._id}`, { attributes: next })
+      await api.put(`/api/stores/products/${product._id}`, { attributes: next })
       setEditing(prev => ({ ...prev, attributes: next }))
       // No need for notify here to avoid spamming, but we can if preferred
     } catch { notify('Failed to save attributes', 'error') }
@@ -1023,7 +1023,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
     try {
       const images = v.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url }));
       
-      await api.post(`/api/products/${product._id}/variants`, {
+      await api.post(`/api/stores/products/${product._id}/variants`, {
         attributes: v.attributes,
         price: Number(v.price),
         mrp: v.mrp ? Number(v.mrp) : undefined,
@@ -1044,7 +1044,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
         ? editingVariant.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url }))
         : editingVariant.images;
 
-      await api.put(`/api/products/${product._id}/variants/${editingVariant._id}`, {
+      await api.put(`/api/stores/products/${product._id}/variants/${editingVariant._id}`, {
         ...editingVariant,
         price: Number(editingVariant.price),
         mrp: editingVariant.mrp ? Number(editingVariant.mrp) : undefined,
@@ -1121,7 +1121,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
         ? product.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url }))
         : (product.images || []);
 
-      await api.post(`/api/products/${product._id}/variants`, {
+      await api.post(`/api/stores/products/${product._id}/variants`, {
         attributes: combo,
         price: Number(price || 0),
         mrp: product.mrp ? Number(product.mrp) : undefined,
@@ -1146,7 +1146,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
     // Create variants sequentially to avoid race conditions/duplicate errors
     for (const combo of missingCombinations) {
       try {
-        await api.post(`/api/products/${product._id}/variants`, {
+        await api.post(`/api/stores/products/${product._id}/variants`, {
           attributes: combo,
           price: Number(price || 0),
           mrp: product.mrp ? Number(product.mrp) : undefined,

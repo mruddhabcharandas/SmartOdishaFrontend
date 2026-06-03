@@ -821,7 +821,7 @@ export default function Home() {
                   Become a Seller
                 </Link>
                 <Link to="/business/login" className="text-sm font-semibold text-slate-400 uppercase tracking-widest hover:text-white transition-colors text-center sm:text-right">
-                  Store Login
+                  Seller Login
                 </Link>
                 <Link to="/privacy-policy" className="text-sm font-semibold text-slate-400 uppercase tracking-widest hover:text-white transition-colors text-center sm:text-right">
                   Privacy Policy

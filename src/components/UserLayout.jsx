@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import { useCart } from '../lib/CartContext'
 import { useWishlist } from '../lib/WishlistContext'
@@ -12,6 +12,7 @@ function classNames(...classes) {
 
 export default function UserLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
   const { cartCount } = useCart()
   const { wishlistCount } = useWishlist()
   const { user, logout } = useAuth()
@@ -58,9 +59,28 @@ export default function UserLayout() {
       <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16 sm:h-20">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 sm:gap-4 group flex-shrink-0">
-              <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
+            {/* Logo & Back Button */}
+            <div className="flex items-center gap-3 sm:gap-4">
+              {location.pathname !== '/' && (
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="flex items-center justify-center h-10 w-10 sm:h-12 sm:w-12 rounded-full border border-gray-200 bg-white hover:bg-gray-50 shadow-sm transition-all hover:border-gray-300 hover:scale-105 active:scale-95 group/back"
+                  aria-label="Go back"
+                >
+                  <svg
+                    className="w-5 h-5 sm:w-6 sm:h-6 text-slate-700 transition-transform group-hover/back:-translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2.5"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+              )}
+              <Link to="/" className="flex items-center gap-3 sm:gap-4 group flex-shrink-0">
+                <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
                   <img
                     src="/logo.png"
                     alt="SmartOdisha"
@@ -72,16 +92,17 @@ export default function UserLayout() {
                   />
                   <span className="text-lg sm:text-xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" style={{ display: 'none' }}>SO</span>
                 </div>
-              <div className="flex flex-col">
-                <span className="text-base sm:text-xl font-black tracking-tighter leading-none">
-                  <span className="text-blue-700">SMART</span>
-                  <span className="text-orange-500">ODISHA</span>
-                </span>
-                <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">
-                  SMART CHOICE, SMART LIFE
-                </span>
-              </div>
-            </Link>
+                <div className="flex flex-col">
+                  <span className="text-base sm:text-xl font-black tracking-tighter leading-none">
+                    <span className="text-blue-700">SMART</span>
+                    <span className="text-orange-500">ODISHA</span>
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">
+                    SMART CHOICE, SMART LIFE
+                  </span>
+                </div>
+              </Link>
+            </div>
 
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-6">

@@ -61,7 +61,7 @@ export default function Enquiry() {
   const [appliedCoupon, setAppliedCoupon] = useState(location.state?.appliedCoupon || null)
   const [couponError, setCouponError] = useState('')
   const [isApplying, setIsApplying] = useState(false)
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('COD') // 'COD' or 'CASHFREE'
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('CASHFREE') // 'COD' or 'CASHFREE'
   const cashfreeSdkLoaded = useRef(false)
   
   // Address management
@@ -212,10 +212,11 @@ export default function Enquiry() {
     })
   }
 
-  const handleCashfreeCheckout = async (paymentSessionId) => {
+  const handleCashfreeCheckout = async (paymentSessionId, cashfreeMode) => {
     try {
       await loadCashfreeSdk()
-      const cashfree = window.Cashfree({ mode: 'sandbox' })
+      const mode = cashfreeMode || (import.meta.env.PROD ? 'production' : 'sandbox')
+      const cashfree = window.Cashfree({ mode })
       cashfree.checkout({
         paymentSessionId: paymentSessionId,
         returnUrl: `${window.location.origin}/orders?order_id={order_id}`
@@ -387,7 +388,7 @@ export default function Enquiry() {
 
       if (data.paymentSessionId) {
         // Open Cashfree checkout
-        await handleCashfreeCheckout(data.paymentSessionId)
+        await handleCashfreeCheckout(data.paymentSessionId, data.cashfreeMode)
       }
     } catch (err) {
       const msg = err?.response?.data?.error || 'Failed to place order. Please try again.'
@@ -550,66 +551,86 @@ export default function Enquiry() {
             </div>
 
             {/* Payment Section */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">
-                2. Payment Method
+            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 border border-slate-100/80">
+              <h2 className="text-lg font-extrabold text-slate-900 mb-6 flex items-center gap-3">
+                <span className="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-sm">2</span>
+                Payment Method
               </h2>
 
-              <div className="space-y-3">
-                {/* COD Option */}
+              <div className="flex flex-col gap-4">
+                {/* Prepaid Option */}
                 <div 
-                  onClick={() => setSelectedPaymentMethod('COD')}
-                  className={`border-2 rounded-lg p-4 flex items-center gap-4 cursor-pointer transition-all ${
-                    selectedPaymentMethod === 'COD' 
-                      ? 'border-orange-500 bg-orange-50' 
-                      : 'border-slate-200 hover:border-slate-300'
+                  onClick={() => setSelectedPaymentMethod('CASHFREE')}
+                  className={`relative overflow-hidden rounded-2xl border-2 p-5 cursor-pointer transition-all duration-300 flex flex-col justify-between gap-4 ${
+                    selectedPaymentMethod === 'CASHFREE' 
+                      ? 'border-blue-600 bg-gradient-to-br from-blue-50/50 to-indigo-50/10 shadow-md shadow-blue-100/50 scale-[1.01]' 
+                      : 'border-slate-200/85 hover:border-blue-300 hover:bg-slate-50/30'
                   }`}
                 >
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                    selectedPaymentMethod === 'COD' 
-                      ? 'border-orange-500' 
-                      : 'border-slate-300'
-                  }`}>
-                    {selectedPaymentMethod === 'COD' && <div className="w-3 h-3 rounded-full bg-orange-500"></div>}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2.5 rounded-xl transition-colors ${selectedPaymentMethod === 'CASHFREE' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-500'}`}>
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-900 text-sm">Secure Online Payment</div>
+                        <div className="text-xs text-slate-500 font-medium mt-0.5">UPI, Credit/Debit Cards, Netbanking & Wallets (Recommended)</div>
+                      </div>
+                    </div>
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                      selectedPaymentMethod === 'CASHFREE' 
+                        ? 'border-blue-600 bg-blue-600' 
+                        : 'border-slate-300'
+                    }`}>
+                      {selectedPaymentMethod === 'CASHFREE' && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-slate-900 flex items-center gap-2">
-                      Cash on Delivery (COD)
-                    </div>
-                    <div className="text-sm text-orange-700 font-medium">
-                      25% advance required to place order
-                    </div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      Pay the remaining 75% upon delivery
+                  <div className="border-t border-slate-100 pt-3 mt-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">Pay 100% Now</span>
+                      <span className="text-xs text-emerald-600 font-bold flex items-center gap-1">
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M2.166 11.37c0-1.25.687-2.403 1.79-3.03l7.08-4.018a3.502 3.502 0 013.502 0l7.08 4.018a3.502 3.502 0 010 6.06l-7.08 4.018a3.502 3.502 0 01-3.502 0l-7.08-4.018a3.502 3.502 0 01-1.79-3.03zM10 5a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd"/></svg>
+                        Instant Order Placement
+                      </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Prepaid Option */}
+                {/* COD Option */}
                 <div 
-                  onClick={() => setSelectedPaymentMethod('CASHFREE')}
-                  className={`border-2 rounded-lg p-4 flex items-center gap-4 cursor-pointer transition-all ${
-                    selectedPaymentMethod === 'CASHFREE' 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-slate-200 hover:border-slate-300'
+                  onClick={() => setSelectedPaymentMethod('COD')}
+                  className={`relative overflow-hidden rounded-2xl border-2 p-5 cursor-pointer transition-all duration-300 flex flex-col justify-between gap-4  ${
+                    selectedPaymentMethod === 'COD' 
+                      ? 'border-orange-500 bg-gradient-to-br from-orange-50/50 to-amber-50/10 shadow-md shadow-orange-100/50 scale-[1.01]' 
+                      : 'border-slate-200/85 hover:border-orange-300 hover:bg-slate-50/30'
                   }`}
                 >
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                    selectedPaymentMethod === 'CASHFREE' 
-                      ? 'border-blue-500' 
-                      : 'border-slate-300'
-                  }`}>
-                    {selectedPaymentMethod === 'CASHFREE' && <div className="w-3 h-3 rounded-full bg-blue-500"></div>}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2.5 rounded-xl transition-colors ${selectedPaymentMethod === 'COD' ? 'bg-orange-100 text-orange-600' : 'bg-slate-100 text-slate-500'}`}>
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="font-bold text-slate-900 text-sm">Cash on Delivery (COD)</div>
+                        <div className="text-xs text-slate-500 font-medium mt-0.5">Pay 25% advance & remaining 75% at your doorstep</div>
+                      </div>
+                    </div>
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                      selectedPaymentMethod === 'COD' 
+                        ? 'border-orange-500 bg-orange-500' 
+                        : 'border-slate-300'
+                    }`}>
+                      {selectedPaymentMethod === 'COD' && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-slate-900 flex items-center gap-2">
-                      Pay Online (Prepaid)
-                    </div>
-                    <div className="text-sm text-blue-700 font-medium">
-                      Pay 100% amount now
-                    </div>
-                    <div className="text-xs text-slate-500 mt-1">
-                      Secure payment via UPI/Card/NetBanking
+                  <div className="border-t border-slate-100 pt-3 mt-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded uppercase tracking-wider">25% Advance Required</span>
+                      <span className="text-xs text-orange-600 font-bold">75% on Delivery</span>
                     </div>
                   </div>
                 </div>

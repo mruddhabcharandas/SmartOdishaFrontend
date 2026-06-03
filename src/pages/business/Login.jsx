@@ -33,7 +33,7 @@ export default function BusinessLogin() {
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center overflow-hidden">
               <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
             </div>
-            <span>SmartOdisha Business</span>
+            <span>SmartOdisha Seller Panel</span>
           </div>
         </div>
         <form
@@ -41,9 +41,9 @@ export default function BusinessLogin() {
           className="bg-white border border-orange-100 rounded-2xl px-6 py-6 md:px-8 md:py-7 shadow-lg space-y-4"
         >
           <div>
-            <h1 className="text-xl font-semibold text-gray-900">Sign in to Business</h1>
+            <h1 className="text-xl font-semibold text-gray-900">Sign in as Seller</h1>
             <p className="text-xs text-gray-500 mt-1">
-              Manage your store, products, and orders
+              Manage your products, inventory, and orders
             </p>
           </div>
           {error && (
@@ -56,7 +56,7 @@ export default function BusinessLogin() {
             <input
               type="email"
               className="border border-gray-300 bg-white text-gray-900 text-sm rounded-lg px-3 py-2 w-full outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-              placeholder="store@example.com"
+              placeholder="seller@example.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
@@ -85,7 +85,7 @@ export default function BusinessLogin() {
             <div className="border-t border-gray-200 pt-2 mt-2">
               Want to join as a seller?{' '}
               <Link to="/business/request" className="text-orange-600 hover:text-orange-700 font-medium">
-                Request access
+                Request seller access
               </Link>
             </div>
           </div>
