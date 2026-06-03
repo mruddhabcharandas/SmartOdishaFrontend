@@ -20,6 +20,7 @@ import StaffManagement from './pages/admin/StaffManagement.jsx'
 import Stores from './pages/admin/Stores.jsx'
 import Offers from './pages/admin/Offers.jsx'
 import Home from './pages/user/Home.jsx'
+import About from './pages/user/About.jsx'
 import Catalogue from './pages/user/Catalogue.jsx'
 import BrandPage from './pages/user/BrandPage.jsx'
 import ProductDetail from './pages/user/ProductDetail.jsx'
@@ -72,6 +73,7 @@ export default function App() {
 
       <Route path="/" element={<UserLayout />}>
         <Route index element={<Home />} />
+        <Route path="about" element={<About />} />
         <Route path="products" element={<Catalogue />} />
         <Route path="brand/:slug" element={<BrandPage />} />
         <Route path="products/:idOrSlug" element={<ProductDetail />} />

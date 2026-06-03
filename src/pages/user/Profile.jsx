@@ -6,6 +6,19 @@ import { useToast } from '../../components/Toast';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { getCloudinaryUrl } from '../../lib/cloudinary';
 
+// Indian States
+const INDIAN_STATES = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand',
+  'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur',
+  'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
+  'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura',
+  'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli',
+  'Daman and Diu', 'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep',
+  'Puducherry'
+];
+
 export default function Profile() {
   const { user, token, refreshProfile } = useAuth();
   const { notify } = useToast();
@@ -15,8 +28,15 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('personal');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
   const [formData, setFormData] = useState({
     name: ''
+  });
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   });
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [showAddressModal, setShowAddressModal] = useState(false);
@@ -69,11 +89,52 @@ export default function Profile() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleAddressInputChange = (e) => {
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  
+  const handleAddressInputChange = async (e) => {
     const { name, value, type, checked } = e.target;
+    let processedValue = value;
+    if (name === 'phone') {
+      processedValue = value.replace(/\D/g, '').slice(0, 10);
+    }
+    if (name === 'pincode') {
+      processedValue = value.replace(/\D/g, '').slice(0, 6);
+      
+      // If pincode is 6 digits, fetch details
+      if (processedValue.length === 6) {
+        setPincodeLoading(true);
+        try {
+          const response = await fetch(`https://api.postalpincode.in/pincode/${processedValue}`);
+          const data = await response.json();
+          
+          if (data[0]?.Status === 'Success' && data[0]?.PostOffice?.length > 0) {
+            const postOffice = data[0].PostOffice[0];
+            setAddressForm(prev => ({
+              ...prev,
+              pincode: processedValue,
+              district: postOffice.District,
+              state: postOffice.State
+            }));
+            return; // Don't run the default set
+          } else {
+            notify('Invalid pincode', 'error');
+          }
+        } catch (err) {
+          console.error('Failed to fetch pincode details', err);
+        } finally {
+          setPincodeLoading(false);
+        }
+      }
+    }
+    
     setAddressForm(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : processedValue
     }));
   };
 
@@ -92,6 +153,33 @@ export default function Profile() {
     }
   };
 
+  const handlePasswordUpdate = async (e) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      notify('New passwords do not match', 'error');
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      notify('New password must be at least 6 characters', 'error');
+      return;
+    }
+    setChangingPassword(true);
+    try {
+      await api.put('/api/user/change-password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      });
+      notify('Password changed successfully!', 'success');
+      setShowPasswordChange(false);
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      console.error('Failed to change password:', err);
+      notify(err?.response?.data?.error || 'Failed to change password', 'error');
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   const handleAddAddress = () => {
     setEditingAddress(null);
     setAddressForm({
@@ -103,7 +191,7 @@ export default function Profile() {
       district: '',
       state: '',
       pincode: '',
-      isDefault: false
+      isDefault: savedAddresses.length === 0
     });
     setShowAddressModal(true);
   };
@@ -126,6 +214,14 @@ export default function Profile() {
 
   const handleSaveAddress = async (e) => {
     e.preventDefault();
+    if (addressForm.phone.length !== 10) {
+      notify('Phone number must be 10 digits', 'error');
+      return;
+    }
+    if (addressForm.pincode.length !== 6) {
+      notify('Pincode must be 6 digits', 'error');
+      return;
+    }
     try {
       if (editingAddress) {
         await api.put(`/api/user/addresses/${editingAddress._id}`, addressForm);
@@ -553,17 +649,77 @@ export default function Profile() {
                 </div>
                 <div className="p-8">
                   <div className="space-y-5">
-                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-blue-200 hover:bg-gradient-to-r from-blue-50 to-indigo-50 transition-all duration-300 cursor-pointer">
-                      <h3 className="font-bold text-slate-900 mb-2 text-lg">Password</h3>
-                      <p className="text-slate-500 text-sm mb-4">Change your password to keep your account secure</p>
-                      <button className="text-blue-700 font-semibold text-sm hover:text-blue-800 transition-colors duration-300 flex items-center gap-2">
-                        Change Password
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </button>
+                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-blue-200 hover:bg-gradient-to-r from-blue-50 to-indigo-50 transition-all duration-300">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="font-bold text-slate-900 mb-2 text-lg">Password</h3>
+                          <p className="text-slate-500 text-sm">Change your password to keep your account secure</p>
+                        </div>
+                        <button
+                          onClick={() => setShowPasswordChange(!showPasswordChange)}
+                          className="text-blue-700 font-semibold text-sm hover:text-blue-800 transition-colors duration-300 flex items-center gap-2"
+                        >
+                          {showPasswordChange ? 'Cancel' : 'Change Password'}
+                          <svg className={`w-4 h-4 transition-transform duration-300 ${showPasswordChange ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </button>
+                      </div>
+                      {showPasswordChange && (
+                        <form onSubmit={handlePasswordUpdate} className="space-y-4 pt-4 border-t border-slate-200">
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">Current Password *</label>
+                            <input
+                              type="password"
+                              name="currentPassword"
+                              value={passwordForm.currentPassword}
+                              onChange={handlePasswordChange}
+                              required
+                              className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">New Password *</label>
+                            <input
+                              type="password"
+                              name="newPassword"
+                              value={passwordForm.newPassword}
+                              onChange={handlePasswordChange}
+                              required
+                              className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-semibold text-slate-700 mb-2">Confirm New Password *</label>
+                            <input
+                              type="password"
+                              name="confirmPassword"
+                              value={passwordForm.confirmPassword}
+                              onChange={handlePasswordChange}
+                              required
+                              className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                            />
+                          </div>
+                          <div className="pt-4">
+                            <button
+                              type="submit"
+                              disabled={changingPassword}
+                              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+                            >
+                              {changingPassword ? (
+                                <>
+                                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                  Changing Password...
+                                </>
+                              ) : (
+                                'Update Password'
+                              )}
+                            </button>
+                          </div>
+                        </form>
+                      )}
                     </div>
-                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-blue-200 hover:bg-gradient-to-r from-blue-50 to-indigo-50 transition-all duration-300 cursor-pointer">
+                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-blue-200 hover:bg-gradient-to-r from-blue-50 to-indigo-50 transition-all duration-300">
                       <h3 className="font-bold text-slate-900 mb-2 text-lg">Notifications</h3>
                       <p className="text-slate-500 text-sm mb-4">Manage your email and SMS notifications</p>
                       <button className="text-blue-700 font-semibold text-sm hover:text-blue-800 transition-colors duration-300 flex items-center gap-2">
@@ -668,14 +824,18 @@ export default function Profile() {
               <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">State *</label>
-                  <input
-                    type="text"
+                  <select
                     name="state"
                     value={addressForm.state}
                     onChange={handleAddressInputChange}
                     required
                     className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
-                  />
+                  >
+                    <option value="">Select State</option>
+                    {INDIAN_STATES.map(state => (
+                      <option key={state} value={state}>{state}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-slate-700 mb-2">Pincode *</label>
@@ -684,6 +844,8 @@ export default function Profile() {
                     name="pincode"
                     value={addressForm.pincode}
                     onChange={handleAddressInputChange}
+                    maxLength={6}
+                    inputMode="numeric"
                     required
                     className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
                   />

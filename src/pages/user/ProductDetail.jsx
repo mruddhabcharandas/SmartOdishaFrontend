@@ -546,6 +546,24 @@ export default function ProductDetail() {
     }
   };
 
+  const handleBuyNow = async () => {
+    if (!isAuthenticated) { navigate('/login', { state: { from: location.pathname + location.search } }); return; }
+    if (variantAttrs.length > 0 && !matchedVariant) {
+      notify('Please select all options', 'error');
+      return;
+    }
+    if (matchedVariant && matchedVariant.stock <= 0) {
+      notify('This variant is out of stock', 'error');
+      return;
+    }
+
+    const ok = await addToCart({ ...p, minOrderQty: 1 }, matchedVariant || undefined);
+    if (ok) {
+      await refreshCart();
+      navigate('/enquiry');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 flex items-center justify-center py-8 px-3 sm:py-12 sm:px-4">
@@ -1424,6 +1442,71 @@ export default function ProductDetail() {
           transform: none;
         }
         
+        .pd-btn-buy-now {
+          flex: 1;
+          min-width: 140px;
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+          background-size: 200% 200%;
+          color: white;
+          border: none;
+          padding: 14px 28px;
+          border-radius: 16px;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          cursor: pointer;
+          font-family: 'Inter', system-ui, sans-serif;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+          box-shadow: 0 10px 32px -10px rgba(249, 115, 22, 0.4);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          position: relative;
+          overflow: hidden;
+          width: 100%;
+        }
+        
+        @media (min-width: 640px) {
+          .pd-btn-buy-now {
+            padding: 16px 32px;
+            border-radius: 18px;
+            font-size: 13px;
+            gap: 10px;
+          }
+        }
+        
+        .pd-btn-buy-now::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+          transform: translateX(-100%);
+          transition: transform 0.6s;
+        }
+        
+        .pd-btn-buy-now:hover:not(:disabled) {
+          transform: translateY(-4px);
+          box-shadow: 0 18px 48px -12px rgba(249, 115, 22, 0.5);
+        }
+        
+        .pd-btn-buy-now:hover:not(:disabled)::after {
+          transform: translateX(100%);
+        }
+        
+        .pd-btn-buy-now:active:not(:disabled) {
+          transform: translateY(-2px) scale(0.98);
+        }
+        
+        .pd-btn-buy-now:disabled {
+          background: #e2e8f0;
+          color: #94a3b8;
+          box-shadow: none;
+          cursor: not-allowed;
+          transform: none;
+        }
+        
         .pd-btn-secondary {
           background: white;
           color: #3b82f6;
@@ -2056,19 +2139,32 @@ export default function ProductDetail() {
               </button>
 
               {authed ? (
-                <button
-                  className="pd-btn-primary"
-                  onClick={handleAddToCart}
-                  disabled={!canAddToCart}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M6 6h15l-1.5 9h-12z" />
-                    <path d="M6 6l-1-3H3" />
-                    <circle cx="9" cy="21" r="1" />
-                    <circle cx="18" cy="21" r="1" />
-                  </svg>
-                  {totalStock <= 0 ? 'Out of Stock' : 'Add to Cart'}
-                </button>
+                <>
+                  <button
+                    className="pd-btn-primary"
+                    onClick={handleAddToCart}
+                    disabled={!canAddToCart}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M6 6h15l-1.5 9h-12z" />
+                      <path d="M6 6l-1-3H3" />
+                      <circle cx="9" cy="21" r="1" />
+                      <circle cx="18" cy="21" r="1" />
+                    </svg>
+                    {totalStock <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                  </button>
+                  <button
+                    className="pd-btn-buy-now"
+                    onClick={handleBuyNow}
+                    disabled={!canAddToCart}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M14 5a3 3 0 0 0-6 0H4a2 2 0 0 0-2 2v10c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4zM1 21h12" />
+                      <path d="M9 10h6" />
+                    </svg>
+                    {totalStock <= 0 ? 'Out of Stock' : 'Buy Now'}
+                  </button>
+                </>
               ) : (
                 <button
                   className="pd-btn-primary"

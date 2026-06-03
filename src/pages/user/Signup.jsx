@@ -123,6 +123,30 @@ export default function Signup() {
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
+    
+    // Client-side validation
+    if (!formData.name.trim()) {
+      notify('Please enter your full name', 'error');
+      return;
+    }
+    if (!formData.email.trim()) {
+      notify('Please enter your email address', 'error');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      notify('Please enter a valid email address', 'error');
+      return;
+    }
+    if (formData.phone.length !== 10) {
+      notify('Phone number must be 10 digits', 'error');
+      return;
+    }
+    if (!formData.password || formData.password.length < 6) {
+      notify('Password must be at least 6 characters', 'error');
+      return;
+    }
+    
     setLoading(true);
     try {
       await api.post('/api/auth/customer/signup', formData);

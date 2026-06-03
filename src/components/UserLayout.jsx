@@ -4,6 +4,7 @@ import { useCart } from '../lib/CartContext'
 import { useWishlist } from '../lib/WishlistContext'
 import { useAuth } from '../lib/AuthContext'
 import { CONFIG } from '../shared/lib/config.js'
+import { getCloudinaryUrl } from '../lib/cloudinary'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -105,8 +106,16 @@ export default function UserLayout() {
                 {user ? (
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
-                        {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
+                        {user.avatar ? (
+                          <img
+                            src={getCloudinaryUrl(user.avatar)}
+                            alt={user.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span>{user.name?.charAt(0)?.toUpperCase() || 'U'}</span>
+                        )}
                       </div>
                       <Link to="/profile" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">
                         Hi, {user.name?.split(' ')[0] || 'User'}
@@ -115,8 +124,11 @@ export default function UserLayout() {
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="text-sm font-semibold text-slate-500 hover:text-red-600 transition-colors"
+                      className="text-sm font-semibold text-slate-500 hover:text-red-600 transition-colors flex items-center gap-1"
                     >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
                       Logout
                     </button>
                   </div>
