@@ -231,23 +231,34 @@ export default function ProductDetail() {
     return () => clearInterval(t);
   }, []);
 
-  // Set initial pincode from user address
+  // Set initial pincode from user's saved addresses
   useEffect(() => {
-    if (user?.address) {
+    if (user?.savedAddresses && user.savedAddresses.length > 0) {
+      // Get default address or first address
+      const defaultAddress = user.savedAddresses.find(addr => addr.isDefault) || user.savedAddresses[0];
+      if (defaultAddress?.pincode) {
+        setPincode(defaultAddress.pincode);
+        checkDeliveryImpl(defaultAddress.pincode);
+      }
+    } else if (user?.address) {
+      // Fallback to old address format
       const pincodeMatch = user.address.match(/\b(\d{6})\b/);
       if (pincodeMatch) {
         setPincode(pincodeMatch[1]);
         checkDeliveryImpl(pincodeMatch[1]);
       }
     }
-  }, [user?.address]);
+  }, [user?.savedAddresses, user?.address]);
 
   const checkDeliveryImpl = async (code) => {
     if (code.length !== 6) return;
     setCheckingDelivery(true);
     try {
-      const { data } = await api.get(`/api/shipping/serviceability?pincode=${code}`);
-      setDeliveryInfo(data);
+      const { data } = await api.get(`/api/shipping/check-pincode`, { params: { pincode: code } });
+      setDeliveryInfo({
+        serviceable: data.delivery_available,
+        message: data.delivery_available ? 'Delivery available' : 'Not available for delivery in this pincode'
+      });
     } catch (err) {
       console.error(err);
       setDeliveryInfo({ serviceable: false, message: 'Unable to check delivery for this pincode' });

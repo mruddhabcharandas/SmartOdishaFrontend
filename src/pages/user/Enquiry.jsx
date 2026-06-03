@@ -1,16 +1,17 @@
-
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import api from '../../lib/api'
 import { getCloudinaryUrl } from '../../lib/cloudinary'
 import { useCart } from '../../lib/CartContext'
 import { useToast } from '../../components/Toast'
+import { useAuth } from '../../lib/AuthContext'
 
 export default function Enquiry() {
   const { notify } = useToast()
   const navigate = useNavigate()
   const location = useLocation()
   const { cart, clearCart, cartTotal } = useCart()
+  const { user, refreshProfile } = useAuth()
   const minAmount = Number(import.meta.env.VITE_MIN_ORDER_AMOUNT || 5000)
 
   const mapCartItem = (item) => {
@@ -42,15 +43,33 @@ export default function Enquiry() {
     : (location.state?.productId ? [{ productId: location.state.productId, quantity: 1, name: location.state.name, mrp: location.state.mrp || location.state.price, price: location.state.price, gst: location.state.gst || 0 }] : [])
 
   const [items, setItems] = useState(initialItems)
-  const [profile, setProfile] = useState({ name: '', phone: '', email: '', kyc: {} })
-  const [svc, setSvc] = useState({ loading: true, available: null, cod: null, etaStart: null, etaEnd: null, error: '' })
-  const [ship, setShip] = useState({ loading: false, amount: 0, discount: 0, final: 0 })
   const [loading, setLoading] = useState(false)
   const [couponCode, setCouponCode] = useState('')
   const [appliedCoupon, setAppliedCoupon] = useState(location.state?.appliedCoupon || null)
   const [couponError, setCouponError] = useState('')
   const [isApplying, setIsApplying] = useState(false)
   const cashfreeSdkLoaded = useRef(false)
+  
+  // Address management
+  const [savedAddresses, setSavedAddresses] = useState([])
+  const [selectedAddress, setSelectedAddress] = useState(null)
+  const [showAddressModal, setShowAddressModal] = useState(false)
+  const [editingAddress, setEditingAddress] = useState(null)
+  const [addressForm, setAddressForm] = useState({
+    fullName: '',
+    phone: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    district: '',
+    state: '',
+    pincode: '',
+    isDefault: false
+  })
+
+  // Serviceability
+  const [svc, setSvc] = useState({ loading: false, available: null, cod: null, etaStart: null, etaEnd: null, error: '' })
+  const [ship, setShip] = useState({ loading: false, amount: 0, discount: 0, final: 0 })
 
   const computeEtaRange = () => {
     const add = (d, n) => { const x = new Date(d); for (let i = 0; i < n; i++) x.setDate(x.getDate() + 1); return x }
@@ -85,22 +104,23 @@ export default function Enquiry() {
   }, [cart])
 
   useEffect(() => {
-    const pin = String(profile?.kyc?.pincode || '').trim()
-    if (pin && items.length > 0) loadServiceability(pin)
-  }, [items])
-
-  useEffect(() => {
     if (!localStorage.getItem('token')) { navigate('/login', { state: { from: location.pathname + location.search } }); return }
-    (async () => {
-      try {
-        const { data } = await api.get('/api/user/me')
-        const prof = { name: data.name || '', phone: data.phone || '', email: data.email || '', address: data.address || '', kyc: data.kyc || {} }
-        setProfile(prof)
-        const pin = String(prof.address?.split(',').pop() || prof.kyc?.pincode || '').trim()
-        if (pin) loadServiceability(pin)
-      } catch { navigate('/login') }
-    })()
+    loadAddresses()
   }, [])
+
+  const loadAddresses = async () => {
+    try {
+      const { data } = await api.get('/api/user/addresses')
+      setSavedAddresses(data)
+      if (data.length > 0) {
+        const defaultAddress = data.find(addr => addr.isDefault) || data[0]
+        setSelectedAddress(defaultAddress)
+        loadServiceability(defaultAddress.pincode)
+      }
+    } catch (err) {
+      console.error('Failed to load addresses:', err)
+    }
+  }
 
   const getLineDetails = (it) => {
     let p = Number(it.price || 0)
@@ -191,26 +211,115 @@ export default function Enquiry() {
     }
   }
 
+  const handleAddAddress = () => {
+    setEditingAddress(null)
+    setAddressForm({
+      fullName: '',
+      phone: '',
+      addressLine1: '',
+      addressLine2: '',
+      city: '',
+      district: '',
+      state: '',
+      pincode: '',
+      isDefault: savedAddresses.length === 0
+    })
+    setShowAddressModal(true)
+  }
+
+  const handleEditAddress = (address) => {
+    setEditingAddress(address)
+    setAddressForm({
+      fullName: address.fullName,
+      phone: address.phone,
+      addressLine1: address.addressLine1,
+      addressLine2: address.addressLine2 || '',
+      city: address.city,
+      district: address.district,
+      state: address.state,
+      pincode: address.pincode,
+      isDefault: address.isDefault
+    })
+    setShowAddressModal(true)
+  }
+
+  const handleSaveAddress = async (e) => {
+    e.preventDefault()
+    try {
+      if (editingAddress) {
+        await api.put(`/api/user/addresses/${editingAddress._id}`, addressForm)
+        notify('Address updated successfully!', 'success')
+      } else {
+        await api.post('/api/user/addresses', addressForm)
+        notify('Address added successfully!', 'success')
+      }
+      await loadAddresses()
+      await refreshProfile()
+      setShowAddressModal(false)
+    } catch (err) {
+      console.error('Failed to save address:', err)
+      notify(err?.response?.data?.error || 'Failed to save address', 'error')
+    }
+  }
+
+  const handleDeleteAddress = async (addressId) => {
+    if (!window.confirm('Are you sure you want to delete this address?')) return
+    try {
+      await api.delete(`/api/user/addresses/${addressId}`)
+      if (selectedAddress?._id === addressId) {
+        setSelectedAddress(null)
+      }
+      await loadAddresses()
+      await refreshProfile()
+      notify('Address deleted successfully!', 'success')
+    } catch (err) {
+      console.error('Failed to delete address:', err)
+      notify(err?.response?.data?.error || 'Failed to delete address', 'error')
+    }
+  }
+
+  const handleSetDefault = async (addressId) => {
+    try {
+      await api.post(`/api/user/addresses/${addressId}/set-default`)
+      await loadAddresses()
+      await refreshProfile()
+      notify('Default address updated!', 'success')
+    } catch (err) {
+      console.error('Failed to set default address:', err)
+      notify(err?.response?.data?.error || 'Failed to set default address', 'error')
+    }
+  }
+
+  const handleAddressInputChange = (e) => {
+    const { name, value, type, checked } = e.target
+    // Clean phone number to exactly 10 digits
+    if (name === 'phone') {
+      const cleaned = value.replace(/\D/g, '').slice(0, 10)
+      setAddressForm(prev => ({
+        ...prev,
+        [name]: cleaned
+      }))
+    } else if (name === 'pincode') {
+      const cleaned = value.replace(/\D/g, '').slice(0, 6)
+      setAddressForm(prev => ({
+        ...prev,
+        [name]: cleaned
+      }))
+    } else {
+      setAddressForm(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value
+      }))
+    }
+  }
+
   const submit = async (e) => {
     e.preventDefault()
     if (cartTotal < minAmount) { notify(`Minimum order amount is ₹${minAmount.toLocaleString()}`, 'error'); return }
-    
-    // Check for missing details
-    const missingDetails = []
-    if (!profile.name || !profile.name.trim()) missingDetails.push('Full Name')
-    if (!profile.phone) missingDetails.push('Phone Number')
-    if (!profile.address || !profile.address.trim()) missingDetails.push('Delivery Address')
-    const pin = String(profile.address?.split(',').pop() || profile.kyc?.pincode || '').trim()
-    if (!pin) missingDetails.push('Pincode')
-    
-    if (missingDetails.length > 0) {
-      notify(`Please fill in missing details: ${missingDetails.join(', ')}`, 'error')
-      navigate('/profile')
-      return
-    }
+    if (!selectedAddress) { notify('Please select a delivery address', 'error'); return }
     
     try {
-      const { data: svcData } = await api.get('/api/shipping/check-pincode', { params: { pincode: pin } })
+      const { data: svcData } = await api.get('/api/shipping/check-pincode', { params: { pincode: selectedAddress.pincode } })
       if (!svcData?.delivery_available) { notify('Delivery not available for your pincode', 'error'); return }
     } catch { notify('Unable to verify serviceability right now', 'error'); return }
 
@@ -218,13 +327,14 @@ export default function Enquiry() {
     try {
       const cleanItems = items.filter(it => typeof it.productId === 'string' && it.productId.length >= 12).map(it => ({ productId: it.productId, variantSku: it.variantSku, quantity: Math.max(1, Number(it.quantity || 1)) }))
       const visibleTotal = computedVisibleTotal(items)
-      if (visibleTotal < minAmount) { notify(`Minimum order amount is ₹${minAmount.toLocaleString()}`, 'error'); setLoading(false); return }
+      if (visibleTotal < minAmount) { notify(`Minimum order value is ₹${minAmount.toLocaleString()}`, 'error'); setLoading(false); return }
 
       // Prepare payment
       const { data } = await api.post('/api/orders/prepare-payment', {
         items: cleanItems,
         paymentMethod: 'CASHFREE',
-        couponCode: appliedCoupon?.code || ''
+        couponCode: appliedCoupon?.code || '',
+        deliveryAddress: selectedAddress
       })
 
       if (data.paymentSessionId) {
@@ -263,240 +373,444 @@ export default function Enquiry() {
   )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-10 px-4">
+    <div className="min-h-screen bg-slate-100 py-6 px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-10">
-          <h1 className="text-4xl font-extrabold text-slate-900 mb-2">
-            Complete Your <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Order</span>
-          </h1>
-          <p className="text-slate-600">Secure checkout with Cashfree Payments</p>
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-slate-900 mb-1">Checkout</h1>
+          <p className="text-slate-600">Complete your order</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            {/* Missing Details Warning */}
-            {(
-              (!profile.name || !profile.name.trim()) ||
-              (!profile.phone) ||
-              (!profile.address || !profile.address.trim()) ||
-              (!String(profile.address?.split(',').pop() || profile.kyc?.pincode || '').trim())
-            ) && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-6 flex items-start gap-4">
-                <div className="text-3xl text-red-600">⚠️</div>
-                <div className="flex-1">
-                  <h4 className="font-bold text-red-900 text-lg mb-2">Missing Order Details</h4>
-                  <p className="text-red-800 mb-3">Please complete your profile to place an order.</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Address & Payment */}
+          <div className="lg:col-span-2 space-y-4">
+            {/* Delivery Address Section */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-slate-900">
+                  1. Delivery Address
+                </h2>
+                <button
+                  onClick={handleAddAddress}
+                  className="text-blue-600 font-medium hover:text-blue-700 text-sm flex items-center gap-1"
+                >
+                  <span className="text-lg">+</span> Add New Address
+                </button>
+              </div>
+
+              {savedAddresses.length === 0 ? (
+                <div className="text-center py-8 bg-slate-50 rounded-lg">
+                  <div className="text-4xl mb-3 text-slate-400">🏠</div>
+                  <p className="text-slate-600 mb-4">No saved addresses</p>
                   <button
-                    onClick={() => navigate('/profile')}
-                    className="px-6 py-3 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+                    onClick={handleAddAddress}
+                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    Complete Profile →
+                    Add Address
                   </button>
                 </div>
-              </div>
-            )}
-            
-            <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-8">
-              <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                <span className="text-3xl">👤</span> Customer Details
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-                  <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">Full Name</div>
-                  <div className="text-lg font-semibold text-slate-900">{profile.name}</div>
-                </div>
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-                  <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">Email</div>
-                  <div className="text-lg font-semibold text-slate-900">{profile.email}</div>
-                </div>
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-                  <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">Phone</div>
-                  <div className="text-lg font-semibold text-slate-900">+91 {profile.phone}</div>
-                </div>
-                <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200">
-                  <div className="text-xs font-semibold uppercase tracking-widest text-slate-500 mb-1">Pincode</div>
-                  <div className="text-lg font-semibold text-slate-900">
-                    {profile.address?.split(',').pop() || profile.kyc?.pincode || ''}
-                  </div>
-                </div>
-              </div>
-
-              {(profile.address || profile.kyc?.addressLine1) && (
-                <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-5 border border-blue-100">
-                  <h4 className="font-semibold text-slate-900 mb-3">Delivery Address</h4>
-                  <p className="text-slate-700 leading-relaxed">
-                    {profile.address || 
-                     `${profile.kyc.addressLine1}${profile.kyc.addressLine2 ? `, ${profile.kyc.addressLine2}` : ''}<br />
-                      ${profile.kyc.city}, ${profile.kyc.district}, ${profile.kyc.state} - ${profile.kyc.pincode}`}
-                  </p>
+              ) : (
+                <div className="space-y-3">
+                  {savedAddresses.map((address) => (
+                    <div
+                      key={address._id}
+                      className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                        selectedAddress?._id === address._id
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-slate-200 hover:border-blue-300'
+                      }`}
+                      onClick={() => {
+                        setSelectedAddress(address)
+                        loadServiceability(address.pincode)
+                      }}
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-slate-900">{address.fullName}</span>
+                            {address.isDefault && (
+                              <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+                                DEFAULT
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-slate-700 text-sm">{address.phone}</p>
+                          <p className="text-slate-700 text-sm mt-1">{address.addressLine1}</p>
+                          {address.addressLine2 && <p className="text-slate-700 text-sm">{address.addressLine2}</p>}
+                          <p className="text-slate-700 text-sm">
+                            {address.city}, {address.district}, {address.state} - {address.pincode}
+                          </p>
+                        </div>
+                        <div className="flex flex-col gap-2 ml-4">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleEditAddress(address); }}
+                            className="text-blue-600 text-sm hover:text-blue-700 font-medium"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleDeleteAddress(address._id); }}
+                            className="text-red-600 text-sm hover:text-red-700 font-medium"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      </div>
+                      {selectedAddress?._id === address._id && (
+                        <div className="mt-3 flex items-center text-green-700 text-sm font-medium">
+                          <span className="w-4 h-4 rounded-full bg-green-600 flex items-center justify-center mr-2">
+                            <span className="w-2 h-2 bg-white rounded-full"></span>
+                          </span>
+                          Delivering here
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
 
-            <div className="bg-white rounded-3xl shadow-lg border border-slate-100 p-8">
-              <h3 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                <span className="text-3xl">💳</span> Payment Method
-              </h3>
+            {/* Payment Section */}
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                2. Payment Method
+              </h2>
 
-              <div className="space-y-4">
-                <button
-                  type="button"
-                  className="w-full text-left p-6 rounded-2xl border-2 transition-all flex items-center gap-4 border-blue-600 bg-gradient-to-r from-blue-50 to-indigo-50"
-                >
-                  <div className="w-16 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-200 overflow-hidden">
-                    <img 
-                      src="https://images.crunchbase.com/image/upload/c_lpad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/dzgyedhczoapqcdpsb1j" 
-                      alt="Cashfree" 
-                      className="h-8 w-auto object-contain"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-lg font-bold text-slate-900">Cashfree Payments</div>
-                    <div className="text-sm text-slate-600">UPI, Cards, Netbanking, Wallets</div>
-                  </div>
-                  <div className="w-6 h-6 rounded-full border-2 flex items-center justify-center border-blue-600">
+              <div className="space-y-3">
+                <div className="border-2 border-blue-600 bg-blue-50 rounded-lg p-4 flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full border-2 border-blue-600 flex items-center justify-center">
                     <div className="w-3 h-3 rounded-full bg-blue-600"></div>
                   </div>
-                </button>
+                  <div className="flex-1">
+                    <div className="font-semibold text-slate-900 flex items-center gap-2">
+                      Cashfree Payments
+                      <div className="flex items-center gap-1">
+                        <img src="https://images.crunchbase.com/image/upload/c_lpad,h_170,w_170,f_auto,b_white,q_auto:eco,dpr_1/dzgyedhczoapqcdpsb1j" alt="Cashfree" className="h-5 w-auto" />
+                      </div>
+                    </div>
+                    <div className="text-sm text-slate-600">UPI, Cards, Netbanking, Wallets</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Order Summary Mobile */}
+            <div className="lg:hidden bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">
+                Price Details
+              </h2>
+              <div className="space-y-3">
+                <div className="flex justify-between text-slate-700">
+                  <span>Total MRP</span>
+                  <span>₹{mrpTotal.toLocaleString()}</span>
+                </div>
+                {bulkSavings > 0 && (
+                  <div className="flex justify-between text-green-700">
+                    <span>Discount on MRP</span>
+                    <span>-₹{bulkSavings.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-slate-700">
+                  <span>Convenience Fee</span>
+                  <div>
+                    <span className="text-slate-400 line-through mr-2">₹{(ship.amount || 85).toLocaleString()}</span>
+                    <span className="text-green-700 font-medium">FREE</span>
+                  </div>
+                </div>
+                <div className="h-px bg-slate-200 my-3"></div>
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-lg text-slate-900">Total Amount</span>
+                  <span className="text-xl font-bold text-slate-900">₹{totalPayable.toLocaleString()}</span>
+                </div>
+                {totalSavings > 0 && (
+                  <div className="text-green-700 font-medium text-sm mt-2">
+                    You will save ₹{totalSavings.toLocaleString()} on this order
+                  </div>
+                )}
               </div>
 
+              {/* Place Order Button Mobile */}
               <button
                 onClick={submit}
-                disabled={loading || visibleTotal < minAmount || !svc.available}
-                className={`w-full mt-8 py-5 rounded-2xl font-bold text-lg uppercase tracking-widest transition-all ${
-                  loading || visibleTotal < minAmount || !svc.available
+                disabled={loading || visibleTotal < minAmount || !svc.available || !selectedAddress}
+                className={`w-full mt-6 py-4 rounded-lg font-bold text-lg transition-all ${
+                  loading || visibleTotal < minAmount || !svc.available || !selectedAddress
                     ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg hover:shadow-xl hover:-translate-y-1'
+                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
                 }`}
               >
                 {loading ? 'Processing...' :
                   visibleTotal < minAmount ? `Add ₹${minLeft.toLocaleString()} More` :
-                  `Pay ₹${totalPayable.toLocaleString()}`}
+                  `Place Order`}
               </button>
             </div>
           </div>
 
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-3xl shadow-lg border border-slate-100 sticky top-10 overflow-hidden">
-              <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-indigo-50">
-                <h3 className="text-2xl font-bold text-slate-900">Order Summary</h3>
+          {/* Right Column - Order Summary Desktop */}
+          <div className="hidden lg:block">
+            <div className="bg-white rounded-lg shadow-sm sticky top-6">
+              <div className="p-6 border-b border-slate-100">
+                <h3 className="text-lg font-semibold text-slate-900">Price Details</h3>
                 <p className="text-slate-600 text-sm mt-1">{items.length} items</p>
               </div>
 
-              <div className="p-6 space-y-4 max-h-[400px] overflow-y-auto">
-                {items.map((it, idx) => {
-                  return (
-                    <div key={idx} className="flex items-start gap-4 pb-4 border-b border-slate-100">
-                      <div className="w-16 h-16 rounded-xl bg-slate-50 flex items-center justify-center flex-shrink-0 overflow-hidden border border-slate-200">
-                        {it.image ? (
-                          <img
-                            src={getCloudinaryUrl(it.image, 100)}
-                            alt={it.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-slate-400 text-xl">📦</span>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-slate-900 truncate">{it.name}</div>
-                        <div className="text-sm text-slate-500 mt-1">Qty: {it.quantity} × ₹{unitPrice(it).toLocaleString()}</div>
-                      </div>
-                      <div className="text-right font-bold text-slate-900">
-                        ₹{lineTotal(it).toLocaleString()}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              <div className="p-8 border-t border-slate-100">
-                <div className="space-y-4">
-                  <div className="flex justify-between text-slate-700">
-                    <span className="font-semibold">MRP Total</span>
-                    <span className="font-semibold">₹{mrpTotal.toLocaleString()}</span>
+              <div className="p-6 space-y-4">
+                <div className="flex justify-between text-slate-700">
+                  <span>Total MRP</span>
+                  <span>₹{mrpTotal.toLocaleString()}</span>
+                </div>
+                {bulkSavings > 0 && (
+                  <div className="flex justify-between text-green-700">
+                    <span>Discount on MRP</span>
+                    <span>-₹{bulkSavings.toLocaleString()}</span>
                   </div>
-
-                  {bulkSavings > 0 && (
-                    <div className="flex justify-between text-green-700">
-                      <span className="font-semibold">Bulk Discount</span>
-                      <span className="font-semibold">-₹{bulkSavings.toLocaleString()}</span>
-                    </div>
-                  )}
-
-                  <div className="flex justify-between text-slate-700">
-                    <span className="font-semibold">Delivery Fee</span>
-                    <span className="font-semibold">
-                      <span className="text-slate-400 line-through mr-2">₹{(ship.amount || 85).toLocaleString()}</span>
-                      <span className="text-green-700">FREE</span>
-                    </span>
-                  </div>
-
-                  {couponDiscount > 0 && (
-                    <div className="flex justify-between text-green-700">
-                      <span className="font-semibold">Coupon Discount</span>
-                      <span className="font-semibold">-₹{couponDiscount.toLocaleString()}</span>
-                    </div>
-                  )}
-
-                  <div className="h-px bg-slate-200 my-4"></div>
-
-                  <div className="flex justify-between items-center pt-2">
-                    <div>
-                      <div className="text-xs uppercase tracking-widest text-slate-500 font-semibold">Total Payable</div>
-                    </div>
-                    <div className="text-3xl font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                      ₹{totalPayable.toLocaleString()}
-                    </div>
-                  </div>
-
-                  {/* Coupon Section */}
-                  <div className="mt-6">
-                    {!appliedCoupon ? (
-                      <div className="flex gap-3">
-                        <input
-                          type="text"
-                          className="flex-1 px-5 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none font-semibold uppercase tracking-widest text-sm"
-                          placeholder="COUPON CODE"
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                        />
-                        <button
-                          onClick={handleApplyCoupon}
-                          disabled={isApplying || !couponCode.trim()}
-                          className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold text-sm uppercase tracking-widest disabled:opacity-50 hover:shadow-lg transition-all"
-                        >
-                          {isApplying ? '...' : 'Apply'}
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between bg-green-50 border-2 border-green-200 rounded-xl p-4">
-                        <div className="flex items-center gap-3">
-                          <span className="text-xl">🎟️</span>
-                          <div>
-                            <div className="text-xs font-bold text-green-700 uppercase tracking-widest">{appliedCoupon.code} Applied</div>
-                            <div className="text-sm font-bold text-green-600">₹{couponDiscount.toLocaleString()} Saved</div>
-                          </div>
-                        </div>
-                        <button
-                          onClick={handleRemoveCoupon}
-                          className="text-red-600 font-bold text-sm uppercase tracking-widest hover:text-red-800 transition-colors"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    )}
-                    {couponError && (
-                      <div className="mt-3 text-sm font-semibold text-red-600">{couponError}</div>
-                    )}
+                )}
+                <div className="flex justify-between text-slate-700">
+                  <span>Convenience Fee</span>
+                  <div>
+                    <span className="text-slate-400 line-through mr-2">₹{(ship.amount || 85).toLocaleString()}</span>
+                    <span className="text-green-700 font-medium">FREE</span>
                   </div>
                 </div>
+                <div className="h-px bg-slate-200 my-2"></div>
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-lg text-slate-900">Total Amount</span>
+                  <span className="text-xl font-bold text-slate-900">₹{totalPayable.toLocaleString()}</span>
+                </div>
+                {totalSavings > 0 && (
+                  <div className="text-green-700 font-medium text-sm">
+                    You will save ₹{totalSavings.toLocaleString()} on this order
+                  </div>
+                )}
+
+                {/* Coupon Section */}
+                <div className="pt-4 border-t border-slate-100">
+                  {!appliedCoupon ? (
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none font-medium uppercase tracking-widest text-sm"
+                        placeholder="COUPON CODE"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      />
+                      <button
+                        onClick={handleApplyCoupon}
+                        disabled={isApplying || !couponCode.trim()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg font-bold text-sm uppercase tracking-widest disabled:opacity-50 hover:bg-blue-700 transition-colors"
+                      >
+                        {isApplying ? '...' : 'Apply'}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">🎟️</span>
+                        <div>
+                          <div className="text-xs font-bold text-green-700 uppercase tracking-widest">{appliedCoupon.code} Applied</div>
+                          <div className="text-sm font-bold text-green-600">₹{couponDiscount.toLocaleString()} Saved</div>
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleRemoveCoupon}
+                        className="text-red-600 font-bold text-sm uppercase tracking-widest hover:text-red-700 transition-colors"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  {couponError && (
+                    <div className="mt-2 text-sm font-semibold text-red-600">{couponError}</div>
+                  )}
+                </div>
+
+                {/* Place Order Button Desktop */}
+                <button
+                  onClick={submit}
+                  disabled={loading || visibleTotal < minAmount || !svc.available || !selectedAddress}
+                  className={`w-full py-4 rounded-lg font-bold text-lg transition-all mt-4 ${
+                    loading || visibleTotal < minAmount || !svc.available || !selectedAddress
+                      ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-lg'
+                  }`}
+                >
+                  {loading ? 'Processing...' :
+                    visibleTotal < minAmount ? `Add ₹${minLeft.toLocaleString()} More` :
+                    `Place Order`}
+                </button>
+              </div>
+
+              {/* Order Items */}
+              <div className="p-6 border-t border-slate-100 max-h-96 overflow-y-auto">
+                {items.map((it, idx) => (
+                  <div key={idx} className="flex items-start gap-4 pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                    <div className="w-16 h-16 rounded-lg bg-slate-50 flex items-center justify-center flex-shrink-0 overflow-hidden border border-slate-200">
+                      {it.image ? (
+                        <img
+                          src={getCloudinaryUrl(it.image, 100)}
+                          alt={it.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-slate-400 text-xl">📦</span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-slate-900 text-sm line-clamp-2">{it.name}</div>
+                      <div className="text-sm text-slate-500 mt-1">Qty: {it.quantity}</div>
+                    </div>
+                    <div className="text-right font-semibold text-slate-900">
+                      ₹{lineTotal(it).toLocaleString()}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Address Modal */}
+      {showAddressModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-slate-900">
+                {editingAddress ? 'Edit Address' : 'Add New Address'}
+              </h2>
+              <button
+                onClick={() => setShowAddressModal(false)}
+                className="text-slate-500 hover:text-slate-700"
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleSaveAddress} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Full Name *</label>
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={addressForm.fullName}
+                    onChange={handleAddressInputChange}
+                    required
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number * (10 digits)</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={addressForm.phone}
+                    onChange={handleAddressInputChange}
+                    required
+                    maxLength={10}
+                    placeholder="Enter 10 digit phone number"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Address Line 1 *</label>
+                  <input
+                    type="text"
+                    name="addressLine1"
+                    value={addressForm.addressLine1}
+                    onChange={handleAddressInputChange}
+                    required
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Address Line 2</label>
+                  <input
+                    type="text"
+                    name="addressLine2"
+                    value={addressForm.addressLine2}
+                    onChange={handleAddressInputChange}
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">City *</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={addressForm.city}
+                    onChange={handleAddressInputChange}
+                    required
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">District *</label>
+                  <input
+                    type="text"
+                    name="district"
+                    value={addressForm.district}
+                    onChange={handleAddressInputChange}
+                    required
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">State *</label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={addressForm.state}
+                    onChange={handleAddressInputChange}
+                    required
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Pincode * (6 digits)</label>
+                  <input
+                    type="text"
+                    name="pincode"
+                    value={addressForm.pincode}
+                    onChange={handleAddressInputChange}
+                    required
+                    maxLength={6}
+                    placeholder="Enter 6 digit pincode"
+                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="isDefault"
+                  name="isDefault"
+                  checked={addressForm.isDefault}
+                  onChange={handleAddressInputChange}
+                  className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
+                />
+                <label htmlFor="isDefault" className="text-sm font-medium text-slate-700">
+                  Make this my default address
+                </label>
+              </div>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddressModal(false)}
+                  className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                >
+                  Save Address
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
