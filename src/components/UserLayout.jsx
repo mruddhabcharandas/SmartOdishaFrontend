@@ -111,20 +111,24 @@ export default function UserLayout() {
                 {user ? (
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
-                        {user.avatar ? (
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
+                        {user?.avatar && (
                           <img
                             src={getCloudinaryUrl(user.avatar)}
                             alt={user.name}
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               e.target.style.display = 'none';
-                              e.target.nextSibling.style.display = 'flex';
+                              const fallback = e.target.parentElement.querySelector('.avatar-fallback');
+                              if (fallback) fallback.style.display = 'flex';
                             }}
                           />
-                        ) : null}
-                        <span style={{ display: user.avatar ? 'none' : 'flex' }}>
-                          {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                        )}
+                        <span 
+                          className="avatar-fallback"
+                          style={{ display: user?.avatar ? 'none' : 'flex' }}
+                        >
+                          {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                         </span>
                       </div>
                       <Link to="/profile" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">

@@ -49,7 +49,7 @@ export default function Home() {
         }
 
         .top-ticker {
-          background: linear-gradient(90deg, #1d4ed8 0%, #3b82f6 50%, #8b5cf6 100%);
+          background: linear-gradient(90deg, #f97316 0%, #ea580c 50%, #c2410c 100%);
           color: white;
           padding: 12px 16px;
           font-size: 12px;
@@ -59,7 +59,7 @@ export default function Home() {
           justify-content: space-between;
           gap: 12px;
           flex-wrap: wrap;
-          box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+          box-shadow: 0 4px 20px rgba(249, 115, 22, 0.3);
         }
         @media (max-width: 640px) {
           .top-ticker { justify-content: center; text-align: center; gap: 8px; }
@@ -79,9 +79,9 @@ export default function Home() {
           position: absolute;
           inset: 0;
           background-image: 
-            radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-            radial-gradient(circle at 100% 0%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
-            radial-gradient(circle at 50% 100%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+            radial-gradient(circle at 0% 0%, rgba(249, 115, 22, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 100% 0%, rgba(234, 88, 12, 0.25) 0%, transparent 50%),
+            radial-gradient(circle at 50% 100%, rgba(251, 146, 60, 0.15) 0%, transparent 50%);
           pointer-events: none;
         }
         .hero-inner {
@@ -126,7 +126,7 @@ export default function Home() {
           letter-spacing: -0.04em;
         }
         .hero-title .accent {
-          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+          background: linear-gradient(135deg, #f97316 0%, #fb923c 50%, #fbbf24 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
@@ -146,7 +146,7 @@ export default function Home() {
           gap: 14px;
         }
         .btn-primary {
-          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          background: linear-gradient(135deg, #f97316, #ea580c);
           background-size: 200% 200%;
           color: white;
           border: none;
@@ -160,14 +160,14 @@ export default function Home() {
           align-items: center;
           justify-content: center;
           gap: 12px;
-          box-shadow: 0 16px 50px -12px rgba(59, 130, 246, 0.6);
+          box-shadow: 0 16px 50px -12px rgba(249, 115, 22, 0.6);
           transition: all 0.3s ease;
           animation: gradient-shift 4s ease infinite;
           letter-spacing: 0.05em;
         }
         .btn-primary:hover {
           transform: translateY(-5px);
-          box-shadow: 0 24px 70px -15px rgba(59, 130, 246, 0.7);
+          box-shadow: 0 24px 70px -15px rgba(249, 115, 22, 0.7);
         }
         @keyframes gradient-shift {
           0%, 100% { background-position: 0% 50%; }
@@ -244,19 +244,19 @@ export default function Home() {
         }
         .feature-card:hover {
           transform: translateY(-8px);
-          box-shadow: 0 30px 80px -25px rgba(15,23,42,0.2);
-          border-color: rgba(59, 130, 246, 0.2);
+          box-shadow: 0 30px 80px -25px rgba(249,115,22,0.2);
+          border-color: rgba(249, 115, 22, 0.2);
         }
         .feature-icon {
           width: 64px;
           height: 64px;
-          background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+          background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
           border-radius: 20px;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 32px;
-          box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
+          box-shadow: 0 10px 30px -10px rgba(249, 115, 22, 0.3);
         }
         .feature-text h4 {
           font-size: 16px;
@@ -296,7 +296,7 @@ export default function Home() {
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.2em;
-          color: #3b82f6;
+          color: #f97316;
         }
         .section-title {
           font-size: clamp(28px, 5vw, 42px);
@@ -342,13 +342,13 @@ export default function Home() {
         }
         .store-card:hover {
           transform: translateY(-12px) scale(1.02);
-          box-shadow: 0 30px 80px -25px rgba(15,23,42,0.25);
-          border-color: rgba(59, 130, 246, 0.25);
+          box-shadow: 0 30px 80px -25px rgba(249,115,22,0.25);
+          border-color: rgba(249, 115, 22, 0.25);
         }
         .store-image-container {
           width: 100%;
           aspect-ratio: 4/3;
-          background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 50%, #fdf2ff 100%);
+          background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 50%, #fef3c7 100%);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -381,13 +381,13 @@ export default function Home() {
           gap: 6px;
           font-size: 11px;
           font-weight: 800;
-          color: #3b82f6;
+          color: #f97316;
           text-transform: uppercase;
           letter-spacing: 0.1em;
         }
 
         .offers {
-          background: linear-gradient(180deg, #f8fafc 0%, #e0e7ff 100%);
+          background: linear-gradient(180deg, #f8fafc 0%, #fff7ed 100%);
         }
         .offers-grid {
           display: grid;
@@ -400,21 +400,21 @@ export default function Home() {
           border-radius: 32px;
           overflow: hidden;
           aspect-ratio: 16/10;
-          background: linear-gradient(135deg, #1e3a8a, #0f172a, #1e293b);
-          box-shadow: 0 30px 80px -30px rgba(15,23,42,0.4);
+          background: linear-gradient(135deg, #f97316, #ea580c, #c2410c);
+          box-shadow: 0 30px 80px -30px rgba(249,115,22,0.4);
           transition: all 0.4s ease;
         }
         .offer-card:hover {
           transform: translateY(-10px);
-          box-shadow: 0 40px 100px -40px rgba(15,23,42,0.5);
+          box-shadow: 0 40px 100px -40px rgba(249,115,22,0.5);
         }
         .offer-card::before {
           content: '';
           position: absolute;
           inset: 0;
           background-image: 
-            radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.4) 0%, transparent 50%),
-            radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.4) 0%, transparent 50%);
+            radial-gradient(circle at 0% 0%, rgba(255,255,255,0.25) 0%, transparent 50%),
+            radial-gradient(circle at 100% 100%, rgba(255,255,255,0.2) 0%, transparent 50%);
           pointer-events: none;
         }
         .offer-content {
@@ -454,7 +454,7 @@ export default function Home() {
           width: fit-content;
           margin-top: 28px;
           background: white;
-          color: #0f172a;
+          color: #f97316;
           border: none;
           padding: 16px 32px;
           border-radius: 16px;
@@ -500,12 +500,12 @@ export default function Home() {
           white-space: nowrap;
         }
         .ticker-highlight {
-          background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+          background: linear-gradient(135deg, #f97316, #ea580c);
           color: white;
           padding: 8px 20px;
           border-radius: 999px;
           font-weight: 900;
-          box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+          box-shadow: 0 4px 20px rgba(249,115,22,0.4);
         }
 
         .stats {
@@ -520,8 +520,8 @@ export default function Home() {
           position: absolute;
           inset: 0;
           background-image: 
-            radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-            radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.15) 0%, transparent 40%);
+            radial-gradient(circle at 20% 50%, rgba(249, 115, 22, 0.15) 0%, transparent 40%),
+            radial-gradient(circle at 80% 50%, rgba(234, 88, 12, 0.15) 0%, transparent 40%);
           pointer-events: none;
         }
         .stats-inner {
@@ -548,7 +548,7 @@ export default function Home() {
           font-weight: 900;
           line-height: 1;
           margin-bottom: 12px;
-          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+          background: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
@@ -673,7 +673,7 @@ export default function Home() {
                 <div className="store-content">
                   <div className="store-name">{store.name}</div>
                   <div className="store-badge">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     Verified Store
@@ -766,7 +766,7 @@ export default function Home() {
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             <div className="flex flex-col items-center lg:items-start gap-6">
               <div className="flex items-center gap-5">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center overflow-hidden shadow-lg shadow-blue-900/50">
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center overflow-hidden shadow-lg shadow-orange-900/50">
                   <img 
                     src="/logo.png" 
                     alt="SmartOdisha" 
@@ -780,8 +780,8 @@ export default function Home() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-2xl font-black tracking-tighter leading-none">
-                    <span className="text-blue-400">SMART</span>
-                    <span className="text-purple-400">ODISHA</span>
+                    <span className="text-orange-400">SMART</span>
+                    <span className="text-orange-300">ODISHA</span>
                   </span>
                   <span className="text-sm font-semibold text-slate-400 tracking-widest mt-1.5">SMART CHOICE, SMART LIFE</span>
                 </div>
