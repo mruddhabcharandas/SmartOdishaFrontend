@@ -469,10 +469,10 @@ export default function Profile() {
 
           <div className="lg:col-span-3 space-y-6">
             {activeTab === 'personal' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden">
-                <div className="p-8 border-b border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50">
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white shadow-lg">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
@@ -718,9 +718,148 @@ export default function Profile() {
               </div>
             )}
 
+            {activeTab === 'support' && (
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-900">Support & Tickets</h2>
+                      <p className="text-slate-500 text-sm mt-1">Manage your support tickets</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setShowNewTicketModal(true)}
+                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    New Ticket
+                  </button>
+                </div>
+                <div className="p-8">
+                  {ticketsLoading ? (
+                    <div className="text-center py-12">
+                      <LoadingSpinner text="Loading tickets..." />
+                    </div>
+                  ) : tickets.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
+                        <svg className="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900 mb-3">No tickets yet</h3>
+                      <p className="text-slate-500 mb-8 max-w-md mx-auto">Create your first support ticket if you need help</p>
+                      <button
+                        onClick={() => setShowNewTicketModal(true)}
+                        className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                      >
+                        Create Ticket
+                      </button>
+                    </div>
+                  ) : selectedTicket ? (
+                    <div className="space-y-6">
+                      <button
+                        onClick={() => setSelectedTicket(null)}
+                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Back to all tickets
+                      </button>
+                      <div className="border border-slate-200 rounded-2xl overflow-hidden">
+                        <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <h3 className="text-xl font-bold text-slate-900">{selectedTicket.subject}</h3>
+                              <p className="text-sm text-slate-500 mt-1">
+                                Category: {selectedTicket.category} • Status: {selectedTicket.status}
+                              </p>
+                            </div>
+                            {selectedTicket.status !== 'Resolved' && (
+                              <button
+                                onClick={() => handleResolveTicket(selectedTicket._id)}
+                                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition-all duration-300 text-sm"
+                              >
+                                Mark as Resolved
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="p-6 max-h-96 overflow-y-auto space-y-4">
+                          {selectedTicket.messages && selectedTicket.messages.map((msg, idx) => (
+                            <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                              <div className={`max-w-[75%] p-4 rounded-2xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white' : 'bg-slate-100 text-slate-900'}`}>
+                                <p className="text-sm">{msg.message}</p>
+                                <p className={`text-xs mt-2 ${msg.sender === 'user' ? 'text-blue-100' : 'text-slate-500'}`}>
+                                  {new Date(msg.createdAt).toLocaleString()}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="p-6 border-t border-slate-200">
+                          <div className="flex gap-3">
+                            <input
+                              type="text"
+                              value={messageInput}
+                              onChange={(e) => setMessageInput(e.target.value)}
+                              onKeyPress={(e) => e.key === 'Enter' && handleAddMessage(selectedTicket._id)}
+                              placeholder="Type your message..."
+                              className="flex-1 px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
+                              disabled={selectedTicket.status === 'Resolved'}
+                            />
+                            <button
+                              onClick={() => handleAddMessage(selectedTicket._id)}
+                              disabled={!messageInput.trim() || selectedTicket.status === 'Resolved'}
+                              className="px-6 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {tickets.map((ticket) => (
+                        <div
+                          key={ticket._id}
+                          onClick={() => setSelectedTicket(ticket)}
+                          className="p-6 border border-slate-200 rounded-2xl hover:border-blue-300 hover:shadow-lg hover:bg-blue-50 transition-all duration-300 cursor-pointer"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <h4 className="font-bold text-lg text-slate-900">{ticket.subject}</h4>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${ticket.status === 'Open' ? 'bg-green-100 text-green-700' : ticket.status === 'In Progress' ? 'bg-yellow-100 text-yellow-700' : 'bg-slate-100 text-slate-700'}`}>
+                              {ticket.status}
+                            </span>
+                          </div>
+                          <p className="text-slate-600 text-sm mb-3">{ticket.description}</p>
+                          <div className="flex items-center gap-4 text-sm text-slate-500">
+                            <span>Category: {ticket.category}</span>
+                            <span>•</span>
+                            <span>Created: {new Date(ticket.createdAt).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {activeTab === 'settings' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden">
-                <div className="p-8 border-b border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50">
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-orange-50 to-amber-50">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white shadow-lg">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -733,7 +872,7 @@ export default function Profile() {
                 </div>
                 <div className="p-8">
                   <div className="space-y-5">
-                    <div className="p-6 border-2 border-orange-200 rounded-2xl hover:border-orange-300 hover:bg-gradient-to-r from-orange-50 to-amber-50 transition-all duration-300">
+                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-orange-300 hover:bg-gradient-to-r from-orange-50 to-amber-50 transition-all duration-300">
                       <div className="flex items-center justify-between mb-4">
                         <div>
                           <h3 className="font-bold text-slate-900 mb-2 text-lg">Password</h3>
@@ -750,7 +889,7 @@ export default function Profile() {
                         </button>
                       </div>
                       {showPasswordChange && (
-                        <form onSubmit={handlePasswordUpdate} className="space-y-4 pt-4 border-t border-orange-200">
+                        <form onSubmit={handlePasswordUpdate} className="space-y-4 pt-4 border-t border-slate-200">
                           <div>
                             <label className="block text-sm font-semibold text-slate-700 mb-2">Current Password *</label>
                             <input
@@ -759,7 +898,7 @@ export default function Profile() {
                               value={passwordForm.currentPassword}
                               onChange={handlePasswordChange}
                               required
-                              className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300 bg-white"
+                              className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300 bg-white"
                             />
                           </div>
                           <div>
@@ -770,7 +909,7 @@ export default function Profile() {
                               value={passwordForm.newPassword}
                               onChange={handlePasswordChange}
                               required
-                              className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300 bg-white"
+                              className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300 bg-white"
                             />
                           </div>
                           <div>
@@ -781,7 +920,7 @@ export default function Profile() {
                               value={passwordForm.confirmPassword}
                               onChange={handlePasswordChange}
                               required
-                              className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300 bg-white"
+                              className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300 bg-white"
                             />
                           </div>
                           <div className="pt-4">
@@ -803,7 +942,7 @@ export default function Profile() {
                         </form>
                       )}
                     </div>
-                    <div className="p-6 border-2 border-orange-200 rounded-2xl hover:border-orange-300 hover:bg-gradient-to-r from-orange-50 to-amber-50 transition-all duration-300">
+                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-orange-300 hover:bg-gradient-to-r from-orange-50 to-amber-50 transition-all duration-300">
                       <h3 className="font-bold text-slate-900 mb-2 text-lg">Notifications</h3>
                       <p className="text-slate-500 text-sm mb-4">Manage your email and SMS notifications</p>
                       <button className="text-orange-700 font-semibold text-sm hover:text-orange-800 transition-colors duration-300 flex items-center gap-2">
@@ -824,13 +963,13 @@ export default function Profile() {
       {showAddressModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-8 border-b border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50 flex items-center justify-between">
+            <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-slate-900">
                 {editingAddress ? 'Edit Address' : 'Add New Address'}
               </h2>
               <button
                 onClick={() => setShowAddressModal(false)}
-                className="p-2 hover:bg-orange-100 rounded-xl transition-all duration-300"
+                className="p-2 hover:bg-blue-100 rounded-xl transition-all duration-300"
               >
                 <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -848,7 +987,7 @@ export default function Profile() {
                       value={addressForm.fullName}
                       onChange={handleAddressInputChange}
                       required
-                      className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300"
+                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                     />
                   </div>
                   <div className="space-y-2">
@@ -860,7 +999,7 @@ export default function Profile() {
                       onChange={handleAddressInputChange}
                       required
                       maxLength={10}
-                      className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300"
+                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -894,7 +1033,7 @@ export default function Profile() {
                       value={addressForm.city}
                       onChange={handleAddressInputChange}
                       required
-                      className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300"
+                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                     />
                   </div>
                   <div className="space-y-2">
@@ -905,7 +1044,7 @@ export default function Profile() {
                       value={addressForm.district}
                       onChange={handleAddressInputChange}
                       required
-                      className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300"
+                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                     />
                   </div>
                   <div className="space-y-2">
@@ -915,7 +1054,7 @@ export default function Profile() {
                       value={addressForm.state}
                       onChange={handleAddressInputChange}
                       required
-                      className="w-full px-5 py-4 border-2 border-orange-200 rounded-2xl focus:border-orange-500 focus:ring-4 focus:ring-orange-100 focus:outline-none transition-all duration-300"
+                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                     >
                       <option value="">Select State</option>
                       {INDIAN_STATES.map(state => (
@@ -943,7 +1082,7 @@ export default function Profile() {
                     name="isDefault"
                     checked={addressForm.isDefault}
                     onChange={handleAddressInputChange}
-                    className="w-5 h-5 rounded accent-orange-500"
+                    className="w-5 h-5 rounded accent-blue-500"
                   />
                   <label htmlFor="isDefault" className="text-sm font-semibold text-slate-700">
                     Set as default address
@@ -953,13 +1092,13 @@ export default function Profile() {
                   <button
                     type="button"
                     onClick={() => setShowAddressModal(false)}
-                    className="px-6 py-4 text-slate-700 font-semibold rounded-2xl hover:bg-orange-50 transition-all duration-300"
+                    className="px-6 py-4 text-slate-700 font-semibold rounded-2xl hover:bg-blue-50 transition-all duration-300"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-2xl shadow-lg shadow-orange-200 hover:shadow-xl transition-all duration-300"
+                    className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
                   >
                     Save Address
                   </button>
@@ -973,11 +1112,11 @@ export default function Profile() {
       {showNewTicketModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-8 border-b border-orange-100 bg-gradient-to-r from-orange-50 to-amber-50 flex items-center justify-between">
+            <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-between">
               <h2 className="text-2xl font-bold text-slate-900">Create New Support Ticket</h2>
               <button
                 onClick={() => setShowNewTicketModal(false)}
-                className="p-2 hover:bg-orange-100 rounded-xl transition-all duration-300"
+                className="p-2 hover:bg-blue-100 rounded-xl transition-all duration-300"
               >
                 <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1031,13 +1170,13 @@ export default function Profile() {
                   <button
                     type="button"
                     onClick={() => setShowNewTicketModal(false)}
-                    className="px-6 py-4 text-slate-700 font-semibold rounded-2xl hover:bg-orange-50 transition-all duration-300"
+                    className="px-6 py-4 text-slate-700 font-semibold rounded-2xl hover:bg-blue-50 transition-all duration-300"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-semibold rounded-2xl shadow-lg shadow-orange-200 hover:shadow-xl transition-all duration-300"
+                    className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
                   >
                     Create Ticket
                   </button>
