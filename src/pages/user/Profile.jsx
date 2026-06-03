@@ -872,7 +872,9 @@ export default function Profile() {
                   )}
                 </div>
               </div>
-                        {activeTab === 'settings' && (
+            )}
+
+            {activeTab === 'settings' && (
               <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
                 <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
                   <div className="flex items-center gap-4">
@@ -967,6 +969,9 @@ export default function Profile() {
                         </svg>
                       </button>
                     </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -1138,6 +1143,7 @@ export default function Profile() {
             </div>
             <div className="p-8">
               <form onSubmit={handleCreateTicket} className="space-y-5">
+                <div className="space-y-2">
                   <label className="text-sm font-semibold text-slate-700">Subject *</label>
                   <input
                     type="text"
