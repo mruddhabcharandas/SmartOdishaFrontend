@@ -357,6 +357,8 @@ export default function Enquiry() {
     }
   }
 
+  const [prepareData, setPrepareData] = useState(null)
+
   const submit = async (e) => {
     e.preventDefault()
     if (cartTotal < minAmount) { notify(`Minimum order amount is ₹${minAmount.toLocaleString()}`, 'error'); return }
@@ -381,6 +383,8 @@ export default function Enquiry() {
         deliveryAddress: selectedAddress
       })
 
+      setPrepareData({ ...data, items: cleanItems, deliveryAddress: selectedAddress, couponCode: appliedCoupon?.code || '' })
+
       if (data.paymentSessionId) {
         // Open Cashfree checkout
         await handleCashfreeCheckout(data.paymentSessionId)
@@ -392,6 +396,37 @@ export default function Enquiry() {
       setLoading(false)
     }
   }
+
+  // Handle cashfree callback
+  useEffect(() => {
+    const handleCashfreeCallback = async () => {
+      const queryParams = new URLSearchParams(location.search)
+      const orderId = queryParams.get('order_id')
+      const cashfreePaymentId = queryParams.get('payment_id')
+      const cashfreeSignature = queryParams.get('signature')
+      
+      if (orderId && cashfreePaymentId && cashfreeSignature && prepareData) {
+        try {
+          setLoading(true)
+          await api.post('/api/orders/create-after-verify', {
+            ...prepareData,
+            cashfreeOrderId: orderId,
+            cashfreePaymentId,
+            cashfreeSignature
+          })
+          notify('Order placed successfully!', 'success')
+          clearCart()
+          navigate('/orders')
+        } catch (err) {
+          notify(err?.response?.data?.error || 'Order failed', 'error')
+        } finally {
+          setLoading(false)
+          setPrepareData(null)
+        }
+      }
+    }
+    handleCashfreeCallback()
+  }, [location.search, prepareData, clearCart, navigate, notify])
 
   const visibleTotal = computedVisibleTotal(items)
   const minLeft = Math.max(0, minAmount - visibleTotal)
