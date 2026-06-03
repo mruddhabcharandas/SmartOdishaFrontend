@@ -50,7 +50,8 @@ export function AuthProvider({ children }) {
         address: data.address,
         avatar: data.avatar || '',
         isKycComplete: !!data.isKycComplete,
-        role: data.role || (data.phone ? 'customer' : 'admin')
+        role: data.role || (data.phone ? 'customer' : 'admin'),
+        savedAddresses: data.savedAddresses || []
       }
       setUser(nextUser)
       localStorage.setItem('user', JSON.stringify(nextUser))

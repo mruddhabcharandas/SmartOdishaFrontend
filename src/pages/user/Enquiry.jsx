@@ -23,7 +23,7 @@ export default function Enquiry() {
   const { notify } = useToast()
   const navigate = useNavigate()
   const location = useLocation()
-  const { cart, clearCart, cartTotal } = useCart()
+  const { cart, clearCart, cartTotal, refreshCart } = useCart()
   const { user, refreshProfile } = useAuth()
   const minAmount = Number(import.meta.env.VITE_MIN_ORDER_AMOUNT || 5000)
 
@@ -118,6 +118,7 @@ export default function Enquiry() {
 
   useEffect(() => {
     if (!localStorage.getItem('token')) { navigate('/login', { state: { from: location.pathname + location.search } }); return }
+    refreshCart()
     loadAddresses()
   }, [])
 

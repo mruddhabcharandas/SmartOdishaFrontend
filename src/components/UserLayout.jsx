@@ -60,12 +60,17 @@ export default function UserLayout() {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 sm:gap-4 group flex-shrink-0">
               <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
-                <img
-                  src="/logo.png"
-                  alt="SmartOdisha"
-                  className="h-full w-full object-contain"
-                />
-              </div>
+                  <img
+                    src="/logo.png"
+                    alt="SmartOdisha"
+                    className="h-full w-full object-contain"
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.nextElementSibling.style.display = 'flex'
+                    }}
+                  />
+                  <span className="text-lg sm:text-xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" style={{ display: 'none' }}>SO</span>
+                </div>
               <div className="flex flex-col">
                 <span className="text-base sm:text-xl font-black tracking-tighter leading-none">
                   <span className="text-blue-700">SMART</span>
@@ -112,10 +117,15 @@ export default function UserLayout() {
                             src={getCloudinaryUrl(user.avatar)}
                             alt={user.name}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                              e.target.nextSibling.style.display = 'flex';
+                            }}
                           />
-                        ) : (
-                          <span>{user.name?.charAt(0)?.toUpperCase() || 'U'}</span>
-                        )}
+                        ) : null}
+                        <span style={{ display: user.avatar ? 'none' : 'flex' }}>
+                          {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                        </span>
                       </div>
                       <Link to="/profile" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">
                         Hi, {user.name?.split(' ')[0] || 'User'}

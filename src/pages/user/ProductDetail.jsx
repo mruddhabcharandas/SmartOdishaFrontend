@@ -547,7 +547,10 @@ export default function ProductDetail() {
   };
 
   const handleBuyNow = async () => {
-    if (!isAuthenticated) { navigate('/login', { state: { from: location.pathname + location.search } }); return; }
+    if (!isAuthenticated) { 
+      navigate('/login', { state: { from: location.pathname + location.search } }); 
+      return; 
+    }
     if (variantAttrs.length > 0 && !matchedVariant) {
       notify('Please select all options', 'error');
       return;
@@ -1511,7 +1514,7 @@ export default function ProductDetail() {
           background: white;
           color: #3b82f6;
           border: 2px solid rgba(59, 130, 246, 0.2);
-          padding: 14px 20px;
+          padding: 14px;
           border-radius: 16px;
           font-size: 12px;
           font-weight: 900;
@@ -1525,16 +1528,19 @@ export default function ProductDetail() {
           align-items: center;
           justify-content: center;
           gap: 8px;
-          width: 100%;
+          width: auto;
+          min-width: 60px;
+          height: 56px;
         }
         
         @media (min-width: 640px) {
           .pd-btn-secondary {
-            padding: 16px 24px;
+            padding: 16px;
             border-radius: 18px;
             font-size: 12px;
             gap: 8px;
-            width: auto;
+            min-width: 70px;
+            height: 64px;
           }
         }
         
@@ -2113,33 +2119,34 @@ export default function ProductDetail() {
 
             {/* CTA Buttons */}
             <div className="pd-cta">
-              <button
-                className="pd-btn-secondary"
-                onClick={() => {
-                  const productId = p._id || p.id;
-                  if (isInWishlist(productId)) {
-                    removeFromWishlist(productId);
-                    notify('Removed from wishlist', 'success');
-                  } else {
-                    addToWishlist(p);
-                    notify('Added to wishlist', 'success');
-                  }
-                }}
-              >
-                {isInWishlist(p._id || p.id) ? (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                  </svg>
-                ) : (
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                  </svg>
-                )}
-                {isInWishlist(p._id || p.id) ? 'Saved' : 'Wishlist'}
-              </button>
-
               {authed ? (
                 <>
+                  {/* Wishlist Button */}
+                  <button
+                    className="pd-btn-secondary"
+                    onClick={() => {
+                      const productId = p._id || p.id;
+                      if (isInWishlist(productId)) {
+                        removeFromWishlist(productId);
+                        notify('Removed from wishlist', 'success');
+                      } else {
+                        addToWishlist(p);
+                        notify('Added to wishlist', 'success');
+                      }
+                    }}
+                  >
+                    {isInWishlist(p._id || p.id) ? (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                    ) : (
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                      </svg>
+                    )}
+                  </button>
+
+                  {/* Add to Cart & Buy Now */}
                   <button
                     className="pd-btn-primary"
                     onClick={handleAddToCart}

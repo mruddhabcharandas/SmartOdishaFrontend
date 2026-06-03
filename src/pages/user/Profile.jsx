@@ -304,10 +304,19 @@ export default function Profile() {
                 <div className="flex items-center gap-5">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg overflow-hidden">
                     {user?.avatar ? (
-                      <img src={getCloudinaryUrl(user.avatar)} alt={user.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
-                    )}
+                      <img 
+                        src={getCloudinaryUrl(user.avatar)} 
+                        alt={user.name} 
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <span style={{ display: user?.avatar ? 'none' : 'flex' }}>
+                      {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                    </span>
                   </div>
                   <div className="flex-1">
                     <p className="font-bold text-slate-900 text-lg leading-tight">{user?.name || 'User'}</p>

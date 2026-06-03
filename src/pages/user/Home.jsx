@@ -767,7 +767,16 @@ export default function Home() {
             <div className="flex flex-col items-center lg:items-start gap-6">
               <div className="flex items-center gap-5">
                 <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center overflow-hidden shadow-lg shadow-blue-900/50">
-                  <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
+                  <img 
+                    src="/logo.png" 
+                    alt="SmartOdisha" 
+                    className="h-full w-full object-contain" 
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.nextElementSibling.style.display = 'flex'
+                    }} 
+                  />
+                  <span className="text-2xl font-bold text-white" style={{ display: 'none' }}>SO</span>
                 </div>
                 <div className="flex flex-col">
                   <span className="text-2xl font-black tracking-tighter leading-none">
