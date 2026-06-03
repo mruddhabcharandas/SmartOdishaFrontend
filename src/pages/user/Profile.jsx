@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../../lib/api';
@@ -34,13 +33,16 @@ export default function Profile() {
     isDefault: false
   });
 
-  useEffect(() =&gt; {
-    if (!token) { navigate('/login', { state: { from: location.pathname + location.search } }); return; }
+  useEffect(() => {
+    if (!token) {
+      navigate('/login', { state: { from: location.pathname + location.search } });
+      return;
+    }
     loadProfile();
     loadAddresses();
   }, [token]);
 
-  const loadProfile = async () =&gt; {
+  const loadProfile = async () => {
     try {
       const { data } = await api.get('/api/user/me');
       setFormData({
@@ -53,7 +55,7 @@ export default function Profile() {
     }
   };
 
-  const loadAddresses = async () =&gt; {
+  const loadAddresses = async () => {
     try {
       const { data } = await api.get('/api/user/addresses');
       setSavedAddresses(data);
@@ -62,20 +64,20 @@ export default function Profile() {
     }
   };
 
-  const handleInputChange = (e) =&gt; {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev =&gt; ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleAddressInputChange = (e) =&gt; {
+  const handleAddressInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setAddressForm(prev =&gt; ({
+    setAddressForm(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
   };
 
-  const handleSaveProfile = async (e) =&gt; {
+  const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
@@ -90,7 +92,7 @@ export default function Profile() {
     }
   };
 
-  const handleAddAddress = () =&gt; {
+  const handleAddAddress = () => {
     setEditingAddress(null);
     setAddressForm({
       fullName: '',
@@ -106,7 +108,7 @@ export default function Profile() {
     setShowAddressModal(true);
   };
 
-  const handleEditAddress = (address) =&gt; {
+  const handleEditAddress = (address) => {
     setEditingAddress(address);
     setAddressForm({
       fullName: address.fullName,
@@ -122,7 +124,7 @@ export default function Profile() {
     setShowAddressModal(true);
   };
 
-  const handleSaveAddress = async (e) =&gt; {
+  const handleSaveAddress = async (e) => {
     e.preventDefault();
     try {
       if (editingAddress) {
@@ -141,7 +143,7 @@ export default function Profile() {
     }
   };
 
-  const handleDeleteAddress = async (addressId) =&gt; {
+  const handleDeleteAddress = async (addressId) => {
     if (!window.confirm('Are you sure you want to delete this address?')) return;
     try {
       await api.delete(`/api/user/addresses/${addressId}`);
@@ -154,7 +156,7 @@ export default function Profile() {
     }
   };
 
-  const handleSetDefault = async (addressId) =&gt; {
+  const handleSetDefault = async (addressId) => {
     try {
       await api.post(`/api/user/addresses/${addressId}/set-default`);
       await loadAddresses();
@@ -166,447 +168,559 @@ export default function Profile() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/');
+  };
+
   if (loading) {
     return (
-      &lt;div className="min-h-screen flex items-center justify-center bg-slate-50"&gt;
-        &lt;LoadingSpinner text="Loading your profile..." /&gt;
-      &lt;/div&gt;
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+        <LoadingSpinner text="Loading your profile..." />
+      </div>
     );
   }
 
   const menuItems = [
-    { id: 'personal', label: 'Personal Information', icon: '👤' },
-    { id: 'addresses', label: 'Saved Addresses', icon: '🏠' },
-    { id: 'orders', label: 'My Orders', icon: '📦' },
-    { id: 'wishlist', label: 'My Wishlist', icon: '❤️' },
-    { id: 'activity', label: 'My Activity', icon: '📋' },
-    { id: 'settings', label: 'Account Settings', icon: '⚙️' },
+    { id: 'personal', label: 'Personal Information' },
+    { id: 'addresses', label: 'Saved Addresses' },
+    { id: 'orders', label: 'My Orders' },
+    { id: 'wishlist', label: 'My Wishlist' },
+    { id: 'activity', label: 'My Activity' },
+    { id: 'settings', label: 'Account Settings' }
   ];
 
   return (
-    &lt;div className="min-h-screen bg-slate-50 py-8 px-4"&gt;
-      &lt;div className="max-w-7xl mx-auto"&gt;
-        &lt;div className="mb-8"&gt;
-          &lt;h1 className="text-3xl font-bold text-slate-900 mb-2"&gt;My Account&lt;/h1&gt;
-          &lt;p className="text-slate-500"&gt;Manage your profile, orders, and preferences&lt;/p&gt;
-        &lt;/div&gt;
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-10">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-blue-700 bg-clip-text text-transparent mb-3">
+            My Account
+          </h1>
+          <p className="text-slate-600 text-lg">Manage your profile, orders, and preferences</p>
+        </div>
 
-        &lt;div className="grid grid-cols-1 lg:grid-cols-4 gap-6"&gt;
-          &lt;div className="lg:col-span-1"&gt;
-            &lt;div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden sticky top-8"&gt;
-              &lt;div className="p-6 border-b border-slate-100"&gt;
-                &lt;div className="flex items-center gap-4"&gt;
-                  &lt;div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-semibold text-lg overflow-hidden"&gt;
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden sticky top-8">
+              <div className="p-8 border-b border-slate-100 bg-gradient-to-br from-blue-50 to-indigo-50">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-2xl shadow-lg overflow-hidden">
                     {user?.avatar ? (
-                      &lt;img src={getCloudinaryUrl(user.avatar)} alt={user.name} className="w-full h-full object-cover" /&gt;
+                      <img src={getCloudinaryUrl(user.avatar)} alt={user.name} className="w-full h-full object-cover" />
                     ) : (
-                      user?.name?.charAt(0)?.toUpperCase() || 'U'
+                      <span>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</span>
                     )}
-                  &lt;/div&gt;
-                  &lt;div className="flex-1"&gt;
-                    &lt;p className="font-semibold text-slate-900 leading-tight"&gt;{user?.name || 'User'}&lt;/p&gt;
-                    &lt;p className="text-slate-500 text-sm truncate"&gt;{user?.email}&lt;/p&gt;
-                  &lt;/div&gt;
-                &lt;/div&gt;
-              &lt;/div&gt;
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-slate-900 text-lg leading-tight">{user?.name || 'User'}</p>
+                    <p className="text-slate-500 text-sm truncate">{user?.email}</p>
+                  </div>
+                </div>
+              </div>
               
-              &lt;nav className="p-3"&gt;
-                {menuItems.map((item) =&gt; (
-                  &lt;button
+              <nav className="p-4 space-y-2">
+                {menuItems.map((item) => (
+                  <button
                     key={item.id}
-                    onClick={() =&gt; setActiveTab(item.id)}
-                    className={`w-full text-left px-4 py-3 rounded-xl mb-1 flex items-center gap-3 transition-all ${
+                    onClick={() => setActiveTab(item.id)}
+                    className={`w-full text-left px-5 py-4 rounded-2xl flex items-center gap-4 transition-all duration-300 group ${
                       activeTab === item.id
-                        ? 'bg-blue-50 text-blue-700 font-semibold'
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-200'
                         : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     }`}
-                  &gt;
-                    &lt;span className="text-xl"&gt;{item.icon}&lt;/span&gt;
-                    &lt;span className="text-sm font-medium"&gt;{item.label}&lt;/span&gt;
-                  &lt;/button&gt;
+                  >
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                      activeTab === item.id ? 'bg-white/20' : 'bg-slate-100 group-hover:bg-blue-100'
+                    }`}>
+                      {item.id === 'personal' && (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      )}
+                      {item.id === 'addresses' && (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      )}
+                      {item.id === 'orders' && (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                      )}
+                      {item.id === 'wishlist' && (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                      )}
+                      {item.id === 'activity' && (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                      )}
+                      {item.id === 'settings' && (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="text-sm font-semibold">{item.label}</span>
+                  </button>
                 ))}
 
-                &lt;div className="border-t border-slate-100 my-3 pt-3"&gt;
-                  &lt;button
-                    onClick={() =&gt; {
-                      localStorage.removeItem('token');
-                      localStorage.removeItem('user');
-                      navigate('/');
-                    }}
-                    className="w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 text-red-600 hover:bg-red-50 transition-all"
-                  &gt;
-                    &lt;span className="text-xl"&gt;🚪&lt;/span&gt;
-                    &lt;span className="text-sm font-medium"&gt;Logout&lt;/span&gt;
-                  &lt;/button&gt;
-                &lt;/div&gt;
-              &lt;/nav&gt;
-            &lt;/div&gt;
-          &lt;/div&gt;
+                <div className="border-t border-slate-100 my-4 pt-4">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-5 py-4 rounded-2xl flex items-center gap-4 text-red-600 hover:bg-red-50 transition-all duration-300 group"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-red-100 group-hover:bg-red-200 flex items-center justify-center transition-all duration-300">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-semibold">Logout</span>
+                  </button>
+                </div>
+              </nav>
+            </div>
+          </div>
 
-          &lt;div className="lg:col-span-3 space-y-6"&gt;
-            {activeTab === 'personal' &amp;&amp; (
-              &lt;div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"&gt;
-                &lt;div className="p-6 border-b border-slate-100"&gt;
-                  &lt;h2 className="text-xl font-bold text-slate-900 flex items-center gap-2"&gt;
-                  &lt;span className="text-2xl"&gt;👤&lt;/span&gt; Personal Information
-                  &lt;/h2&gt;
-                  &lt;p className="text-slate-500 text-sm mt-1"&gt;Update your personal details here&lt;/p&gt;
-                &lt;/div&gt;
-                &lt;div className="p-6"&gt;
-                  &lt;form onSubmit={handleSaveProfile} className="space-y-6"&gt;
-                    &lt;div className="grid grid-cols-1 md:grid-cols-2 gap-5"&gt;
-                      &lt;div className="space-y-2"&gt;
-                        &lt;label className="text-sm font-medium text-slate-700"&gt;
-                          Full Name &lt;span className="text-red-500"&gt;*&lt;/span&gt;
-                        &lt;/label&gt;
-                        &lt;input
+          <div className="lg:col-span-3 space-y-6">
+            {activeTab === 'personal' && (
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-900">Personal Information</h2>
+                      <p className="text-slate-500 text-sm mt-1">Update your personal details here</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-8">
+                  <form onSubmit={handleSaveProfile} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-slate-700">
+                          Full Name <span className="text-red-500">*</span>
+                        </label>
+                        <input
                           type="text"
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all bg-white"
+                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white text-slate-900 placeholder-slate-400"
                           placeholder="Enter your full name"
-                        /&gt;
-                      &lt;/div&gt;
-                      &lt;div className="space-y-2"&gt;
-                        &lt;label className="text-sm font-medium text-slate-700"&gt;Email Address&lt;/label&gt;
-                        &lt;input
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                        <input
                           type="email"
                           name="email"
                           value={user?.email || ''}
                           disabled
-                          className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
-                        /&gt;
-                      &lt;/div&gt;
-                      &lt;div className="space-y-2"&gt;
-                        &lt;label className="text-sm font-medium text-slate-700"&gt;Phone Number&lt;/label&gt;
-                        &lt;input
+                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl bg-slate-50 text-slate-500 cursor-not-allowed"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-semibold text-slate-700">Phone Number</label>
+                        <input
                           type="tel"
                           name="phone"
                           value={user?.phone || ''}
                           disabled
-                          className="w-full px-4 py-3 border border-slate-300 rounded-lg bg-slate-50 text-slate-500 cursor-not-allowed"
-                        /&gt;
-                      &lt;/div&gt;
-                    &lt;/div&gt;
+                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl bg-slate-50 text-slate-500 cursor-not-allowed"
+                        />
+                      </div>
+                    </div>
 
-                    &lt;div className="pt-6 flex justify-end"&gt;
-                      &lt;button
+                    <div className="pt-6 flex justify-end">
+                      <button
                         type="submit"
                         disabled={saving}
-                        className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-sm hover:shadow transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      &gt;
+                        className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-blue-200 hover:shadow-2xl hover:shadow-blue-300 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-xl flex items-center gap-3"
+                      >
                         {saving ? (
-                          &lt;span className="flex items-center gap-2"&gt;
-                          &lt;div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"&gt;&lt;/div&gt;
-                          Saving...
-                          &lt;/span&gt;
+                          <>
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            Saving...
+                          </>
                         ) : (
                           'Save Changes'
                         )}
-                      &lt;/button&gt;
-                    &lt;/div&gt;
-                  &lt;/form&gt;
-                &lt;/div&gt;
-              &lt;/div&gt;
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
             )}
 
-            {activeTab === 'addresses' &amp;&amp; (
-              &lt;div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"&gt;
-                &lt;div className="p-6 border-b border-slate-100 flex items-center justify-between"&gt;
-                  &lt;div&gt;
-                    &lt;h2 className="text-xl font-bold text-slate-900 flex items-center gap-2"&gt;
-                      &lt;span className="text-2xl"&gt;🏠&lt;/span&gt; Saved Addresses
-                    &lt;/h2&gt;
-                    &lt;p className="text-slate-500 text-sm mt-1"&gt;Manage your delivery addresses&lt;/p&gt;
-                  &lt;/div&gt;
-                  &lt;button
+            {activeTab === 'addresses' && (
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100 flex items-center justify-between flex-wrap gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-900">Saved Addresses</h2>
+                      <p className="text-slate-500 text-sm mt-1">Manage your delivery addresses</p>
+                    </div>
+                  </div>
+                  <button
                     onClick={handleAddAddress}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all flex items-center gap-2"
-                  &gt;
-                    &lt;span&gt;+&lt;/span&gt; Add Address
-                  &lt;/button&gt;
-                &lt;/div&gt;
-                &lt;div className="p-6"&gt;
+                    className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Address
+                  </button>
+                </div>
+                <div className="p-8">
                   {savedAddresses.length === 0 ? (
-                    &lt;div className="text-center py-12"&gt;
-                      &lt;div className="text-6xl mb-4 text-slate-300"&gt;📍&lt;/div&gt;
-                      &lt;h3 className="text-lg font-semibold text-slate-900 mb-2"&gt;No saved addresses yet&lt;/h3&gt;
-                      &lt;p className="text-slate-500 mb-6"&gt;Add your first address to get started with faster checkout&lt;/p&gt;
-                      &lt;button
+                    <div className="text-center py-16">
+                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
+                        <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-900 mb-3">No saved addresses yet</h3>
+                      <p className="text-slate-500 mb-8 max-w-md mx-auto">Add your first address to get started with faster checkout</p>
+                      <button
                         onClick={handleAddAddress}
-                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all"
-                      &gt;
+                        className="px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                      >
                         Add Your First Address
-                      &lt;/button&gt;
-                    &lt;/div&gt;
+                      </button>
+                    </div>
                   ) : (
-                    &lt;div className="space-y-4"&gt;
-                      {savedAddresses.map((address) =&gt; (
-                        &lt;div key={address._id} className={`p-5 border rounded-xl transition-all ${address.isDefault ? 'border-blue-300 bg-blue-50' : 'border-slate-200 hover:border-slate-300'}`}&gt;
-                          &lt;div className="flex items-start justify-between mb-3"&gt;
-                            &lt;div&gt;
-                              &lt;div className="flex items-center gap-2 mb-1"&gt;
-                                &lt;h4 className="font-semibold text-slate-900"&gt;{address.fullName}&lt;/h4&gt;
-                                {address.isDefault &amp;&amp; (
-                                  &lt;span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full"&gt;Default&lt;/span&gt;
+                    <div className="space-y-5">
+                      {savedAddresses.map((address) => (
+                        <div key={address._id} className={`p-6 border-2 rounded-2xl transition-all duration-300 ${address.isDefault ? 'border-blue-300 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-md' : 'border-slate-200 hover:border-blue-200 hover:shadow-md'}`}>
+                          <div className="flex items-start justify-between mb-4">
+                            <div>
+                              <div className="flex items-center gap-3 mb-2">
+                                <h4 className="font-bold text-lg text-slate-900">{address.fullName}</h4>
+                                {address.isDefault && (
+                                  <span className="px-3 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-full shadow">Default</span>
                                 )}
-                              &lt;/div&gt;
-                              &lt;p className="text-slate-600 text-sm"&gt;{address.phone}&lt;/p&gt;
-                            &lt;/div&gt;
-                            &lt;div className="flex gap-2"&gt;
-                              &lt;button
-                                onClick={() =&gt; handleEditAddress(address)}
-                                className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-100 rounded-lg transition-all"
+                              </div>
+                              <p className="text-slate-600 text-sm font-medium">{address.phone}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEditAddress(address)}
+                                className="p-3 text-slate-500 hover:text-blue-600 hover:bg-blue-100 rounded-xl transition-all duration-300"
                                 title="Edit"
-                              &gt;
-                                ✏️
-                              &lt;/button&gt;
-                              &lt;button
-                                onClick={() =&gt; handleDeleteAddress(address._id)}
-                                className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-100 rounded-lg transition-all"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteAddress(address._id)}
+                                className="p-3 text-slate-500 hover:text-red-600 hover:bg-red-100 rounded-xl transition-all duration-300"
                                 title="Delete"
-                              &gt;
-                                🗑️
-                              &lt;/button&gt;
-                            &lt;/div&gt;
-                          &lt;/div&gt;
-                          &lt;div className="text-slate-700 mb-3"&gt;
-                            &lt;p&gt;{address.addressLine1}&lt;/p&gt;
-                            {address.addressLine2 &amp;&amp; &lt;p&gt;{address.addressLine2}&lt;/p&gt;}
-                            &lt;p&gt;{address.city}, {address.district}, {address.state} - {address.pincode}&lt;/p&gt;
-                          &lt;/div&gt;
-                          {!address.isDefault &amp;&amp; (
-                            &lt;button
-                              onClick={() =&gt; handleSetDefault(address._id)}
-                              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-                            &gt;
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                          <div className="text-slate-700 space-y-1 mb-4">
+                            <p className="font-medium">{address.addressLine1}</p>
+                            {address.addressLine2 && <p>{address.addressLine2}</p>}
+                            <p>{address.city}, {address.district}, {address.state} - {address.pincode}</p>
+                          </div>
+                          {!address.isDefault && (
+                            <button
+                              onClick={() => handleSetDefault(address._id)}
+                              className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-300"
+                            >
                               Set as Default
-                            &lt;/button&gt;
+                            </button>
                           )}
-                        &lt;/div&gt;
+                        </div>
                       ))}
-                    &lt;/div&gt;
+                    </div>
                   )}
-                &lt;/div&gt;
-              &lt;/div&gt;
+                </div>
+              </div>
             )}
 
-            {activeTab === 'orders' &amp;&amp; (
-              &lt;div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"&gt;
-                &lt;div className="p-6 border-b border-slate-100"&gt;
-                  &lt;h2 className="text-xl font-bold text-slate-900 flex items-center gap-2"&gt;
-                    &lt;span className="text-2xl"&gt;📦&lt;/span&gt; My Orders
-                  &lt;/h2&gt;
-                &lt;/div&gt;
-                &lt;div className="p-6"&gt;
-                  &lt;Link
+            {activeTab === 'orders' && (
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900">My Orders</h2>
+                  </div>
+                </div>
+                <div className="p-8">
+                  <Link
                     to="/orders"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm hover:shadow transition-all"
-                  &gt;
-                    View All Orders →
-                  &lt;/Link&gt;
-                &lt;/div&gt;
-              &lt;/div&gt;
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                  >
+                    View All Orders
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
             )}
 
-            {activeTab === 'wishlist' &amp;&amp; (
-              &lt;div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"&gt;
-                &lt;div className="p-6 border-b border-slate-100"&gt;
-                  &lt;h2 className="text-xl font-bold text-slate-900 flex items-center gap-2"&gt;
-                    &lt;span className="text-2xl"&gt;❤️&lt;/span&gt; My Wishlist
-                  &lt;/h2&gt;
-                &lt;/div&gt;
-                &lt;div className="p-6"&gt;
-                  &lt;Link
+            {activeTab === 'wishlist' && (
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900">My Wishlist</h2>
+                  </div>
+                </div>
+                <div className="p-8">
+                  <Link
                     to="/wishlist"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm hover:shadow transition-all"
-                  &gt;
-                    View My Wishlist →
-                  &lt;/Link&gt;
-                &lt;/div&gt;
-              &lt;/div&gt;
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                  >
+                    View My Wishlist
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
             )}
 
-            {activeTab === 'activity' &amp;&amp; (
-              &lt;div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"&gt;
-                &lt;div className="p-6 border-b border-slate-100"&gt;
-                  &lt;h2 className="text-xl font-bold text-slate-900 flex items-center gap-2"&gt;
-                    &lt;span className="text-2xl"&gt;📋&lt;/span&gt; My Activity
-                  &lt;/h2&gt;
-                &lt;/div&gt;
-                &lt;div className="p-8 text-center"&gt;
-                  &lt;div className="text-6xl mb-4 text-slate-300"&gt;📖&lt;/div&gt;
-                  &lt;h3 className="text-lg font-semibold text-slate-900 mb-2"&gt;Your activity will appear here&lt;/h3&gt;
-                  &lt;p className="text-slate-500"&gt;Keep shopping to see your browsing history!&lt;/p&gt;
-                &lt;/div&gt;
-              &lt;/div&gt;
+            {activeTab === 'activity' && (
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900">My Activity</h2>
+                  </div>
+                </div>
+                <div className="p-12 text-center">
+                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center">
+                    <svg className="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-3">Your activity will appear here</h3>
+                  <p className="text-slate-500">Keep shopping to see your browsing history!</p>
+                </div>
+              </div>
             )}
 
-            {activeTab === 'settings' &amp;&amp; (
-              &lt;div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden"&gt;
-                &lt;div className="p-6 border-b border-slate-100"&gt;
-                  &lt;h2 className="text-xl font-bold text-slate-900 flex items-center gap-2"&gt;
-                    &lt;span className="text-2xl"&gt;⚙️&lt;/span&gt; Account Settings
-                  &lt;/h2&gt;
-                &lt;/div&gt;
-                &lt;div className="p-6"&gt;
-                  &lt;div className="space-y-4"&gt;
-                    &lt;div className="p-5 border border-slate-200 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all"&gt;
-                      &lt;h3 className="font-semibold text-slate-900 mb-1"&gt;Password&lt;/h3&gt;
-                      &lt;p className="text-slate-500 text-sm mb-3"&gt;Change your password to keep your account secure&lt;/p&gt;
-                      &lt;button className="text-blue-700 font-medium text-sm hover:text-blue-800"&gt;
-                        Change Password →
-                      &lt;/button&gt;
-                    &lt;/div&gt;
-                    &lt;div className="p-5 border border-slate-200 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all"&gt;
-                      &lt;h3 className="font-semibold text-slate-900 mb-1"&gt;Notifications&lt;/h3&gt;
-                      &lt;p className="text-slate-500 text-sm mb-3"&gt;Manage your email and SMS notifications&lt;/p&gt;
-                      &lt;button className="text-blue-700 font-medium text-sm hover:text-blue-800"&gt;
-                        Notification Settings →
-                      &lt;/button&gt;
-                    &lt;/div&gt;
-                  &lt;/div&gt;
-                &lt;/div&gt;
-              &lt;/div&gt;
+            {activeTab === 'settings' && (
+              <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+                <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold text-slate-900">Account Settings</h2>
+                  </div>
+                </div>
+                <div className="p-8">
+                  <div className="space-y-5">
+                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-blue-200 hover:bg-gradient-to-r from-blue-50 to-indigo-50 transition-all duration-300 cursor-pointer">
+                      <h3 className="font-bold text-slate-900 mb-2 text-lg">Password</h3>
+                      <p className="text-slate-500 text-sm mb-4">Change your password to keep your account secure</p>
+                      <button className="text-blue-700 font-semibold text-sm hover:text-blue-800 transition-colors duration-300 flex items-center gap-2">
+                        Change Password
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-blue-200 hover:bg-gradient-to-r from-blue-50 to-indigo-50 transition-all duration-300 cursor-pointer">
+                      <h3 className="font-bold text-slate-900 mb-2 text-lg">Notifications</h3>
+                      <p className="text-slate-500 text-sm mb-4">Manage your email and SMS notifications</p>
+                      <button className="text-blue-700 font-semibold text-sm hover:text-blue-800 transition-colors duration-300 flex items-center gap-2">
+                        Notification Settings
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
-          &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
+          </div>
+        </div>
+      </div>
 
-      {showAddressModal &amp;&amp; (
-        &lt;div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"&gt;
-          &lt;div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"&gt;
-            &lt;div className="p-6 border-b border-slate-100"&gt;
-              &lt;h2 className="text-xl font-bold text-slate-900"&gt;
+      {showAddressModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-8 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-slate-100 flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-slate-900">
                 {editingAddress ? 'Edit Address' : 'Add New Address'}
-              &lt;/h2&gt;
-            &lt;/div&gt;
-            &lt;form onSubmit={handleSaveAddress} className="p-6 space-y-4"&gt;
-              &lt;div&gt;
-                &lt;label className="block text-sm font-medium text-slate-700 mb-1"&gt;Full Name *&lt;/label&gt;
-                &lt;input
+              </h2>
+              <button
+                onClick={() => setShowAddressModal(false)}
+                className="p-2 hover:bg-slate-200 rounded-xl transition-all duration-300"
+              >
+                <svg className="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <form onSubmit={handleSaveAddress} className="p-8 space-y-5">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name *</label>
+                <input
                   type="text"
                   name="fullName"
                   value={addressForm.fullName}
                   onChange={handleAddressInputChange}
                   required
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                /&gt;
-              &lt;/div&gt;
-              &lt;div&gt;
-                &lt;label className="block text-sm font-medium text-slate-700 mb-1"&gt;Phone Number *&lt;/label&gt;
-                &lt;input
+                  className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Phone Number *</label>
+                <input
                   type="tel"
                   name="phone"
                   value={addressForm.phone}
                   onChange={handleAddressInputChange}
                   required
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                /&gt;
-              &lt;/div&gt;
-              &lt;div&gt;
-                &lt;label className="block text-sm font-medium text-slate-700 mb-1"&gt;Address Line 1 *&lt;/label&gt;
-                &lt;input
+                  className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Address Line 1 *</label>
+                <input
                   type="text"
                   name="addressLine1"
                   value={addressForm.addressLine1}
                   onChange={handleAddressInputChange}
                   required
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                /&gt;
-              &lt;/div&gt;
-              &lt;div&gt;
-                &lt;label className="block text-sm font-medium text-slate-700 mb-1"&gt;Address Line 2&lt;/label&gt;
-                &lt;input
+                  className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Address Line 2</label>
+                <input
                   type="text"
                   name="addressLine2"
                   value={addressForm.addressLine2}
                   onChange={handleAddressInputChange}
-                  className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                /&gt;
-              &lt;/div&gt;
-              &lt;div className="grid grid-cols-2 gap-4"&gt;
-                &lt;div&gt;
-                  &lt;label className="block text-sm font-medium text-slate-700 mb-1"&gt;City *&lt;/label&gt;
-                  &lt;input
+                  className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">City *</label>
+                  <input
                     type="text"
                     name="city"
                     value={addressForm.city}
                     onChange={handleAddressInputChange}
                     required
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                  /&gt;
-                &lt;/div&gt;
-                &lt;div&gt;
-                  &lt;label className="block text-sm font-medium text-slate-700 mb-1"&gt;District *&lt;/label&gt;
-                  &lt;input
+                    className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">District *</label>
+                  <input
                     type="text"
                     name="district"
                     value={addressForm.district}
                     onChange={handleAddressInputChange}
                     required
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                  /&gt;
-                &lt;/div&gt;
-              &lt;/div&gt;
-              &lt;div className="grid grid-cols-2 gap-4"&gt;
-                &lt;div&gt;
-                  &lt;label className="block text-sm font-medium text-slate-700 mb-1"&gt;State *&lt;/label&gt;
-                  &lt;input
+                    className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">State *</label>
+                  <input
                     type="text"
                     name="state"
                     value={addressForm.state}
                     onChange={handleAddressInputChange}
                     required
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                  /&gt;
-                &lt;/div&gt;
-                &lt;div&gt;
-                  &lt;label className="block text-sm font-medium text-slate-700 mb-1"&gt;Pincode *&lt;/label&gt;
-                  &lt;input
+                    className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-2">Pincode *</label>
+                  <input
                     type="text"
                     name="pincode"
                     value={addressForm.pincode}
                     onChange={handleAddressInputChange}
                     required
-                    className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none"
-                  /&gt;
-                &lt;/div&gt;
-              &lt;/div&gt;
-              &lt;div className="flex items-center gap-2"&gt;
-                &lt;input
+                    className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <input
                   type="checkbox"
                   id="isDefault"
                   name="isDefault"
                   checked={addressForm.isDefault}
                   onChange={handleAddressInputChange}
-                  className="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500"
-                /&gt;
-                &lt;label htmlFor="isDefault" className="text-sm font-medium text-slate-700"&gt;
+                  className="w-5 h-5 text-blue-600 rounded-lg border-slate-300 focus:ring-blue-500"
+                />
+                <label htmlFor="isDefault" className="text-sm font-semibold text-slate-700">
                   Set as default address
-                &lt;/label&gt;
-              &lt;/div&gt;
-              &lt;div className="flex gap-3 pt-4"&gt;
-                &lt;button
+                </label>
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button
                   type="button"
-                  onClick={() =&gt; setShowAddressModal(false)}
-                  className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 transition-all"
-                &gt;
+                  onClick={() => setShowAddressModal(false)}
+                  className="flex-1 px-6 py-4 border-2 border-slate-200 text-slate-700 font-semibold rounded-2xl hover:bg-slate-50 transition-all duration-300"
+                >
                   Cancel
-                &lt;/button&gt;
-                &lt;button
+                </button>
+                <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all"
-                &gt;
+                  className="flex-1 px-6 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                >
                   Save Address
-                &lt;/button&gt;
-              &lt;/div&gt;
-            &lt;/form&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
-    &lt;/div&gt;
+    </div>
   );
 }
-
