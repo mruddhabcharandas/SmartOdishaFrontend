@@ -651,11 +651,11 @@ export default function Home() {
           </div>
           <div className="stores-grid">
             {stores.map((store, i) => (
-              <Link
-                key={store._id}
-                to={`/products?store=${encodeURIComponent(store.name)}`}
-                className="store-card"
-              >
+            <Link
+              key={store._id}
+              to={`/products?store=${store._id}`}
+              className="store-card"
+            >
                 <div className="store-image-container">
                   {store.logo || store.image ? (
                     <img

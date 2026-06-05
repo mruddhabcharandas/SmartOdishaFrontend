@@ -336,7 +336,7 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50">
         <LoadingSpinner text="Loading your profile..." />
       </div>
     );
@@ -353,21 +353,21 @@ export default function Profile() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-50/30 to-slate-50/30 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto animate-fade-in-up">
         <div className="mb-10">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent mb-3">
             My Account
           </h1>
-          <p className="text-slate-600 text-lg">Manage your profile, orders, and preferences</p>
+          <p className="text-slate-400 text-lg">Manage your profile, orders, and preferences</p>
         </div>
 
         {activeTab === 'dashboard' ? (
           <div className="space-y-8">
             {/* User Profile Header Card */}
-            <div className="bg-white rounded-3xl p-8 shadow-xl border border-slate-200 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 flex flex-col md:flex-row items-center justify-between gap-6">
               <div className="flex flex-col md:flex-row items-center gap-6">
-                <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-4xl shadow-xl overflow-hidden">
+                <div className="h-28 w-28 rounded-3xl bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-5xl shadow-2xl overflow-hidden border-4 border-white/20">
                   {user?.avatar ? (
                     <img 
                       src={getCloudinaryUrl(user.avatar)} 
@@ -379,16 +379,16 @@ export default function Profile() {
                   )}
                 </div>
                 <div className="text-center md:text-left space-y-1">
-                  <h2 className="text-2xl font-black text-slate-900">{user?.name || 'User'}</h2>
-                  <p className="text-slate-500 font-semibold">{user?.email}</p>
-                  <p className="text-slate-500 font-medium">{user?.phone || 'No phone number added'}</p>
+                  <h2 className="text-3xl font-black text-white">{user?.name || 'User'}</h2>
+                  <p className="text-slate-300 font-semibold">{user?.email}</p>
+                  <p className="text-slate-400 font-medium">{user?.phone || 'No phone number added'}</p>
                 </div>
               </div>
               <button
                 onClick={handleLogout}
-                className="px-6 py-3 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-2xl transition-all duration-300 flex items-center gap-2 border border-red-100"
+                className="px-8 py-4 bg-gradient-to-r from-red-500/20 hover:from-red-500/30 text-red-300 hover:text-white font-bold rounded-2xl transition-all duration-300 flex items-center gap-3 border border-red-500/30 hover:border-red-500/50 hover:shadow-xl"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
                 Logout Account
@@ -401,14 +401,14 @@ export default function Profile() {
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className="p-8 bg-white border border-slate-200 rounded-3xl hover:border-blue-400 hover:shadow-2xl hover:shadow-blue-100/50 hover:-translate-y-1 transition-all duration-300 text-left flex gap-5 group"
+                  className="p-8 bg-white/10 backdrop-blur-lg border border-white/20 hover:border-blue-400/50 hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-2 transition-all duration-300 text-left flex gap-5 group rounded-3xl"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-blue-50 group-hover:bg-blue-600 group-hover:text-white flex items-center justify-center text-2xl transition-all duration-300 shadow-inner">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 group-hover:from-blue-500 group-hover:to-indigo-600 group-hover:text-white flex items-center justify-center text-3xl transition-all duration-300 shadow-inner border border-white/10 group-hover:border-transparent">
                     {item.icon}
                   </div>
-                  <div className="flex-1 space-y-1">
-                    <h3 className="font-bold text-lg text-slate-900 group-hover:text-blue-600 transition-colors">{item.label}</h3>
-                    <p className="text-sm text-slate-500 font-medium leading-relaxed">{item.desc}</p>
+                  <div className="flex-1 space-y-2">
+                    <h3 className="font-bold text-xl text-white group-hover:text-blue-300 transition-colors">{item.label}</h3>
+                    <p className="text-sm text-slate-400 font-medium leading-relaxed">{item.desc}</p>
                   </div>
                 </button>
               ))}
@@ -418,9 +418,9 @@ export default function Profile() {
           <div className="space-y-6 animate-fade-in-up">
             <button
               onClick={() => setActiveTab('dashboard')}
-              className="inline-flex items-center gap-3 px-6 py-3.5 bg-white border border-slate-200 rounded-2xl text-sm font-bold text-slate-700 hover:text-blue-600 hover:border-blue-300 shadow-sm transition-all group"
+              className="inline-flex items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl text-sm font-bold text-slate-300 hover:text-white hover:border-blue-400/50 shadow-sm transition-all group"
             >
-              <svg className="w-5 h-5 text-slate-500 group-hover:text-blue-600 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-slate-400 group-hover:text-blue-400 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
               Back to My Account
@@ -428,54 +428,54 @@ export default function Profile() {
 
             <div className="w-full space-y-6">
               {activeTab === 'personal' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="p-8 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-900">Personal Information</h2>
-                      <p className="text-slate-500 text-sm mt-1">Update your personal details here</p>
+                      <h2 className="text-2xl font-bold text-white">Personal Information</h2>
+                      <p className="text-slate-300 text-sm mt-1">Update your personal details here</p>
                     </div>
                   </div>
                 </div>
                 <div className="p-8">
                   <form onSubmit={handleSaveProfile} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">
-                          Full Name <span className="text-red-500">*</span>
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold text-slate-200">
+                          Full Name <span className="text-red-400">*</span>
                         </label>
                         <input
                           type="text"
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
-                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white text-slate-900 placeholder-slate-400"
+                          className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
                           placeholder="Enter your full name"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Email Address</label>
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold text-slate-200">Email Address</label>
                         <input
                           type="email"
                           name="email"
                           value={user?.email || ''}
                           disabled
-                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl bg-slate-50 text-slate-500 cursor-not-allowed"
+                          className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl bg-white/5 text-slate-400 cursor-not-allowed"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-slate-700">Phone Number</label>
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold text-slate-200">Phone Number</label>
                         <input
                           type="tel"
                           name="phone"
                           value={formData.phone}
                           onChange={handleInputChange}
-                          className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white text-slate-900 placeholder-slate-400"
+                          className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
                           placeholder="Enter your phone number"
                         />
                       </div>
@@ -485,11 +485,11 @@ export default function Profile() {
                       <button
                         type="submit"
                         disabled={saving}
-                        className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-blue-200 hover:shadow-2xl hover:shadow-blue-300 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-xl flex items-center gap-3"
+                        className="px-10 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-xl flex items-center gap-3 text-lg"
                       >
                         {saving ? (
                           <>
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                             Saving...
                           </>
                         ) : (
@@ -503,25 +503,25 @@ export default function Profile() {
             )}
 
             {activeTab === 'addresses' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-between flex-wrap gap-4">
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="p-8 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 flex items-center justify-between flex-wrap gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-900">Saved Addresses</h2>
-                      <p className="text-slate-500 text-sm mt-1">Manage your delivery addresses</p>
+                      <h2 className="text-2xl font-bold text-white">Saved Addresses</h2>
+                      <p className="text-slate-300 text-sm mt-1">Manage your delivery addresses</p>
                     </div>
                   </div>
                   <button
                     onClick={handleAddAddress}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                    className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-300 flex items-center gap-3 text-lg"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
                     Add Address
@@ -529,18 +529,18 @@ export default function Profile() {
                 </div>
                 <div className="p-8">
                   {savedAddresses.length === 0 ? (
-                    <div className="text-center py-16">
-                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
-                        <svg className="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="text-center py-20">
+                      <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-full flex items-center justify-center border border-white/10">
+                        <svg className="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                       </div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-3">No saved addresses yet</h3>
-                      <p className="text-slate-500 mb-8 max-w-md mx-auto">Add your first address to get started with faster checkout</p>
+                      <h3 className="text-2xl font-bold text-white mb-4">No saved addresses yet</h3>
+                      <p className="text-slate-400 mb-10 max-w-md mx-auto text-lg">Add your first address to get started with faster checkout</p>
                       <button
                         onClick={handleAddAddress}
-                        className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                        className="px-10 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-300 text-lg"
                       >
                         Add Your First Address
                       </button>
@@ -548,39 +548,39 @@ export default function Profile() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {savedAddresses.map((address) => (
-                        <div key={address._id} className={`p-6 border-2 rounded-2xl transition-all duration-300 ${address.isDefault ? 'border-blue-300 bg-gradient-to-r from-blue-50 to-indigo-50 shadow-md' : 'border-slate-200 hover:border-blue-200 hover:shadow-md'}`}>
-                          <div className="flex items-start justify-between mb-4">
+                        <div key={address._id} className={`p-7 border-2 rounded-2xl transition-all duration-300 ${address.isDefault ? 'border-blue-400/50 bg-gradient-to-r from-blue-500/10 to-indigo-500/10 shadow-lg' : 'border-white/20 hover:border-blue-400/30 hover:shadow-md bg-white/5'}`}>
+                          <div className="flex items-start justify-between mb-5">
                             <div>
-                              <div className="flex items-center gap-3 mb-2">
-                                <h4 className="font-bold text-lg text-slate-900">{address.fullName}</h4>
+                              <div className="flex items-center gap-3 mb-3">
+                                <h4 className="font-bold text-xl text-white">{address.fullName}</h4>
                                 {address.isDefault && (
-                                  <span className="px-3 py-1 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-bold rounded-full shadow">Default</span>
+                                  <span className="px-4 py-1.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-bold rounded-full shadow-lg">Default</span>
                                 )}
                               </div>
-                              <p className="text-slate-600 text-sm font-medium">{address.phone}</p>
+                              <p className="text-slate-300 font-medium">{address.phone}</p>
                             </div>
                             <div className="flex gap-2">
                               <button
                                 onClick={() => handleEditAddress(address)}
-                                className="p-3 text-slate-500 hover:text-blue-600 hover:bg-blue-100 rounded-xl transition-all duration-300"
+                                className="p-3 text-slate-400 hover:text-blue-400 hover:bg-blue-500/20 rounded-xl transition-all duration-300"
                                 title="Edit"
                               >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                 </svg>
                               </button>
                               <button
                                 onClick={() => handleDeleteAddress(address._id)}
-                                className="p-3 text-slate-500 hover:text-red-600 hover:bg-red-100 rounded-xl transition-all duration-300"
+                                className="p-3 text-slate-400 hover:text-red-400 hover:bg-red-500/20 rounded-xl transition-all duration-300"
                                 title="Delete"
                               >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                               </button>
                             </div>
                           </div>
-                          <div className="text-slate-700 space-y-1 mb-4">
+                          <div className="text-slate-300 space-y-1.5 mb-5">
                             <p className="font-medium">{address.addressLine1}</p>
                             {address.addressLine2 && <p>{address.addressLine2}</p>}
                             <p>{address.city}, {address.district}, {address.state} - {address.pincode}</p>
@@ -588,7 +588,7 @@ export default function Profile() {
                           {!address.isDefault && (
                             <button
                               onClick={() => handleSetDefault(address._id)}
-                              className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors duration-300"
+                              className="text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-300"
                             >
                               Set as Default
                             </button>
@@ -602,24 +602,24 @@ export default function Profile() {
             )}
 
             {activeTab === 'orders' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="p-8 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900">My Orders</h2>
+                    <h2 className="text-2xl font-bold text-white">My Orders</h2>
                   </div>
                 </div>
                 <div className="p-8">
                   <Link
                     to="/orders"
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                    className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-300 text-lg"
                   >
                     View All Orders
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </Link>
@@ -628,24 +628,24 @@ export default function Profile() {
             )}
 
             {activeTab === 'wishlist' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="p-8 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900">My Wishlist</h2>
+                    <h2 className="text-2xl font-bold text-white">My Wishlist</h2>
                   </div>
                 </div>
                 <div className="p-8">
                   <Link
                     to="/wishlist"
-                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                    className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-300 text-lg"
                   >
                     View My Wishlist
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                     </svg>
                   </Link>
@@ -654,48 +654,48 @@ export default function Profile() {
             )}
 
             {activeTab === 'activity' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="p-8 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 0 012-2h2a2 2 0 012 2" />
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012-2" />
                       </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900">My Activity</h2>
+                    <h2 className="text-2xl font-bold text-white">My Activity</h2>
                   </div>
                 </div>
                 <div className="p-12 text-center">
-                  <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
-                    <svg className="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-full flex items-center justify-center border border-white/10">
+                    <svg className="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-3">Your activity will appear here</h3>
-                  <p className="text-slate-500">Keep shopping to see your browsing history!</p>
+                  <h3 className="text-2xl font-bold text-white mb-4">Your activity will appear here</h3>
+                  <p className="text-slate-400 text-lg">Keep shopping to see your browsing history!</p>
                 </div>
               </div>
             )}
 
             {activeTab === 'support' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-between flex-wrap gap-4">
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="p-8 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 flex items-center justify-between flex-wrap gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                       </svg>
                     </div>
                     <div>
-                      <h2 className="text-2xl font-bold text-slate-900">Support & Tickets</h2>
-                      <p className="text-slate-500 text-sm mt-1">Manage your support tickets</p>
+                      <h2 className="text-2xl font-bold text-white">Support & Tickets</h2>
+                      <p className="text-slate-300 text-sm mt-1">Manage your support tickets</p>
                     </div>
                   </div>
                   <button
                     onClick={() => setShowNewTicketModal(true)}
-                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300 flex items-center gap-2"
+                    className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-300 flex items-center gap-3 text-lg"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
                     New Ticket
@@ -707,17 +707,17 @@ export default function Profile() {
                       <LoadingSpinner text="Loading tickets..." />
                     </div>
                   ) : tickets.length === 0 ? (
-                    <div className="text-center py-16">
-                      <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-full flex items-center justify-center">
-                        <svg className="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="text-center py-20">
+                      <div className="w-32 h-32 mx-auto mb-8 bg-gradient-to-br from-blue-500/20 to-indigo-500/20 rounded-full flex items-center justify-center border border-white/10">
+                        <svg className="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
                       </div>
-                      <h3 className="text-xl font-bold text-slate-900 mb-3">No tickets yet</h3>
-                      <p className="text-slate-500 mb-8 max-w-md mx-auto">Create your first support ticket if you need help</p>
+                      <h3 className="text-2xl font-bold text-white mb-4">No tickets yet</h3>
+                      <p className="text-slate-400 mb-10 max-w-md mx-auto text-lg">Create your first support ticket if you need help</p>
                       <button
                         onClick={() => setShowNewTicketModal(true)}
-                        className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                        className="px-10 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-300 text-lg"
                       >
                         Create Ticket
                       </button>
@@ -726,45 +726,45 @@ export default function Profile() {
                     <div className="space-y-6">
                       <button
                         onClick={() => setSelectedTicket(null)}
-                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold"
+                        className="flex items-center gap-2 text-blue-400 hover:text-blue-300 font-semibold text-lg"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                         Back to all tickets
                       </button>
-                      <div className="border border-slate-200 rounded-2xl overflow-hidden">
-                        <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                      <div className="border border-white/20 rounded-2xl overflow-hidden">
+                        <div className="p-6 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20">
                           <div className="flex items-start justify-between">
                             <div>
-                              <h3 className="text-xl font-bold text-slate-900">{selectedTicket.subject}</h3>
-                              <p className="text-sm text-slate-500 mt-1">
+                              <h3 className="text-2xl font-bold text-white">{selectedTicket.subject}</h3>
+                              <p className="text-sm text-slate-300 mt-1">
                                 Category: {selectedTicket.category} • Status: {selectedTicket.status}
                               </p>
                             </div>
                             {selectedTicket.status !== 'Resolved' && (
                               <button
                                 onClick={() => handleResolveTicket(selectedTicket._id)}
-                                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl transition-all duration-300 text-sm"
+                                className="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all duration-300 text-lg"
                               >
                                 Mark as Resolved
                               </button>
                             )}
                           </div>
                         </div>
-                        <div className="p-6 max-h-96 overflow-y-auto space-y-4">
+                        <div className="p-8 max-h-96 overflow-y-auto space-y-4">
                           {selectedTicket.messages && selectedTicket.messages.map((msg, idx) => (
                             <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[75%] p-4 rounded-2xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white' : 'bg-slate-100 text-slate-900'}`}>
-                                <p className="text-sm">{msg.message}</p>
-                                <p className={`text-xs mt-2 ${msg.sender === 'user' ? 'text-blue-100' : 'text-slate-500'}`}>
+                              <div className={`max-w-[75%] p-6 rounded-2xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white' : 'bg-white/10 text-white backdrop-blur-sm'}`}>
+                                <p className="text-base">{msg.message}</p>
+                                <p className={`text-xs mt-3 ${msg.sender === 'user' ? 'text-blue-100' : 'text-slate-400'}`}>
                                   {new Date(msg.createdAt).toLocaleString()}
                                 </p>
                               </div>
                             </div>
                           ))}
                         </div>
-                        <div className="p-6 border-t border-slate-200">
+                        <div className="p-6 border-t border-white/10">
                           <div className="flex gap-3">
                             <input
                               type="text"
@@ -772,15 +772,15 @@ export default function Profile() {
                               onChange={(e) => setMessageInput(e.target.value)}
                               onKeyPress={(e) => e.key === 'Enter' && handleAddMessage(selectedTicket._id)}
                               placeholder="Type your message..."
-                              className="flex-1 px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
+                              className="flex-1 px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
                               disabled={selectedTicket.status === 'Resolved'}
                             />
                             <button
                               onClick={() => handleAddMessage(selectedTicket._id)}
                               disabled={!messageInput.trim() || selectedTicket.status === 'Resolved'}
-                              className="px-6 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="px-8 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                               </svg>
                             </button>
@@ -789,25 +789,20 @@ export default function Profile() {
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {tickets.map((ticket) => (
-                        <div
-                          key={ticket._id}
-                          onClick={() => setSelectedTicket(ticket)}
-                          className="p-6 border border-slate-200 rounded-2xl hover:border-blue-300 hover:shadow-lg hover:bg-blue-50 transition-all duration-300 cursor-pointer"
-                        >
-                          <div className="flex items-start justify-between mb-3">
-                            <h4 className="font-bold text-lg text-slate-900">{ticket.subject}</h4>
-                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${ticket.status === 'Open' ? 'bg-green-100 text-green-700' : ticket.status === 'In Progress' ? 'bg-yellow-100 text-yellow-700' : 'bg-slate-100 text-slate-700'}`}>
+                        <div key={ticket._id} className="p-6 border border-white/20 rounded-2xl bg-white/5 hover:border-blue-400/30 hover:bg-white/10 transition-all duration-300 cursor-pointer" onClick={() => setSelectedTicket(ticket)}>
+                          <div className="flex items-start justify-between mb-4">
+                            <div>
+                              <h4 className="font-bold text-lg text-white">{ticket.subject}</h4>
+                              <p className="text-sm text-slate-400">{ticket.category}</p>
+                            </div>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${ticket.status === 'Open' ? 'bg-yellow-500/20 text-yellow-300' : ticket.status === 'In Progress' ? 'bg-blue-500/20 text-blue-300' : 'bg-green-500/20 text-green-300'}`}>
                               {ticket.status}
                             </span>
                           </div>
-                          <p className="text-slate-600 text-sm mb-3">{ticket.description}</p>
-                          <div className="flex items-center gap-4 text-sm text-slate-500">
-                            <span>Category: {ticket.category}</span>
-                            <span>•</span>
-                            <span>Created: {new Date(ticket.createdAt).toLocaleDateString()}</span>
-                          </div>
+                          <p className="text-slate-400 text-sm mb-4 line-clamp-2">{ticket.description}</p>
+                          <p className="text-xs text-slate-500">Updated: {new Date(ticket.updatedAt).toLocaleString()}</p>
                         </div>
                       ))}
                     </div>
@@ -817,250 +812,244 @@ export default function Profile() {
             )}
 
             {activeTab === 'settings' && (
-              <div className="bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
-                <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+              <div className="bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="p-8 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31-2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg">
+                      <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900">Account Settings</h2>
+                    <h2 className="text-2xl font-bold text-white">Account Settings</h2>
                   </div>
                 </div>
-                <div className="p-8">
-                  <div className="space-y-5">
-                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-blue-300 hover:bg-gradient-to-r from-blue-50 to-indigo-50 transition-all duration-300">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h3 className="font-bold text-slate-900 mb-2 text-lg">Password</h3>
-                          <p className="text-slate-500 text-sm">Change your password to keep your account secure</p>
-                        </div>
-                        <button
-                          onClick={() => setShowPasswordChange(!showPasswordChange)}
-                          className="text-blue-700 font-semibold text-sm hover:text-blue-800 transition-colors duration-300 flex items-center gap-2"
-                        >
-                          {showPasswordChange ? 'Cancel' : 'Change Password'}
-                          <svg className={`w-4 h-4 transition-transform duration-300 ${showPasswordChange ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                          </svg>
-                        </button>
+                <div className="p-8 space-y-6">
+                  {!showPasswordChange ? (
+                    <button
+                      onClick={() => setShowPasswordChange(true)}
+                      className="w-full p-8 bg-white/5 border border-white/20 rounded-2xl hover:border-blue-400/30 hover:bg-white/10 transition-all duration-300 text-left flex items-center gap-6"
+                    >
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-500/20 flex items-center justify-center text-2xl">
+                        🔒
                       </div>
-                      {showPasswordChange && (
-                        <form onSubmit={handlePasswordUpdate} className="space-y-4 pt-4 border-t border-slate-200">
-                          <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">Current Password *</label>
-                            <input
-                              type="password"
-                              name="currentPassword"
-                              value={passwordForm.currentPassword}
-                              onChange={handlePasswordChange}
-                              required
-                              className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">New Password *</label>
-                            <input
-                              type="password"
-                              name="newPassword"
-                              value={passwordForm.newPassword}
-                              onChange={handlePasswordChange}
-                              required
-                              className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-semibold text-slate-700 mb-2">Confirm New Password *</label>
-                            <input
-                              type="password"
-                              name="confirmPassword"
-                              value={passwordForm.confirmPassword}
-                              onChange={handlePasswordChange}
-                              required
-                              className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 bg-white"
-                            />
-                          </div>
-                          <div className="pt-4">
-                            <button
-                              type="submit"
-                              disabled={changingPassword}
-                              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
-                            >
-                              {changingPassword ? (
-                                <>
-                                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                  Changing Password...
-                                </>
-                              ) : (
-                                'Update Password'
-                              )}
-                            </button>
-                          </div>
-                        </form>
-                      )}
+                      <div className="flex-1">
+                        <h3 className="font-bold text-xl text-white">Change Password</h3>
+                        <p className="text-sm text-slate-400 mt-1">Update your account password</p>
+                      </div>
+                      <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <div className="space-y-6">
+                      <form onSubmit={handlePasswordUpdate} className="space-y-6">
+                        <div className="space-y-3">
+                          <label className="text-sm font-semibold text-slate-200">Current Password</label>
+                          <input
+                            type="password"
+                            name="currentPassword"
+                            value={passwordForm.currentPassword}
+                            onChange={handlePasswordChange}
+                            className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                            placeholder="Enter current password"
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <label className="text-sm font-semibold text-slate-200">New Password</label>
+                          <input
+                            type="password"
+                            name="newPassword"
+                            value={passwordForm.newPassword}
+                            onChange={handlePasswordChange}
+                            className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                            placeholder="Enter new password (min 6 characters)"
+                          />
+                        </div>
+                        <div className="space-y-3">
+                          <label className="text-sm font-semibold text-slate-200">Confirm New Password</label>
+                          <input
+                            type="password"
+                            name="confirmPassword"
+                            value={passwordForm.confirmPassword}
+                            onChange={handlePasswordChange}
+                            className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                            placeholder="Confirm new password"
+                          />
+                        </div>
+                        <div className="flex gap-4 pt-4">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowPasswordChange(false);
+                              setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                            }}
+                            className="px-8 py-5 bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:border-red-400/30 font-semibold rounded-2xl transition-all duration-300 text-lg"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            disabled={changingPassword}
+                            className="px-10 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-blue-500/30 hover:shadow-2xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 text-lg"
+                          >
+                            {changingPassword ? (
+                              <>
+                                <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                Changing...
+                              </>
+                            ) : (
+                              'Change Password'
+                            )}
+                          </button>
+                        </div>
+                      </form>
                     </div>
-                    <div className="p-6 border-2 border-slate-200 rounded-2xl hover:border-blue-300 hover:bg-gradient-to-r from-blue-50 to-indigo-50 transition-all duration-300">
-                      <h3 className="font-bold text-slate-900 mb-2 text-lg">Notifications</h3>
-                      <p className="text-slate-500 text-sm mb-4">Manage your email and SMS notifications</p>
-                      <button className="text-blue-700 font-semibold text-sm hover:text-blue-800 transition-colors duration-300 flex items-center gap-2">
-                        Notification Settings
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             )}
-            </div>
           </div>
         )}
-      </div>
-    </div>
 
-      {showAddressModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900">
-                {editingAddress ? 'Edit Address' : 'Add New Address'}
-              </h2>
-              <button
-                onClick={() => setShowAddressModal(false)}
-                className="p-2 hover:bg-blue-100 rounded-xl transition-all duration-300"
-              >
-                <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="p-8">
-              <form onSubmit={handleSaveAddress} className="space-y-5">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Pincode * (Enter first to autofill details)</label>
-                  <input
-                    type="text"
-                    name="pincode"
-                    value={addressForm.pincode}
-                    onChange={handleAddressInputChange}
-                    required
-                    maxLength={6}
-                    placeholder="e.g. 751001"
-                    className="w-full px-5 py-4 border-2 border-blue-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Full Name *</label>
+        {/* Address Modal */}
+        {showAddressModal && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+              <div className="p-8 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-white">{editingAddress ? 'Edit Address' : 'Add New Address'}</h2>
+                <button onClick={() => setShowAddressModal(false)} className="text-slate-400 hover:text-white transition-colors">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <form onSubmit={handleSaveAddress} className="p-8 space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-slate-200">Full Name <span className="text-red-400">*</span></label>
                     <input
                       type="text"
                       name="fullName"
                       value={addressForm.fullName}
                       onChange={handleAddressInputChange}
+                      className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                      placeholder="Enter full name"
                       required
-                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Phone Number *</label>
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-slate-200">Phone Number <span className="text-red-400">*</span></label>
                     <input
                       type="tel"
                       name="phone"
                       value={addressForm.phone}
                       onChange={handleAddressInputChange}
+                      className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                      placeholder="10-digit phone number"
                       required
                       maxLength={10}
-                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Address Line 1 *</label>
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-slate-200">Address Line 1 <span className="text-red-400">*</span></label>
                   <input
                     type="text"
                     name="addressLine1"
                     value={addressForm.addressLine1}
                     onChange={handleAddressInputChange}
+                    className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                    placeholder="House number, street, etc."
                     required
-                    className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Address Line 2</label>
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-slate-200">Address Line 2</label>
                   <input
                     type="text"
                     name="addressLine2"
                     value={addressForm.addressLine2}
                     onChange={handleAddressInputChange}
-                    className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
+                    className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                    placeholder="Landmark, area, etc. (optional)"
                   />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">City *</label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-slate-200">Pincode <span className="text-red-400">*</span></label>
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={addressForm.pincode}
+                      onChange={handleAddressInputChange}
+                      className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                      placeholder="6-digit pincode"
+                      required
+                      maxLength={6}
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-slate-200">City <span className="text-red-400">*</span></label>
                     <input
                       type="text"
                       name="city"
                       value={addressForm.city}
                       onChange={handleAddressInputChange}
+                      className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                      placeholder="City"
                       required
-                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">District *</label>
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-slate-200">District</label>
                     <input
                       type="text"
                       name="district"
                       value={addressForm.district}
                       onChange={handleAddressInputChange}
-                      required
-                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
+                      className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
+                      placeholder="District"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">State *</label>
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold text-slate-200">State <span className="text-red-400">*</span></label>
                     <select
                       name="state"
                       value={addressForm.state}
                       onChange={handleAddressInputChange}
+                      className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white"
                       required
-                      className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
                     >
-                      <option value="">Select State</option>
+                      <option value="">Select state</option>
                       {INDIAN_STATES.map(state => (
-                        <option key={state} value={state}>{state}</option>
+                        <option key={state} value={state} className="bg-slate-800">{state}</option>
                       ))}
                     </select>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 pt-2">
+                <div className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     id="isDefault"
                     name="isDefault"
                     checked={addressForm.isDefault}
                     onChange={handleAddressInputChange}
-                    className="w-5 h-5 rounded accent-blue-500"
+                    className="w-5 h-5 text-blue-500 rounded border-white/20 bg-white/10 focus:ring-blue-400/20"
                   />
-                  <label htmlFor="isDefault" className="text-sm font-semibold text-slate-700">
-                    Set as default address
-                  </label>
+                  <label htmlFor="isDefault" className="text-sm font-semibold text-slate-200">Set as default address</label>
                 </div>
-                <div className="pt-6 flex gap-4 justify-end">
+                <div className="flex gap-4 pt-4">
                   <button
                     type="button"
                     onClick={() => setShowAddressModal(false)}
-                    className="px-6 py-4 text-slate-700 font-semibold rounded-2xl hover:bg-blue-50 transition-all duration-300"
+                    className="flex-1 px-8 py-5 bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:border-red-400/30 font-semibold rounded-2xl transition-all duration-300 text-lg"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                    className="flex-1 px-10 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-blue-500/30 hover:shadow-2xl transition-all duration-300 text-lg"
                   >
                     Save Address
                   </button>
@@ -1068,77 +1057,67 @@ export default function Profile() {
               </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {showNewTicketModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="p-8 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-between">
-              <h2 className="text-2xl font-bold text-slate-900">Create New Support Ticket</h2>
-              <button
-                onClick={() => setShowNewTicketModal(false)}
-                className="p-2 hover:bg-blue-100 rounded-xl transition-all duration-300"
-              >
-                <svg className="w-6 h-6 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="p-8">
-              <form onSubmit={handleCreateTicket} className="space-y-5">
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Subject *</label>
+        {/* New Ticket Modal */}
+        {showNewTicketModal && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+              <div className="p-8 border-b border-white/10 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-white">Create Support Ticket</h2>
+                <button onClick={() => setShowNewTicketModal(false)} className="text-slate-400 hover:text-white transition-colors">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <form onSubmit={handleCreateTicket} className="p-8 space-y-6">
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-slate-200">Subject <span className="text-red-400">*</span></label>
                   <input
                     type="text"
-                    name="subject"
                     value={newTicketForm.subject}
-                    onChange={(e) => setNewTicketForm(prev => ({ ...prev, subject: e.target.value }))}
-                    required
-                    className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
+                    onChange={(e) => setNewTicketForm({ ...newTicketForm, subject: e.target.value })}
+                    className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400"
                     placeholder="Brief description of your issue"
+                    required
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Category *</label>
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-slate-200">Category</label>
                   <select
-                    name="category"
                     value={newTicketForm.category}
-                    onChange={(e) => setNewTicketForm(prev => ({ ...prev, category: e.target.value }))}
-                    required
-                    className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300"
+                    onChange={(e) => setNewTicketForm({ ...newTicketForm, category: e.target.value })}
+                    className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white"
                   >
-                    <option value="Order Issue">Order Issue</option>
-                    <option value="Product Issue">Product Issue</option>
-                    <option value="Payment Issue">Payment Issue</option>
-                    <option value="Return/Refund">Return/Refund</option>
-                    <option value="General Query">General Query</option>
-                    <option value="Other">Other</option>
+                    <option value="Order Issue" className="bg-slate-800">Order Issue</option>
+                    <option value="Payment Issue" className="bg-slate-800">Payment Issue</option>
+                    <option value="Product Query" className="bg-slate-800">Product Query</option>
+                    <option value="Return/Refund" className="bg-slate-800">Return/Refund</option>
+                    <option value="Other" className="bg-slate-800">Other</option>
                   </select>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Description *</label>
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold text-slate-200">Description <span className="text-red-400">*</span></label>
                   <textarea
-                    name="description"
                     value={newTicketForm.description}
-                    onChange={(e) => setNewTicketForm(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) => setNewTicketForm({ ...newTicketForm, description: e.target.value })}
+                    className="w-full px-6 py-5 border-2 border-white/20 rounded-2xl focus:border-blue-400 focus:ring-4 focus:ring-blue-400/20 focus:outline-none transition-all duration-300 bg-white/10 text-white placeholder-slate-400 resize-vertical min-h-[150px]"
+                    placeholder="Please provide details about your issue"
                     required
-                    rows={6}
-                    className="w-full px-5 py-4 border-2 border-slate-200 rounded-2xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 focus:outline-none transition-all duration-300 resize-none"
-                    placeholder="Please provide details about your issue..."
                   />
                 </div>
-                <div className="pt-4 flex gap-4 justify-end">
+                <div className="flex gap-4 pt-4">
                   <button
                     type="button"
                     onClick={() => setShowNewTicketModal(false)}
-                    className="px-6 py-4 text-slate-700 font-semibold rounded-2xl hover:bg-blue-50 transition-all duration-300"
+                    className="flex-1 px-8 py-5 bg-white/5 border border-white/20 text-slate-300 hover:text-white hover:border-red-400/30 font-semibold rounded-2xl transition-all duration-300 text-lg"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold rounded-2xl shadow-lg shadow-blue-200 hover:shadow-xl transition-all duration-300"
+                    className="flex-1 px-10 py-5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold rounded-2xl shadow-xl shadow-blue-500/30 hover:shadow-2xl transition-all duration-300 text-lg"
                   >
                     Create Ticket
                   </button>
@@ -1146,8 +1125,8 @@ export default function Profile() {
               </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

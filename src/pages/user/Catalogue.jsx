@@ -95,6 +95,12 @@ export default function Catalogue() {
     staleTime: 1000 * 60 * 60 * 24
   })
 
+  const { data: stores = [] } = useQuery({
+    queryKey: ['stores'],
+    queryFn: () => api.get('/api/public/stores').then(res => res.data || []),
+    staleTime: 1000 * 60 * 60 * 24
+  })
+
   const items = useMemo(() => {
     return productData?.pages.flatMap(page => page.items) || []
   }, [productData])
@@ -633,6 +639,18 @@ export default function Catalogue() {
           </div>
 
           <div className="ct-filters">
+            <select
+              className="ct-filter-select"
+              value={store}
+              onChange={(e) => setStore(e.target.value)}
+            >
+              <option value="">All Stores</option>
+              {stores.map((s) => (
+                <option key={s._id} value={s._id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
             <select
               className="ct-filter-select"
               value={sortBy}

@@ -2018,8 +2018,70 @@ export default function ProductDetail() {
               )}
             </div>
 
+            {/* Seller/Store Info */}
+            {p.store && (
+              <div style={{
+                marginTop: '20px',
+                background: 'white',
+                border: '1px solid rgba(59, 130, 246, 0.1)',
+                borderRadius: '20px',
+                padding: '18px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                boxShadow: '0 4px 20px rgba(15, 23, 42, 0.04)'
+              }}>
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '18px',
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '24px',
+                  fontWeight: '900',
+                  boxShadow: '0 8px 24px rgba(59, 130, 246, 0.25)'
+                }}>
+                  {p.store.name ? p.store.name.charAt(0).toUpperCase() : 'S'}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{
+                    fontSize: '16px',
+                    fontWeight: '900',
+                    background: 'linear-gradient(135deg, #0f172a 0%, #475569 100%)',
+                    backgroundClip: 'text',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  }}>
+                    {p.store.name}
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: '11px',
+                  fontWeight: '900',
+                  color: '#059669',
+                  background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%)',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  padding: '6px 14px',
+                  borderRadius: '999px',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.12em',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                  </svg>
+                  Verified
+                </span>
+              </div>
+            )}
+
             {/* Stock */}
-            <div>
+            <div style={{ marginTop: '18px' }}>
               <span
                 className="pd-stock"
                 style={{
