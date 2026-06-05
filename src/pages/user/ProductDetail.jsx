@@ -447,7 +447,7 @@ export default function ProductDetail() {
       image: (p.images || []).map(i => i.url), category: p.category?.name || p.category || 'General',
       offers: {
         '@type': 'Offer', priceCurrency: 'INR', price: String(p.price || 0),
-        availability: p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', url: `${window.location.origin}/products/${p.slug || p._id}'
+        availability: p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', url: `${window.location.origin}/products/${p.slug || p._id}`
       },
       aggregateRating: { '@type': 'AggregateRating', ratingValue: String(p.ratingAvg || 0), reviewCount: String(p.ratingCount || 0) }
     });
