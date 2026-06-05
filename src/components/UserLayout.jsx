@@ -251,7 +251,7 @@ export default function UserLayout() {
                   Message Us
                 </a>
               </div>
-              <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 w-full sm:w-auto">
+              <div className="flex flex-wrap justify-center lg:justify-end items-center gap-6 sm:gap-8 w-full sm:w-auto">
                 <Link to="/business/request" className="text-sm font-semibold text-indigo-400 uppercase tracking-widest hover:text-indigo-300 transition-colors text-center sm:text-right">
                   Become a Seller
                 </Link>

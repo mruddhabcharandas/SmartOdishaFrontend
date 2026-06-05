@@ -13,7 +13,7 @@ import CustomerDetail from './pages/admin/CustomerDetail.jsx'
 import AdminLayout from './components/AdminLayout.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import StaffManagement from './pages/admin/StaffManagement.jsx'
-import Sellers from './pages/admin/Stores.jsx'
+import Sellers from './pages/admin/Sellers.jsx'
 import Offers from './pages/admin/Offers.jsx'
 import Home from './pages/user/Home.jsx'
 import About from './pages/user/About.jsx'
@@ -43,6 +43,7 @@ import BusinessRequest from './pages/business/Request.jsx'
 import BusinessProducts from './pages/business/BusinessProducts.jsx'
 import BusinessInventory from './pages/business/BusinessInventory.jsx'
 import BusinessProtectedRoute from './components/BusinessProtectedRoute.jsx'
+import BusinessLayout from './components/BusinessLayout.jsx'
 
 export default function App() {
   return (
@@ -75,21 +76,19 @@ export default function App() {
       <Route path="/business/forgot-password" element={<BusinessForgotPassword />} />
       <Route path="/business/reset-password" element={<BusinessResetPassword />} />
       <Route path="/business/request" element={<BusinessRequest />} />
-      <Route path="/business/dashboard" element={
-        <BusinessProtectedRoute>
-          <BusinessDashboard />
-        </BusinessProtectedRoute>
-      } />
-      <Route path="/business/products" element={
-        <BusinessProtectedRoute>
-          <BusinessProducts />
-        </BusinessProtectedRoute>
-      } />
-      <Route path="/business/inventory" element={
-        <BusinessProtectedRoute>
-          <BusinessInventory />
-        </BusinessProtectedRoute>
-      } />
+      <Route
+        path="/business"
+        element={
+          <BusinessProtectedRoute>
+            <BusinessLayout />
+          </BusinessProtectedRoute>
+        }
+      >
+        <Route index element={<Navigate to="/business/dashboard" />} />
+        <Route path="dashboard" element={<BusinessDashboard />} />
+        <Route path="products" element={<BusinessProducts />} />
+        <Route path="inventory" element={<BusinessInventory />} />
+      </Route>
 
       <Route path="/" element={<UserLayout />}>
         <Route index element={<Home />} />
