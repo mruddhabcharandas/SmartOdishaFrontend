@@ -567,9 +567,28 @@ export default function ProductDetail() {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      const shareUrl = `${window.location.origin}/products/${p.slug || p._id}`;
+      const shareData = {
+        title: p.name,
+        text: `Check out this product on SmartOdisha: ${p.name}`,
+        url: shareUrl,
+      };
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        notify('Product link copied to clipboard!', 'success');
+      }
+    } catch (err) {
+      console.error('Share failed:', err);
+    }
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 flex items-center justify-center py-8 px-3 sm:py-12 sm:px-4">
+      <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center py-8 px-3 sm:py-12 sm:px-4">
         <LoadingSpinner text="Fetching product details..." />
       </div>
     );
@@ -577,8 +596,8 @@ export default function ProductDetail() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 flex items-center justify-center py-8 px-3 sm:py-12 sm:px-4">
-        <div className="max-w-md w-full bg-white/80 backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-12 text-center border border-white/80">
+      <div className="min-h-screen bg-[#f8fafc] flex items-center justify-center py-8 px-3 sm:py-12 sm:px-4">
+        <div className="max-w-md w-full bg-white rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-12 text-center border border-gray-100">
           <div className="text-4xl sm:text-5xl lg:text-7xl mb-4 sm:mb-6 bg-gradient-to-br from-orange-100 to-orange-200 w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 flex items-center justify-center rounded-full mx-auto">
             😔
           </div>
@@ -604,7 +623,7 @@ export default function ProductDetail() {
       <style jsx>{`
         .pd {
           font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-          background: linear-gradient(180deg, #0f172a 0%, #020617 25%, #f8fafc 25%, #f8fafc 100%);
+          background: #f8fafc;
           color: #0f172a;
           min-height: 100vh;
           overflow-x: hidden;
@@ -2208,6 +2227,16 @@ export default function ProductDetail() {
                     )}
                   </button>
 
+                  {/* Share Button */}
+                  <button
+                    className="pd-btn-secondary"
+                    onClick={handleShare}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v16" />
+                    </svg>
+                  </button>
+
                   {/* Add to Cart & Buy Now */}
                   <button
                     className="pd-btn-primary"
@@ -2235,17 +2264,28 @@ export default function ProductDetail() {
                   </button>
                 </>
               ) : (
-                <button
-                  className="pd-btn-primary"
-                  onClick={() => navigate('/login', { state: { from: location.pathname + location.search } })}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                    <polyline points="10 17 15 12 10 7" />
-                    <line x1="15" y1="12" x2="3" y2="12" />
-                  </svg>
-                  Login to Buy
-                </button>
+                <>
+                  {/* Share Button */}
+                  <button
+                    className="pd-btn-secondary"
+                    onClick={handleShare}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v16" />
+                    </svg>
+                  </button>
+                  <button
+                    className="pd-btn-primary"
+                    onClick={() => navigate('/login', { state: { from: location.pathname + location.search } })}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                      <polyline points="10 17 15 12 10 7" />
+                      <line x1="15" y1="12" x2="3" y2="12" />
+                    </svg>
+                    Login to Buy
+                  </button>
+                </>
               )}
             </div>
 
