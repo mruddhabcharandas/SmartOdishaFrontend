@@ -1794,7 +1794,7 @@ export default function ProductDetail() {
                     {deliveryInfo?.serviceable ? (
                       <div className="pd-delivery-subtitle">
                         <span>Delivery by {new Date(Date.now() + (deliveryInfo?.deliveryDays || 2) * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
-                        <span className={`pd-delivery-charge ${(currentPrice || minPrice) >= (deliveryInfo?.freeDeliveryAbove || 999) ? 'free' : ''}>
+                        <span className={`pd-delivery-charge ${(currentPrice || minPrice) >= (deliveryInfo?.freeDeliveryAbove || 999) ? 'free' : ''}`}>
                           {(currentPrice || minPrice) >= (deliveryInfo?.freeDeliveryAbove || 999) ? 'FREE Delivery' : `₹${deliveryInfo?.deliveryCharge || 40} Delivery`}
                         </span>
                       </div>
