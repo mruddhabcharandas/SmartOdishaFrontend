@@ -21,7 +21,7 @@ function sortVariantValues(lowKey, values) {
       const nb = parseFloat(String(b).replace(/[^\d.]/g, '')) || 0;
       if (na !== nb) return na - nb;
       return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
-    };
+    });
   }
   return arr.sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' }));
 }
