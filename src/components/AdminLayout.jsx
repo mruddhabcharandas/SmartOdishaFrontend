@@ -124,8 +124,8 @@ export default function AdminLayout() {
           [
             'flex items-center px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-200 group',
             isActive
-              ? 'bg-gradient-to-r from-blue-600 to-orange-500 text-white shadow-lg shadow-blue-200 scale-[1.02]'
-              : 'text-gray-500 hover:bg-gradient-to-br from-blue-50 to-orange-50 hover:text-gray-900 hover:pl-5'
+              ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-200 scale-[1.02]'
+              : 'text-gray-500 hover:bg-gradient-to-br from-blue-50 to-indigo-50 hover:text-gray-900 hover:pl-5'
           ].join(' ')
         }
       >
@@ -139,25 +139,25 @@ export default function AdminLayout() {
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfdbfe; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #93c5fd; }
       `}</style>
       <div className="flex h-20 items-center justify-between border-b border-blue-100 bg-white/80 backdrop-blur-md px-6 md:px-10 sticky top-0 z-30">
         <div className="flex items-center gap-4">
           <button
-            className="md:hidden p-2 rounded-xl hover:bg-gradient-to-br from-blue-50 to-orange-50 border border-blue-100 transition-colors"
+            className="md:hidden p-2 rounded-xl hover:bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 transition-colors"
             onClick={() => setOpen(!open)}
           >
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
           <div className="flex items-center gap-3">
-            <span className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-50 to-orange-50 flex items-center justify-center overflow-hidden">
+            <span className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center overflow-hidden">
               <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
             </span>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="text-base font-black tracking-tight text-gray-900">{CONFIG.BRAND_NAME}</span>
-                <span className="px-2 py-0.5 bg-gradient-to-r from-blue-600 to-orange-500 text-[10px] font-black text-white rounded-lg tracking-widest uppercase">{role}</span>
+                <span className="px-2 py-0.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-[10px] font-black text-white rounded-lg tracking-widest uppercase">{role}</span>
               </div>
               <div className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">{role === 'admin' ? 'Admin Panel' : 'Staff Panel'}</div>
             </div>

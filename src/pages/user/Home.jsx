@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { CONFIG } from '../../shared/lib/config.js'
 import { setSEO, injectJsonLd } from '../../shared/lib/seo.js'
 import api from '../../lib/api'
@@ -8,9 +8,11 @@ import { useAuth } from '../../lib/AuthContext'
 
 export default function Home() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [offers, setOffers] = useState([])
   const [stores, setStores] = useState([])
   const [openFaq, setOpenFaq] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     setSEO('SmartOdisha | Your One-Stop Shop in Odisha', 'Your one-stop destination for quality products at the best prices in Odisha.')
@@ -60,6 +62,13 @@ export default function Home() {
     return [...neutral, ...neutral]
   }, [])
 
+  const handleSearch = (e) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
   return (
     <div className="home-root bg-gray-50 min-h-screen">
       <style>{`
@@ -74,15 +83,15 @@ export default function Home() {
         
         .home-root {
           font-family: 'Inter', sans-serif;
-          background: linear-gradient(180deg, #0f172a 0%, #020617 25%, #f8fafc 25%, #f8fafc 100%);
+          background: linear-gradient(180deg, #0f172a 0%, #020617 35%, #f8fafc 35%, #f8fafc 100%);
           color: #0f172a;
         }
 
         .top-ticker {
           background: linear-gradient(90deg, #3b82f6 0%, #4f46e5 50%, #2563eb 100%);
           color: white;
-          padding: 12px 16px;
-          font-size: 12px;
+          padding: 8px 16px;
+          font-size: 11px;
           font-weight: 700;
           display: flex;
           align-items: center;
@@ -94,13 +103,13 @@ export default function Home() {
         @media (max-width: 640px) {
           .top-ticker { justify-content: center; text-align: center; gap: 8px; }
         }
-        .ticker-right { display: flex; gap: 16px; }
-        .ticker-link { color: white; text-decoration: none; font-weight: 700; transition: all 0.2s; padding: 4px 12px; border-radius: 999px; background: rgba(255,255,255,0.1); }
+        .ticker-right { display: flex; gap: 12px; }
+        .ticker-link { color: white; text-decoration: none; font-weight: 700; transition: all 0.2s; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.1); font-size:10px }
         .ticker-link:hover { background: rgba(255,255,255,0.2); transform: translateY(-1px); }
 
         .hero {
           color: white;
-          padding: 80px 20px 100px;
+          padding: 40px 20px 60px;
           position: relative;
           overflow: hidden;
         }
@@ -119,7 +128,7 @@ export default function Home() {
           margin: 0 auto;
           display: grid;
           grid-template-columns: 1fr;
-          gap: 40px;
+          gap: 30px;
           align-items: center;
           position: relative;
           z-index: 1;
@@ -127,31 +136,31 @@ export default function Home() {
         @media (min-width: 1024px) {
           .hero-inner {
             grid-template-columns: 1.2fr 1fr;
-            gap: 60px;
+            gap: 40px;
           }
         }
         .hero-left {
           display: flex;
           flex-direction: column;
-          gap: 28px;
+          gap: 20px;
         }
         .hero-eyebrow {
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          padding: 10px 18px;
+          gap: 8px;
+          padding: 8px 16px;
           background: rgba(255,255,255,0.12);
           backdrop-filter: blur(20px);
           border: 1px solid rgba(255,255,255,0.2);
           border-radius: 999px;
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 700;
           width: fit-content;
           box-shadow: 0 8px 32px rgba(15, 23, 42, 0.2);
         }
         .hero-title {
-          font-size: clamp(36px, 8vw, 72px);
-          line-height: 1;
+          font-size: clamp(28px, 5vw, 52px);
+          line-height: 1.1;
           font-weight: 900;
           letter-spacing: -0.04em;
         }
@@ -162,42 +171,73 @@ export default function Home() {
           -webkit-text-fill-color: transparent;
         }
         .hero-desc {
-          font-size: 18px;
-          line-height: 1.8;
+          font-size: 15px;
+          line-height: 1.7;
           color: #cbd5e1;
-          max-width: 540px;
+          max-width: 500px;
         }
         @media (max-width: 640px) {
-          .hero-desc { font-size: 16px; }
+          .hero-desc { font-size: 14px; }
+        }
+        .hero-search {
+          display: flex;
+          width: 100%;
+          max-width: 500px;
+          gap: 8px;
+          margin-top: 8px;
+        }
+        .hero-search-input {
+          flex: 1;
+          padding: 14px 18px;
+          border-radius: 14px;
+          border: none;
+          outline: none;
+          font-size: 14px;
+          font-weight: 600;
+          background: rgba(255,255,255,0.95);
+        }
+        .hero-search-btn {
+          padding: 14px 24px;
+          border-radius: 14px;
+          border: none;
+          background: linear-gradient(135deg, #f97316, #ea580c);
+          color: white;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .hero-search-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 30px -10px rgba(249,115,22,0.5);
         }
         .hero-cta {
           display: flex;
           flex-wrap: wrap;
-          gap: 14px;
+          gap: 12px;
         }
         .btn-primary {
           background: linear-gradient(135deg, #3b82f6, #4f46e5);
           background-size: 200% 200%;
           color: white;
           border: none;
-          padding: 20px 36px;
-          border-radius: 18px;
+          padding: 16px 28px;
+          border-radius: 16px;
           font-weight: 800;
-          font-size: 15px;
+          font-size: 14px;
           cursor: pointer;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 12px;
-          box-shadow: 0 16px 50px -12px rgba(59, 130, 246, 0.6);
+          gap: 10px;
+          box-shadow: 0 12px 40px -10px rgba(59, 130, 246, 0.6);
           transition: all 0.3s ease;
           animation: gradient-shift 4s ease infinite;
           letter-spacing: 0.05em;
         }
         .btn-primary:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 24px 70px -15px rgba(59, 130, 246, 0.7);
+          transform: translateY(-3px);
+          box-shadow: 0 20px 60px -15px rgba(59, 130, 246, 0.7);
         }
         @keyframes gradient-shift {
           0%, 100% { background-position: 0% 50%; }
@@ -207,24 +247,24 @@ export default function Home() {
           background: rgba(255,255,255,0.08);
           color: white;
           border: 2px solid rgba(255,255,255,0.3);
-          padding: 18px 32px;
-          border-radius: 18px;
+          padding: 14px 24px;
+          border-radius: 16px;
           font-weight: 800;
-          font-size: 15px;
+          font-size: 14px;
           cursor: pointer;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 10px;
+          gap: 8px;
           transition: all 0.3s ease;
           backdrop-filter: blur(20px);
         }
         .btn-secondary:hover {
           background: rgba(255,255,255,0.15);
           border-color: rgba(255,255,255,0.5);
-          transform: translateY(-3px);
-          box-shadow: 0 10px 30px -10px rgba(255,255,255,0.3);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px -10px rgba(255,255,255,0.3);
         }
         .hero-right {
           display: flex;
@@ -235,9 +275,10 @@ export default function Home() {
         .hero-image {
           max-width: 100%;
           height: auto;
-          border-radius: 32px;
-          box-shadow: 0 40px 100px -30px rgba(0,0,0,0.6);
+          border-radius: 24px;
+          box-shadow: 0 30px 80px -30px rgba(0,0,0,0.6);
           transition: transform 0.5s ease;
+          max-height: 320px;
         }
         .hero-image:hover {
           transform: scale(1.03);
@@ -245,99 +286,96 @@ export default function Home() {
 
         .features {
           max-width: 1280px;
-          margin: -40px auto 0;
+          margin: -30px auto 0;
           padding: 0 20px;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 14px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
           position: relative;
           z-index: 10;
         }
-        @media (min-width: 640px) {
-          .features {
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-top: -50px;
-          }
-        }
         .feature-card {
+          flex: 1 1 calc(50% - 12px);
+          min-width: 140px;
           background: white;
-          border-radius: 24px;
-          padding: 28px 24px;
+          border-radius: 18px;
+          padding: 20px 16px;
           display: flex;
-          flex-direction: column;
           align-items: center;
-          gap: 16px;
-          box-shadow: 0 20px 60px -20px rgba(15,23,42,0.15);
+          gap: 12px;
+          box-shadow: 0 12px 40px -20px rgba(15,23,42,0.15);
           border: 1px solid rgba(15,23,42,0.06);
-          text-align: center;
+          text-align: left;
           transition: all 0.3s ease;
         }
+        @media (min-width: 768px) {
+          .feature-card { flex: 1 1 calc(25% - 12px); }
+        }
         .feature-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 30px 80px -25px rgba(59,130,246,0.2);
+          transform: translateY(-4px);
+          box-shadow: 0 20px 60px -25px rgba(59,130,246,0.2);
           border-color: rgba(59, 130, 246, 0.2);
         }
         .feature-icon {
-          width: 64px;
-          height: 64px;
+          width: 44px;
+          height: 44px;
           background: linear-gradient(135deg, #dbeafe 0%, #a5b4fc 100%);
-          border-radius: 20px;
+          border-radius: 14px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 32px;
-          box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
+          flex-shrink: 0;
         }
+        .feature-icon svg { width: 22px; height: 22px; color: #2563eb; }
         .feature-text h4 {
-          font-size: 16px;
+          font-size: 14px;
           font-weight: 800;
           color: #0f172a;
           margin: 0;
         }
         .feature-text p {
-          font-size: 13px;
+          font-size: 12px;
           color: #64748b;
-          margin: 6px 0 0 0;
+          margin: 4px 0 0 0;
           font-weight: 600;
         }
 
         .section-wrapper {
           max-width: 1280px;
           margin: 0 auto;
-          padding: 80px 20px;
+          padding: 60px 20px;
         }
         @media (max-width: 640px) {
-          .section-wrapper { padding: 60px 16px; }
+          .section-wrapper { padding: 48px 16px; }
         }
         .section-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-end;
-          margin-bottom: 40px;
-          gap: 20px;
+          margin-bottom: 32px;
+          gap: 16px;
         }
         .section-title-group {
           display: flex;
           flex-direction: column;
-          gap: 10px;
+          gap: 8px;
         }
         .section-eyebrow {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.2em;
           color: #3b82f6;
         }
         .section-title {
-          font-size: clamp(28px, 5vw, 42px);
+          font-size: clamp(24px, 4vw, 36px);
           font-weight: 900;
           color: #0f172a;
           letter-spacing: -0.03em;
           margin: 0;
         }
         .section-subtitle {
-          font-size: 16px;
+          font-size: 14px;
           color: #64748b;
           margin: 0;
           font-weight: 500;
@@ -345,63 +383,61 @@ export default function Home() {
 
         .stores-grid {
           display: grid;
-          grid-template-columns: repeat(1, 1fr);
-          gap: 18px;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
         }
-        @media (min-width: 540px) {
-          .stores-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        @media (min-width: 640px) {
+          .stores-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
         }
-        @media (min-width: 900px) {
-          .stores-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-        @media (min-width: 1200px) {
-          .stores-grid { grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        @media (min-width: 1024px) {
+          .stores-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
         }
         .store-card {
           background: white;
-          border-radius: 28px;
+          border-radius: 16px;
           overflow: hidden;
           cursor: pointer;
           text-decoration: none;
           color: #0f172a;
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 8px 30px -12px rgba(15,23,42,0.12);
+          box-shadow: 0 6px 20px -10px rgba(15,23,42,0.1);
           border: 1px solid rgba(15,23,42,0.06);
           display: flex;
           flex-direction: column;
           position: relative;
         }
         .store-card:hover {
-          transform: translateY(-12px) scale(1.02);
-          box-shadow: 0 30px 80px -25px rgba(59,130,246,0.25);
+          transform: translateY(-4px);
+          box-shadow: 0 16px 40px -20px rgba(59,130,246,0.25);
           border-color: rgba(59, 130, 246, 0.25);
         }
         .store-image-container {
           width: 100%;
-          aspect-ratio: 4/3;
+          aspect-ratio: 16/10;
           background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 50%, #eff6ff 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           position: relative;
           overflow: hidden;
+          padding: 12px;
         }
         .store-image {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
         }
         .store-placeholder {
-          font-size: 56px;
+          display: flex;
         }
         .store-content {
-          padding: 24px 20px;
+          padding: 12px 10px;
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 4px;
         }
         .store-name {
-          font-size: 18px;
+          font-size: 14px;
           font-weight: 800;
           color: #0f172a;
           letter-spacing: -0.02em;
@@ -409,8 +445,8 @@ export default function Home() {
         .store-badge {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          font-size: 11px;
+          gap: 4px;
+          font-size: 10px;
           font-weight: 800;
           color: #10b981;
           text-transform: uppercase;
@@ -423,21 +459,21 @@ export default function Home() {
         .offers-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 20px;
+          gap: 16px;
         }
-        @media (min-width: 768px) { .offers-grid { grid-template-columns: repeat(2, 1fr); gap: 28px; } }
+        @media (min-width: 768px) { .offers-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
         .offer-card {
           position: relative;
-          border-radius: 32px;
+          border-radius: 24px;
           overflow: hidden;
-          aspect-ratio: 16/10;
+          aspect-ratio: 16/9;
           background: linear-gradient(135deg, #3b82f6, #4f46e5, #1e1b4b);
-          box-shadow: 0 30px 80px -30px rgba(59,130,246,0.4);
+          box-shadow: 0 24px 70px -30px rgba(59,130,246,0.4);
           transition: all 0.4s ease;
         }
         .offer-card:hover {
-          transform: translateY(-10px);
-          box-shadow: 0 40px 100px -40px rgba(59,130,246,0.5);
+          transform: translateY(-8px);
+          box-shadow: 0 32px 90px -40px rgba(59,130,246,0.5);
         }
         .offer-card::before {
           content: '';
@@ -451,62 +487,62 @@ export default function Home() {
         .offer-content {
           position: absolute;
           inset: 0;
-          padding: 40px;
+          padding: 28px;
           display: flex;
           flex-direction: column;
           justify-content: center;
           color: white;
         }
         @media (max-width: 640px) {
-          .offer-content { padding: 30px 24px; }
+          .offer-content { padding: 22px 18px; }
         }
         .offer-tag {
           display: inline-flex;
           background: rgba(255,255,255,0.18);
           backdrop-filter: blur(20px);
-          padding: 10px 20px;
+          padding: 8px 16px;
           border-radius: 999px;
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 900;
           text-transform: uppercase;
           letter-spacing: 0.15em;
           width: fit-content;
-          margin-bottom: 20px;
+          margin-bottom: 14px;
           border: 1px solid rgba(255,255,255,0.25);
         }
         .offer-title {
-          font-size: clamp(28px, 5vw, 44px);
+          font-size: clamp(22px, 4vw, 36px);
           font-weight: 900;
-          margin: 0 0 12px 0;
+          margin: 0 0 10px 0;
           line-height: 1.1;
           letter-spacing: -0.03em;
         }
         .offer-btn {
           width: fit-content;
-          margin-top: 28px;
+          margin-top: 20px;
           background: white;
           color: #3b82f6;
           border: none;
-          padding: 16px 32px;
-          border-radius: 16px;
+          padding: 12px 26px;
+          border-radius: 14px;
           font-weight: 800;
-          font-size: 14px;
+          font-size: 13px;
           cursor: pointer;
           text-decoration: none;
           transition: all 0.3s;
           display: inline-flex;
           align-items: center;
-          gap: 10px;
-          box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
+          gap: 8px;
+          box-shadow: 0 8px 24px -10px rgba(0,0,0,0.3);
         }
         .offer-btn:hover {
-          transform: translateY(-3px) scale(1.05);
-          box-shadow: 0 20px 40px -15px rgba(0,0,0,0.4);
+          transform: translateY(-2px) scale(1.03);
+          box-shadow: 0 16px 36px -15px rgba(0,0,0,0.4);
         }
 
         .ticker {
           background: linear-gradient(90deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-          padding: 16px 0;
+          padding: 12px 0;
           overflow: hidden;
         }
         .ticker-inner {
@@ -521,11 +557,11 @@ export default function Home() {
         .ticker-item {
           display: flex;
           align-items: center;
-          gap: 20px;
-          padding: 0 60px;
+          gap: 16px;
+          padding: 0 48px;
           color: white;
           font-weight: 800;
-          font-size: 12px;
+          font-size: 11px;
           text-transform: uppercase;
           letter-spacing: 0.18em;
           white-space: nowrap;
@@ -533,7 +569,7 @@ export default function Home() {
         .ticker-highlight {
           background: linear-gradient(135deg, #3b82f6, #4f46e5);
           color: white;
-          padding: 8px 20px;
+          padding: 6px 16px;
           border-radius: 999px;
           font-weight: 900;
           box-shadow: 0 4px 20px rgba(59,130,246,0.4);
@@ -542,7 +578,7 @@ export default function Home() {
         .stats {
           background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
           color: white;
-          padding: 100px 20px;
+          padding: 60px 20px;
           position: relative;
           overflow: hidden;
         }
@@ -560,32 +596,32 @@ export default function Home() {
           margin: 0 auto;
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 40px;
+          gap: 30px;
           position: relative;
           z-index: 1;
         }
         @media (min-width: 768px) {
-          .stats-inner { grid-template-columns: repeat(4, 1fr); gap: 60px; }
+          .stats-inner { grid-template-columns: repeat(4, 1fr); gap: 40px; }
         }
         .stat-item { 
           text-align: center; 
           transition: transform 0.3s ease;
         }
         .stat-item:hover {
-          transform: translateY(-8px);
+          transform: translateY(-6px);
         }
         .stat-num {
-          font-size: clamp(44px, 8vw, 64px);
+          font-size: clamp(36px, 6vw, 52px);
           font-weight: 900;
           line-height: 1;
-          margin-bottom: 12px;
+          margin-bottom: 10px;
           background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
         .stat-label {
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 700;
           color: #94a3b8;
           text-transform: uppercase;
@@ -595,7 +631,7 @@ export default function Home() {
 
       {/* Top Ticker */}
       <div className="top-ticker">
-        <span>✨ Free Delivery on Select Products • Easy Returns • Secure Payments</span>
+        <span>Free Delivery on Select Products • Easy Returns • Secure Payments</span>
         <div className="ticker-right">
           <a href="/orders" className="ticker-link">Track Order</a>
           <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="ticker-link">Help Center</a>
@@ -607,7 +643,9 @@ export default function Home() {
         <div className="hero-inner">
           <div className="hero-left">
             <div className="hero-eyebrow">
-              <span>🛍️</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+              </svg>
               <span>Smart Shopping, Smart Living</span>
             </div>
             <h1 className="hero-title">
@@ -616,16 +654,28 @@ export default function Home() {
             <p className="hero-desc">
               Your premium destination for quality products from trusted local stores. Shop smart, live better with exclusive deals and fast delivery across Odisha.
             </p>
+            <form onSubmit={handleSearch} className="hero-search">
+              <input
+                type="text"
+                placeholder="Search for products, brands and more..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="hero-search-input"
+              />
+              <button type="submit" className="hero-search-btn">
+                Search
+              </button>
+            </form>
             <div className="hero-cta">
               <Link to="/products" className="btn-primary">
                 Shop Now
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
               <Link to="/about" className="btn-secondary">
                 Learn More
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
@@ -633,7 +683,7 @@ export default function Home() {
           </div>
           <div className="hero-right">
             <img
-              src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1000&q=80"
+              src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80"
               alt="Shopping"
               className="hero-image"
             />
@@ -644,28 +694,44 @@ export default function Home() {
       {/* Features */}
       <section className="features">
         <div className="feature-card">
-          <div className="feature-icon">🚚</div>
+          <div className="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+            </svg>
+          </div>
           <div className="feature-text">
             <h4>Free Delivery</h4>
             <p>On select products</p>
           </div>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">🔄</div>
+          <div className="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+          </div>
           <div className="feature-text">
             <h4>Easy Returns</h4>
             <p>Hassle-free returns</p>
           </div>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">🔒</div>
+          <div className="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
           <div className="feature-text">
             <h4>Secure Payments</h4>
             <p>100% secure checkout</p>
           </div>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">🏪</div>
+          <div className="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+          </div>
           <div className="feature-text">
             <h4>Local Stores</h4>
             <p>Trusted local sellers</p>
@@ -698,16 +764,19 @@ export default function Home() {
                       className="store-image"
                       onError={(e) => {
                         e.target.style.display = 'none'
-                        e.target.nextSibling.style.display = 'flex'
                       }}
                     />
                   ) : null}
-                  <div className="store-placeholder" style={{ display: store.logo || store.image ? 'none' : 'flex' }}>🏪</div>
+                  <div className="store-placeholder" style={{ display: (store.logo || store.image) ? 'none' : 'flex' }}>
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="1.5">
+                      <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                  </div>
                 </div>
                 <div className="store-content">
                   <div className="store-name">{store.name}</div>
                   <div className="store-badge">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                     Verified Store
@@ -747,7 +816,7 @@ export default function Home() {
                     <h3 className="offer-title">{offer.title || 'Amazing Deal'}</h3>
                     <Link to="/products" className="offer-btn">
                       Shop Now
-                      <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </Link>
@@ -798,21 +867,21 @@ export default function Home() {
       <section className="section-wrapper bg-white">
         <div className="section-header">
           <div className="section-title-group">
-            <span className="section-eyebrow">Questions?</span>
+            <span className="section-eyebrow">Got Questions?</span>
             <h2 className="section-title">Frequently Asked</h2>
             <p className="section-subtitle">Everything you need to know about shopping with us</p>
           </div>
         </div>
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div className="max-w-3xl mx-auto space-y-3">
           {faqs.map((faq, i) => (
-            <div key={i} className="bg-gray-50 border border-gray-100 rounded-2xl overflow-hidden transition-all">
+            <div key={i} className="bg-gray-50 border border-gray-100 rounded-xl overflow-hidden transition-all">
               <button 
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full flex items-center justify-between px-6 py-5 text-left focus:outline-none"
+                className="w-full flex items-center justify-between px-5 py-4 text-left focus:outline-none"
               >
                 <span className="text-sm font-bold text-gray-900">{faq.question}</span>
                 <svg 
-                  width="20" height="20" fill="none" stroke="currentColor" 
+                  width="18" height="18" fill="none" stroke="currentColor" 
                   viewBox="0 0 24 24" 
                   className={`text-gray-500 transition-transform ${openFaq === i ? 'rotate-180' : ''}`}
                 >
@@ -820,7 +889,7 @@ export default function Home() {
                 </svg>
               </button>
               {openFaq === i && (
-                <div className="px-6 pb-5 text-sm text-gray-600 font-medium">
+                <div className="px-5 pb-4 text-sm text-gray-600 font-medium">
                   {faq.answer}
                 </div>
               )}
@@ -830,45 +899,58 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-slate-900 text-white py-16">
+      <footer className="bg-slate-900 text-white py-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-            <div className="col-span-1 lg:col-span-2">
-              <div className="flex items-center gap-5 mb-6">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center overflow-hidden shadow-lg shadow-indigo-900/50">
-                  <img 
-                    src="/logo.png" 
-                    alt="SmartOdisha" 
-                    className="h-full w-full object-contain" 
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-2xl font-black tracking-tighter leading-none">
-                    <span className="text-blue-400">SMART</span>
-                    <span className="text-orange-400">ODISHA</span>
-                  </span>
-                  <span className="text-sm font-semibold text-slate-400 tracking-widest mt-1.5" style={{ 
-                    background: 'linear-gradient(90deg, #3b82f6, #f97316, #10b981, #8b5cf6, #3b82f6)', 
-                    backgroundSize: '200% 100%', 
-                    WebkitBackgroundClip: 'text', 
-                    WebkitTextFillColor: 'transparent', 
-                    animation: 'gradientMove 3s linear infinite'
-                  }}>SMART CHOICE, SMART LIFE</span>
-                </div>
+          <div className="flex flex-col lg:flex-row gap-8 items-start lg:items-center justify-between mb-8 pb-6 border-b border-slate-800">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center overflow-hidden shadow-lg shadow-indigo-900/50">
+                <img
+                  src="/logo.png"
+                  alt="SmartOdisha"
+                  className="h-full w-full object-contain"
+                />
               </div>
-              <p className="text-slate-400 text-sm leading-relaxed mb-6 max-w-lg">
-                Your one-stop destination for quality products from trusted local stores across Odisha. Experience premium shopping with fast delivery and excellent support.
-              </p>
-              <div className="flex items-center gap-3 px-4 py-2.5 bg-slate-800 rounded-xl border border-slate-700 w-fit">
-                <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-ping absolute"></span>
-                <span className="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
-                <span className="text-xs font-bold text-green-400 uppercase tracking-widest ml-1">Store Status: Online</span>
+              <div className="flex flex-col">
+                <span className="text-lg font-black tracking-tighter leading-none">
+                  <span className="text-blue-400">SMART</span>
+                  <span className="text-orange-400">ODISHA</span>
+                </span>
+                <span className="text-[10px] font-semibold text-slate-400 tracking-widest mt-0.5" style={{ 
+                  background: 'linear-gradient(90deg, #3b82f6, #f97316, #10b981, #8b5cf6, #3b82f6)', 
+                  backgroundSize: '200% 100%', 
+                  WebkitBackgroundClip: 'text', 
+                  WebkitTextFillColor: 'transparent', 
+                  animation: 'gradientMove 3s linear infinite'
+                }}>SMART CHOICE, SMART LIFE</span>
               </div>
             </div>
-            
+
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 rounded-lg border border-slate-700">
+                <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest">COD Available</span>
+              </div>
+              <a href={`mailto:${CONFIG.SUPPORT_EMAIL}`} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span className="text-xs font-semibold">Email Us</span>
+              </a>
+              <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#25D366">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                  <path d="M12 0C5.373 0 0 5.373 0 12c0 2.646.917 5.082 2.477 7.053L0 24l5.247-1.342C7.317 23.678 9.585 24 12 24c6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                <span className="text-xs font-semibold">WhatsApp</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h4 className="text-sm font-black text-white uppercase tracking-widest mb-6">Quick Links</h4>
-              <div className="flex flex-col gap-4">
+              <h4 className="text-[10px] font-black text-white uppercase tracking-widest mb-4">Quick Links</h4>
+              <div className="flex flex-col gap-2.5">
                 <Link to="/products" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">Shop Products</Link>
                 <Link to="/about" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">About Us</Link>
                 <Link to="/orders" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">Track Order</Link>
@@ -877,57 +959,29 @@ export default function Home() {
             </div>
             
             <div>
-              <h4 className="text-sm font-black text-white uppercase tracking-widest mb-6">Legal</h4>
-              <div className="flex flex-col gap-4">
+              <h4 className="text-[10px] font-black text-white uppercase tracking-widest mb-4">Support</h4>
+              <div className="flex flex-col gap-2.5">
+                <Link to="/contact" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">Contact Us</Link>
+                <Link to="/orders" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">My Orders</Link>
+                <Link to="/wishlist" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">Wishlist</Link>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="text-[10px] font-black text-white uppercase tracking-widest mb-4">Legal</h4>
+              <div className="flex flex-col gap-2.5">
                 <Link to="/privacy-policy" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">Privacy Policy</Link>
                 <Link to="/terms-of-service" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">Terms of Service</Link>
-                <Link to="/contact" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">Contact Us</Link>
+                <Link to="/contact" className="text-slate-400 text-sm font-semibold hover:text-white transition-colors">Return Policy</Link>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-slate-800 pt-8">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-              <div className="flex flex-wrap justify-center lg:justify-start gap-4">
-                <a
-                  href={`mailto:${CONFIG.SUPPORT_EMAIL}`}
-                  className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-sm font-bold uppercase tracking-widest hover:bg-slate-700 hover:border-slate-600 transition-all"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" strokeWidth="2" />
-                    <polyline points="22,6 12,13 2,6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                  Mail Us
-                </a>
-                <a
-                  href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-slate-800 border border-slate-700 text-sm font-bold uppercase tracking-widest hover:bg-slate-700 hover:border-slate-600 transition-all"
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#22c55e">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-                  </svg>
-                  Message Us
-                </a>
-              </div>
-
-              <div className="flex flex-wrap justify-center lg:justify-end items-center gap-4">
-                <Link to="/business/login" className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 text-white text-sm font-black uppercase tracking-widest shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 hover:scale-105 transition-all text-center">
-                  Seller Login
-                </Link>
-              </div>
-            </div>
-
-            <div className="mt-8 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-400 uppercase tracking-widest">
-              <span>© {new Date().getFullYear()} SmartOdisha. All rights reserved.</span>
-              <span>Cash On Delivery Available | 24/7 Support</span>
-            </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
+            <span>© {new Date().getFullYear()} SmartOdisha. All rights reserved.</span>
           </div>
         </div>
       </footer>
-
-
     </div>
   )
 }

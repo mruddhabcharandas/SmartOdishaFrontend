@@ -201,23 +201,23 @@ export default function Catalogue() {
       <style jsx>{`
         .ct-wrapper {
           font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-          background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 150px, #f8fafc 150px);
+          background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 150px, #f8fafc 150px);
           color: #0f172a;
           min-height: 100vh;
           overflow-x: hidden;
         }
 
         .ct-hero {
-          padding: 32px 20px 40px;
+          padding: 24px 16px 32px;
           margin: 0 -12px;
           position: relative;
           overflow: hidden;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
         }
 
         @media (min-width: 768px) {
           .ct-hero {
-            padding: 56px 40px 56px;
+            padding: 36px 32px 40px;
             margin: 0 -24px;
           }
         }
@@ -225,14 +225,14 @@ export default function Catalogue() {
         .ct-container {
           max-width: 1400px;
           margin: 0 auto;
-          padding: 0 12px 48px;
+          padding: 0 12px 40px;
           position: relative;
           z-index: 1;
         }
 
         @media (min-width: 768px) {
           .ct-container {
-            padding: 0 24px 64px;
+            padding: 0 24px 56px;
           }
         }
 
@@ -244,16 +244,16 @@ export default function Catalogue() {
 
         .ct-search-input {
           width: 100%;
-          padding: 18px 26px;
+          padding: 14px 22px;
           border: 2px solid #e2e8f0;
-          border-radius: 24px;
-          font-size: 16px;
+          border-radius: 16px;
+          font-size: 15px;
           font-weight: 600;
           outline: none;
           background: white;
           color: #0f172a;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
         }
 
         .ct-search-input::placeholder {
@@ -261,8 +261,8 @@ export default function Catalogue() {
         }
 
         .ct-search-input:focus {
-          border-color: #f97316;
-          box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.1), 0 12px 48px rgba(0,0,0,0.1);
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.1), 0 8px 32px rgba(0,0,0,0.08);
           background: white;
         }
 
@@ -272,10 +272,10 @@ export default function Catalogue() {
           left: 0;
           right: 0;
           background: white;
-          border-radius: 20px;
-          margin-top: 12px;
+          border-radius: 16px;
+          margin-top: 10px;
           overflow: hidden;
-          box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+          box-shadow: 0 12px 40px rgba(0,0,0,0.1);
           z-index: 1000;
           border: 1px solid rgba(248,250,252);
         }
@@ -283,8 +283,8 @@ export default function Catalogue() {
         .ct-suggest-item {
           display: flex;
           align-items: center;
-          gap: 14px;
-          padding: 14px 18px;
+          gap: 12px;
+          padding: 12px 16px;
           cursor: pointer;
           transition: background 0.2s ease;
         }
@@ -294,9 +294,9 @@ export default function Catalogue() {
         }
 
         .ct-sug-thumb {
-          width: 50px;
-          height: 50px;
-          border-radius: 14px;
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
           background: linear-gradient(135deg, #dbeafe, #3b82f6);
           display: flex;
           align-items: center;
@@ -331,10 +331,10 @@ export default function Catalogue() {
 
         .ct-categories {
           display: flex;
-          gap: 12px;
+          gap: 8px;
           overflow-x: auto;
-          margin: 36px 0 40px;
-          padding: 6px 2px;
+          margin: 28px 0 28px;
+          padding: 4px 2px;
           scrollbar-width: none;
         }
 
@@ -343,44 +343,44 @@ export default function Catalogue() {
         }
 
         .ct-category-chip {
-          padding: 14px 26px;
-          border: 2px solid rgba(15,23,42,0.06);
-          border-radius: 20px;
+          padding: 10px 18px;
+          border: 1.5px solid rgba(15,23,42,0.08);
+          border-radius: 12px;
           background: white;
-          font-size: 13px;
-          font-weight: 900;
+          font-size: 12px;
+          font-weight: 700;
           cursor: pointer;
           white-space: nowrap;
-          transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           color: #475569;
-          box-shadow: 0 8px 28px rgba(15,23,42,0.06);
-          letter-spacing: 0.05em;
+          box-shadow: 0 2px 12px rgba(15,23,42,0.04);
+          letter-spacing: 0.02em;
         }
 
         .ct-category-chip:hover {
-          border-color: #f97316;
-          color: #f97316;
-          transform: translateY(-3px);
-          box-shadow: 0 16px 40px rgba(249, 115, 22, 0.18);
+          border-color: #3b82f6;
+          color: #3b82f6;
+          transform: translateY(-1px);
+          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
         }
 
         .ct-category-chip.active {
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
           color: white;
           border-color: transparent;
-          box-shadow: 0 18px 52px rgba(249, 115, 22, 0.35);
-          transform: translateY(-4px);
+          box-shadow: 0 12px 32px rgba(59, 130, 246, 0.35);
+          transform: translateY(-2px);
         }
 
         .ct-header-section {
           display: flex;
           flex-direction: column;
-          gap: 18px;
-          margin-bottom: 32px;
+          gap: 16px;
+          margin-bottom: 24px;
           background: white;
-          padding: 28px;
-          border-radius: 28px;
-          box-shadow: 0 8px 36px rgba(15,23,42,0.06);
+          padding: 20px;
+          border-radius: 16px;
+          box-shadow: 0 4px 24px rgba(15,23,42,0.04);
           border: 1px solid rgba(248,250,252);
         }
 
@@ -389,22 +389,22 @@ export default function Catalogue() {
             flex-direction: row;
             justify-content: space-between;
             align-items: center;
-            padding: 30px 36px;
+            padding: 20px 24px;
           }
         }
 
         .ct-title {
-          font-size: clamp(22px, 4vw, 36px);
+          font-size: clamp(20px, 3.5vw, 32px);
           font-weight: 900;
-          background: linear-gradient(135deg, #0f172a 0%, #f97316 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          letter-spacing: -0.04em;
+          letter-spacing: -0.03em;
         }
 
         .ct-count {
-          font-size: 14px;
+          font-size: 13px;
           color: #64748b;
           font-weight: 600;
           margin-top: 4px;
@@ -412,15 +412,16 @@ export default function Catalogue() {
 
         .ct-filters {
           display: flex;
-          gap: 12px;
+          gap: 10px;
           flex-wrap: wrap;
+          align-items: center;
         }
 
         .ct-filter-select {
-          padding: 12px 18px;
-          border-radius: 16px;
-          border: 2px solid #e2e8f0;
-          font-size: 13px;
+          padding: 10px 16px;
+          border-radius: 12px;
+          border: 1.5px solid #e2e8f0;
+          font-size: 12px;
           font-weight: 700;
           color: #475569;
           background: white;
@@ -430,20 +431,20 @@ export default function Catalogue() {
         }
 
         .ct-filter-select:focus, .ct-filter-select:hover {
-          border-color: #f97316;
-          color: #f97316;
+          border-color: #3b82f6;
+          color: #3b82f6;
         }
 
         .ct-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 18px;
+          gap: 14px;
         }
 
         @media (min-width: 550px) {
           .ct-grid {
             grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
+            gap: 18px;
           }
         }
 
@@ -456,7 +457,7 @@ export default function Catalogue() {
         @media (min-width: 1200px) {
           .ct-grid {
             grid-template-columns: repeat(5, 1fr);
-            gap: 28px;
+            gap: 22px;
           }
         }
 
@@ -498,8 +499,8 @@ export default function Catalogue() {
         .ct-loading-card {
           aspect-ratio: 1;
           background: white;
-          border-radius: 28px;
-          box-shadow: 0 8px 36px rgba(0,0,0,0.06);
+          border-radius: 20px;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.04);
           animation: pulse 1.5s infinite ease-in-out;
         }
 
@@ -510,27 +511,27 @@ export default function Catalogue() {
 
         .ct-load-more {
           text-align: center;
-          margin: 60px 0 24px;
+          margin: 48px 0 20px;
         }
 
         .ct-load-btn {
-          padding: 18px 56px;
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+          padding: 14px 48px;
+          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
           color: white;
           border: none;
-          border-radius: 20px;
-          font-size: 14px;
+          border-radius: 16px;
+          font-size: 13px;
           font-weight: 900;
-          letter-spacing: 0.14em;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
           cursor: pointer;
-          transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 14px 44px rgba(249, 115, 22, 0.35);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 10px 32px rgba(59, 130, 246, 0.35);
         }
 
         .ct-load-btn:hover:not(:disabled) {
-          transform: translateY(-5px) scale(1.02);
-          box-shadow: 0 22px 60px rgba(249, 115, 22, 0.5);
+          transform: translateY(-3px) scale(1.01);
+          box-shadow: 0 16px 44px rgba(59, 130, 246, 0.45);
         }
 
         .ct-load-btn:disabled {
@@ -543,31 +544,31 @@ export default function Catalogue() {
 
         .ct-empty {
           text-align: center;
-          padding: 100px 40px;
-          background: linear-gradient(180deg, #ffffff 0%, #fef9f5 100%);
-          border-radius: 32px;
-          margin-top: 32px;
+          padding: 80px 32px;
+          background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
+          border-radius: 24px;
+          margin-top: 24px;
           border: 1px solid rgba(248,250,252);
-          box-shadow: 0 12px 40px rgba(15,23,42,0.06);
+          box-shadow: 0 8px 28px rgba(15,23,42,0.04);
         }
 
         .ct-empty-icon {
-          font-size: 84px;
-          margin-bottom: 24px;
+          font-size: 72px;
+          margin-bottom: 20px;
         }
 
         .ct-empty-title {
-          font-size: 26px;
+          font-size: 24px;
           font-weight: 900;
-          background: linear-gradient(135deg, #0f172a 0%, #f97316 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          margin-bottom: 12px;
+          margin-bottom: 10px;
         }
 
         .ct-empty-desc {
-          font-size: 15px;
+          font-size: 14px;
           color: #64748b;
           max-width: 420px;
           margin: 0 auto;
@@ -601,7 +602,7 @@ export default function Catalogue() {
               <input
                 ref={searchRef}
                 className="ct-search-input"
-                placeholder="🔍 Search for products, brands, categories..."
+                placeholder="Search for products, brands, categories..."
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
               />
@@ -615,7 +616,7 @@ export default function Catalogue() {
             className={`ct-category-chip${category === '' ? ' active' : ''}`}
             onClick={() => { setCategory(''); setSubCategory('') }}
           >
-            ✨ All Products
+            All Products
           </button>
           {categories.map((c) => (
             <button

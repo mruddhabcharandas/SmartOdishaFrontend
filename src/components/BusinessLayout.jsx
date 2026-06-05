@@ -60,8 +60,8 @@ export default function BusinessLayout() {
           [
             'flex items-center px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-200 group',
             isActive
-              ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg shadow-orange-200 scale-[1.02]'
-              : 'text-gray-500 hover:bg-gradient-to-br from-orange-50 to-amber-50 hover:text-gray-900 hover:pl-5'
+              ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-200 scale-[1.02]'
+              : 'text-gray-500 hover:bg-gradient-to-br from-blue-50 to-indigo-50 hover:text-gray-900 hover:pl-5'
           ].join(' ')
         }
       >
@@ -71,32 +71,32 @@ export default function BusinessLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 selection:bg-orange-100 selection:text-orange-900">
+    <div className="min-h-screen bg-white text-gray-900 selection:bg-blue-100 selection:text-blue-900">
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #fed7aa; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #fdba74; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfdbfe; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #93c5fd; }
       `}</style>
-      <div className="flex h-20 items-center justify-between border-b border-orange-100 bg-white/80 backdrop-blur-md px-6 md:px-10 sticky top-0 z-30">
+      <div className="flex h-20 items-center justify-between border-b border-blue-100 bg-white/80 backdrop-blur-md px-6 md:px-10 sticky top-0 z-30">
         <div className="flex items-center gap-4">
           <button
-            className="md:hidden p-2 rounded-xl hover:bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-100 transition-colors"
+            className="md:hidden p-2 rounded-xl hover:bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 transition-colors"
             onClick={() => setOpen(!open)}
           >
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
           <div className="flex items-center gap-3">
-            <span className="h-16 w-16 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center overflow-hidden">
+            <span className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center overflow-hidden">
               <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
             </span>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="text-base font-black tracking-tight text-gray-900">{CONFIG.BRAND_NAME}</span>
-                <span className="px-2 py-0.5 bg-gradient-to-r from-orange-500 to-amber-500 text-[10px] font-black text-white rounded-lg tracking-widest uppercase">Seller</span>
+                <span className="px-2 py-0.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-[10px] font-black text-white rounded-lg tracking-widest uppercase">Seller</span>
               </div>
               <div className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">Seller Panel</div>
-              {storeName && <div className="text-[11px] text-orange-600 font-semibold">{storeName}</div>}
+              {storeName && <div className="text-[11px] text-blue-600 font-semibold">{storeName}</div>}
             </div>
           </div>
         </div>
@@ -115,7 +115,7 @@ export default function BusinessLayout() {
 
       <div className="grid min-h-[calc(100vh-5rem)] md:grid-cols-[280px_minmax(0,1fr)]">
         <aside
-          className={`border-r border-orange-100 bg-white/50 backdrop-blur-sm ${
+          className={`border-r border-blue-100 bg-white/50 backdrop-blur-sm ${
             open ? 'fixed inset-0 z-40 bg-white pt-20' : 'hidden'
           } md:block sticky top-20 h-[calc(100vh-5rem)]`}
         >
@@ -146,7 +146,7 @@ export default function BusinessLayout() {
                 </>
               ))}
             </nav>
-            <div className="mt-auto pt-6 border-t border-orange-50 px-2">
+            <div className="mt-auto pt-6 border-t border-blue-50 px-2">
               <div className="flex items-center gap-2 text-[10px] font-bold text-green-500 uppercase tracking-widest">
                 <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
                 System Online
@@ -155,7 +155,7 @@ export default function BusinessLayout() {
           </div>
         </aside>
 
-        <main className="bg-orange-50/30">
+        <main className="bg-blue-50/30">
           <div className="max-w-[1400px] mx-auto p-6 md:p-10">
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
               <Outlet />

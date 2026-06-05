@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../../lib/api';
@@ -7,7 +6,6 @@ import { useToast } from '../../components/Toast';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import { getCloudinaryUrl } from '../../lib/cloudinary';
 
-// Indian States
 const INDIAN_STATES = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
   'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand',
@@ -19,6 +17,31 @@ const INDIAN_STATES = [
   'Daman and Diu', 'Delhi', 'Jammu and Kashmir', 'Ladakh', 'Lakshadweep',
   'Puducherry'
 ];
+
+const Icon = ({ name }) => {
+  switch (name) {
+    case 'dashboard':
+      return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>;
+    case 'personal':
+      return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>;
+    case 'addresses':
+      return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7l9-4 9 4v10l-9 4-9-4V7z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4" /></svg>;
+    case 'orders':
+      return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>;
+    case 'wishlist':
+      return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z" /></svg>;
+    case 'support':
+      return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093 0 .75.507 1.4 1.208 1.664.502.189.788.73.788 1.246v.227a.75.75 0 01-.346.644l-4.975 3.317a.75.75 0 01-.773.028A6.008 6.008 0 013 16c0-2.663 2.045-4.882 4.729-5.593A4.003 4.003 0 018.228 9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12h.01M9 12h.01M12 9h.01M12 15h.01" /></svg>;
+    case 'settings':
+      return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
+    case 'logout':
+      return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>;
+    case 'lock':
+      return <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>;
+    default:
+      return null;
+  }
+};
 
 export default function Profile() {
   const { user, token, refreshProfile } = useAuth();
@@ -56,7 +79,6 @@ export default function Profile() {
   });
   const [pincodeLoading, setPincodeLoading] = useState(false);
   
-  // Support Ticket State
   const [tickets, setTickets] = useState([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
   const [showNewTicketModal, setShowNewTicketModal] = useState(false);
@@ -170,7 +192,6 @@ export default function Profile() {
     if (name === 'pincode') {
       processedValue = value.replace(/\D/g, '').slice(0, 6);
       
-      // If pincode is 6 digits, fetch details
       if (processedValue.length === 6) {
         setPincodeLoading(true);
         try {
@@ -185,7 +206,7 @@ export default function Profile() {
               district: postOffice.District,
               state: postOffice.State
             }));
-            return; // Don't run the default set
+            return;
           } else {
             notify('Invalid pincode', 'error');
           }
@@ -344,20 +365,19 @@ export default function Profile() {
   }
 
   const menuItems = [
-    { id: 'dashboard', label: 'My Account', icon: '👤' },
-    { id: 'personal', label: 'Personal Information', icon: '📝' },
-    { id: 'addresses', label: 'Addresses', icon: '🏠' },
-    { id: 'orders', label: 'My Orders', icon: '📦' },
-    { id: 'wishlist', label: 'My Wishlist', icon: '❤️' },
-    { id: 'support', label: 'Help & Support', icon: '🎫' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
-    { id: 'logout', label: 'Logout', icon: '🚪' }
+    { id: 'dashboard', label: 'My Account', icon: 'dashboard' },
+    { id: 'personal', label: 'Personal Information', icon: 'personal' },
+    { id: 'addresses', label: 'Addresses', icon: 'addresses' },
+    { id: 'orders', label: 'My Orders', icon: 'orders' },
+    { id: 'wishlist', label: 'My Wishlist', icon: 'wishlist' },
+    { id: 'support', label: 'Help & Support', icon: 'support' },
+    { id: 'settings', label: 'Settings', icon: 'settings' },
+    { id: 'logout', label: 'Logout', icon: 'logout' }
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Flipkart-style header */}
-      <div className="bg-blue-600 text-white py-4 px-4 shadow-lg">
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 px-4 shadow-md">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -370,9 +390,9 @@ export default function Profile() {
             </div>
             <div className="flex items-center gap-3">
               {user?.avatar ? (
-                <img src={getCloudinaryUrl(user.avatar)} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
+                <img src={getCloudinaryUrl(user.avatar)} alt={user.name} className="w-10 h-10 rounded-full object-cover border-2 border-white/30" />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold border-2 border-white/30">
                   {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
               )}
@@ -387,9 +407,8 @@ export default function Profile() {
 
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left Sidebar Menu - Flipkart style */}
           <div className="w-full lg:w-64 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               {menuItems.map((item) => (
                 <button
                   key={item.id}
@@ -400,22 +419,21 @@ export default function Profile() {
                       setActiveTab(item.id);
                     }
                   }}
-                  className={`w-full px-5 py-4 text-left flex items-center gap-4 border-b border-gray-100 last:border-0 transition-colors ${
+                  className={`w-full px-5 py-4 text-left flex items-center gap-4 border-b border-gray-50 last:border-0 transition-colors ${
                     activeTab === item.id 
                       ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600' 
                       : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
-                  <span className="text-xl">{item.icon}</span>
+                  <Icon name={item.icon} />
                   <span className="font-medium">{item.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Right Content Area */}
           <div className="flex-1">
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               {activeTab === 'dashboard' && (
                 <div className="space-y-6">
                   <div>
@@ -424,20 +442,38 @@ export default function Profile() {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Link to="/orders" className="p-5 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all">
-                      <div className="text-3xl mb-2">📦</div>
-                      <div className="font-semibold text-gray-900">My Orders</div>
-                      <div className="text-sm text-gray-500 mt-1">Track, cancel or return orders</div>
+                    <Link to="/orders" className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all">
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
+                          <Icon name="orders" />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">My Orders</div>
+                          <div className="text-sm text-gray-500">Track, cancel or return orders</div>
+                        </div>
+                      </div>
                     </Link>
-                    <button onClick={() => setActiveTab('addresses')} className="p-5 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left w-full">
-                      <div className="text-3xl mb-2">🏠</div>
-                      <div className="font-semibold text-gray-900">Addresses</div>
-                      <div className="text-sm text-gray-500 mt-1">Save and manage delivery addresses</div>
+                    <button onClick={() => setActiveTab('addresses')} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left w-full">
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
+                          <Icon name="addresses" />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">Addresses</div>
+                          <div className="text-sm text-gray-500">Save and manage delivery addresses</div>
+                        </div>
+                      </div>
                     </button>
-                    <button onClick={() => setActiveTab('personal')} className="p-5 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left w-full">
-                      <div className="text-3xl mb-2">📝</div>
-                      <div className="font-semibold text-gray-900">Profile</div>
-                      <div className="text-sm text-gray-500 mt-1">Edit your profile details</div>
+                    <button onClick={() => setActiveTab('personal')} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left w-full">
+                      <div className="flex items-center gap-4 mb-3">
+                        <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
+                          <Icon name="personal" />
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">Profile</div>
+                          <div className="text-sm text-gray-500">Edit your profile details</div>
+                        </div>
+                      </div>
                     </button>
                   </div>
                 </div>
@@ -454,7 +490,7 @@ export default function Profile() {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                         placeholder="Enter your full name"
                       />
                     </div>
@@ -464,7 +500,7 @@ export default function Profile() {
                         type="email"
                         value={user?.email || ''}
                         disabled
-                        className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-500"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
                       />
                     </div>
                     <div>
@@ -474,14 +510,14 @@ export default function Profile() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                         placeholder="Enter your phone number"
                       />
                     </div>
                     <button
                       type="submit"
                       disabled={saving}
-                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+                      className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
                     >
                       {saving ? 'Saving...' : 'Save Changes'}
                     </button>
@@ -495,7 +531,7 @@ export default function Profile() {
                     <h2 className="text-xl font-bold text-gray-900">Saved Addresses</h2>
                     <button
                       onClick={handleAddAddress}
-                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+                      className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center gap-2"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -506,12 +542,14 @@ export default function Profile() {
                   
                   {savedAddresses.length === 0 ? (
                     <div className="text-center py-12">
-                      <div className="text-6xl mb-4">🏠</div>
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                        <Icon name="addresses" />
+                      </div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">No saved addresses yet</h3>
                       <p className="text-gray-500 mb-6">Add your first address to get started with faster checkout</p>
                       <button
                         onClick={handleAddAddress}
-                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                        className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
                       >
                         Add Your First Address
                       </button>
@@ -519,15 +557,15 @@ export default function Profile() {
                   ) : (
                     <div className="space-y-4">
                       {savedAddresses.map((address) => (
-                        <div key={address._id} className="p-5 border border-gray-200 rounded-lg hover:border-blue-300">
-                          <div className="flex items-start justify-between">
-                            <div>
+                        <div key={address._id} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="flex-1">
                               <div className="flex items-center gap-3 mb-2">
                                 <div className="font-bold text-gray-900">{address.fullName}</div>
-                                <span className="text-gray-500">•</span>
+                                <span className="text-gray-400">•</span>
                                 <div className="text-gray-700">{address.phone}</div>
                                 {address.isDefault && (
-                                  <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded">Default</span>
+                                  <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Default</span>
                                 )}
                               </div>
                               <div className="text-gray-600 space-y-1">
@@ -536,18 +574,24 @@ export default function Profile() {
                                 <div>{address.city}, {address.district}, {address.state} - {address.pincode}</div>
                               </div>
                             </div>
-                            <div className="flex gap-3">
+                            <div className="flex gap-2">
                               <button
                                 onClick={() => handleEditAddress(address)}
-                                className="px-3 py-1.5 text-blue-600 hover:bg-blue-50 rounded text-sm font-medium"
+                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="Edit"
                               >
-                                Edit
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
                               </button>
                               <button
                                 onClick={() => handleDeleteAddress(address._id)}
-                                className="px-3 py-1.5 text-red-600 hover:bg-red-50 rounded text-sm font-medium"
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="Delete"
                               >
-                                Delete
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
                               </button>
                             </div>
                           </div>
@@ -569,7 +613,7 @@ export default function Profile() {
               {activeTab === 'orders' && (
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 mb-6">My Orders</h2>
-                  <Link to="/orders" className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
+                  <Link to="/orders" className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
                     View All Orders
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -581,7 +625,7 @@ export default function Profile() {
               {activeTab === 'wishlist' && (
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 mb-6">My Wishlist</h2>
-                  <Link to="/wishlist" className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2">
+                  <Link to="/wishlist" className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
                     View My Wishlist
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -596,7 +640,7 @@ export default function Profile() {
                     <h2 className="text-xl font-bold text-gray-900">Help & Support</h2>
                     <button
                       onClick={() => setShowNewTicketModal(true)}
-                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors flex items-center gap-2"
+                      className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center gap-2"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -611,12 +655,14 @@ export default function Profile() {
                     </div>
                   ) : tickets.length === 0 ? (
                     <div className="text-center py-12">
-                      <div className="text-6xl mb-4">🎫</div>
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                        <Icon name="support" />
+                      </div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">No support tickets yet</h3>
                       <p className="text-gray-500 mb-6">Create a ticket if you need help with anything</p>
                       <button
                         onClick={() => setShowNewTicketModal(true)}
-                        className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                        className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
                       >
                         Create Ticket
                       </button>
@@ -632,8 +678,8 @@ export default function Profile() {
                         </svg>
                         Back to all tickets
                       </button>
-                      <div className="border border-gray-200 rounded-lg overflow-hidden">
-                        <div className="p-5 border-b border-gray-200 bg-gray-50">
+                      <div className="border border-gray-100 rounded-xl overflow-hidden">
+                        <div className="p-5 border-b border-gray-100 bg-gray-50">
                           <div className="flex items-start justify-between">
                             <div>
                               <h3 className="text-lg font-semibold text-gray-900">{selectedTicket.subject}</h3>
@@ -644,7 +690,7 @@ export default function Profile() {
                             {selectedTicket.status !== 'Resolved' && (
                               <button
                                 onClick={() => handleResolveTicket(selectedTicket._id)}
-                                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+                                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all"
                               >
                                 Mark as Resolved
                               </button>
@@ -654,7 +700,7 @@ export default function Profile() {
                         <div className="p-5 max-h-96 overflow-y-auto space-y-4">
                           {selectedTicket.messages && selectedTicket.messages.map((msg, idx) => (
                             <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[75%] p-4 rounded-lg ${msg.sender === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'}`}>
+                              <div className={`max-w-[75%] p-4 rounded-xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white' : 'bg-gray-100 text-gray-900'}`}>
                                 <p>{msg.message}</p>
                                 <p className={`text-xs mt-2 ${msg.sender === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>
                                   {new Date(msg.createdAt).toLocaleString()}
@@ -663,7 +709,7 @@ export default function Profile() {
                             </div>
                           ))}
                         </div>
-                        <div className="p-5 border-t border-gray-200">
+                        <div className="p-5 border-t border-gray-100">
                           <div className="flex gap-3">
                             <input
                               type="text"
@@ -671,12 +717,12 @@ export default function Profile() {
                               onChange={(e) => setMessageInput(e.target.value)}
                               onKeyPress={(e) => e.key === 'Enter' && handleAddMessage(selectedTicket._id)}
                               placeholder="Type your message..."
-                              className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                             />
                             <button
                               onClick={() => handleAddMessage(selectedTicket._id)}
                               disabled={!messageInput.trim()}
-                              className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+                              className="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
                             >
                               Send
                             </button>
@@ -690,7 +736,7 @@ export default function Profile() {
                         <div
                           key={ticket._id}
                           onClick={() => setSelectedTicket(ticket)}
-                          className="p-5 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 cursor-pointer"
+                          className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 cursor-pointer"
                         >
                           <div className="flex items-center justify-between mb-3">
                             <div className="font-semibold text-gray-900">{ticket.subject}</div>
@@ -718,19 +764,21 @@ export default function Profile() {
                     {!showPasswordChange ? (
                       <button
                         onClick={() => setShowPasswordChange(true)}
-                        className="w-full p-5 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all text-left flex items-center gap-4"
+                        className="w-full p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left flex items-center gap-4"
                       >
-                        <span className="text-2xl">🔒</span>
-                        <div>
+                        <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
+                          <Icon name="lock" />
+                        </div>
+                        <div className="flex-1">
                           <div className="font-semibold text-gray-900">Change Password</div>
                           <div className="text-sm text-gray-500 mt-1">Update your account password</div>
                         </div>
-                        <svg className="w-5 h-5 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                         </svg>
                       </button>
                     ) : (
-                      <div className="border border-gray-200 rounded-lg p-6">
+                      <div className="border border-gray-100 rounded-xl p-6">
                         <button
                           onClick={() => {
                             setShowPasswordChange(false);
@@ -751,7 +799,7 @@ export default function Profile() {
                               name="currentPassword"
                               value={passwordForm.currentPassword}
                               onChange={handlePasswordChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                               placeholder="Enter current password"
                             />
                           </div>
@@ -762,7 +810,7 @@ export default function Profile() {
                               name="newPassword"
                               value={passwordForm.newPassword}
                               onChange={handlePasswordChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                               placeholder="Enter new password (min 6 chars)"
                             />
                           </div>
@@ -773,14 +821,14 @@ export default function Profile() {
                               name="confirmPassword"
                               value={passwordForm.confirmPassword}
                               onChange={handlePasswordChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                               placeholder="Confirm new password"
                             />
                           </div>
                           <button
                             type="submit"
                             disabled={changingPassword}
-                            className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50"
+                            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
                           >
                             {changingPassword ? 'Changing Password...' : 'Change Password'}
                           </button>
@@ -795,13 +843,12 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Address Modal */}
       {showAddressModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
               <h2 className="text-lg font-bold text-gray-900">{editingAddress ? 'Edit Address' : 'Add New Address'}</h2>
-              <button onClick={() => setShowAddressModal(false)} className="text-gray-500 hover:text-gray-700">
+              <button onClick={() => setShowAddressModal(false)} className="text-gray-400 hover:text-gray-600">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -816,7 +863,7 @@ export default function Profile() {
                     name="fullName"
                     value={addressForm.fullName}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                     placeholder="Enter full name"
                     required
                   />
@@ -828,7 +875,7 @@ export default function Profile() {
                     name="phone"
                     value={addressForm.phone}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                     placeholder="10-digit phone number"
                     required
                     maxLength={10}
@@ -842,7 +889,7 @@ export default function Profile() {
                   name="addressLine1"
                   value={addressForm.addressLine1}
                   onChange={handleAddressInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                   placeholder="House number, street, etc."
                   required
                 />
@@ -854,7 +901,7 @@ export default function Profile() {
                   name="addressLine2"
                   value={addressForm.addressLine2}
                   onChange={handleAddressInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                   placeholder="Landmark, area, etc. (optional)"
                 />
               </div>
@@ -866,7 +913,7 @@ export default function Profile() {
                     name="pincode"
                     value={addressForm.pincode}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                     placeholder="6-digit pincode"
                     required
                     maxLength={6}
@@ -879,7 +926,7 @@ export default function Profile() {
                     name="city"
                     value={addressForm.city}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                     placeholder="City"
                     required
                   />
@@ -891,7 +938,7 @@ export default function Profile() {
                     name="district"
                     value={addressForm.district}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                     placeholder="District"
                   />
                 </div>
@@ -901,11 +948,11 @@ export default function Profile() {
                     name="state"
                     value={addressForm.state}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                     required
                   >
-                    <option value="">Select state</option>
-                    {INDIAN_STATES.map((state) => (
+                    <option value="">Select State</option>
+                    {INDIAN_STATES.map(state => (
                       <option key={state} value={state}>{state}</option>
                     ))}
                   </select>
@@ -918,37 +965,29 @@ export default function Profile() {
                   name="isDefault"
                   checked={addressForm.isDefault}
                   onChange={handleAddressInputChange}
-                  className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />
-                <label htmlFor="isDefault" className="text-sm font-medium text-gray-700">Set as default address</label>
+                <label htmlFor="isDefault" className="text-sm font-medium text-gray-700">
+                  Set as default address
+                </label>
               </div>
-              <div className="flex gap-4 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowAddressModal(false)}
-                  className="flex-1 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                >
-                  Save Address
-                </button>
-              </div>
+              <button
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
+              >
+                {editingAddress ? 'Update Address' : 'Add Address'}
+              </button>
             </form>
           </div>
         </div>
       )}
 
-      {/* New Ticket Modal */}
       {showNewTicketModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Create Support Ticket</h2>
-              <button onClick={() => setShowNewTicketModal(false)} className="text-gray-500 hover:text-gray-700">
+          <div className="bg-white rounded-xl max-w-lg w-full">
+            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-gray-900">Create New Support Ticket</h2>
+              <button onClick={() => setShowNewTicketModal(false)} className="text-gray-400 hover:text-gray-600">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -961,7 +1000,7 @@ export default function Profile() {
                   type="text"
                   value={newTicketForm.subject}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, subject: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                   placeholder="Brief description of your issue"
                   required
                 />
@@ -971,12 +1010,12 @@ export default function Profile() {
                 <select
                   value={newTicketForm.category}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, category: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
                 >
                   <option value="Order Issue">Order Issue</option>
-                  <option value="Payment Issue">Payment Issue</option>
-                  <option value="Product Query">Product Query</option>
                   <option value="Return/Refund">Return/Refund</option>
+                  <option value="Product Query">Product Query</option>
+                  <option value="Payment Issue">Payment Issue</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
@@ -985,26 +1024,17 @@ export default function Profile() {
                 <textarea
                   value={newTicketForm.description}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, description: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent min-h-[150px]"
-                  placeholder="Please provide details about your issue"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 min-h-[120px]"
+                  placeholder="Please describe your issue in detail"
                   required
                 />
               </div>
-              <div className="flex gap-4 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowNewTicketModal(false)}
-                  className="flex-1 py-3 border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                >
-                  Create Ticket
-                </button>
-              </div>
+              <button
+                type="submit"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
+              >
+                Create Ticket
+              </button>
             </form>
           </div>
         </div>

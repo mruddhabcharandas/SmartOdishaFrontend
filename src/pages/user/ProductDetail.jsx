@@ -26,18 +26,87 @@ function sortVariantValues(lowKey, values) {
   return arr.sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' }));
 }
 
-function variantAttrIconEmoji(lowKey) {
-  const k = String(lowKey || '').toLowerCase();
-  if (k === 'option') return '🛒';
-  if (k.includes('color') || k.includes('colour') || k === 'finish' || k.includes('shade')) return '🎨';
-  if (k.includes('ram')) return '🧠';
-  if (k.includes('rom') || k.includes('storage') || k.includes('memory')) return '💾';
-  if (k.includes('size') && !k.includes('screen')) return '📏';
-  if (k.includes('watt') || k.includes('power')) return '⚡';
-  if (k.includes('material')) return '🧵';
-  if (k.includes('model') || k.includes('variant')) return '📱';
-  if (k.includes('screen') || k.includes('display')) return '🖥';
-  return '🔧';
+function VariantIcon({ name }) {
+  const IconSVG = () => {
+    switch (name) {
+      case 'option':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        );
+      case 'color':
+      case 'colour':
+      case 'finish':
+      case 'shade':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M8 13l4-1v8a3 3 0 103 3"/>
+          </svg>
+        );
+      case 'ram':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <rect x="4" y="4" width="16" height="16" rx="2"/>
+            <path d="M9 1v2M15 1v2M9 21v2M15 21v2"/>
+          </svg>
+        );
+      case 'rom':
+      case 'storage':
+      case 'memory':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <path d="M12 18h.01"/>
+          </svg>
+        );
+      case 'size':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <path d="M12 2L4 5v10l8 3 8-3V5l-8-3z"/>
+            <path d="M4.5 7.5L20.5 7.5"/>
+          </svg>
+        );
+      case 'watt':
+      case 'power':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/>
+          </svg>
+        );
+      case 'material':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <path d="M12.22 2s-4.15 2.14-1.56 4.16 4.7 5 1.42 5-4.62 10 1 1 3.5-3 1-3.5 1.1 2.5 4.37-3.5 2.85 1 3z"/>
+          </svg>
+        );
+      case 'model':
+      case 'variant':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <path d="M12 18h.01"/>
+          </svg>
+        );
+      case 'screen':
+      case 'display':
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <rect x="2" y="3" width="20" height="15" rx="2"/>
+            <path d="M8 21h8"/>
+          </svg>
+        );
+      default:
+        return (
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" strokeWidth="2">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.8 1.8H11v2h7.5l-1.8 1.8a1 1 0 0 0 1.4 1.4l4-4a1 1 0 0 0 0-1.4l-4-4a1 1 0 0 0-1.4 0z"/>
+            <path d="M5 18v-6"/>
+          </svg>
+        );
+    }
+  };
+  return <IconSVG />;
 }
 
 export default function ProductDetail() {
@@ -893,40 +962,38 @@ export default function ProductDetail() {
         
         .pd-var-btn {
           min-width: 64px;
-          padding: 10px 12px;
+          padding: 10px 16px;
           background: white;
-          border: 2px solid rgba(249, 115, 22, 0.15);
+          border: 2px solid rgba(59, 130, 246, 0.15);
           border-radius: 12px;
-          transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
           display: flex;
-          flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 3px;
           position: relative;
           box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
         }
         
         @media (min-width: 480px) {
-          .pd-var-btn { min-width: 72px; padding: 12px 14px; border-radius: 14px; gap: 4px; }
+          .pd-var-btn { min-width: 72px; padding: 12px 18px; border-radius: 14px; }
         }
         
         @media (min-width: 640px) {
-          .pd-var-btn { min-width: 80px; padding: 14px 16px; border-radius: 16px; gap: 5px; }
+          .pd-var-btn { min-width: 80px; padding: 14px 20px; border-radius: 16px; }
         }
         
         .pd-var-btn:hover:not(.disabled):not(.on) {
-          border-color: rgba(249, 115, 22, 0.4);
-          background: linear-gradient(135deg, #f8fafc 0%, #fff7ed 100%);
+          border-color: rgba(59, 130, 246, 0.4);
+          background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
           transform: translateY(-2px);
-          box-shadow: 0 10px 28px -8px rgba(249, 115, 22, 0.25);
+          box-shadow: 0 10px 28px -8px rgba(59, 130, 246, 0.25);
         }
         
         .pd-var-btn.on {
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-          border-color: #f97316;
-          box-shadow: 0 12px 36px -12px rgba(249, 115, 22, 0.4);
+          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
+          border-color: #3b82f6;
+          box-shadow: 0 12px 36px -12px rgba(59, 130, 246, 0.4);
           transform: translateY(-3px);
         }
         
@@ -935,34 +1002,15 @@ export default function ProductDetail() {
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
         }
         
-        .pd-var-btn.on .pd-var-price {
-          color: rgba(255, 255, 255, 0.9);
-        }
-        
         .pd-var-val {
           font-size: 12px;
           font-weight: 800;
           color: #0f172a;
           transition: color 0.3s;
-          position: relative;
-          z-index: 2;
         }
         
         @media (min-width: 640px) {
           .pd-var-val { font-size: 13px; }
-        }
-        
-        .pd-var-price {
-          font-size: 10px;
-          font-weight: 700;
-          color: #f97316;
-          letter-spacing: 0.02em;
-          position: relative;
-          z-index: 2;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-var-price { font-size: 11px; }
         }
         
         .pd-var-btn.disabled {
@@ -1194,79 +1242,49 @@ export default function ProductDetail() {
           .pd-stock-dot { width: 9px; height: 9px; }
         }
         
-        .pd-countdown {
+        .pd-ships-tomorrow {
           margin-top: 14px;
           display: flex;
-          flex-direction: column;
+          align-items: center;
           gap: 10px;
-          align-items: stretch;
+          padding: 12px 16px;
+          background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+          border-radius: 16px;
+          border: 1px solid rgba(59, 130, 246, 0.2);
         }
         
         @media (min-width: 640px) {
-          .pd-countdown {
-            flex-direction: row;
-            align-items: center;
-            gap: 14px;
-            margin-top: 18px;
-          }
+          .pd-ships-tomorrow { margin-top: 18px; padding: 14px 20px; gap: 12px; }
         }
         
-        .pd-countdown-lbl {
-          font-size: 11px;
-          font-weight: 700;
-          color: #64748b;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-countdown-lbl { font-size: 12px; }
-        }
-        
-        .pd-countdown-val {
-          display: flex;
-          gap: 6px;
-          font-family: 'Inter', system-ui, sans-serif;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-countdown-val { gap: 8px; }
-        }
-        
-        .pd-countdown-item {
-          background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
-          padding: 6px 10px;
+        .pd-ships-icon {
+          width: 40px;
+          height: 40px;
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
           border-radius: 12px;
-          border: 1px solid rgba(249, 115, 22, 0.18);
-          min-width: 48px;
-          text-align: center;
-          box-shadow: 0 3px 12px rgba(249, 115, 22, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         
-        @media (min-width: 640px) {
-          .pd-countdown-item { padding: 8px 14px; min-width: 56px; border-radius: 14px; }
+        .pd-ships-text {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
         }
         
-        .pd-countdown-num {
-          font-size: 16px;
-          font-weight: 900;
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-          background-clip: text;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-countdown-num { font-size: 18px; }
-        }
-        
-        .pd-countdown-label {
-          font-size: 9px;
-          color: #64748b;
-          font-weight: 700;
-          letter-spacing: 0.1em;
+        .pd-ships-title {
+          font-size: 13px;
+          font-weight: 800;
+          color: #1e40af;
           text-transform: uppercase;
-          margin-top: 2px;
+          letter-spacing: 0.1em;
+        }
+        
+        .pd-ships-subtitle {
+          font-size: 12px;
+          font-weight: 600;
+          color: #3b82f6;
         }
         
         .pd-delivery {
@@ -1402,7 +1420,7 @@ export default function ProductDetail() {
         .pd-btn-primary {
           flex: 1;
           min-width: 140px;
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
           background-size: 200% 200%;
           color: white;
           border: none;
@@ -1415,7 +1433,7 @@ export default function ProductDetail() {
           cursor: pointer;
           font-family: 'Inter', system-ui, sans-serif;
           transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 10px 32px -10px rgba(249, 115, 22, 0.4);
+          box-shadow: 0 10px 32px -10px rgba(59, 130, 246, 0.4);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1445,7 +1463,7 @@ export default function ProductDetail() {
         
         .pd-btn-primary:hover:not(:disabled) {
           transform: translateY(-4px);
-          box-shadow: 0 18px 48px -12px rgba(249, 115, 22, 0.5);
+          box-shadow: 0 18px 48px -12px rgba(59, 130, 246, 0.5);
         }
         
         .pd-btn-primary:hover:not(:disabled)::after {
@@ -1467,7 +1485,7 @@ export default function ProductDetail() {
         .pd-btn-buy-now {
           flex: 1;
           min-width: 140px;
-          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
           background-size: 200% 200%;
           color: white;
           border: none;
@@ -1531,14 +1549,10 @@ export default function ProductDetail() {
         
         .pd-btn-secondary {
           background: white;
-          color: #f97316;
-          border: 2px solid rgba(249, 115, 22, 0.2);
-          padding: 14px;
-          border-radius: 16px;
-          font-size: 12px;
-          font-weight: 900;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
+          color: #3b82f6;
+          border: 2px solid rgba(59, 130, 246, 0.2);
+          padding: 10px;
+          border-radius: 12px;
           cursor: pointer;
           font-family: 'Inter', system-ui, sans-serif;
           transition: all 0.3s;
@@ -1546,28 +1560,25 @@ export default function ProductDetail() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
           width: auto;
-          min-width: 60px;
-          height: 56px;
+          min-width: 48px;
+          height: 48px;
         }
         
         @media (min-width: 640px) {
           .pd-btn-secondary {
-            padding: 16px;
-            border-radius: 18px;
-            font-size: 12px;
-            gap: 8px;
-            min-width: 70px;
-            height: 64px;
+            padding: 12px;
+            border-radius: 14px;
+            min-width: 56px;
+            height: 56px;
           }
         }
         
         .pd-btn-secondary:hover {
-          border-color: #f97316;
-          background: linear-gradient(135deg, #f8fafc 0%, #fff7ed 100%);
+          border-color: #3b82f6;
+          background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
           transform: translateY(-2px);
-          box-shadow: 0 10px 28px rgba(249, 115, 22, 0.18);
+          box-shadow: 0 10px 28px rgba(59, 130, 246, 0.18);
         }
         
         .pd-trust {
@@ -1940,40 +1951,34 @@ export default function ProductDetail() {
                   return (
                     <div key={attrIdx} className="pd-var-sec">
                       <div className="pd-var-header">
-                        <div className="pd-var-lbl">
-                          <span className="pd-var-icon">{variantAttrIconEmoji(lowAttr)}</span>
-                          <span className="pd-var-name">{attr}</span>
+                          <div className="pd-var-lbl">
+                            <span className="pd-var-icon"><VariantIcon name={lowAttr} /></span>
+                            <span className="pd-var-name">{attr}</span>
+                          </div>
+                          {selected[lowAttr] && (
+                            <span className="pd-var-selected">
+                              {selected[lowAttr]}
+                            </span>
+                          )}
                         </div>
-                        {selected[lowAttr] && (
-                          <span className="pd-var-selected">
-                            {selected[lowAttr]}
-                          </span>
-                        )}
-                      </div>
-                      <div className={`pd-var-opts ${isMany ? 'has-many' : ''}`}>
-                        {opts.map((optVal, optIdx) => {
-                          const enabled = isOptEnabled(attr, optVal);
-                          const isOn = selected[lowAttr]?.toLowerCase() === String(optVal).toLowerCase();
-                          const thisVariant = p.variants?.find(v => {
-                            const vAttrs = normalizeAttrs(v.attributes, v.sku, p.attributes);
-                            return v.isActive !== false && Object.entries(vAttrs).some(([k, vv]) => k.toLowerCase() === lowAttr && String(vv).toLowerCase() === String(optVal).toLowerCase());
-                          });
-                          const vPrice = thisVariant?.price;
-                          return (
-                            <button
-                              key={optIdx}
-                              className={`pd-var-btn ${!enabled ? 'disabled' : ''} ${isOn ? 'on' : ''}`}
-                              onClick={() => {
-                                if (!enabled) return;
-                                setSelected(s => ({ ...s, [lowAttr]: String(optVal) }));
-                              }}
-                              disabled={!enabled}
-                            >
-                              <span className="pd-var-val">{optVal}</span>
-                              {vPrice && <span className="pd-var-price">₹{Number(vPrice).toLocaleString()}</span>}
-                            </button>
-                          );
-                        })}
+                        <div className={`pd-var-opts ${isMany ? 'has-many' : ''}`}>
+                          {opts.map((optVal, optIdx) => {
+                            const enabled = isOptEnabled(attr, optVal);
+                            const isOn = selected[lowAttr]?.toLowerCase() === String(optVal).toLowerCase();
+                            return (
+                              <button
+                                key={optIdx}
+                                className={`pd-var-btn ${!enabled ? 'disabled' : ''} ${isOn ? 'on' : ''}`}
+                                onClick={() => {
+                                  if (!enabled) return;
+                                  setSelected(s => ({ ...s, [lowAttr]: String(optVal) }));
+                                }}
+                                disabled={!enabled}
+                              >
+                                <span className="pd-var-val">{optVal}</span>
+                              </button>
+                            );
+                          })}
                       </div>
                     </div>
                   );
@@ -1998,7 +2003,7 @@ export default function ProductDetail() {
                   </span>
                 )}
                 <span className="pd-badge pd-badge-a">
-                  ⚡ Express Dispatch
+                  Express Dispatch
                 </span>
               </div>
             </div>
@@ -2115,22 +2120,16 @@ export default function ProductDetail() {
               </span>
             </div>
 
-            {/* Express Dispatch Countdown */}
-            <div className="pd-countdown">
-              <span className="pd-countdown-lbl">Express Dispatch</span>
-              <div className="pd-countdown-val">
-                <div className="pd-countdown-item">
-                  <div className="pd-countdown-num">{String(countdown.h).padStart(2, '0')}</div>
-                  <div className="pd-countdown-label">Hours</div>
-                </div>
-                <div className="pd-countdown-item">
-                  <div className="pd-countdown-num">{String(countdown.m).padStart(2, '0')}</div>
-                  <div className="pd-countdown-label">Mins</div>
-                </div>
-                <div className="pd-countdown-item">
-                  <div className="pd-countdown-num">{String(countdown.s).padStart(2, '0')}</div>
-                  <div className="pd-countdown-label">Secs</div>
-                </div>
+            {/* Ships Tomorrow */}
+            <div className="pd-ships-tomorrow">
+              <div className="pd-ships-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              </div>
+              <div className="pd-ships-text">
+                <span className="pd-ships-title">Ships Tomorrow</span>
+                <span className="pd-ships-subtitle">Guaranteed delivery by tomorrow</span>
               </div>
             </div>
 
