@@ -616,7 +616,7 @@ export default function Enquiry() {
                       </div>
                       <div>
                         <div className="font-bold text-slate-900 text-sm">Cash on Delivery (COD)</div>
-                        <div className="text-xs text-slate-500 font-medium mt-0.5">Pay 25% advance & remaining 75% at your doorstep</div>
+                        <div className="text-xs text-slate-500 font-medium mt-0.5">Pay 15% advance & remaining 85% at your doorstep</div>
                       </div>
                     </div>
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
@@ -629,8 +629,8 @@ export default function Enquiry() {
                   </div>
                   <div className="border-t border-slate-100 pt-3 mt-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded uppercase tracking-wider">25% Advance Required</span>
-                      <span className="text-xs text-orange-600 font-bold">75% on Delivery</span>
+                      <span className="text-[11px] font-bold text-orange-700 bg-orange-50 px-2 py-0.5 rounded uppercase tracking-wider">15% Advance Required</span>
+                      <span className="text-xs text-orange-600 font-bold">85% on Delivery</span>
                     </div>
                   </div>
                 </div>
@@ -669,11 +669,11 @@ export default function Enquiry() {
                 {selectedPaymentMethod === 'COD' ? (
                   <>
                     <div className="flex justify-between items-center bg-orange-50 p-3 rounded-lg border border-orange-200">
-                      <span className="font-semibold text-orange-700 text-sm">25% Advance to Pay Now</span>
-                      <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.25).toLocaleString()}</span>
+                      <span className="font-semibold text-orange-700 text-sm">15% Advance to Pay Now</span>
+                      <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.15).toLocaleString()}</span>
                     </div>
                     <div className="text-xs text-slate-500">
-                      Remaining 75% (₹{Math.round(totalPayable * 0.75).toLocaleString()}) to be paid on delivery
+                      Remaining 85% (₹{Math.round(totalPayable * 0.85).toLocaleString()}) to be paid on delivery
                     </div>
                   </>
                 ) : (
@@ -746,11 +746,11 @@ export default function Enquiry() {
                 {selectedPaymentMethod === 'COD' ? (
                   <>
                     <div className="flex justify-between items-center bg-orange-50 p-3 rounded-lg border border-orange-200">
-                      <span className="font-semibold text-orange-700 text-sm">25% Advance to Pay Now</span>
-                      <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.25).toLocaleString()}</span>
+                      <span className="font-semibold text-orange-700 text-sm">15% Advance to Pay Now</span>
+                      <span className="text-xl font-bold text-orange-600">₹{Math.round(totalPayable * 0.15).toLocaleString()}</span>
                     </div>
                     <div className="text-xs text-slate-500">
-                      Remaining 75% (₹{Math.round(totalPayable * 0.75).toLocaleString()}) to be paid on delivery
+                      Remaining 85% (₹{Math.round(totalPayable * 0.85).toLocaleString()}) to be paid on delivery
                     </div>
                   </>
                 ) : (
