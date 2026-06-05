@@ -1,10 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/admin/Login.jsx'
 import Dashboard from './pages/admin/Dashboard.jsx'
-import Products from './pages/admin/Products.jsx'
 import Brands from './pages/admin/Brands.jsx'
-import Categories from './pages/admin/Categories.jsx'
-import SubCategories from './pages/admin/SubCategories.jsx'
 import Billing from './pages/admin/Billing.jsx'
 import Orders from './pages/admin/Orders.jsx'
 import PaymentVerification from './pages/admin/PaymentVerification.jsx'
@@ -15,9 +12,8 @@ import Customers from './pages/admin/Customers.jsx'
 import CustomerDetail from './pages/admin/CustomerDetail.jsx'
 import AdminLayout from './components/AdminLayout.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
-import InventoryPage from './pages/admin/InventoryPage.jsx'
 import StaffManagement from './pages/admin/StaffManagement.jsx'
-import Stores from './pages/admin/Stores.jsx'
+import Sellers from './pages/admin/Stores.jsx'
 import Offers from './pages/admin/Offers.jsx'
 import Home from './pages/user/Home.jsx'
 import About from './pages/user/About.jsx'
@@ -44,6 +40,8 @@ import BusinessForgotPassword from './pages/business/ForgotPassword.jsx'
 import BusinessResetPassword from './pages/business/ResetPassword.jsx'
 import BusinessDashboard from './pages/business/Dashboard.jsx'
 import BusinessRequest from './pages/business/Request.jsx'
+import BusinessProducts from './pages/business/BusinessProducts.jsx'
+import BusinessInventory from './pages/business/BusinessInventory.jsx'
 import BusinessProtectedRoute from './components/BusinessProtectedRoute.jsx'
 
 export default function App() {
@@ -59,10 +57,7 @@ export default function App() {
         }
       >
         <Route index element={<Dashboard />} />
-        <Route path="products" element={<Products />} />
         <Route path="brands" element={<Brands />} />
-        <Route path="categories" element={<Categories />} />
-        <Route path="subcategories" element={<SubCategories />} />
         <Route path="billing" element={<Billing />} />
         <Route path="orders" element={<Orders />} />
         <Route path="payment-verification" element={<PaymentVerification />} />
@@ -71,9 +66,8 @@ export default function App() {
         <Route path="customers" element={<Customers />} />
         <Route path="customers/:id" element={<CustomerDetail />} />
         <Route path="settings" element={<Settings />} />
-        <Route path="inventory" element={<InventoryPage />} />
         <Route path="staff" element={<StaffManagement />} />
-        <Route path="stores" element={<Stores />} />
+        <Route path="sellers" element={<Sellers />} />
         <Route path="offers" element={<Offers />} />
       </Route>
 
@@ -84,6 +78,16 @@ export default function App() {
       <Route path="/business/dashboard" element={
         <BusinessProtectedRoute>
           <BusinessDashboard />
+        </BusinessProtectedRoute>
+      } />
+      <Route path="/business/products" element={
+        <BusinessProtectedRoute>
+          <BusinessProducts />
+        </BusinessProtectedRoute>
+      } />
+      <Route path="/business/inventory" element={
+        <BusinessProtectedRoute>
+          <BusinessInventory />
         </BusinessProtectedRoute>
       } />
 

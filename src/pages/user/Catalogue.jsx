@@ -261,8 +261,8 @@ export default function Catalogue() {
         }
 
         .ct-search-input:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.1), 0 12px 48px rgba(0,0,0,0.1);
+          border-color: #f97316;
+          box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.1), 0 12px 48px rgba(0,0,0,0.1);
           background: white;
         }
 
@@ -358,17 +358,17 @@ export default function Catalogue() {
         }
 
         .ct-category-chip:hover {
-          border-color: #3b82f6;
-          color: #3b82f6;
+          border-color: #f97316;
+          color: #f97316;
           transform: translateY(-3px);
-          box-shadow: 0 16px 40px rgba(59,130,246,0.18);
+          box-shadow: 0 16px 40px rgba(249, 115, 22, 0.18);
         }
 
         .ct-category-chip.active {
-          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
           color: white;
           border-color: transparent;
-          box-shadow: 0 18px 52px rgba(59,130,246,0.35);
+          box-shadow: 0 18px 52px rgba(249, 115, 22, 0.35);
           transform: translateY(-4px);
         }
 
@@ -396,7 +396,7 @@ export default function Catalogue() {
         .ct-title {
           font-size: clamp(22px, 4vw, 36px);
           font-weight: 900;
-          background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #f97316 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
@@ -430,8 +430,8 @@ export default function Catalogue() {
         }
 
         .ct-filter-select:focus, .ct-filter-select:hover {
-          border-color: #2563eb;
-          color: #2563eb;
+          border-color: #f97316;
+          color: #f97316;
         }
 
         .ct-grid {
@@ -515,7 +515,7 @@ export default function Catalogue() {
 
         .ct-load-btn {
           padding: 18px 56px;
-          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
           color: white;
           border: none;
           border-radius: 20px;
@@ -525,12 +525,12 @@ export default function Catalogue() {
           text-transform: uppercase;
           cursor: pointer;
           transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 14px 44px rgba(59,130,246,0.35);
+          box-shadow: 0 14px 44px rgba(249, 115, 22, 0.35);
         }
 
         .ct-load-btn:hover:not(:disabled) {
           transform: translateY(-5px) scale(1.02);
-          box-shadow: 0 22px 60px rgba(59,130,246,0.5);
+          box-shadow: 0 22px 60px rgba(249, 115, 22, 0.5);
         }
 
         .ct-load-btn:disabled {
@@ -559,7 +559,7 @@ export default function Catalogue() {
         .ct-empty-title {
           font-size: 26px;
           font-weight: 900;
-          background: linear-gradient(135deg, #0f172a 0%, #2563eb 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #f97316 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;

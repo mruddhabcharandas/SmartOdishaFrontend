@@ -72,7 +72,7 @@ export default function UserLayout() {
                 <div className="flex flex-col">
                   <span className="text-base sm:text-xl font-black tracking-tighter leading-none">
                     <span className="text-blue-700">SMART</span>
-                    <span className="text-indigo-600">ODISHA</span>
+                    <span className="text-orange-600">ODISHA</span>
                   </span>
                   <span className="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-widest mt-0.5">
                     SMART CHOICE, SMART LIFE
@@ -216,7 +216,7 @@ export default function UserLayout() {
                 <div className="flex flex-col">
                   <span className="text-2xl font-black tracking-tighter leading-none">
                     <span className="text-blue-400">SMART</span>
-                    <span className="text-indigo-400">ODISHA</span>
+                    <span className="text-orange-400">ODISHA</span>
                   </span>
                   <span className="text-sm font-semibold text-slate-400 tracking-widest mt-1.5">SMART CHOICE, SMART LIFE</span>
                 </div>
@@ -255,7 +255,7 @@ export default function UserLayout() {
                 <Link to="/business/request" className="text-sm font-semibold text-indigo-400 uppercase tracking-widest hover:text-indigo-300 transition-colors text-center sm:text-right">
                   Become a Seller
                 </Link>
-                <Link to="/business/login" className="text-sm font-semibold text-slate-400 uppercase tracking-widest hover:text-white transition-colors text-center sm:text-right">
+                <Link to="/business/login" className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 text-white text-sm font-black uppercase tracking-widest shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 hover:scale-105 transition-all text-center">
                   Seller Login
                 </Link>
                 <Link to="/privacy-policy" className="text-sm font-semibold text-slate-400 uppercase tracking-widest hover:text-white transition-colors text-center sm:text-right">

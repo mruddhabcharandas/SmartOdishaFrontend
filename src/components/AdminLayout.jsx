@@ -190,30 +190,12 @@ export default function AdminLayout() {
                   Dashboard
                 </>
               ), null, true)}
-              {link('/admin/products', (
-                <>
-                  <Icon name="prod" />
-                  Products
-                </>
-              ), 'products')}
               {link('/admin/brands', (
                 <>
                   <Icon name="cat" />
                   Brands
                 </>
               ), 'brands')}
-              {link('/admin/categories', (
-                <>
-                  <Icon name="cat" />
-                  Categories
-                </>
-              ), 'categories')}
-              {link('/admin/subcategories', (
-                <>
-                  <Icon name="cat" />
-                  Subcategories
-                </>
-              ), 'subcategories')}
               {link('/admin/billing', (
                 <>
                   <Icon name="bill" />
@@ -261,16 +243,10 @@ export default function AdminLayout() {
                   Customers
                 </>
               ), 'customers')}
-              {link('/admin/inventory', (
+              {link('/admin/sellers', (
                 <>
                   <Icon name="inv" />
-                  Inventory
-                </>
-              ), 'inventory')}
-              {link('/admin/stores', (
-                <>
-                  <Icon name="inv" />
-                  Stores
+                  Sellers
                 </>
               ), 'stores')}
               {link('/admin/staff', (

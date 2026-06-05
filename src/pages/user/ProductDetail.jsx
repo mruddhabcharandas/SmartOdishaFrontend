@@ -579,16 +579,16 @@ export default function ProductDetail() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-50 flex items-center justify-center py-8 px-3 sm:py-12 sm:px-4">
         <div className="max-w-md w-full bg-white/80 backdrop-blur-2xl rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-12 text-center border border-white/80">
-          <div className="text-4xl sm:text-5xl lg:text-7xl mb-4 sm:mb-6 bg-gradient-to-br from-blue-100 to-purple-100 w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 flex items-center justify-center rounded-full mx-auto">
+          <div className="text-4xl sm:text-5xl lg:text-7xl mb-4 sm:mb-6 bg-gradient-to-br from-orange-100 to-orange-200 w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 flex items-center justify-center rounded-full mx-auto">
             😔
           </div>
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2 sm:mb-3">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-slate-800 to-orange-600 bg-clip-text text-transparent mb-2 sm:mb-3">
             Oops!
           </h2>
           <p className="text-slate-600 mb-6 sm:mb-8 lg:mb-10 text-sm sm:text-base lg:text-lg leading-relaxed">{error}</p>
           <Link
             to="/products"
-            className="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 text-sm sm:text-base"
+            className="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold rounded-xl sm:rounded-2xl shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 text-sm sm:text-base"
           >
             Back to Products
           </Link>
@@ -646,8 +646,8 @@ export default function ProductDetail() {
         }
         
         .pd-img-main {
-          background: linear-gradient(145deg, #ffffff 0%, #f0f4ff 50%, #e8eafc 100%);
-          border: 1px solid rgba(59, 130, 246, 0.1);
+          background: linear-gradient(145deg, #ffffff 0%, #fff7ed 50%, #fed7aa 100%);
+          border: 1px solid rgba(249, 115, 22, 0.1);
           border-radius: 20px;
           overflow: hidden;
           aspect-ratio: 1;
@@ -679,7 +679,7 @@ export default function ProductDetail() {
         .pd-img-main:hover {
           transform: translateY(-4px);
           box-shadow: 0 20px 56px -20px rgba(15, 23, 42, 0.3);
-          border-color: rgba(59, 130, 246, 0.25);
+          border-color: rgba(249, 115, 22, 0.25);
         }
         
         .pd-thumbs {
@@ -688,7 +688,7 @@ export default function ProductDetail() {
           padding: 12px 0 20px;
           overflow-x: auto;
           scrollbar-width: thin;
-          scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
+          scrollbar-color: rgba(249, 115, 22, 0.3) transparent;
           -webkit-overflow-scrolling: touch;
         }
         
@@ -701,7 +701,7 @@ export default function ProductDetail() {
         }
         
         .pd-thumbs::-webkit-scrollbar-thumb {
-          background: rgba(59, 130, 246, 0.3);
+          background: rgba(249, 115, 22, 0.3);
           border-radius: 100px;
         }
         
@@ -710,7 +710,7 @@ export default function ProductDetail() {
           height: 60px;
           flex-shrink: 0;
           background: white;
-          border: 2px solid rgba(59, 130, 246, 0.12);
+          border: 2px solid rgba(249, 115, 22, 0.12);
           border-radius: 14px;
           overflow: hidden;
           cursor: pointer;
@@ -730,14 +730,14 @@ export default function ProductDetail() {
         }
         
         .pd-thumb:hover {
-          border-color: rgba(59, 130, 246, 0.35);
+          border-color: rgba(249, 115, 22, 0.35);
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+          box-shadow: 0 8px 24px rgba(249, 115, 22, 0.15);
         }
         
         .pd-thumb.on {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 8px 28px rgba(59, 130, 246, 0.25);
+          border-color: #f97316;
+          box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12), 0 8px 28px rgba(249, 115, 22, 0.25);
           transform: translateY(-3px) scale(1.02);
         }
         
@@ -813,13 +813,13 @@ export default function ProductDetail() {
         .pd-var-icon {
           width: 32px;
           height: 32px;
-          background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+          background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
           border-radius: 12px;
           display: flex;
           align-items: center;
           justify-content: center;
           font-size: 15px;
-          box-shadow: 0 3px 12px rgba(59, 130, 246, 0.12);
+          box-shadow: 0 3px 12px rgba(249, 115, 22, 0.12);
         }
         
         @media (min-width: 640px) {
@@ -839,11 +839,11 @@ export default function ProductDetail() {
         }
         
         .pd-var-selected {
-          color: #3b82f6;
+          color: #f97316;
           font-weight: 800;
           padding: 5px 10px;
           border-radius: 12px;
-          background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+          background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
           font-size: 11px;
         }
         
@@ -876,7 +876,7 @@ export default function ProductDetail() {
           min-width: 64px;
           padding: 10px 12px;
           background: white;
-          border: 2px solid rgba(59, 130, 246, 0.15);
+          border: 2px solid rgba(249, 115, 22, 0.15);
           border-radius: 12px;
           transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
@@ -898,16 +898,16 @@ export default function ProductDetail() {
         }
         
         .pd-var-btn:hover:not(.disabled):not(.on) {
-          border-color: rgba(59, 130, 246, 0.4);
-          background: linear-gradient(135deg, #f8fafc 0%, #f0f4ff 100%);
+          border-color: rgba(249, 115, 22, 0.4);
+          background: linear-gradient(135deg, #f8fafc 0%, #fff7ed 100%);
           transform: translateY(-2px);
-          box-shadow: 0 10px 28px -8px rgba(59, 130, 246, 0.25);
+          box-shadow: 0 10px 28px -8px rgba(249, 115, 22, 0.25);
         }
         
         .pd-var-btn.on {
-          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-          border-color: #3b82f6;
-          box-shadow: 0 12px 36px -12px rgba(59, 130, 246, 0.4);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+          border-color: #f97316;
+          box-shadow: 0 12px 36px -12px rgba(249, 115, 22, 0.4);
           transform: translateY(-3px);
         }
         
@@ -936,7 +936,7 @@ export default function ProductDetail() {
         .pd-var-price {
           font-size: 10px;
           font-weight: 700;
-          color: #3b82f6;
+          color: #f97316;
           letter-spacing: 0.02em;
           position: relative;
           z-index: 2;
@@ -1022,9 +1022,9 @@ export default function ProductDetail() {
         }
         
         .pd-badge-v {
-          background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
-          border: 1px solid rgba(59, 130, 246, 0.2);
-          color: #3b82f6;
+          background: linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(234, 88, 12, 0.08) 100%);
+          border: 1px solid rgba(249, 115, 22, 0.2);
+          color: #f97316;
         }
         
         .pd-badge-g {
@@ -1085,14 +1085,14 @@ export default function ProductDetail() {
         }
         
         .pd-price-block {
-          background: linear-gradient(165deg, #ffffff 0%, #f8fafc 50%, #f0f4ff 100%);
-          border: 1px solid rgba(59, 130, 246, 0.15);
+          background: linear-gradient(165deg, #ffffff 0%, #f8fafc 50%, #fff7ed 100%);
+          border: 1px solid rgba(249, 115, 22, 0.15);
           border-radius: 20px;
           padding: 18px 16px 16px;
           margin-bottom: 18px;
           position: relative;
           overflow: hidden;
-          box-shadow: 0 14px 44px -20px rgba(59, 130, 246, 0.18);
+          box-shadow: 0 14px 44px -20px rgba(249, 115, 22, 0.18);
         }
         
         @media (min-width: 640px) {
@@ -1100,7 +1100,7 @@ export default function ProductDetail() {
             border-radius: 24px;
             padding: 24px 20px 20px;
             margin-bottom: 22px;
-          }
+            }
         }
         
         .pd-price-block::before {
@@ -1110,13 +1110,13 @@ export default function ProductDetail() {
           left: 0;
           right: 0;
           height: 4px;
-          background: linear-gradient(90deg, transparent 0%, #3b82f6 25%, #8b5cf6 50%, #3b82f6 75%, transparent 100%);
+          background: linear-gradient(90deg, transparent 0%, #f97316 25%, #ea580c 50%, #f97316 75%, transparent 100%);
         }
         
         .pd-price-main {
           font-size: clamp(28px, 7vw, 48px);
           font-weight: 900;
-          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
@@ -1215,13 +1215,13 @@ export default function ProductDetail() {
         }
         
         .pd-countdown-item {
-          background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+          background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
           padding: 6px 10px;
           border-radius: 12px;
-          border: 1px solid rgba(59, 130, 246, 0.18);
+          border: 1px solid rgba(249, 115, 22, 0.18);
           min-width: 48px;
           text-align: center;
-          box-shadow: 0 3px 12px rgba(59, 130, 246, 0.1);
+          box-shadow: 0 3px 12px rgba(249, 115, 22, 0.1);
         }
         
         @media (min-width: 640px) {
@@ -1231,7 +1231,7 @@ export default function ProductDetail() {
         .pd-countdown-num {
           font-size: 16px;
           font-weight: 900;
-          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
@@ -1254,7 +1254,7 @@ export default function ProductDetail() {
           margin-top: 20px;
           background: rgba(255, 255, 255, 0.92);
           border-radius: 18px;
-          border: 1px solid rgba(59, 130, 246, 0.12);
+          border: 1px solid rgba(249, 115, 22, 0.12);
           overflow: hidden;
           box-shadow: 0 8px 28px -14px rgba(15, 23, 42, 0.1);
         }
@@ -1269,7 +1269,7 @@ export default function ProductDetail() {
           gap: 6px;
           align-items: flex-start;
           padding: 14px 14px;
-          background: linear-gradient(135deg, rgba(59, 130, 246, 0.04) 0%, rgba(139, 92, 246, 0.04) 100%);
+          background: linear-gradient(135deg, rgba(249, 115, 22, 0.04) 0%, rgba(234, 88, 12, 0.04) 100%);
         }
         
         @media (min-width: 480px) {
@@ -1302,7 +1302,7 @@ export default function ProductDetail() {
           width: 100%;
           padding: 12px 16px;
           border-radius: 14px;
-          border: 2px solid rgba(59, 130, 246, 0.18);
+          border: 2px solid rgba(249, 115, 22, 0.18);
           background: white;
           font-size: 13px;
           font-weight: 700;
@@ -1320,17 +1320,17 @@ export default function ProductDetail() {
             padding: 14px 18px;
             border-radius: 16px;
             font-size: 14px;
-          }
+            }
         }
         
         .pd-del-inp:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+          border-color: #f97316;
+          box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
         }
         
         .pd-del-check {
           width: 100%;
-          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
           color: white;
           border: none;
           padding: 12px 18px;
@@ -1341,7 +1341,7 @@ export default function ProductDetail() {
           text-transform: uppercase;
           cursor: pointer;
           transition: all 0.3s;
-          box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+          box-shadow: 0 6px 20px rgba(249, 115, 22, 0.3);
         }
         
         @media (min-width: 480px) {
@@ -1355,7 +1355,7 @@ export default function ProductDetail() {
         
         .pd-del-check:hover:not(:disabled) {
           transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+          box-shadow: 0 12px 32px rgba(249, 115, 22, 0.4);
         }
         
         .pd-del-check:disabled {
@@ -1383,7 +1383,7 @@ export default function ProductDetail() {
         .pd-btn-primary {
           flex: 1;
           min-width: 140px;
-          background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
           background-size: 200% 200%;
           color: white;
           border: none;
@@ -1396,7 +1396,7 @@ export default function ProductDetail() {
           cursor: pointer;
           font-family: 'Inter', system-ui, sans-serif;
           transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 10px 32px -10px rgba(59, 130, 246, 0.4);
+          box-shadow: 0 10px 32px -10px rgba(249, 115, 22, 0.4);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1426,7 +1426,7 @@ export default function ProductDetail() {
         
         .pd-btn-primary:hover:not(:disabled) {
           transform: translateY(-4px);
-          box-shadow: 0 18px 48px -12px rgba(59, 130, 246, 0.5);
+          box-shadow: 0 18px 48px -12px rgba(249, 115, 22, 0.5);
         }
         
         .pd-btn-primary:hover:not(:disabled)::after {
@@ -1512,8 +1512,8 @@ export default function ProductDetail() {
         
         .pd-btn-secondary {
           background: white;
-          color: #3b82f6;
-          border: 2px solid rgba(59, 130, 246, 0.2);
+          color: #f97316;
+          border: 2px solid rgba(249, 115, 22, 0.2);
           padding: 14px;
           border-radius: 16px;
           font-size: 12px;
@@ -1545,10 +1545,10 @@ export default function ProductDetail() {
         }
         
         .pd-btn-secondary:hover {
-          border-color: #3b82f6;
-          background: linear-gradient(135deg, #f8fafc 0%, #f0f4ff 100%);
+          border-color: #f97316;
+          background: linear-gradient(135deg, #f8fafc 0%, #fff7ed 100%);
           transform: translateY(-2px);
-          box-shadow: 0 10px 28px rgba(59, 130, 246, 0.18);
+          box-shadow: 0 10px 28px rgba(249, 115, 22, 0.18);
         }
         
         .pd-trust {
@@ -1556,7 +1556,7 @@ export default function ProductDetail() {
           grid-template-columns: repeat(2, 1fr);
           gap: 8px;
           padding-top: 18px;
-          border-top: 1px solid rgba(59, 130, 246, 0.08);
+          border-top: 1px solid rgba(249, 115, 22, 0.08);
           margin-top: 18px;
         }
         
@@ -1575,7 +1575,7 @@ export default function ProductDetail() {
           background: white;
           padding: 10px 8px;
           border-radius: 12px;
-          border: 1px solid rgba(59, 130, 246, 0.1);
+          border: 1px solid rgba(249, 115, 22, 0.1);
           text-align: center;
         }
         

@@ -14,7 +14,7 @@ const COMPONENTS = [
   { id: 'partners', label: 'Partners' },
   { id: 'customers', label: 'Customers' },
   { id: 'inventory', label: 'Inventory' },
-  { id: 'stores', label: 'Stores' },
+  { id: 'stores', label: 'Sellers' },
   { id: 'settings', label: 'Settings' }
 ]
 

@@ -195,12 +195,12 @@ export default function Profile() {
           setPincodeLoading(false);
         }
       }
+      
+      setAddressForm(prev => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : processedValue
+      }));
     }
-    
-    setAddressForm(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : processedValue
-    }));
   };
 
   const handleSaveProfile = async (e) => {
@@ -360,7 +360,7 @@ export default function Profile() {
       <div className="bg-blue-600 text-white py-4 px-4 shadow-lg">
         <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <button onClick={() => navigate('/')} className="text-white hover:text-gray-200">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -523,7 +523,7 @@ export default function Profile() {
                           <div className="flex items-start justify-between">
                             <div>
                               <div className="flex items-center gap-3 mb-2">
-                                <div className="font-semibold text-gray-900">{address.fullName}</div>
+                                <div className="font-bold text-gray-900">{address.fullName}</div>
                                 <span className="text-gray-500">•</span>
                                 <div className="text-gray-700">{address.phone}</div>
                                 {address.isDefault && (
@@ -536,7 +536,7 @@ export default function Profile() {
                                 <div>{address.city}, {address.district}, {address.state} - {address.pincode}</div>
                               </div>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-3">
                               <button
                                 onClick={() => handleEditAddress(address)}
                                 className="px-3 py-1.5 text-blue-600 hover:bg-blue-50 rounded text-sm font-medium"
@@ -694,7 +694,7 @@ export default function Profile() {
                         >
                           <div className="flex items-center justify-between mb-3">
                             <div className="font-semibold text-gray-900">{ticket.subject}</div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                            <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
                               ticket.status === 'Open' ? 'bg-yellow-100 text-yellow-700' : 
                               ticket.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 
                               'bg-green-100 text-green-700'
@@ -763,7 +763,7 @@ export default function Profile() {
                               value={passwordForm.newPassword}
                               onChange={handlePasswordChange}
                               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="Enter new password (min 6 characters)"
+                              placeholder="Enter new password (min 6 chars)"
                             />
                           </div>
                           <div>

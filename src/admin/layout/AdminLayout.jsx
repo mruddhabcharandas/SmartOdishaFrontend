@@ -57,7 +57,7 @@ export default function AdminLayout() {
           {link('/admin/inventory', <><Icon name="inventory"/>Inventory</>)}
           {link('/admin/customers', <><Icon name="partner"/>Customers</>)}
           {link('/admin/categories', <><Icon name="cat"/>Categories</>)}
-          {link('/admin/stores', <><Icon name="store"/>Stores</>)}
+          {link('/admin/sellers', <><Icon name="store"/>Sellers</>)}
           {link('/admin/coupons', <><Icon name="coupon"/>Coupons</>)}
           {link('/admin/partners', <><Icon name="partner"/>Partners</>)}
           {link('/admin/settings', <><Icon name="settings"/>Settings</>)}

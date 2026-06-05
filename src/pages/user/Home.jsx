@@ -126,7 +126,7 @@ export default function Home() {
           letter-spacing: -0.04em;
         }
         .hero-title .accent {
-          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 50%, #10b981 100%);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
