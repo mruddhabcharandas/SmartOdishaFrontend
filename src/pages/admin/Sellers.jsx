@@ -31,7 +31,7 @@ export default function Sellers() {
   const loadStores = async () => {
     try {
       setLoading(true)
-      const { data } = await api.get('/admin/stores')
+      const { data } = await api.get('/api/admin/stores')
       setStores(data)
     } catch (err) {
       notify(err?.response?.data?.error || 'Failed to load sellers', 'error')
@@ -76,10 +76,10 @@ export default function Sellers() {
     try {
       setLoading(true)
       if (editingStore) {
-        await api.put(`/admin/stores/${editingStore._id}`, formData)
+        await api.put(`/api/admin/stores/${editingStore._id}`, formData)
         notify('Seller updated successfully', 'success')
       } else {
-        await api.post('/admin/stores', formData)
+        await api.post('/api/admin/stores', formData)
         notify('Seller added successfully', 'success')
       }
       setShowModal(false)
@@ -126,7 +126,7 @@ export default function Sellers() {
   const deleteStore = async (storeId) => {
     if (!window.confirm('Are you sure you want to delete this seller?')) return
     try {
-      await api.delete(`/admin/stores/${storeId}`)
+      await api.delete(`/api/admin/stores/${storeId}`)
       notify('Seller deleted successfully', 'success')
       loadStores()
     } catch (err) {
