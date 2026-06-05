@@ -216,12 +216,12 @@ export default function Profile() {
           setPincodeLoading(false);
         }
       }
-      
-      setAddressForm(prev => ({
-        ...prev,
-        [name]: type === 'checkbox' ? checked : processedValue
-      }));
     }
+    
+    setAddressForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : processedValue
+    }));
   };
 
   const handleSaveProfile = async (e) => {
@@ -557,24 +557,24 @@ export default function Profile() {
                   ) : (
                     <div className="space-y-4">
                       {savedAddresses.map((address) => (
-                        <div key={address._id} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <div className="font-bold text-gray-900">{address.fullName}</div>
-                                <span className="text-gray-400">•</span>
+                        <div key={address._id} className="p-4 sm:p-5 border border-gray-100 rounded-xl hover:border-blue-200">
+                          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
+                                <div className="font-bold text-gray-900 truncate">{address.fullName}</div>
+                                <span className="text-gray-400 hidden sm:inline">•</span>
                                 <div className="text-gray-700">{address.phone}</div>
                                 {address.isDefault && (
-                                  <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Default</span>
+                                  <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full flex-shrink-0">Default</span>
                                 )}
                               </div>
-                              <div className="text-gray-600 space-y-1">
+                              <div className="text-gray-600 space-y-1 text-sm">
                                 <div>{address.addressLine1}</div>
                                 {address.addressLine2 && <div>{address.addressLine2}</div>}
                                 <div>{address.city}, {address.district}, {address.state} - {address.pincode}</div>
                               </div>
                             </div>
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-shrink-0">
                               <button
                                 onClick={() => handleEditAddress(address)}
                                 className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -598,7 +598,7 @@ export default function Profile() {
                           {!address.isDefault && (
                             <button
                               onClick={() => handleSetDefault(address._id)}
-                              className="mt-4 text-blue-600 text-sm font-medium hover:underline"
+                              className="mt-3 text-blue-600 text-sm font-medium hover:underline"
                             >
                               Set as Default
                             </button>

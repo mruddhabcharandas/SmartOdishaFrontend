@@ -654,18 +654,6 @@ export default function Home() {
             <p className="hero-desc">
               Your premium destination for quality products from trusted local stores. Shop smart, live better with exclusive deals and fast delivery across Odisha.
             </p>
-            <form onSubmit={handleSearch} className="hero-search">
-              <input
-                type="text"
-                placeholder="Search for products, brands and more..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="hero-search-input"
-              />
-              <button type="submit" className="hero-search-btn">
-                Search
-              </button>
-            </form>
             <div className="hero-cta">
               <Link to="/products" className="btn-primary">
                 Shop Now
@@ -926,6 +914,9 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap gap-4 items-center">
+              <Link to="/business/login" className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg text-white text-xs font-black uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all">
+                Seller Login
+              </Link>
               <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 rounded-lg border border-slate-700">
                 <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
                 <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest">COD Available</span>

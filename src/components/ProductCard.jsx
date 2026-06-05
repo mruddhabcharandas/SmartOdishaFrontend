@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import api from '../lib/api'
 import { getCloudinaryUrl } from '../lib/cloudinary'
 import { useCart } from '../lib/CartContext'
 
-export default function ProductCard({ p, authed, addToCart, navigate, index, setRecOpen, setRecItems }) {
-  const { refreshCart } = useCart()
+export default function ProductCard({ p, authed = false, addToCart: propAddToCart, navigate: propNavigate, index, setRecOpen, setRecItems }) {
+  const { refreshCart, addToCart: cartAddToCart } = useCart()
   const location = useLocation()
   const queryClient = useQueryClient()
+  const navigate = propNavigate || useNavigate()
+  const addToCart = propAddToCart || cartAddToCart
 
   const productIdOrSlug = p.slug || p._id
 
