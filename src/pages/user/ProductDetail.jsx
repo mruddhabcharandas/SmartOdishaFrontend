@@ -542,7 +542,7 @@ export default function ProductDetail() {
     if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.price || 0);
     const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.price || 0) > 0);
     if (activeVariants.length === 0) return safeNumber(p.price || 0);
-    return Math.min(...activeVariants.map(v => safeNumber(v.price || 0));
+    return Math.min(...activeVariants.map(v => safeNumber(v.price || 0)));
   }, [p]);
 
   const displayMrp = useMemo(() => {
