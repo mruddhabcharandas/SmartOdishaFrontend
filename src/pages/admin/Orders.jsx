@@ -395,7 +395,7 @@ export default function Orders(){
                                         </button>
                                       )}
 
-                                      {!['DELIVERED', 'CANCELLED', 'FULFILLED', 'RETURNED'].includes(o.status) && (
+                                      {!['DELIVERED', 'CANCELLED', 'FULFILLED', 'RETURNED', 'SHIPPED', 'OUT_FOR_DELIVERY'].includes(o.status) && !o.shipping?.waybill && !o.shiprocketOrderId && !o.shiprocketAwbNumber && (
                                         <button
                                           onClick={(e)=>{ e.stopPropagation(); update(o._id, 'CANCELLED').then(()=>notify('Order cancelled','success')).catch(()=>notify('Failed to cancel','error')) }}
                                           disabled={actionLoading === `${o._id}-CANCELLED`}
