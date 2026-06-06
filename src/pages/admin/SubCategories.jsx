@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
+import ImageUpload from '../../components/ImageUpload'
 
 export default function SubCategories() {
   const [items, setItems] = useState([])
   const [brands, setBrands] = useState([])
   const [categories, setCategories] = useState([])
   const [selectedBrand, setSelectedBrand] = useState('')
-  const [form, setForm] = useState({ name: '', slug: '', categoryId: '' })
+  const [form, setForm] = useState({ name: '', slug: '', categoryId: '', image: '' })
   const [editing, setEditing] = useState(null)
 
   const load = async () => {
@@ -28,7 +29,7 @@ export default function SubCategories() {
   const create = async (e) => {
     e.preventDefault()
     await api.post('/api/subcategories', form)
-    setForm({ name: '', slug: '', categoryId: '' })
+    setForm({ name: '', slug: '', categoryId: '', image: '' })
     load()
   }
 
@@ -40,7 +41,7 @@ export default function SubCategories() {
   const update = async (e) => {
     e.preventDefault()
     if (!editing) return
-    await api.put(`/api/subcategories/${editing._id}`, { name: editing.name, slug: editing.slug, categoryId: editing.categoryId, isActive: editing.isActive })
+    await api.put(`/api/subcategories/${editing._id}`, { name: editing.name, slug: editing.slug, categoryId: editing.categoryId, isActive: editing.isActive, image: editing.image })
     setEditing(null)
     load()
   }
@@ -81,6 +82,18 @@ export default function SubCategories() {
                 <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Slug</label>
                 <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 20w" value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} required />
               </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Image (Optional)</label>
+                <div className="flex items-center gap-2">
+                  <input className="flex-1 bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://..." value={form.image} onChange={e=>setForm({...form, image:e.target.value})} />
+                  <ImageUpload onUploaded={(url)=>setForm(f=>({...f, image:url}))} />
+                </div>
+                {form.image && (
+                  <div className="mt-2 h-20 w-20 rounded-xl border border-gray-100 bg-white overflow-hidden flex items-center justify-center">
+                    <img src={form.image} alt="Preview" className="h-full w-full object-contain p-2" />
+                  </div>
+                )}
+              </div>
               <button className="w-full bg-gray-900 text-white py-4 rounded-2xl text-sm font-black shadow-lg hover:bg-gray-800 transition-all transform hover:-translate-y-0.5 active:scale-95 uppercase tracking-widest">Create Subcategory</button>
             </form>
           </div>
@@ -92,9 +105,14 @@ export default function SubCategories() {
             <div className="divide-y divide-gray-50">
               {items.map(s => (
                 <div key={s._id} className="p-6 flex justify-between items-center hover:bg-gray-50/50 transition-colors cursor-pointer" onClick={() => setEditing({ ...s })}>
-                  <div>
-                    <div className="font-bold text-gray-900 capitalize">{s.name}</div>
-                    <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Category: {s.category?.name || '-'} | Slug: {s.slug}</div>
+                  <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 rounded-2xl bg-gray-50 border border-gray-100 overflow-hidden flex items-center justify-center">
+                      {s.image ? <img src={s.image} alt={s.name} className="h-full w-full object-contain p-1" /> : <span className="text-[10px] text-gray-400">No Img</span>}
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 capitalize">{s.name}</div>
+                      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Category: {s.category?.name || '-'} | Slug: {s.slug}</div>
+                    </div>
                   </div>
                   <button onClick={(e) => { e.stopPropagation(); toggle(s); }} className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${s.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-gray-50 text-gray-400 border border-gray-100'}`}>
                     {s.isActive ? 'Active' : 'Hidden'}
@@ -118,6 +136,13 @@ export default function SubCategories() {
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Slug</label>
                 <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold outline-none" value={editing.slug} onChange={e => setEditing({ ...editing, slug: e.target.value })} required />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Image</label>
+                <div className="flex items-center gap-2">
+                  <input className="flex-1 bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://..." value={editing.image || ''} onChange={e=>setEditing({...editing, image:e.target.value})} />
+                  <ImageUpload onUploaded={(url)=>setEditing(ed=>({...ed, image:url}))} />
+                </div>
               </div>
             </div>
             <div className="flex gap-3">

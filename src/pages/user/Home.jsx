@@ -11,6 +11,7 @@ export default function Home() {
   const navigate = useNavigate()
   const [offers, setOffers] = useState([])
   const [stores, setStores] = useState([])
+  const [categories, setCategories] = useState([])
   const [openFaq, setOpenFaq] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -26,6 +27,7 @@ export default function Home() {
     })
     api.get('/api/offers?activeOnly=true').then(({ data }) => setOffers(data || [])).catch(() => setOffers([]))
     api.get('/api/public/stores').then(({ data }) => setStores(data || [])).catch(() => setStores([]))
+    api.get('/api/categories?active=true').then(({ data }) => setCategories(data || [])).catch(() => setCategories([]))
   }, [])
 
   const faqs = [
@@ -730,6 +732,43 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Categories */}
+      {categories.length > 0 && (
+        <section className="section-wrapper">
+          <div className="section-header">
+            <div className="section-title-group">
+              <span className="section-eyebrow">Browse</span>
+              <h2 className="section-title">Shop by Category</h2>
+              <p className="section-subtitle">Explore products by category for easier shopping</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            {categories.map((cat) => (
+              <Link
+                key={cat._id}
+                to={`/products?category=${cat._id}`}
+                className="group bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:border-blue-200 transition-all duration-300 flex flex-col items-center gap-3"
+              >
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center border border-blue-100 overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                  {cat.image ? (
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      className="w-full h-full object-contain p-2"
+                    />
+                  ) : (
+                    <span className="text-2xl">🏷️</span>
+                  )}
+                </div>
+                <div className="text-center">
+                  <div className="font-bold text-gray-900 text-sm capitalize">{cat.name}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Popular Stores */}
       {stores.length > 0 && (

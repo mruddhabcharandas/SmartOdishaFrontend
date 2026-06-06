@@ -95,6 +95,12 @@ export default function Catalogue() {
     staleTime: 1000 * 60 * 60 * 24
   })
 
+  const { data: subCategories = [] } = useQuery({
+    queryKey: ['subCategories', category],
+    queryFn: () => category ? api.get('/api/subcategories', { params: { category, active: true } }).then(res => res.data || []) : [],
+    staleTime: 1000 * 60 * 60 * 24
+  })
+
   const { data: stores = [] } = useQuery({
     queryKey: ['stores'],
     queryFn: () => api.get('/api/public/stores').then(res => res.data || []),
@@ -610,10 +616,30 @@ export default function Catalogue() {
           ))}
         </div>
 
+        {category && subCategories.length > 0 && (
+          <div className="ct-categories">
+            <button
+              className={`ct-category-chip${subCategory === '' ? ' active' : ''}`}
+              onClick={() => setSubCategory('')}
+            >
+              All {categories.find(c => c._id === category)?.name}
+            </button>
+            {subCategories.map((s) => (
+              <button
+                key={s._id}
+                className={`ct-category-chip${subCategory === s._id ? ' active' : ''}`}
+                onClick={() => setSubCategory(s._id)}
+              >
+                {capitalizeText(s.name)}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="ct-header-section">
           <div>
             <h1 className="ct-title">
-              {q ? `Search: "${q}"` : (category ? categories.find(c => c._id === category)?.name : 'All Products')}
+              {q ? `Search: "${q}"` : (subCategory ? subCategories.find(s => s._id === subCategory)?.name : (category ? categories.find(c => c._id === category)?.name : 'All Products'))}
             </h1>
             <div className="ct-count">
               {total} {total === 1 ? 'product' : 'products'} available

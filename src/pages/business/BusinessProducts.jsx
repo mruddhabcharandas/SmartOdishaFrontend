@@ -133,7 +133,7 @@ export default function BusinessProducts() {
       specifications: Array.isArray(p.specifications) ? p.specifications.map(s => ({ key: s.key || '', value: s.value || '' })).filter(s => s.key && s.value) : [],
       specKey: '',
       specValue: '',
-      variantDisplayType: p.variantDisplayType || 'selector'
+      variantDisplayType: 'selector'
     }
     setEditing(ed)
     return ed
@@ -418,13 +418,7 @@ export default function BusinessProducts() {
                     </div>
                   </div>
 
-                  <div className="space-y-1 col-span-2">
-                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Store Section (Optional)</label>
-                    <select className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none appearance-none" value={form.section} onChange={e => setForm({ ...form, section: e.target.value })}>
-                      <option value="">Select section</option>
-                      {(myStore?.sections || []).map(sec => <option key={sec} value={sec}>{sec}</option>)}
-                    </select>
-                  </div>
+
 
                   <div className="grid grid-cols-1 gap-3">
                     <div className="space-y-1">
@@ -550,13 +544,7 @@ export default function BusinessProducts() {
                 </div>
                 <p className="text-[9px] text-gray-400 ml-1">Manage stock via Inventory page or stock adjustment.</p>
               </div>
-              <div className="space-y-1 col-span-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Store Section (Optional)</label>
-                <select className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none appearance-none" value={editing.section || ''} onChange={e => setEditing({ ...editing, section: e.target.value })}>
-                  <option value="">Select section</option>
-                  {(myStore?.sections || []).map(sec => <option key={sec} value={sec}>{sec}</option>)}
-                </select>
-              </div>
+
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">GST %</label>
                 <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="GST %" value={editing.gst} onChange={e => setEditing({ ...editing, gst: e.target.value })} />
@@ -570,23 +558,7 @@ export default function BusinessProducts() {
                 <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="e.g. 8517" value={editing.hsnCode || ''} onChange={e => setEditing({ ...editing, hsnCode: e.target.value })} />
               </div>
 
-              <div className="flex items-center justify-between p-3 bg-gray-50/50 rounded-2xl border border-gray-100 mt-1 md:col-span-3">
-                <div>
-                  <div className="text-[10px] font-bold text-gray-500 uppercase ml-1">Variant Display Style</div>
-                  <div className="text-[10px] text-gray-400 ml-1">{editing.variantDisplayType === 'matrix' ? 'Bulk Matrix View (Grid)' : 'Standard Variant Selector (Dropdown)'}</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setEditing(e => ({ ...e, variantDisplayType: e.variantDisplayType === 'matrix' ? 'selector' : 'matrix' }))}
-                  className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none ${editing.variantDisplayType === 'matrix' ? 'bg-indigo-600' : 'bg-gray-200'}`}
-                >
-                  <span
-                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${editing.variantDisplayType === 'matrix' ? 'translate-x-9' : 'translate-x-1'}`}
-                  />
-                  <span className="absolute left-2 text-[8px] font-bold text-white uppercase">{editing.variantDisplayType === 'matrix' ? 'MTX' : ''}</span>
-                  <span className="absolute right-2 text-[8px] font-bold text-gray-400 uppercase">{editing.variantDisplayType === 'selector' ? 'SEL' : ''}</span>
-                </button>
-              </div>
+
 
               <div className="space-y-1 md:col-span-3">
                 <p className="text-[11px] text-gray-500 bg-violet-50/80 border border-violet-100 rounded-xl px-3 py-2">Option SKUs and variant stock are managed in <span className="font-bold text-violet-700">Manage Variants</span>, not here.</p>

@@ -42,17 +42,18 @@ api.interceptors.response.use(
       const isPartner = localStorage.getItem('partnerToken') || location.pathname.startsWith('/partner')
       const isBusiness = localStorage.getItem('storeToken') || location.pathname.startsWith('/business')
       
-      // Only clear relevant tokens based on route
+      // Clear only irrelevant tokens based on role
       if (!isPartner && !isBusiness) {
+        // User role - clear all except maybe nothing?
         localStorage.removeItem('token')
         localStorage.removeItem('user')
         localStorage.removeItem('userPhone')
       }
-      if (!isBusiness) {
+      if (!isPartner) {
         localStorage.removeItem('partnerToken')
         localStorage.removeItem('partnerData')
       }
-      if (!isPartner && !isBusiness) {
+      if (!isBusiness) {
         localStorage.removeItem('storeToken')
         localStorage.removeItem('storeName')
       }
