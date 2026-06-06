@@ -127,7 +127,24 @@ export default function ProductDetail() {
 
   const { data: similarProducts = [] } = useQuery({
     queryKey: ['recommendations', idOrSlug],
-    queryFn: () => api.get(`/api/products/${idOrSlug}/recommendations?limit=8`).then(res => res.data || []),
+    queryFn: async () => {
+      try {
+        const res = await api.get(`/api/products/${idOrSlug}/recommendations?limit=8`);
+        if (res.data && res.data.length > 0) return res.data;
+        
+        // Fallback: get random products if no specific recommendations
+        const fallbackRes = await api.get('/api/products?limit=8');
+        return fallbackRes.data?.items || [];
+      } catch (err) {
+        // If both fail, get fallback products
+        try {
+          const fallbackRes = await api.get('/api/products?limit=8');
+          return fallbackRes.data?.items || [];
+        } catch {
+          return [];
+        }
+      }
+    },
     enabled: !!idOrSlug,
     staleTime: 1000 * 60 * 60,
   });
@@ -1987,16 +2004,14 @@ export default function ProductDetail() {
         </div>
 
         {/* Similar Products */}
-        {similarProducts.length > 0 && (
-          <div className="pd-similar">
-            <h3 className="pd-similar-title">Recommended for You</h3>
-            <div className="pd-similar-grid">
-              {similarProducts.slice(0, 4).map((product, i) => (
-                <ProductCard key={i} p={product} />
-              ))}
-            </div>
+        <div className="pd-similar">
+          <h3 className="pd-similar-title">Recommended for You</h3>
+          <div className="pd-similar-grid">
+            {(similarProducts || []).map((product, i) => (
+              <ProductCard key={i} p={product} />
+            ))}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Sticky CTA for mobile */}

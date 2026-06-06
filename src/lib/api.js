@@ -24,7 +24,8 @@ function isCredentialAuthRequest(config) {
     '/api/auth/customer/verify-otp',
     '/api/auth/customer/forgot-password',
     '/api/auth/customer/reset-password',
-    '/api/public/partner/login'
+    '/api/public/partner/login',
+    '/api/stores/login'
   ]
   return suffixes.some((s) => p === s || p.endsWith(s))
 }
@@ -51,7 +52,7 @@ api.interceptors.response.use(
         localStorage.removeItem('partnerToken')
         localStorage.removeItem('partnerData')
       }
-      if (!isPartner) {
+      if (!isPartner && !isBusiness) {
         localStorage.removeItem('storeToken')
         localStorage.removeItem('storeName')
       }

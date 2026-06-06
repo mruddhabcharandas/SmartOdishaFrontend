@@ -370,7 +370,7 @@ export default function Home() {
         .section-title {
           font-size: clamp(24px, 4vw, 36px);
           font-weight: 900;
-          color: #0f172a;
+          color: #3b82f6;
           letter-spacing: -0.03em;
           margin: 0;
         }
