@@ -1982,8 +1982,9 @@ export default function ProductDetail() {
             <h3 className="pd-similar-title">Recommended for You</h3>
             <div className="pd-similar-grid">
               {similarProducts.slice(0, 4).map((product, i) => (
-              <ProductCard key={i} p={product} />
-            ))}
+                <ProductCard key={i} p={product} />
+              ))}
+            </div>
           </div>
         )}
       </div>
