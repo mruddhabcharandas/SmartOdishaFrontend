@@ -1805,7 +1805,7 @@ export default function ProductDetail() {
                             <button
                               key={optIdx}
                               className={`pd-var-btn ${isOn ? 'on' : ''} ${!enabled ? 'disabled' : ''}`}
-                              onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal)}))}
+                              onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal)})))}
                               disabled={!enabled}
                             >
                               {isColor ? (
