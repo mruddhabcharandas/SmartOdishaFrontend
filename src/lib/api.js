@@ -37,16 +37,24 @@ api.interceptors.response.use(
     const skipLogout = isCredentialAuthRequest(err.config)
     if ((s === 401 || code === 'invalid_token') && !skipLogout) {
       try { sessionStorage.setItem('postLoginRedirect', location.pathname + location.search) } catch {}
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      localStorage.removeItem('userPhone')
       
       const isPartner = localStorage.getItem('partnerToken') || location.pathname.startsWith('/partner')
       const isBusiness = localStorage.getItem('storeToken') || location.pathname.startsWith('/business')
-      localStorage.removeItem('partnerToken')
-      localStorage.removeItem('partnerData')
-      localStorage.removeItem('storeToken')
-      localStorage.removeItem('storeName')
+      
+      // Only clear relevant tokens based on route
+      if (!isPartner && !isBusiness) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        localStorage.removeItem('userPhone')
+      }
+      if (!isBusiness) {
+        localStorage.removeItem('partnerToken')
+        localStorage.removeItem('partnerData')
+      }
+      if (!isPartner) {
+        localStorage.removeItem('storeToken')
+        localStorage.removeItem('storeName')
+      }
 
       if (location.pathname.startsWith('/admin')) location.href = '/admin/login'
       else if (isPartner) location.href = '/partner'

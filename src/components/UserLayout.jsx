@@ -149,9 +149,12 @@ export default function UserLayout() {
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="text-xs font-semibold text-slate-400 hover:text-red-400 transition-colors"
+                      className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-800/70 rounded-xl transition-all"
                     >
-                      Logout
+                      <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M16 17l5-5m0 0l-5-5m5 5H9" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </button>
                   </div>
                 ) : (
@@ -176,7 +179,7 @@ export default function UserLayout() {
                   <path d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 {wishlistCount > 0 && (
-                  <span className="absolute top-0 right-0 h-4.5 w-4.5 flex items-center justify-center text-[9px] font-black text-white bg-orange-500 rounded-full shadow-lg shadow-orange-900/50">
+                  <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-black text-white bg-gradient-to-br from-orange-500 to-red-500 rounded-full shadow-lg shadow-orange-900/50">
                     {wishlistCount}
                   </span>
                 )}
@@ -193,7 +196,7 @@ export default function UserLayout() {
                   <circle cx="17" cy="19" r="1.4" fill="currentColor" />
                 </svg>
                 {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 h-4.5 w-4.5 flex items-center justify-center text-[9px] font-black text-white bg-orange-500 rounded-full shadow-lg shadow-orange-900/50">
+                  <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-black text-white bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full shadow-lg shadow-blue-900/50">
                     {cartCount}
                   </span>
                 )}

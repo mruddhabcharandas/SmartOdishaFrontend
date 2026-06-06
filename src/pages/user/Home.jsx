@@ -394,33 +394,33 @@ export default function Home() {
         }
         .store-card {
           background: white;
-          border-radius: 16px;
+          border-radius: 20px;
           overflow: hidden;
           cursor: pointer;
           text-decoration: none;
           color: #0f172a;
           transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 6px 20px -10px rgba(15,23,42,0.1);
-          border: 1px solid rgba(15,23,42,0.06);
+          box-shadow: 0 4px 24px rgba(15,23,42,0.08);
+          border: 1px solid rgba(59, 130, 246, 0.1);
           display: flex;
           flex-direction: column;
           position: relative;
         }
         .store-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 40px -20px rgba(59,130,246,0.25);
-          border-color: rgba(59, 130, 246, 0.25);
+          transform: translateY(-6px);
+          box-shadow: 0 16px 48px rgba(59,130,246,0.2);
+          border-color: rgba(59,130,246,0.3);
         }
         .store-image-container {
           width: 100%;
           aspect-ratio: 16/10;
-          background: linear-gradient(135deg, #dbeafe 0%, #c7d2fe 50%, #eff6ff 100%);
+          background: linear-gradient(145deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
           display: flex;
           align-items: center;
           justify-content: center;
           position: relative;
           overflow: hidden;
-          padding: 12px;
+          padding: 16px;
         }
         .store-image {
           width: 100%;
@@ -431,13 +431,13 @@ export default function Home() {
           display: flex;
         }
         .store-content {
-          padding: 12px 10px;
+          padding: 16px;
           display: flex;
           flex-direction: column;
-          gap: 4px;
+          gap: 8px;
         }
         .store-name {
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 800;
           color: #0f172a;
           letter-spacing: -0.02em;
@@ -445,12 +445,16 @@ export default function Home() {
         .store-badge {
           display: inline-flex;
           align-items: center;
-          gap: 4px;
+          gap: 6px;
           font-size: 10px;
           font-weight: 800;
-          color: #10b981;
+          color: #059669;
           text-transform: uppercase;
           letter-spacing: 0.1em;
+          background: #d1fae5;
+          padding: 4px 10px;
+          border-radius: 999px;
+          width: fit-content;
         }
 
         .offers {

@@ -60,48 +60,52 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
 
   return (
     <div
-      className="pc-card"
+      className="pc-card group"
       onClick={() => navigate(`/products/${productIdOrSlug}`)}
       onMouseEnter={prefetchProduct}
       style={{
         background: 'white',
-        borderRadius: '16px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+        borderRadius: '24px',
+        boxShadow: '0 4px 24px rgba(15,23,42,0.06)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        transition: 'all 0.2s',
+        transition: 'all 0.3s cubic-bezier(0.4,0,0.2,1)',
         cursor: 'pointer',
-        position: 'relative'
+        position: 'relative',
+        border: '1px solid rgba(148,163,184,0.1)'
       }}
     >
       <style jsx>{`
         .pc-card:hover {
-          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+          box-shadow: 0 12px 40px rgba(59,130,246,0.15);
+          transform: translateY(-4px);
         }
       `}</style>
 
       <div style={{
         position: 'relative',
         aspectRatio: '1/1',
-        background: '#f8fafc',
+        background: 'linear-gradient(145deg, #f8fafc, #eff6ff)',
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        padding: '16px'
       }}>
         {discount > 0 && (
           <div style={{
             position: 'absolute',
-            top: '8px',
-            left: '8px',
-            background: '#10b981',
+            top: '12px',
+            left: '12px',
+            background: 'linear-gradient(135deg, #10b981, #059669)',
             color: 'white',
-            padding: '2px 8px',
+            padding: '4px 12px',
             borderRadius: '100px',
-            fontSize: '10px',
-            fontWeight: 700,
-            zIndex: 10
+            fontSize: '11px',
+            fontWeight: 800,
+            zIndex: 10,
+            boxShadow: '0 4px 12px rgba(16,185,129,0.3)'
           }}>
             {discount}% OFF
           </div>
@@ -116,27 +120,27 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
               width: '100%',
               height: '100%',
               objectFit: 'contain',
-              transition: 'transform 0.3s'
+              transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)'
             }}
           />
         ) : (
-          <span style={{ fontSize: '36px', opacity: '0.3' }}>📦</span>
+          <span style={{ fontSize: '48px', opacity: '0.2' }}>📦</span>
         )}
       </div>
 
       <div style={{
-        padding: '10px 12px 12px',
+        padding: '16px',
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        gap: '6px'
+        gap: '8px'
       }}>
         <Link
           to={`/products/${productIdOrSlug}`}
           onClick={e => e.stopPropagation()}
           style={{
-            fontSize: '13px',
-            fontWeight: 500,
+            fontSize: '14px',
+            fontWeight: 700,
             color: '#0f172a',
             lineHeight: 1.4,
             display: '-webkit-box',
@@ -152,30 +156,32 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '4px',
+          gap: '6px',
           fontSize: '12px',
-          color: '#94a3b8'
+          color: '#64748b'
         }}>
           <span style={{ color: '#f59e0b' }}>★★★★☆</span>
-          <span>4.3</span>
+          <span style={{ fontWeight: 600 }}>4.3</span>
         </div>
 
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: '10px',
           marginTop: 'auto'
         }}>
           <span style={{
-            fontSize: '16px',
-            fontWeight: 700,
-            color: '#0f172a'
+            fontSize: '18px',
+            fontWeight: 900,
+            background: 'linear-gradient(135deg, #3b82f6, #4f46e5)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
           }}>
             ₹{Number(minPrice).toLocaleString()}
           </span>
           {displayMrp > minPrice && (
             <span style={{
-              fontSize: '11px',
+              fontSize: '12px',
               fontWeight: 500,
               color: '#94a3b8',
               textDecoration: 'line-through'
@@ -189,19 +195,21 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           disabled={!authed || totalStock <= 0}
           style={{
             width: '100%',
-            padding: '8px 12px',
-            borderRadius: '10px',
-            background: totalStock <= 0 ? '#e2e8f0' : '#0f172a',
+            padding: '12px 16px',
+            borderRadius: '16px',
+            background: totalStock <= 0 ? '#e2e8f0' : 'linear-gradient(135deg, #3b82f6, #4f46e5)',
             color: totalStock <= 0 ? '#94a3b8' : 'white',
             border: 'none',
-            fontSize: '12px',
-            fontWeight: 600,
+            fontSize: '13px',
+            fontWeight: 800,
             cursor: totalStock <= 0 ? 'not-allowed' : 'pointer',
-            marginTop: '6px',
+            marginTop: '10px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '4px'
+            gap: '8px',
+            boxShadow: totalStock <= 0 ? 'none' : '0 6px 20px rgba(59,130,246,0.35)',
+            transition: 'all 0.2s'
           }}
           onClick={async e => {
             e.stopPropagation()
@@ -228,7 +236,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
             }
           }}
         >
-          {p.variants?.length > 0 ? 'View Product' : '🛒 Add'}
+          {p.variants?.length > 0 ? '👁️ View Product' : '🛒 Add to Cart'}
         </button>
       </div>
     </div>

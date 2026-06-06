@@ -244,6 +244,49 @@ export default function ProductDetail() {
     });
   }, [p, selected, variantAttrs]);
 
+  const minPrice = useMemo(() => {
+    const safeNumber = (val) => {
+      const num = Number(val);
+      return isNaN(num) || !isFinite(num) ? 0 : num;
+    };
+    if (!p) return 0;
+    if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.price || 0);
+    const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.price || 0) > 0);
+    if (activeVariants.length === 0) return safeNumber(p.price || 0);
+    return Math.min(...activeVariants.map(v => safeNumber(v.price || 0)));
+  }, [p]);
+
+  const currentPrice = matchedVariant?.price ?? p?.price;
+  const currentMrp = matchedVariant?.mrp ?? p?.mrp;
+  const currentStock = matchedVariant?.stock ?? p?.stock;
+  const isAvailable = currentStock > 0;
+
+  const displayMrp = useMemo(() => {
+    const safeNumber = (val) => {
+      const num = Number(val);
+      return isNaN(num) || !isFinite(num) ? 0 : num;
+    };
+    if (!p) return 0;
+    if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.mrp || p.price || 0);
+    const variantWithMinPrice = p.variants.find(v => v.isActive !== false && safeNumber(v.price || 0) === minPrice);
+    return safeNumber(variantWithMinPrice?.mrp || p.mrp || minPrice || 0);
+  }, [p, minPrice]);
+
+  const discount = displayMrp > minPrice ? Math.round(((displayMrp - minPrice) / displayMrp) * 100) : 0;
+
+  const totalStock = p && Array.isArray(p.variants) && p.variants.length > 0
+    ? p.variants.filter(v => v.isActive !== false).reduce((sum, v) => sum + (v.stock || 0), 0)
+    : (p?.stock || 0);
+
+  const stockStRaw = getStockStatus(currentStock ?? totalStock);
+  const stockSt = { ...stockStRaw, text: String(stockStRaw.text || '').includes('Only') ? 'Limited Stock' : stockStRaw.text };
+
+  const canAddToCart = variantAttrs.every(attr => !!selected[attr.toLowerCase().trim()]) && !!matchedVariant && isAvailable;
+
+  const hasHighlights = p && Array.isArray(p.highlights) && p.highlights.length > 0;
+  const hasSpecifications = p && Array.isArray(p.specifications) && p.specifications.length > 0;
+  const hasDescription = p?.description?.length > 0;
+
   useEffect(() => {
     setImgLoading(true);
   }, [activeImg, activeVariant, matchedVariant]);
@@ -579,48 +622,7 @@ export default function ProductDetail() {
     });
   };
 
-  const currentPrice = matchedVariant?.price ?? p?.price;
-  const currentMrp = matchedVariant?.mrp ?? p?.mrp;
-  const currentStock = matchedVariant?.stock ?? p?.stock;
-  const isAvailable = currentStock > 0;
 
-  const canAddToCart = variantAttrs.every(attr => !!selected[attr.toLowerCase().trim()]) && !!matchedVariant && isAvailable;
-
-  const minPrice = useMemo(() => {
-    const safeNumber = (val) => {
-      const num = Number(val);
-      return isNaN(num) || !isFinite(num) ? 0 : num;
-    };
-    if (!p) return 0;
-    if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.price || 0);
-    const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.price || 0) > 0);
-    if (activeVariants.length === 0) return safeNumber(p.price || 0);
-    return Math.min(...activeVariants.map(v => safeNumber(v.price || 0)));
-  }, [p]);
-
-  const displayMrp = useMemo(() => {
-    const safeNumber = (val) => {
-      const num = Number(val);
-      return isNaN(num) || !isFinite(num) ? 0 : num;
-    };
-    if (!p) return 0;
-    if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.mrp || p.price || 0);
-    const variantWithMinPrice = p.variants.find(v => v.isActive !== false && safeNumber(v.price || 0) === minPrice);
-    return safeNumber(variantWithMinPrice?.mrp || p.mrp || minPrice || 0);
-  }, [p, minPrice]);
-
-  const discount = displayMrp > minPrice ? Math.round(((displayMrp - minPrice) / displayMrp) * 100) : 0;
-
-  const totalStock = p && Array.isArray(p.variants) && p.variants.length > 0
-    ? p.variants.filter(v => v.isActive !== false).reduce((sum, v) => sum + (v.stock || 0), 0)
-    : (p?.stock || 0);
-
-  const stockStRaw = getStockStatus(currentStock ?? totalStock);
-  const stockSt = { ...stockStRaw, text: String(stockStRaw.text || '').includes('Only') ? 'Limited Stock' : stockStRaw.text };
-
-  const hasHighlights = p && Array.isArray(p.highlights) && p.highlights.length > 0;
-  const hasSpecifications = p && Array.isArray(p.specifications) && p.specifications.length > 0;
-  const hasDescription = p?.description?.length > 0;
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) { navigate('/login', { state: { from: location.pathname + location.search } }); return; }

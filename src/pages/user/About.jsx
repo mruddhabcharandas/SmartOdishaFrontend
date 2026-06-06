@@ -58,56 +58,80 @@ export default function About() {
         * { box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; }
         .about-page { font-family: 'Inter', sans-serif; }
+        
+        @keyframes float {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        
+        @keyframes gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        
+        .floating { animation: float 6s ease-in-out infinite; }
+        .gradient-bg {
+          background-size: 200% 200%;
+          animation: gradient 8s ease infinite;
+        }
       `}</style>
 
       {/* Hero */}
-      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-white/10 backdrop-blur border border-white/20 mb-8">
-            <span className="text-2xl">✨</span>
-            <span className="text-sm font-bold uppercase tracking-widest">How It Works</span>
+      <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-white overflow-hidden relative">
+        {/* Animated background elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <div className="absolute -top-20 -left-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl floating"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl floating" style={{ animationDelay: '3s' }}></div>
+        </div>
+        
+        <div className="max-w-7xl mx-auto text-center relative z-10">
+          <div className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 mb-10 shadow-2xl">
+            <span className="text-3xl">✨</span>
+            <span className="text-sm font-black uppercase tracking-widest">How It Works</span>
           </div>
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-tight mb-6">
-            Shop Smart, Live Better with <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">SmartOdisha</span>
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black leading-tight mb-8">
+            Shop Smart, Live Better with <span className="bg-gradient-to-r from-blue-300 via-indigo-300 to-purple-300 bg-clip-text text-transparent gradient-bg">SmartOdisha</span>
           </h1>
-          <p className="text-xl sm:text-2xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl sm:text-2xl lg:text-3xl text-slate-300 max-w-4xl mx-auto leading-relaxed font-medium">
             Your one-stop destination for quality products from trusted local stores across Odisha. Here's how it all works.
           </p>
         </div>
       </section>
 
       {/* Steps */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid gap-8">
+      <section className="py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid gap-12">
             {sections.map((section, index) => (
-              <div 
-                key={section.id} 
-                className={`p-8 sm:p-12 rounded-3xl bg-white shadow-2xl shadow-slate-200/50 border border-slate-100 transition-all duration-500 hover:shadow-3xl hover:-translate-y-2 ${index % 2 === 1 ? 'md:flex-row-reverse' : ''}`}
+              <div
+                key={section.id}
+                className="p-10 sm:p-16 rounded-[32px] bg-white shadow-2xl shadow-slate-300/40 border border-slate-100 transition-all duration-700 hover:shadow-[0_32px_64px_-12px_rgba(59,130,246,0.15)] hover:-translate-y-4"
               >
-                <div className="grid md:grid-cols-2 gap-10 items-center">
-                  <div className="flex justify-center">
-                    <div className="w-48 h-48 rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-7xl shadow-2xl shadow-blue-300/50">
-                      {section.icon}
+                <div className="grid md:grid-cols-2 gap-16 items-center">
+                  <div className={`flex justify-center ${index % 2 === 1 ? 'md:order-2' : ''}`}>
+                    <div className="w-56 h-56 rounded-[32px] bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 flex items-center justify-center text-8xl shadow-2xl shadow-blue-400/50 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+                      <span className="relative z-10">{section.icon}</span>
                     </div>
                   </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg">
+                  <div className={index % 2 === 1 ? 'md:order-1' : ''}>
+                    <div className="flex items-center gap-4 mb-6">
+                      <span className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-300/40">
                         {index + 1}
                       </span>
-                      <h3 className="text-3xl font-black text-slate-900">{section.title}</h3>
+                      <h3 className="text-3xl sm:text-4xl font-black text-slate-900">{section.title}</h3>
                     </div>
-                    <p className="text-slate-600 text-lg mb-6 leading-relaxed">
+                    <p className="text-slate-600 text-xl mb-8 leading-relaxed">
                       {section.description}
                     </p>
-                    <ul className="space-y-3">
+                    <ul className="space-y-4">
                       {section.features.map((feature, i) => (
-                        <li key={i} className="flex items-center gap-3">
-                          <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                        <li key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100">
+                          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white font-bold shadow-md">
                             ✓
                           </div>
-                          <span className="text-slate-700 font-semibold">{feature}</span>
+                          <span className="text-slate-800 font-bold text-lg">{feature}</span>
                         </li>
                       ))}
                     </ul>
@@ -120,11 +144,11 @@ export default function About() {
       </section>
 
       {/* Features Grid */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-black text-slate-900 mb-4">Why Choose SmartOdisha?</h2>
-            <p className="text-xl text-slate-600">Experience the best of local shopping with modern convenience</p>
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white to-blue-50/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 mb-6">Why Choose SmartOdisha?</h2>
+            <p className="text-xl sm:text-2xl text-slate-600 font-medium">Experience the best of local shopping with modern convenience</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
@@ -133,10 +157,10 @@ export default function About() {
               { icon: '🔒', title: 'Secure Payments', desc: '100% secure transactions' },
               { icon: '↩️', title: 'Easy Returns', desc: 'Hassle-free return policy' }
             ].map((item, i) => (
-              <div key={i} className="p-8 rounded-3xl bg-gradient-to-br from-slate-50 to-blue-50 border border-slate-100 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
-                <div className="text-5xl mb-6">{item.icon}</div>
-                <h4 className="text-2xl font-black text-slate-900 mb-3">{item.title}</h4>
-                <p className="text-slate-600">{item.desc}</p>
+              <div key={i} className="p-10 rounded-[32px] bg-gradient-to-br from-white to-blue-50 border border-blue-100 shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-500 group">
+                <div className="text-6xl mb-8 group-hover:scale-110 transition-transform duration-300">{item.icon}</div>
+                <h4 className="text-2xl sm:text-3xl font-black text-slate-900 mb-4">{item.title}</h4>
+                <p className="text-slate-600 text-lg font-medium">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -144,17 +168,22 @@ export default function About() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl sm:text-5xl font-black mb-6">Ready to Start Shopping?</h2>
-          <p className="text-xl text-blue-100 mb-10">Discover amazing products from local stores across Odisha</p>
-          <Link 
-            to="/products" 
-            className="inline-flex items-center gap-4 px-10 py-5 bg-white text-blue-600 rounded-2xl font-black text-xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300"
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-700 text-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+          <div className="absolute -top-20 -left-20 w-96 h-96 bg-white/10 rounded-full blur-3xl floating"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl floating" style={{ animationDelay: '3s' }}></div>
+        </div>
+        
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black mb-8">Ready to Start Shopping?</h2>
+          <p className="text-xl sm:text-2xl text-blue-100 mb-12 font-medium">Discover amazing products from local stores across Odisha</p>
+          <Link
+            to="/products"
+            className="inline-flex items-center gap-6 px-12 py-6 bg-white text-blue-600 rounded-[24px] font-black text-2xl shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300"
           >
             Shop Now
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24" className="font-bold">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
         </div>
