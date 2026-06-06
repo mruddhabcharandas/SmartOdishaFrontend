@@ -1687,18 +1687,19 @@ export default function ProductDetail() {
               <div className="pd-thumbs">
                 {imgs.map((img, i) => (
                   <button
-                  key={i}
-                  className={`pd-thumb ${i === activeImg ? 'on' : ''}`}
-                  onClick={() => setActiveImg(i)}
-                >
-                  <img
-                    src={getCloudinaryUrl(img, 200)}
-                    alt={`${p.name} - View ${i + 1}`}
-                  />
-                </button>
-              ))}
-            </div>
-          )}
+                    key={i}
+                    className={`pd-thumb ${i === activeImg ? 'on' : ''}`}
+                    onClick={() => setActiveImg(i)}
+                  >
+                    <img
+                      src={getCloudinaryUrl(img, 200)}
+                      alt={p.name + ' - View ' + (i + 1)}
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Right: Product Info */}
           <div className="pd-info">
