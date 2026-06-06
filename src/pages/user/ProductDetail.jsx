@@ -486,14 +486,14 @@ export default function ProductDetail() {
 
   useEffect(() => {
     if (!p) return;
-    setSEO(`${p.name} | SmartOdisha`, `Buy ${p.name} at best prices with fast delivery across Odisha.`);
+    setSEO(p.name + ' | SmartOdisha', 'Buy ' + p.name + ' at best prices with fast delivery across Odisha.');
     const cleanup = injectJsonLd({
       '@context': 'https://schema.org/', '@type': 'Product', name: p.name,
       brand: { '@type': 'Brand', name: p.brand?.name || p.brand || 'SmartOdisha' },
       image: (p.images || []).map(i => i.url), category: p.category?.name || p.category || 'General',
       offers: {
         '@type': 'Offer', priceCurrency: 'INR', price: String(p.price || 0),
-        availability: p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', url: `${window.location.origin}/products/${p.slug || p._id}`
+        availability: p.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', url: window.location.origin + '/products/' + (p.slug || p._id)
       },
       aggregateRating: { '@type': 'AggregateRating', ratingValue: String(p.ratingAvg || 0), reviewCount: String(p.ratingCount || 0) }
     });
@@ -630,7 +630,7 @@ export default function ProductDetail() {
     if (ok) {
       await refreshCart();
       try {
-        const { data } = await api.get(`/api/recommendations/frequently-bought/${p._id}');
+        const { data } = await api.get('/api/recommendations/frequently-bought/' + p._id);
         const filtered = (data || []).filter(item => (item._id || item.id) !== p._id);
         setRecItems(filtered);
         if (filtered.length > 0) setRecOpen(true);
@@ -661,10 +661,10 @@ export default function ProductDetail() {
 
   const handleShare = async () => {
     try {
-      const shareUrl = `${window.location.origin}/products/${p.slug || p._id}`;
+      const shareUrl = window.location.origin + '/products/' + (p.slug || p._id);
       const shareData = {
         title: p.name,
-        text: `Check out this product on SmartOdisha: ${p.name}`,
+        text: 'Check out this product on SmartOdisha: ' + p.name,
         url: shareUrl,
       };
       if (navigator.share) {
@@ -1881,7 +1881,7 @@ export default function ProductDetail() {
                       <span className={`pd-delivery-charge ${deliveryInfo.isFreeDelivery ? 'free' : ''}`}>
                         {deliveryInfo.isFreeDelivery 
                           ? '🎉 FREE Delivery' 
-                          : `₹${deliveryInfo.finalCharge} Delivery`
+                          : '₹' + deliveryInfo.finalCharge + ' Delivery'
                         }
                       </span>
                       {!deliveryInfo.isFreeDelivery && (
