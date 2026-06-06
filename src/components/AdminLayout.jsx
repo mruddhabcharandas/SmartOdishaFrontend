@@ -196,6 +196,18 @@ export default function AdminLayout() {
                   Brands
                 </>
               ), 'brands')}
+              {link('/admin/categories', (
+                <>
+                  <Icon name="cat" />
+                  Categories
+                </>
+              ), 'categories')}
+              {link('/admin/subcategories', (
+                <>
+                  <Icon name="cat" />
+                  Subcategories
+                </>
+              ), 'subcategories')}
               {link('/admin/billing', (
                 <>
                   <Icon name="bill" />

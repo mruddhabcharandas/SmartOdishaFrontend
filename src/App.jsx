@@ -15,6 +15,8 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import StaffManagement from './pages/admin/StaffManagement.jsx'
 import Sellers from './pages/admin/Sellers.jsx'
 import Offers from './pages/admin/Offers.jsx'
+import Categories from './pages/admin/Categories.jsx'
+import SubCategories from './pages/admin/SubCategories.jsx'
 import Home from './pages/user/Home.jsx'
 import About from './pages/user/About.jsx'
 import Catalogue from './pages/user/Catalogue.jsx'
@@ -60,6 +62,8 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="brands" element={<Brands />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="subcategories" element={<SubCategories />} />
         <Route path="billing" element={<Billing />} />
         <Route path="orders" element={<Orders />} />
         <Route path="payment-verification" element={<PaymentVerification />} />

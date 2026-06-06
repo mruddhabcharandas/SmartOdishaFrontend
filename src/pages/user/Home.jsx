@@ -788,9 +788,9 @@ export default function Home() {
               className="store-card"
             >
                 <div className="store-image-container">
-                  {store.logo || store.image ? (
+                  {store.sellerAvatar || store.logo || store.image ? (
                     <img
-                      src={getCloudinaryUrl(store.logo || store.image, 600)}
+                      src={getCloudinaryUrl(store.sellerAvatar?.url || store.logo || store.image?.url || store.image, 600)}
                       alt={store.name}
                       className="store-image"
                       onError={(e) => {
@@ -798,7 +798,7 @@ export default function Home() {
                       }}
                     />
                   ) : null}
-                  <div className="store-placeholder" style={{ display: (store.logo || store.image) ? 'none' : 'flex' }}>
+                  <div className="store-placeholder" style={{ display: (store.sellerAvatar || store.logo || store.image) ? 'none' : 'flex' }}>
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="1.5">
                       <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                     </svg>

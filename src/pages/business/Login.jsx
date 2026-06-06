@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import api from '../../lib/api'
 import PasswordInput from '../../components/PasswordInput'
 
@@ -8,6 +8,13 @@ export default function BusinessLogin() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (localStorage.getItem('storeToken')) {
+      navigate('/business/dashboard', { replace: true })
+    }
+  }, [navigate])
 
   const submit = async (e) => {
     e.preventDefault()
@@ -17,7 +24,7 @@ export default function BusinessLogin() {
       const { data } = await api.post('/api/stores/login', { email, password })
       localStorage.setItem('storeToken', data.token)
       localStorage.setItem('storeName', data.name)
-      location.href = '/business/dashboard'
+      navigate('/business/dashboard', { replace: true })
     } catch (err) {
       setError(err?.response?.data?.error || 'Login failed')
     } finally {

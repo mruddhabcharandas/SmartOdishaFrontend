@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
 import LoadingSpinner from '../../components/LoadingSpinner'
+import ImageUpload from '../../components/ImageUpload'
 
 export default function BusinessProfile() {
   const { notify } = useToast()
@@ -12,6 +13,8 @@ export default function BusinessProfile() {
     name: '',
     phone: '',
     gstNumber: '',
+    image: '',
+    sellerAvatar: '',
     address: {
       line1: '',
       line2: '',
@@ -43,6 +46,8 @@ export default function BusinessProfile() {
         name: data.name || '',
         phone: data.phone || '',
         gstNumber: data.gstNumber || '',
+        image: data.image?.url || '',
+        sellerAvatar: data.sellerAvatar?.url || '',
         address: {
           line1: data.address?.line1 || '',
           line2: data.address?.line2 || '',
@@ -118,35 +123,96 @@ export default function BusinessProfile() {
           <div>
             <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider">Basic Information</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Store Name</label>
-                <input
-                  type="text"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                  value={formData.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
-                  required
-                />
-              </div>
+              <div className="md:col-span-2 flex items-center gap-6 flex-wrap">
+                    <div className="flex flex-col items-center gap-3">
+                      {formData.image ? (
+                        <img 
+                          src={formData.image} 
+                          alt="Store" 
+                          className="w-24 h-24 rounded-full object-cover border border-blue-100"
+                        />
+                      ) : (
+                        <div className="w-24 h-24 rounded-full bg-gray-100 border border-blue-100 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <ImageUpload onUploaded={(url) => setFormData(prev => ({ ...prev, image: url }))} />
+                        {formData.image && (
+                          <button 
+                            type="button" 
+                            onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
+                            className="text-xs text-red-500 hover:text-red-700 font-bold"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      <span className="text-xs font-bold text-gray-500">Store Logo</span>
+                    </div>
+                    
+                    <div className="flex flex-col items-center gap-3">
+                      {formData.sellerAvatar ? (
+                        <img 
+                          src={formData.sellerAvatar} 
+                          alt="Seller Avatar" 
+                          className="w-24 h-24 rounded-full object-cover border border-blue-100"
+                        />
+                      ) : (
+                        <div className="w-24 h-24 rounded-full bg-gray-100 border border-blue-100 flex items-center justify-center">
+                          <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <ImageUpload onUploaded={(url) => setFormData(prev => ({ ...prev, sellerAvatar: url }))} />
+                        {formData.sellerAvatar && (
+                          <button 
+                            type="button" 
+                            onClick={() => setFormData(prev => ({ ...prev, sellerAvatar: '' }))}
+                            className="text-xs text-red-500 hover:text-red-700 font-bold"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </div>
+                      <span className="text-xs font-bold text-gray-500">Seller Avatar</span>
+                    </div>
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Store Name</label>
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      required
+                    />
+                  </div>
 
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Phone Number</label>
-                <input
-                  type="text"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                  value={formData.phone}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
-                />
-              </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Phone Number</label>
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                    />
+                  </div>
 
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">GSTIN</label>
-                <input
-                  type="text"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                  value={formData.gstNumber}
-                  onChange={(e) => handleInputChange('gstNumber', e.target.value)}
-                />
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">GSTIN</label>
+                    <input
+                      type="text"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                      value={formData.gstNumber}
+                      onChange={(e) => handleInputChange('gstNumber', e.target.value)}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

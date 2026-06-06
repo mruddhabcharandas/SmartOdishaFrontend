@@ -5,7 +5,18 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token') || localStorage.getItem('partnerToken') || localStorage.getItem('storeToken')
+  let token
+  const path = window.location.pathname
+  if (path.startsWith('/business')) {
+    token = localStorage.getItem('storeToken') || localStorage.getItem('token') || localStorage.getItem('partnerToken')
+  } else if (path.startsWith('/partner')) {
+    token = localStorage.getItem('partnerToken') || localStorage.getItem('token') || localStorage.getItem('storeToken')
+  } else if (path.startsWith('/admin')) {
+    token = localStorage.getItem('token') || localStorage.getItem('storeToken') || localStorage.getItem('partnerToken')
+  } else {
+    // Default for customer pages
+    token = localStorage.getItem('token') || localStorage.getItem('partnerToken') || localStorage.getItem('storeToken')
+  }
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })

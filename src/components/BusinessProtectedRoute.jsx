@@ -1,14 +1,15 @@
 import { useEffect } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 
 export default function BusinessProtectedRoute({ children }) {
   const storeToken = localStorage.getItem('storeToken')
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!storeToken) {
-      location.href = '/business/login'
+      navigate('/business/login', { replace: true })
     }
-  }, [storeToken])
+  }, [storeToken, navigate])
 
   if (!storeToken) {
     return <Navigate to="/business/login" replace />

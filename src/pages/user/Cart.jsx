@@ -662,18 +662,6 @@ export default function Cart() {
                           onClick={() => removeFromCart(itemId, itemSku)}>
                           Remove
                         </button>
-                        {!isOutOfStock && (
-                          <button className="ct-action-btn save"
-                            onClick={() => {
-                              try {
-                                const saved = JSON.parse(localStorage.getItem('saved')||'[]')
-                                localStorage.setItem('saved', JSON.stringify([...saved, item]))
-                                removeFromCart(itemId, itemSku)
-                              } catch {}
-                            }}>
-                            Save for later
-                          </button>
-                        )}
                       </div>
                     </div>
 
