@@ -65,11 +65,11 @@ export default function UserLayout() {
       {/* Main Header */}
       <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16 sm:h-20">
+          <div className="flex items-center justify-between h-14">
             {/* Logo */}
-            <div className="flex items-center gap-3 sm:gap-4">
-              <Link to="/" className="flex items-center gap-3 sm:gap-4 group flex-shrink-0">
-                <div className="h-10 w-10 sm:h-14 sm:w-14 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
+            <div className="flex items-center gap-3">
+              <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
                   <img
                     src="/logo.png"
                     alt="SmartOdisha"
@@ -77,38 +77,29 @@ export default function UserLayout() {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-base sm:text-xl font-black tracking-tighter leading-none">
+                  <span className="text-sm font-black tracking-tighter leading-none">
                     <span className="text-blue-700">SMART</span>
                     <span className="text-orange-600">ODISHA</span>
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] font-bold tracking-widest mt-0.5" style={{ 
-                    background: 'linear-gradient(90deg, #3b82f6, #f97316, #10b981, #8b5cf6, #3b82f6)', 
-                    backgroundSize: '200% 100%', 
-                    WebkitBackgroundClip: 'text', 
-                    WebkitTextFillColor: 'transparent', 
-                    animation: 'gradientMove 3s linear infinite'
-                  }}>
-                    SMART CHOICE, SMART LIFE
                   </span>
                 </div>
               </Link>
             </div>
 
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-6">
-              <div className="flex items-center w-full bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
+            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-4">
+              <div className="flex items-center w-full bg-gray-50 border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
                 <input
                   type="text"
                   placeholder="Search for products, brands and more..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="header-search-input px-4 py-3 bg-transparent"
+                  className="header-search-input px-3 py-2 bg-transparent"
                 />
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-white font-bold"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-white font-bold"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <circle cx="11" cy="11" r="7" strokeWidth="2" />
                     <path d="M21 21l-4.3-4.3" strokeWidth="2" strokeLinecap="round" />
                   </svg>
@@ -117,44 +108,39 @@ export default function UserLayout() {
             </form>
 
             {/* Right Section: Auth, Wishlist, Cart */}
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2">
               {/* Login/Sign Up or User Profile */}
               <div className="hidden sm:flex items-center gap-3">
                 {user ? (
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md overflow-hidden">
-                        {user?.avatar && (
-                          <img
-                            src={getCloudinaryUrl(user.avatar)}
-                            alt={user.name}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                              const fallback = e.target.parentElement.querySelector('.avatar-fallback');
-                              if (fallback) fallback.style.display = 'flex';
-                            }}
-                          />
-                        )}
-                        <span 
-                          className="avatar-fallback"
-                          style={{ display: user?.avatar ? 'none' : 'flex' }}
-                        >
-                          {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                        </span>
-                      </div>
-                      <Link to="/profile" className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors">
-                        Hi, {user.name?.split(' ')[0] || 'User'}
-                      </Link>
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md overflow-hidden">
+                      {user?.avatar && (
+                        <img
+                          src={getCloudinaryUrl(user.avatar)}
+                          alt={user.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const fallback = e.target.parentElement.querySelector('.avatar-fallback');
+                            if (fallback) fallback.style.display = 'flex';
+                          }}
+                        />
+                      )}
+                      <span 
+                        className="avatar-fallback"
+                        style={{ display: user?.avatar ? 'none' : 'flex' }}
+                      >
+                        {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                      </span>
                     </div>
+                    <Link to="/profile" className="text-xs font-semibold text-slate-700 hover:text-blue-600 transition-colors">
+                      Hi, {user.name?.split(' ')[0] || 'User'}
+                    </Link>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="text-sm font-semibold text-slate-500 hover:text-red-600 transition-colors flex items-center gap-1"
+                      className="text-xs font-semibold text-slate-500 hover:text-red-600 transition-colors"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
                       Logout
                     </button>
                   </div>
@@ -163,7 +149,7 @@ export default function UserLayout() {
                     <Link
                       to="/login"
                       state={{ from: location.pathname + location.search }}
-                      className="text-sm font-semibold text-slate-700 hover:text-blue-600 transition-colors"
+                      className="text-xs font-semibold text-slate-700 hover:text-blue-600 transition-colors"
                     >
                       Login / Sign Up
                     </Link>
@@ -174,9 +160,9 @@ export default function UserLayout() {
               {/* Wishlist */}
               <Link
                 to="/wishlist"
-                className="group relative p-2 sm:p-3 rounded-xl hover:bg-gray-50 transition-all"
+                className="group relative p-2 rounded-lg hover:bg-gray-50 transition-all"
               >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-blue-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-5 h-5 text-gray-700 group-hover:text-blue-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 {wishlistCount > 0 && (
@@ -189,9 +175,9 @@ export default function UserLayout() {
               {/* Cart */}
               <Link
                 to="/cart"
-                className="group relative p-2 sm:p-3 rounded-xl hover:bg-gray-50 transition-all"
+                className="group relative p-2 rounded-lg hover:bg-gray-50 transition-all"
               >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 group-hover:text-blue-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-5 h-5 text-gray-700 group-hover:text-blue-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M7 6h13l-1.2 7H9.2L7 6Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   <circle cx="10" cy="19" r="1.4" fill="currentColor" />
                   <circle cx="17" cy="19" r="1.4" fill="currentColor" />

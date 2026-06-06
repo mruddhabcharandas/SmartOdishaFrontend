@@ -60,279 +60,176 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
 
   return (
     <div
-      className="pc-card group"
+      className="pc-card"
       onClick={() => navigate(`/products/${productIdOrSlug}`)}
       onMouseEnter={prefetchProduct}
       style={{
         background: 'white',
-        borderRadius: '28px',
-        border: '2px solid rgba(248,250,252)',
-        boxShadow: '0 8px 40px -24px rgba(15, 23, 42, 0.18)',
+        borderRadius: '16px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+        transition: 'all 0.2s',
         cursor: 'pointer',
         position: 'relative'
       }}
     >
       <style jsx>{`
         .pc-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 24px 64px -28px rgba(37, 99, 235, 0.3);
-          border-color: rgba(37, 99, 235, 0.25);
-        }
-
-        @media (max-width: 640px) {
-          .pc-card { border-radius: 24px; }
-          .pc-img-wrap { padding: 16px !important; }
-          .pc-verified { padding: 4px 10px !important; border-radius: 12px !important; bottom: 8px !important; left: 8px !important; }
-          .pc-body { padding: 16px !important; }
-          .pc-name { font-size: 13px !important; margin-bottom: 8px !important; }
-          .pc-price { font-size: 18px !important; }
+          box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
       `}</style>
 
       <div style={{
         position: 'relative',
-        aspectRatio: '1',
-        background: 'linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%)',
-        overflow: 'hidden'
+        aspectRatio: '1/1',
+        background: '#f8fafc',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
       }}>
-        {discount >= 10 && (
+        {discount > 0 && (
           <div style={{
             position: 'absolute',
-            top: '10px',
-            left: '10px',
-            background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+            top: '8px',
+            left: '8px',
+            background: '#10b981',
             color: 'white',
-            padding: '6px 14px',
-            borderRadius: '14px',
-            fontSize: '11px',
-            fontWeight: 900,
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            boxShadow: '0 6px 20px rgba(59,130,246,0.25)',
+            padding: '2px 8px',
+            borderRadius: '100px',
+            fontSize: '10px',
+            fontWeight: 700,
             zIndex: 10
           }}>
             {discount}% OFF
           </div>
         )}
 
-        <div className="pc-img-wrap" style={{
-          width: '100%',
-          height: '100%',
-          padding: '28px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          {p.images?.length ? (
-            <img
-              src={getCloudinaryUrl(p.images[0].url, 500)}
-              alt={p.name}
-              loading="lazy"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
-              }}
-              className="group-hover:scale-110"
-            />
-          ) : (
-            <span style={{ fontSize: '56px', opacity: '0.3' }}>📦</span>
-          )}
-        </div>
-
-        <div className="pc-verified" style={{
-          position: 'absolute',
-          bottom: '12px',
-          left: '12px',
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(16px)',
-          border: '1px solid rgba(59, 130, 246, 0.15)',
-          padding: '6px 14px',
-          borderRadius: '14px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          zIndex: 5,
-          boxShadow: '0 8px 28px rgba(15,23,42,0.08)'
-        }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="#2563eb">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-          </svg>
-          <span style={{
-            fontSize: '11px',
-            fontWeight: 900,
-            color: '#2563eb',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase'
-          }}>Verified</span>
-        </div>
+        {p.images?.length ? (
+          <img
+            src={getCloudinaryUrl(p.images[0].url, 500)}
+            alt={p.name}
+            loading="lazy"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              transition: 'transform 0.3s'
+            }}
+          />
+        ) : (
+          <span style={{ fontSize: '36px', opacity: '0.3' }}>📦</span>
+        )}
       </div>
 
-      <div className="pc-body" style={{
-        padding: '24px',
+      <div style={{
+        padding: '10px 12px 12px',
         flex: 1,
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        gap: '6px'
       }}>
-        {p.category?.name && (
-          <span style={{
-            fontSize: '11px',
-            fontWeight: 900,
-            color: '#2563eb',
-            background: 'rgba(37, 99, 235, 0.08)',
-            padding: '5px 12px',
-            borderRadius: '10px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            display: 'inline-block',
-            marginBottom: '10px'
-          }}>
-            {capitalizeText(p.category.name)}
-          </span>
-        )}
-
         <Link
           to={`/products/${productIdOrSlug}`}
           onClick={e => e.stopPropagation()}
-          className="pc-name"
           style={{
-            fontSize: '14px',
-            fontWeight: 800,
-            color: '#1e293b',
+            fontSize: '13px',
+            fontWeight: 500,
+            color: '#0f172a',
             lineHeight: 1.4,
-            marginBottom: '16px',
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
-            textDecoration: 'none',
-            transition: 'color 0.2s'
+            textDecoration: 'none'
           }}
         >
           {p.name}
         </Link>
 
         <div style={{
-          marginTop: 'auto',
           display: 'flex',
-          alignItems: 'flex-end',
-          justifyContent: 'space-between',
-          gap: '12px'
+          alignItems: 'center',
+          gap: '4px',
+          fontSize: '12px',
+          color: '#94a3b8'
         }}>
-          <div style={{ flex: 1 }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '4px'
-            }}>
-              <span className="pc-price" style={{
-                fontSize: '22px',
-                fontWeight: 900,
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent'
-              }}>
-                ₹{Number(minPrice).toLocaleString()}
-              </span>
-              {displayMrp > minPrice && (
-                <span style={{
-                  fontSize: '12px',
-                  fontWeight: 700,
-                  color: '#94a3b8',
-                  textDecoration: 'line-through'
-                }}>
-                  ₹{Number(displayMrp).toLocaleString()}
-                </span>
-              )}
-            </div>
-            {displayMrp > minPrice && (
-              <div style={{
-                fontSize: '11px',
-                color: '#2563eb',
-                fontWeight: 800
-              }}>
-                Save ₹{Number(displayMrp - minPrice).toLocaleString()}
-              </div>
-            )}
-          </div>
-
-          <button
-            disabled={!authed || totalStock <= 0}
-            style={{
-              width: '52px',
-              height: '52px',
-              borderRadius: '18px',
-              background: totalStock <= 0 ? '#e2e8f0' : 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-              color: totalStock <= 0 ? '#94a3b8' : 'white',
-              border: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: totalStock <= 0 ? 'not-allowed' : 'pointer',
-              boxShadow: totalStock <= 0 ? 'none' : '0 10px 32px rgba(37, 99, 235, 0.3)',
-              transition: 'all 0.3s'
-            }}
-            onClick={async e => {
-              e.stopPropagation()
-              e.preventDefault()
-              if (!authed) {
-                navigate('/login', { state: { from: location.pathname + location.search } })
-                return
-              }
-              if (p.variants?.length > 0) {
-                navigate(`/products/${productIdOrSlug}`)
-                return
-              }
-              const ok = await addToCart(p)
-              if (ok) {
-                await refreshCart()
-                if (typeof setRecOpen === 'function') {
-                  try {
-                    const { data } = await api.get(`/api/recommendations/frequently-bought/${p._id}`)
-                    const filtered = (data || []).filter(i => (i._id || i.id) !== p._id)
-                    setRecItems(filtered)
-                    if (filtered.length > 0) setRecOpen(true)
-                  } catch {}
-                }
-              }
-            }}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-              <path d={p.variants?.length > 0 ? "M9 5l7 7-7 7" : "M12 4v16m8-8H4"} strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
+          <span style={{ color: '#f59e0b' }}>★★★★☆</span>
+          <span>4.3</span>
         </div>
 
         <div style={{
-          marginTop: '16px',
-          paddingTop: '16px',
-          borderTop: '1px solid #f1f5f9',
           display: 'flex',
           alignItems: 'center',
-          gap: '6px'
+          gap: '8px',
+          marginTop: 'auto'
         }}>
-          <div style={{
-            width: '7px',
-            height: '7px',
-            background: totalStock > 0 ? '#10b981' : '#dc2626',
-            borderRadius: '50%'
-          }} />
           <span style={{
-            fontSize: '11px',
-            fontWeight: 800,
-            color: totalStock > 0 ? '#10b981' : '#dc2626',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em'
+            fontSize: '16px',
+            fontWeight: 700,
+            color: '#0f172a'
           }}>
-            {totalStock > 0 ? 'In Stock' : 'Out of Stock'}
+            ₹{Number(minPrice).toLocaleString()}
           </span>
+          {displayMrp > minPrice && (
+            <span style={{
+              fontSize: '11px',
+              fontWeight: 500,
+              color: '#94a3b8',
+              textDecoration: 'line-through'
+            }}>
+              ₹{Number(displayMrp).toLocaleString()}
+            </span>
+          )}
         </div>
+
+        <button
+          disabled={!authed || totalStock <= 0}
+          style={{
+            width: '100%',
+            padding: '8px 12px',
+            borderRadius: '10px',
+            background: totalStock <= 0 ? '#e2e8f0' : '#0f172a',
+            color: totalStock <= 0 ? '#94a3b8' : 'white',
+            border: 'none',
+            fontSize: '12px',
+            fontWeight: 600,
+            cursor: totalStock <= 0 ? 'not-allowed' : 'pointer',
+            marginTop: '6px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '4px'
+          }}
+          onClick={async e => {
+            e.stopPropagation()
+            e.preventDefault()
+            if (!authed) {
+              navigate('/login', { state: { from: location.pathname + location.search } })
+              return
+            }
+            if (p.variants?.length > 0) {
+              navigate(`/products/${productIdOrSlug}`)
+              return
+            }
+            const ok = await addToCart(p)
+            if (ok) {
+              await refreshCart()
+              if (typeof setRecOpen === 'function') {
+                try {
+                  const { data } = await api.get(`/api/recommendations/frequently-bought/${p._id}`)
+                  const filtered = (data || []).filter(i => (i._id || i.id) !== p._id)
+                  setRecItems(filtered)
+                  if (filtered.length > 0) setRecOpen(true)
+                } catch {}
+              }
+            }
+          }}
+        >
+          {p.variants?.length > 0 ? 'View Product' : '🛒 Add'}
+        </button>
       </div>
     </div>
   )

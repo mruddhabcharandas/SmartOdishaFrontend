@@ -201,23 +201,23 @@ export default function Catalogue() {
       <style jsx>{`
         .ct-wrapper {
           font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-          background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 150px, #f8fafc 150px);
+          background: #f8fafc;
           color: #0f172a;
           min-height: 100vh;
           overflow-x: hidden;
         }
 
         .ct-hero {
-          padding: 24px 16px 32px;
+          padding: 16px 12px 12px;
           margin: 0 -12px;
           position: relative;
           overflow: hidden;
-          background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
+          background: #f8fafc;
         }
 
         @media (min-width: 768px) {
           .ct-hero {
-            padding: 36px 32px 40px;
+            padding: 16px 24px 12px;
             margin: 0 -24px;
           }
         }
@@ -244,25 +244,25 @@ export default function Catalogue() {
 
         .ct-search-input {
           width: 100%;
-          padding: 14px 22px;
-          border: 2px solid #e2e8f0;
-          border-radius: 16px;
-          font-size: 15px;
-          font-weight: 600;
+          padding: 12px 18px;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          font-size: 14px;
+          font-weight: 500;
           outline: none;
           background: white;
           color: #0f172a;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+          transition: all 0.2s;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
         .ct-search-input::placeholder {
-          color: #64748b;
+          color: #94a3b8;
         }
 
         .ct-search-input:focus {
           border-color: #3b82f6;
-          box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.1), 0 8px 32px rgba(0,0,0,0.08);
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
           background: white;
         }
 
@@ -272,12 +272,12 @@ export default function Catalogue() {
           left: 0;
           right: 0;
           background: white;
-          border-radius: 16px;
-          margin-top: 10px;
+          border-radius: 12px;
+          margin-top: 8px;
           overflow: hidden;
-          box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
           z-index: 1000;
-          border: 1px solid rgba(248,250,252);
+          border: 1px solid #e2e8f0;
         }
 
         .ct-suggest-item {
@@ -294,10 +294,10 @@ export default function Catalogue() {
         }
 
         .ct-sug-thumb {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
-          background: linear-gradient(135deg, #dbeafe, #3b82f6);
+          width: 40px;
+          height: 40px;
+          border-radius: 8px;
+          background: #f1f5f9;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -312,29 +312,47 @@ export default function Catalogue() {
         }
 
         .ct-sug-name {
-          font-size: 14px;
-          font-weight: 700;
+          font-size: 13px;
+          font-weight: 600;
           color: #1e293b;
           margin-bottom: 2px;
         }
 
         .ct-sug-cat {
-          font-size: 12px;
-          font-weight: 600;
-          color: #64748b;
+          font-size: 11px;
+          font-weight: 500;
+          color: #94a3b8;
         }
 
         .ct-sug-fill {
           margin-left: auto;
-          color: #3b82f6;
+          color: #94a3b8;
+        }
+
+        .ct-trust {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 24px;
+          margin: 12px auto 0;
+          padding: 10px 0;
+        }
+
+        .ct-trust-item {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          font-weight: 500;
+          color: #64748b;
         }
 
         .ct-categories {
           display: flex;
           gap: 8px;
           overflow-x: auto;
-          margin: 28px 0 28px;
-          padding: 4px 2px;
+          margin: 12px 0 16px;
+          padding: 2px 2px 8px;
           scrollbar-width: none;
         }
 
@@ -343,108 +361,86 @@ export default function Catalogue() {
         }
 
         .ct-category-chip {
-          padding: 10px 18px;
-          border: 1.5px solid rgba(15,23,42,0.08);
-          border-radius: 12px;
-          background: white;
-          font-size: 12px;
-          font-weight: 700;
+          padding: 8px 16px;
+          border: none;
+          border-radius: 100px;
+          background: transparent;
+          font-size: 13px;
+          font-weight: 500;
           cursor: pointer;
           white-space: nowrap;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          color: #475569;
-          box-shadow: 0 2px 12px rgba(15,23,42,0.04);
-          letter-spacing: 0.02em;
+          transition: all 0.2s;
+          color: #64748b;
         }
 
         .ct-category-chip:hover {
-          border-color: #3b82f6;
-          color: #3b82f6;
-          transform: translateY(-1px);
-          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+          color: #0f172a;
         }
 
         .ct-category-chip.active {
-          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
+          background: #0f172a;
           color: white;
-          border-color: transparent;
-          box-shadow: 0 12px 32px rgba(59, 130, 246, 0.35);
-          transform: translateY(-2px);
         }
 
         .ct-header-section {
           display: flex;
-          flex-direction: column;
+          flex-direction: row;
           gap: 16px;
-          margin-bottom: 24px;
-          background: white;
-          padding: 20px;
-          border-radius: 16px;
-          box-shadow: 0 4px 24px rgba(15,23,42,0.04);
-          border: 1px solid rgba(248,250,252);
-        }
-
-        @media (min-width: 768px) {
-          .ct-header-section {
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 24px;
-          }
+          margin-bottom: 16px;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0;
+          background: transparent;
         }
 
         .ct-title {
-          font-size: clamp(20px, 3.5vw, 32px);
-          font-weight: 900;
-          background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
-          background-clip: text;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          letter-spacing: -0.03em;
+          font-size: 18px;
+          font-weight: 700;
+          color: #0f172a;
+          letter-spacing: -0.02em;
         }
 
         .ct-count {
-          font-size: 13px;
-          color: #64748b;
-          font-weight: 600;
-          margin-top: 4px;
+          font-size: 12px;
+          color: #94a3b8;
+          font-weight: 500;
         }
 
         .ct-filters {
           display: flex;
-          gap: 10px;
+          gap: 8px;
           flex-wrap: wrap;
           align-items: center;
         }
 
         .ct-filter-select {
-          padding: 10px 16px;
-          border-radius: 12px;
-          border: 1.5px solid #e2e8f0;
+          padding: 8px 12px;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
           font-size: 12px;
-          font-weight: 700;
-          color: #475569;
+          font-weight: 500;
+          color: #64748b;
           background: white;
           cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.2s;
           outline: none;
         }
 
         .ct-filter-select:focus, .ct-filter-select:hover {
           border-color: #3b82f6;
-          color: #3b82f6;
+          color: #0f172a;
         }
 
         .ct-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 14px;
+          gap: 12px;
         }
 
         @media (min-width: 550px) {
           .ct-grid {
             grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
+            gap: 14px;
           }
         }
 
@@ -457,13 +453,13 @@ export default function Catalogue() {
         @media (min-width: 1200px) {
           .ct-grid {
             grid-template-columns: repeat(5, 1fr);
-            gap: 22px;
+            gap: 16px;
           }
         }
 
         .ct-loading {
           font-family: 'Inter', system-ui, sans-serif;
-          background: linear-gradient(180deg, #0f172a 0%, #1e293b 150px, #f1f5f9 150px);
+          background: #f8fafc;
           min-height: 100vh;
           padding: 40px 12px;
         }
@@ -499,8 +495,8 @@ export default function Catalogue() {
         .ct-loading-card {
           aspect-ratio: 1;
           background: white;
-          border-radius: 20px;
-          box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+          border-radius: 16px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.04);
           animation: pulse 1.5s infinite ease-in-out;
         }
 
@@ -511,64 +507,54 @@ export default function Catalogue() {
 
         .ct-load-more {
           text-align: center;
-          margin: 48px 0 20px;
+          margin: 32px 0 20px;
         }
 
         .ct-load-btn {
-          padding: 14px 48px;
-          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
+          padding: 12px 32px;
+          background: #0f172a;
           color: white;
           border: none;
-          border-radius: 16px;
+          border-radius: 12px;
           font-size: 13px;
-          font-weight: 900;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
+          font-weight: 600;
           cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 10px 32px rgba(59, 130, 246, 0.35);
+          transition: all 0.2s;
         }
 
         .ct-load-btn:hover:not(:disabled) {
-          transform: translateY(-3px) scale(1.01);
-          box-shadow: 0 16px 44px rgba(59, 130, 246, 0.45);
+          background: #1e293b;
         }
 
         .ct-load-btn:disabled {
           background: #e2e8f0;
           color: #94a3b8;
           cursor: not-allowed;
-          box-shadow: none;
-          transform: none;
         }
 
         .ct-empty {
           text-align: center;
-          padding: 80px 32px;
-          background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%);
-          border-radius: 24px;
+          padding: 60px 24px;
+          background: white;
+          border-radius: 16px;
           margin-top: 24px;
-          border: 1px solid rgba(248,250,252);
-          box-shadow: 0 8px 28px rgba(15,23,42,0.04);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
         .ct-empty-icon {
-          font-size: 72px;
-          margin-bottom: 20px;
+          font-size: 48px;
+          margin-bottom: 16px;
         }
 
         .ct-empty-title {
-          font-size: 24px;
-          font-weight: 900;
-          background: linear-gradient(135deg, #0f172a 0%, #3b82f6 100%);
-          background-clip: text;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          margin-bottom: 10px;
+          font-size: 18px;
+          font-weight: 700;
+          color: #0f172a;
+          margin-bottom: 8px;
         }
 
         .ct-empty-desc {
-          font-size: 14px;
+          font-size: 13px;
           color: #64748b;
           max-width: 420px;
           margin: 0 auto;
@@ -577,26 +563,6 @@ export default function Catalogue() {
 
       <div className="ct-container">
         <div className="ct-hero">
-          <div style={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
-                  <h2 style={{ 
-                    fontSize: 'clamp(24px, 3.5vw, 40px)', 
-                    fontWeight: 900, 
-                    color: '#0f172a',
-                    marginBottom: 10,
-                    letterSpacing: '-0.04em'
-                  }}>
-                    Discover Premium Products for Odisha
-                  </h2>
-                  <p style={{ 
-                    fontSize: 'clamp(13px, 1.8vw, 16px)', 
-                    color: '#64748b', 
-                    fontWeight: 600,
-                    letterSpacing: '0.05em'
-                  }}>
-                    Quality you can trust, fast delivery across Odisha
-                  </p>
-          </div>
-
           <div className="ct-search-wrap">
             <div style={{ position: 'relative' }}>
               <input
@@ -609,6 +575,21 @@ export default function Catalogue() {
               {showSug && sug.length > 0 && <SuggestList items={sug} setQ={setQ} />}
             </div>
           </div>
+
+          <div className="ct-trust">
+            <div className="ct-trust-item">
+              <span style={{ fontSize: '16px' }}>🚚</span>
+              <span>Fast Delivery</span>
+            </div>
+            <div className="ct-trust-item">
+              <span style={{ fontSize: '16px' }}>🔒</span>
+              <span>Secure Payment</span>
+            </div>
+            <div className="ct-trust-item">
+              <span style={{ fontSize: '16px' }}>↩</span>
+              <span>Easy Return</span>
+            </div>
+          </div>
         </div>
 
         <div className="ct-categories">
@@ -616,7 +597,7 @@ export default function Catalogue() {
             className={`ct-category-chip${category === '' ? ' active' : ''}`}
             onClick={() => { setCategory(''); setSubCategory('') }}
           >
-            All Products
+            All
           </button>
           {categories.map((c) => (
             <button
@@ -642,6 +623,15 @@ export default function Catalogue() {
           <div className="ct-filters">
             <select
               className="ct-filter-select"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="newest">Sort: Newest</option>
+              <option value="price-low">Sort: Price Low</option>
+              <option value="price-high">Sort: Price High</option>
+            </select>
+            <select
+              className="ct-filter-select"
               value={store}
               onChange={(e) => setStore(e.target.value)}
             >
@@ -651,15 +641,6 @@ export default function Catalogue() {
                   {s.name}
                 </option>
               ))}
-            </select>
-            <select
-              className="ct-filter-select"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="newest">Sort: Newest First</option>
-              <option value="price-low">Sort: Price Low → High</option>
-              <option value="price-high">Sort: Price High → Low</option>
             </select>
           </div>
         </div>
