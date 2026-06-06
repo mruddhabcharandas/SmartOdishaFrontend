@@ -42,6 +42,7 @@ import BusinessDashboard from './pages/business/Dashboard.jsx'
 import BusinessRequest from './pages/business/Request.jsx'
 import BusinessProducts from './pages/business/BusinessProducts.jsx'
 import BusinessInventory from './pages/business/BusinessInventory.jsx'
+import BusinessProfile from './pages/business/BusinessProfile.jsx'
 import BusinessProtectedRoute from './components/BusinessProtectedRoute.jsx'
 import BusinessLayout from './components/BusinessLayout.jsx'
 
@@ -88,6 +89,7 @@ export default function App() {
         <Route path="dashboard" element={<BusinessDashboard />} />
         <Route path="products" element={<BusinessProducts />} />
         <Route path="inventory" element={<BusinessInventory />} />
+        <Route path="profile" element={<BusinessProfile />} />
       </Route>
 
       <Route path="/" element={<UserLayout />}>

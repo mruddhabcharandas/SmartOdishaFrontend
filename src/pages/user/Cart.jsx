@@ -16,6 +16,17 @@ export default function Cart() {
   const [appliedCoupon, setAppliedCoupon] = useState(null)
   const [couponError, setCouponError] = useState('')
   const [isApplying, setIsApplying] = useState(false)
+  const [savedAddresses, setSavedAddresses] = useState([])
+  const [selectedAddress, setSelectedAddress] = useState(null)
+  const [shippingInfo, setShippingInfo] = useState({
+    loading: false,
+    deliveryCharge: 0,
+    codCharge: 0,
+    codAvailable: true,
+    isFreeDelivery: false,
+    deliveryAvailable: true
+  })
+  const [paymentMethod, setPaymentMethod] = useState('prepaid')
   const minAmount = Number(import.meta.env.VITE_MIN_ORDER_AMOUNT || 5000)
 
   const handleCheckout = () => {
@@ -95,8 +106,70 @@ export default function Cart() {
     setCouponError('')
   }
 
-  const finalTotalPayable = appliedCoupon ? appliedCoupon.payable : totalPayable
+  // Load user addresses
+  const loadAddresses = async () => {
+    if (!isAuthenticated) return
+    try {
+      const { data } = await api.get('/api/user/addresses')
+      setSavedAddresses(data)
+      if (data.length > 0) {
+        const defaultAddr = data.find(a => a.isDefault) || data[0]
+        setSelectedAddress(defaultAddr)
+      }
+    } catch (err) {
+      console.error('Failed to load addresses:', err)
+    }
+  }
+
+  // Calculate shipping charges
+  const calculateShipping = async (address, orderAmt, paymentMethod) => {
+    if (!address) return
+    try {
+      setShippingInfo(prev => ({ ...prev, loading: true }))
+      const totalWeight = cart.reduce((sum, item) => sum + (Number(item.weight) || 0.5) * item.quantity, 0)
+      const { data } = await api.post('/api/shipping/calculate', {
+        destination_pin: address.pincode,
+        weight: totalWeight,
+        order_amount: orderAmt,
+        payment_method: paymentMethod
+      })
+      setShippingInfo({
+        loading: false,
+        deliveryCharge: data.shipping_charge || 0,
+        codCharge: data.cod_charge || 0,
+        codAvailable: data.cod_available !== false,
+        isFreeDelivery: data.is_free || false,
+        deliveryAvailable: data.delivery_available !== false
+      })
+    } catch (err) {
+      console.error('Failed to calculate shipping:', err)
+      setShippingInfo({
+        loading: false,
+        deliveryCharge: 0,
+        codCharge: 0,
+        codAvailable: true,
+        isFreeDelivery: false,
+        deliveryAvailable: true
+      })
+    }
+  }
+
+  const finalTotalPayable = (appliedCoupon ? appliedCoupon.payable : totalPayable) + 
+    (shippingInfo.isFreeDelivery ? 0 : shippingInfo.deliveryCharge) + 
+    (paymentMethod === 'cod' ? shippingInfo.codCharge : 0)
   const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0
+
+  // Load addresses on mount
+  useEffect(() => {
+    loadAddresses()
+  }, [isAuthenticated])
+
+  // Calculate shipping when address, cart total, or payment method changes
+  useEffect(() => {
+    if (selectedAddress) {
+      calculateShipping(selectedAddress, totalPayable, paymentMethod)
+    }
+  }, [selectedAddress, totalPayable, paymentMethod])
 
   useEffect(() => {
     const first = cart[0]
@@ -649,6 +722,67 @@ export default function Cart() {
             <div className="ct-summary">
               <div className="ct-summary-title">Order Summary</div>
 
+              {/* Address Selection */}
+              {savedAddresses.length > 0 && (
+                <div className="mb-4">
+                  <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Delivery Address</div>
+                  <select
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500"
+                    value={selectedAddress?._id}
+                    onChange={(e) => {
+                      const addr = savedAddresses.find(a => a._id === e.target.value)
+                      setSelectedAddress(addr)
+                    }}
+                  >
+                    {savedAddresses.map(addr => (
+                      <option key={addr._id} value={addr._id}>
+                        {addr.fullName} - {addr.pincode}
+                      </option>
+                    ))}
+                  </select>
+                  {selectedAddress && (
+                    <div className="mt-2 text-xs text-gray-600">
+                      {selectedAddress.addressLine1}, {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.pincode}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Payment Method Selection */}
+              <div className="mb-4">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Payment Method</div>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('prepaid')}
+                    className={`flex-1 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                      paymentMethod === 'prepaid'
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white'
+                        : 'bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    Prepaid (Free Delivery)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (shippingInfo.codAvailable) setPaymentMethod('cod')
+                      else notify('COD not available for this order', 'error')
+                    }}
+                    disabled={!shippingInfo.codAvailable}
+                    className={`flex-1 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                      !shippingInfo.codAvailable
+                        ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed'
+                        : paymentMethod === 'cod'
+                        ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white'
+                        : 'bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    {!shippingInfo.codAvailable ? 'COD Unavailable' : 'Cash on Delivery'}
+                  </button>
+                </div>
+              </div>
+
               {/* rows */}
               <div className="ct-summary-rows">
                 <div className="ct-summary-row">
@@ -664,10 +798,22 @@ export default function Cart() {
                 <div className="ct-summary-row">
                   <span className="ct-summary-label">Delivery Fee</span>
                   <span className="ct-summary-val">
-                    <span style={{ textDecoration: 'line-through', color: '#9ca3af', marginRight: 8 }}>₹85</span>
-                    <span className="free">FREE</span>
+                    {shippingInfo.isFreeDelivery ? (
+                      <>
+                        <span style={{ textDecoration: 'line-through', color: '#9ca3af', marginRight: 8 }}>₹{shippingInfo.deliveryCharge}</span>
+                        <span className="free">FREE</span>
+                      </>
+                    ) : (
+                      `₹${shippingInfo.deliveryCharge}`
+                    )}
                   </span>
                 </div>
+                {paymentMethod === 'cod' && shippingInfo.codCharge > 0 && (
+                  <div className="ct-summary-row">
+                    <span className="ct-summary-label">COD Charge (15%)</span>
+                    <span className="ct-summary-val">₹{shippingInfo.codCharge}</span>
+                  </div>
+                )}
                 <div className="ct-summary-row">
                   <span className="ct-summary-label">GST</span>
                   <span className="ct-summary-val">Included</span>
@@ -730,12 +876,22 @@ export default function Cart() {
               </div>
 
               {/* savings badge */}
-              {(bulkDiscount > 0 || couponDiscount > 0 || true) && (
+              {(bulkDiscount > 0 || couponDiscount > 0 || shippingInfo.isFreeDelivery) && (
                 <div className="ct-savings-badge">
                   <div className="ct-savings-ico">🎉</div>
                   <div>
-                    <div className="ct-savings-text">You're saving ₹{(bulkDiscount + couponDiscount + 85).toLocaleString()}</div>
-                    <div className="ct-savings-sub">Bulk + Coupon + Free Delivery</div>
+                    <div className="ct-savings-text">
+                      You're saving ₹{(
+                        bulkDiscount + 
+                        couponDiscount + 
+                        (shippingInfo.isFreeDelivery ? shippingInfo.deliveryCharge : 0)
+                      ).toLocaleString()}
+                    </div>
+                    <div className="ct-savings-sub">
+                      Bulk
+                      {couponDiscount > 0 ? ' + Coupon' : ''}
+                      {shippingInfo.isFreeDelivery ? ' + Free Delivery' : ''}
+                    </div>
                   </div>
                 </div>
               )}
@@ -783,7 +939,7 @@ export default function Cart() {
         <div className="ct-mobile-bar">
           <div className="ct-mobile-total">
             <div className="ct-mobile-total-label">Total Payable</div>
-            <div className="ct-mobile-total-val">₹{totalPayable.toLocaleString()}</div>
+            <div className="ct-mobile-total-val">₹{finalTotalPayable.toLocaleString()}</div>
           </div>
           <button
             className={`ct-mobile-btn ${totalPayable >= minAmount && !cart.every(item => (item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock)) <= 0) ? '' : 'disabled'}`}

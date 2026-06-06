@@ -314,7 +314,7 @@ export default function ProductDetail() {
     setCheckingDelivery(true);
     try {
       // First check pincode serviceability
-      const serviceRes = await api.get(`/api/shipping/check-pincode`, { params: { pincode: code } });
+      const serviceRes = await api.get(`/api/shipping/check-pincode`, { params: { pincode: code, order_amount: orderAmount } });
       
       // Then calculate shipping charges
       const calculateRes = await api.post(`/api/shipping/calculate`, {
