@@ -610,7 +610,7 @@ export default function Profile() {
                             </div>
                             <div className="text-gray-600 space-y-1 text-sm">
                               <div>{address.addressLine1}</div>
-                              {address.addressLine2 && <div>{address.addressLine2}</div>
+                              {address.addressLine2 && <div>{address.addressLine2}</div>}
                               <div>{address.city}, {address.district}, {address.state} - {address.pincode}</div>
                             </div>
                           </div>
