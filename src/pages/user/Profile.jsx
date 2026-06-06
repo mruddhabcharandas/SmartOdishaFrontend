@@ -44,12 +44,27 @@ const Icon = ({ name }) => {
 };
 
 export default function Profile() {
-  const { user, token, refreshProfile } = useAuth();
-  const { notify } = useToast();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { user, token, refreshProfile } = useAuth()
+  const { notify } = useToast()
+  const navigate = useNavigate()
+  const location = useLocation()
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [openSections, setOpenSections] = useState({
+    dashboard: true,
+    personal: false,
+    addresses: false,
+    orders: false,
+    wishlist: false,
+    support: false,
+    settings: false
+  })
+
+  const toggleSection = (section) => {
+    setOpenSections(prev => ({
+      ...prev,
+      [section]: !prev[section]
+    }))
+  };
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -97,10 +112,10 @@ export default function Profile() {
     }
     loadProfile();
     loadAddresses();
-    if (activeTab === 'support') {
+    if (openSections.support) {
       loadTickets();
     }
-  }, [token, activeTab]);
+  }, [token, openSections.support]);
 
   const loadProfile = async () => {
     try {
@@ -364,17 +379,6 @@ export default function Profile() {
     );
   }
 
-  const menuItems = [
-    { id: 'dashboard', label: 'My Account', icon: 'dashboard' },
-    { id: 'personal', label: 'Personal Information', icon: 'personal' },
-    { id: 'addresses', label: 'Addresses', icon: 'addresses' },
-    { id: 'orders', label: 'My Orders', icon: 'orders' },
-    { id: 'wishlist', label: 'My Wishlist', icon: 'wishlist' },
-    { id: 'support', label: 'Help & Support', icon: 'support' },
-    { id: 'settings', label: 'Settings', icon: 'settings' },
-    { id: 'logout', label: 'Logout', icon: 'logout' }
-  ];
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 px-4 shadow-md">
@@ -406,35 +410,29 @@ export default function Profile() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="w-full lg:w-64 flex-shrink-0">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              {menuItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    if (item.id === 'logout') {
-                      handleLogout();
-                    } else {
-                      setActiveTab(item.id);
-                    }
-                  }}
-                  className={`w-full px-5 py-4 text-left flex items-center gap-4 border-b border-gray-50 last:border-0 transition-colors ${
-                    activeTab === item.id 
-                      ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600' 
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <Icon name={item.icon} />
-                  <span className="font-medium">{item.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              {activeTab === 'dashboard' && (
+        <div className="space-y-4">
+          {/* Dashboard Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <button
+              onClick={() => toggleSection('dashboard')}
+              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <Icon name="dashboard" />
+                <span className="font-bold text-gray-900">My Account</span>
+              </div>
+              <svg 
+                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.dashboard ? 'rotate-180' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {openSections.dashboard && (
+              <div className="px-6 pb-6 pt-0">
                 <div className="space-y-6">
                   <div>
                     <h2 className="text-xl font-bold text-gray-900 mb-4">Hello, {user?.name?.split(' ')[0] || 'User'}!</h2>
@@ -453,7 +451,7 @@ export default function Profile() {
                         </div>
                       </div>
                     </Link>
-                    <button onClick={() => setActiveTab('addresses')} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left w-full">
+                    <button onClick={() => toggleSection('addresses')} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left w-full">
                       <div className="flex items-center gap-4 mb-3">
                         <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
                           <Icon name="addresses" />
@@ -464,7 +462,7 @@ export default function Profile() {
                         </div>
                       </div>
                     </button>
-                    <button onClick={() => setActiveTab('personal')} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left w-full">
+                    <button onClick={() => toggleSection('personal')} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left w-full">
                       <div className="flex items-center gap-4 mb-3">
                         <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
                           <Icon name="personal" />
@@ -477,478 +475,594 @@ export default function Profile() {
                     </button>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
+          </div>
 
-              {activeTab === 'personal' && (
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Personal Information</h2>
-                  <form onSubmit={handleSaveProfile} className="space-y-6 max-w-lg">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                        placeholder="Enter your full name"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                      <input
-                        type="email"
-                        value={user?.email || ''}
-                        disabled
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                        placeholder="Enter your phone number"
-                      />
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
-                    >
-                      {saving ? 'Saving...' : 'Save Changes'}
-                    </button>
-                  </form>
+          {/* Personal Info Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <button
+              onClick={() => toggleSection('personal')}
+              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <Icon name="personal" />
+                <span className="font-bold text-gray-900">Personal Information</span>
+              </div>
+              <svg 
+                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.personal ? 'rotate-180' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {openSections.personal && (
+              <div className="px-6 pb-6 pt-0">
+                <form onSubmit={handleSaveProfile} className="space-y-6 max-w-lg">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      value={user?.email || ''}
+                      disabled
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
+                  >
+                    {saving ? 'Saving...' : 'Save Changes'}
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+
+          {/* Addresses Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <button
+              onClick={() => toggleSection('addresses')}
+              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <Icon name="addresses" />
+                <span className="font-bold text-gray-900">Addresses</span>
+              </div>
+              <svg 
+                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.addresses ? 'rotate-180' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {openSections.addresses && (
+              <div className="px-6 pb-6 pt-0">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900">Saved Addresses</h2>
+                  <button
+                    onClick={handleAddAddress}
+                    className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add Address
+                  </button>
                 </div>
-              )}
-
-              {activeTab === 'addresses' && (
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Saved Addresses</h2>
+                
+                {savedAddresses.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                      <Icon name="addresses" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No saved addresses yet</h3>
+                    <p className="text-gray-500 mb-6">Add your first address to get started with faster checkout</p>
                     <button
                       onClick={handleAddAddress}
-                      className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center gap-2"
+                      className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                      </svg>
-                      Add Address
+                      Add Your First Address
                     </button>
                   </div>
-                  
-                  {savedAddresses.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
-                        <Icon name="addresses" />
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">No saved addresses yet</h3>
-                      <p className="text-gray-500 mb-6">Add your first address to get started with faster checkout</p>
-                      <button
-                        onClick={handleAddAddress}
-                        className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
-                      >
-                        Add Your First Address
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {savedAddresses.map((address) => (
-                        <div key={address._id} className="p-4 sm:p-5 border border-gray-100 rounded-xl hover:border-blue-200">
-                          <div className="flex flex-col sm:flex-row sm:items-start gap-4">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex flex-wrap items-center gap-2 mb-2">
-                                <div className="font-bold text-gray-900 truncate">{address.fullName}</div>
-                                <span className="text-gray-400 hidden sm:inline">•</span>
-                                <div className="text-gray-700">{address.phone}</div>
-                                {address.isDefault && (
-                                  <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full flex-shrink-0">Default</span>
-                                )}
-                              </div>
-                              <div className="text-gray-600 space-y-1 text-sm">
-                                <div>{address.addressLine1}</div>
-                                {address.addressLine2 && <div>{address.addressLine2}</div>}
-                                <div>{address.city}, {address.district}, {address.state} - {address.pincode}</div>
-                              </div>
+                ) : (
+                  <div className="space-y-4">
+                    {savedAddresses.map((address) => (
+                      <div key={address._id} className="p-4 sm:p-5 border border-gray-100 rounded-xl hover:border-blue-200">
+                        <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <div className="font-bold text-gray-900 truncate">{address.fullName}</div>
+                              <span className="text-gray-400 hidden sm:inline">•</span>
+                              <div className="text-gray-700">{address.phone}</div>
+                              {address.isDefault && (
+                                <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full flex-shrink-0">Default</span>
+                              )}
                             </div>
-                            <div className="flex gap-2 flex-shrink-0">
-                              <button
-                                onClick={() => handleEditAddress(address)}
-                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                                title="Edit"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                              </button>
-                              <button
-                                onClick={() => handleDeleteAddress(address._id)}
-                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                title="Delete"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                              </button>
+                            <div className="text-gray-600 space-y-1 text-sm">
+                              <div>{address.addressLine1}</div>
+                              {address.addressLine2 && <div>{address.addressLine2}</div>
+                              <div>{address.city}, {address.district}, {address.state} - {address.pincode}</div>
                             </div>
                           </div>
-                          {!address.isDefault && (
+                          <div className="flex gap-2 flex-shrink-0">
                             <button
-                              onClick={() => handleSetDefault(address._id)}
-                              className="mt-3 text-blue-600 text-sm font-medium hover:underline"
+                              onClick={() => handleEditAddress(address)}
+                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              title="Edit"
                             >
-                              Set as Default
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteAddress(address._id)}
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                        {!address.isDefault && (
+                          <button
+                            onClick={() => handleSetDefault(address._id)}
+                            className="mt-3 text-blue-600 text-sm font-medium hover:underline"
+                          >
+                            Set as Default
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Orders Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <button
+              onClick={() => toggleSection('orders')}
+              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <Icon name="orders" />
+                <span className="font-bold text-gray-900">My Orders</span>
+              </div>
+              <svg 
+                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.orders ? 'rotate-180' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {openSections.orders && (
+              <div className="px-6 pb-6 pt-0">
+                <Link to="/orders" className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
+                  View All Orders
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Wishlist Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <button
+              onClick={() => toggleSection('wishlist')}
+              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <Icon name="wishlist" />
+                <span className="font-bold text-gray-900">My Wishlist</span>
+              </div>
+              <svg 
+                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.wishlist ? 'rotate-180' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {openSections.wishlist && (
+              <div className="px-6 pb-6 pt-0">
+                <Link to="/wishlist" className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
+                  View My Wishlist
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Support Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <button
+              onClick={() => toggleSection('support')}
+              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <Icon name="support" />
+                <span className="font-bold text-gray-900">Help & Support</span>
+              </div>
+              <svg 
+                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.support ? 'rotate-180' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {openSections.support && (
+              <div className="px-6 pb-6 pt-0">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900">Help & Support</h2>
+                  <button
+                    onClick={() => setShowNewTicketModal(true)}
+                    className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Raise a Ticket
+                  </button>
+                </div>
+                
+                {ticketsLoading ? (
+                  <div className="text-center py-8">
+                    <LoadingSpinner text="Loading tickets..." />
+                  </div>
+                ) : tickets.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                      <Icon name="support" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No support tickets yet</h3>
+                    <p className="text-gray-500 mb-6">Create a ticket if you need help with anything</p>
+                    <button
+                      onClick={() => setShowNewTicketModal(true)}
+                      className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
+                    >
+                      Create Ticket
+                    </button>
+                  </div>
+                ) : selectedTicket ? (
+                  <div className="space-y-4">
+                    <button
+                      onClick={() => setSelectedTicket(null)}
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                      </svg>
+                      Back to all tickets
+                    </button>
+                    <div className="border border-gray-100 rounded-xl overflow-hidden">
+                      <div className="p-5 border-b border-gray-100 bg-gray-50">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900">{selectedTicket.subject}</h3>
+                            <div className="text-sm text-gray-500 mt-1">
+                              Category: {selectedTicket.category} • Status: {selectedTicket.status}
+                            </div>
+                          </div>
+                          {selectedTicket.status !== 'Resolved' && (
+                            <button
+                              onClick={() => handleResolveTicket(selectedTicket._id)}
+                              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all"
+                            >
+                              Mark as Resolved
                             </button>
                           )}
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {activeTab === 'orders' && (
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">My Orders</h2>
-                  <Link to="/orders" className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
-                    View All Orders
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </Link>
-                </div>
-              )}
-
-              {activeTab === 'wishlist' && (
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">My Wishlist</h2>
-                  <Link to="/wishlist" className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
-                    View My Wishlist
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
-                  </Link>
-                </div>
-              )}
-
-              {activeTab === 'support' && (
-                <div>
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Help & Support</h2>
-                    <button
-                      onClick={() => setShowNewTicketModal(true)}
-                      className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center gap-2"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                      </svg>
-                      Raise a Ticket
-                    </button>
-                  </div>
-                  
-                  {ticketsLoading ? (
-                    <div className="text-center py-8">
-                      <LoadingSpinner text="Loading tickets..." />
-                    </div>
-                  ) : tickets.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
-                        <Icon name="support" />
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">No support tickets yet</h3>
-                      <p className="text-gray-500 mb-6">Create a ticket if you need help with anything</p>
-                      <button
-                        onClick={() => setShowNewTicketModal(true)}
-                        className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
-                      >
-                        Create Ticket
-                      </button>
+                      <div className="p-5 max-h-96 overflow-y-auto space-y-4">
+                        {selectedTicket.messages && selectedTicket.messages.map((msg, idx) => (
+                          <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[75%] p-4 rounded-xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white' : 'bg-gray-100 text-gray-900'}`}>
+                              <p>{msg.message}</p>
+                              <p className={`text-xs mt-2 ${msg.sender === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>
+                                {new Date(msg.createdAt).toLocaleString()}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="p-5 border-t border-gray-100">
+                        <div className="flex gap-3">
+                          <input
+                            type="text"
+                            value={messageInput}
+                            onChange={(e) => setMessageInput(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && handleAddMessage(selectedTicket._id)}
+                            placeholder="Type your message..."
+                            className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                          />
+                          <button
+                            onClick={() => handleAddMessage(selectedTicket._id)}
+                            disabled={!messageInput.trim()}
+                            className="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
+                          >
+                            Send
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  ) : selectedTicket ? (
-                    <div className="space-y-4">
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {tickets.map((ticket) => (
+                      <div
+                        key={ticket._id}
+                        onClick={() => setSelectedTicket(ticket)}
+                        className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="font-semibold text-gray-900">{ticket.subject}</div>
+                          <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                            ticket.status === 'Open' ? 'bg-yellow-100 text-yellow-700' : 
+                            ticket.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 
+                            'bg-green-100 text-green-700'
+                          }`}>
+                            {ticket.status}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{ticket.description}</p>
+                        <p className="text-xs text-gray-400">Updated: {new Date(ticket.updatedAt).toLocaleString()}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Settings Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <button
+              onClick={() => toggleSection('settings')}
+              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <Icon name="settings" />
+                <span className="font-bold text-gray-900">Settings</span>
+              </div>
+              <svg 
+                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.settings ? 'rotate-180' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {openSections.settings && (
+              <div className="px-6 pb-6 pt-0">
+                <div className="space-y-4 max-w-lg">
+                  {!showPasswordChange ? (
+                    <button
+                      onClick={() => setShowPasswordChange(true)}
+                      className="w-full p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left flex items-center gap-4"
+                    >
+                      <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
+                        <Icon name="lock" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-gray-900">Change Password</div>
+                        <div className="text-sm text-gray-500 mt-1">Update your account password</div>
+                      </div>
+                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <div className="border border-gray-100 rounded-xl p-6">
                       <button
-                        onClick={() => setSelectedTicket(null)}
-                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+                        onClick={() => {
+                          setShowPasswordChange(false);
+                          setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+                        }}
+                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium mb-6"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                         </svg>
-                        Back to all tickets
+                        Back
                       </button>
-                      <div className="border border-gray-100 rounded-xl overflow-hidden">
-                        <div className="p-5 border-b border-gray-100 bg-gray-50">
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <h3 className="text-lg font-semibold text-gray-900">{selectedTicket.subject}</h3>
-                              <div className="text-sm text-gray-500 mt-1">
-                                Category: {selectedTicket.category} • Status: {selectedTicket.status}
-                              </div>
-                            </div>
-                            {selectedTicket.status !== 'Resolved' && (
-                              <button
-                                onClick={() => handleResolveTicket(selectedTicket._id)}
-                                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all"
-                              >
-                                Mark as Resolved
-                              </button>
-                            )}
-                          </div>
+                      <form onSubmit={handlePasswordUpdate} className="space-y-6">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                          <input
+                            type="password"
+                            name="currentPassword"
+                            value={passwordForm.currentPassword}
+                            onChange={handlePasswordChange}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                            placeholder="Enter current password"
+                          />
                         </div>
-                        <div className="p-5 max-h-96 overflow-y-auto space-y-4">
-                          {selectedTicket.messages && selectedTicket.messages.map((msg, idx) => (
-                            <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                              <div className={`max-w-[75%] p-4 rounded-xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white' : 'bg-gray-100 text-gray-900'}`}>
-                                <p>{msg.message}</p>
-                                <p className={`text-xs mt-2 ${msg.sender === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>
-                                  {new Date(msg.createdAt).toLocaleString()}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                          <input
+                            type="password"
+                            name="newPassword"
+                            value={passwordForm.newPassword}
+                            onChange={handlePasswordChange}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                            placeholder="Enter new password (min 6 chars)"
+                          />
                         </div>
-                        <div className="p-5 border-t border-gray-100">
-                          <div className="flex gap-3">
-                            <input
-                              type="text"
-                              value={messageInput}
-                              onChange={(e) => setMessageInput(e.target.value)}
-                              onKeyPress={(e) => e.key === 'Enter' && handleAddMessage(selectedTicket._id)}
-                              placeholder="Type your message..."
-                              className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                            />
-                            <button
-                              onClick={() => handleAddMessage(selectedTicket._id)}
-                              disabled={!messageInput.trim()}
-                              className="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
-                            >
-                              Send
-                            </button>
-                          </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                          <input
+                            type="password"
+                            name="confirmPassword"
+                            value={passwordForm.confirmPassword}
+                            onChange={handlePasswordChange}
+                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                            placeholder="Confirm new password"
+                          />
                         </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {tickets.map((ticket) => (
-                        <div
-                          key={ticket._id}
-                          onClick={() => setSelectedTicket(ticket)}
-                          className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 cursor-pointer"
+                        <button
+                          type="submit"
+                          disabled={changingPassword || passwordForm.newPassword !== passwordForm.confirmPassword}
+                          className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
                         >
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="font-semibold text-gray-900">{ticket.subject}</div>
-                            <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                              ticket.status === 'Open' ? 'bg-yellow-100 text-yellow-700' : 
-                              ticket.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 
-                              'bg-green-100 text-green-700'
-                            }`}>
-                              {ticket.status}
-                            </span>
-                          </div>
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{ticket.description}</p>
-                          <p className="text-xs text-gray-400">Updated: {new Date(ticket.updatedAt).toLocaleString()}</p>
-                        </div>
-                      ))}
+                          {changingPassword ? 'Updating...' : 'Change Password'}
+                        </button>
+                      </form>
                     </div>
                   )}
                 </div>
-              )}
-
-              {activeTab === 'settings' && (
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Settings</h2>
-                  <div className="space-y-4 max-w-lg">
-                    {!showPasswordChange ? (
-                      <button
-                        onClick={() => setShowPasswordChange(true)}
-                        className="w-full p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left flex items-center gap-4"
-                      >
-                        <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
-                          <Icon name="lock" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-semibold text-gray-900">Change Password</div>
-                          <div className="text-sm text-gray-500 mt-1">Update your account password</div>
-                        </div>
-                        <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                      </button>
-                    ) : (
-                      <div className="border border-gray-100 rounded-xl p-6">
-                        <button
-                          onClick={() => {
-                            setShowPasswordChange(false);
-                            setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-                          }}
-                          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium mb-6"
-                        >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                          </svg>
-                          Back
-                        </button>
-                        <form onSubmit={handlePasswordUpdate} className="space-y-6">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-                            <input
-                              type="password"
-                              name="currentPassword"
-                              value={passwordForm.currentPassword}
-                              onChange={handlePasswordChange}
-                              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                              placeholder="Enter current password"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-                            <input
-                              type="password"
-                              name="newPassword"
-                              value={passwordForm.newPassword}
-                              onChange={handlePasswordChange}
-                              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                              placeholder="Enter new password (min 6 chars)"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-                            <input
-                              type="password"
-                              name="confirmPassword"
-                              value={passwordForm.confirmPassword}
-                              onChange={handlePasswordChange}
-                              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                              placeholder="Confirm new password"
-                            />
-                          </div>
-                          <button
-                            type="submit"
-                            disabled={changingPassword}
-                            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
-                          >
-                            {changingPassword ? 'Changing Password...' : 'Change Password'}
-                          </button>
-                        </form>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
+
+          {/* Logout Button */}
+          <button
+            onClick={handleLogout}
+            className="w-full bg-white rounded-xl shadow-sm border border-red-100 px-6 py-5 flex items-center gap-4 text-left hover:bg-red-50 transition-colors"
+          >
+            <Icon name="logout" />
+            <span className="font-bold text-red-600">Logout</span>
+          </button>
         </div>
       </div>
 
+      {/* Address Modal */}
       {showAddressModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">{editingAddress ? 'Edit Address' : 'Add New Address'}</h2>
-              <button onClick={() => setShowAddressModal(false)} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <h2 className="text-xl font-bold text-gray-900">
+                {editingAddress ? 'Edit Address' : 'Add New Address'}
+              </h2>
+              <button
+                onClick={() => setShowAddressModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <form onSubmit={handleSaveAddress} className="p-6 space-y-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+            <form onSubmit={handleSaveAddress} className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Full Name</label>
                   <input
                     type="text"
                     name="fullName"
                     value={addressForm.fullName}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                    placeholder="Enter full name"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Phone Number</label>
                   <input
                     type="tel"
                     name="phone"
                     value={addressForm.phone}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                    placeholder="10-digit phone number"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
-                    maxLength={10}
                   />
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Address Line 1 *</label>
-                <input
-                  type="text"
-                  name="addressLine1"
-                  value={addressForm.addressLine1}
-                  onChange={handleAddressInputChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                  placeholder="House number, street, etc."
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Address Line 2</label>
-                <input
-                  type="text"
-                  name="addressLine2"
-                  value={addressForm.addressLine2}
-                  onChange={handleAddressInputChange}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                  placeholder="Landmark, area, etc. (optional)"
-                />
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Pincode *</label>
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Address Line 1</label>
                   <input
                     type="text"
-                    name="pincode"
-                    value={addressForm.pincode}
+                    name="addressLine1"
+                    value={addressForm.addressLine1}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                    placeholder="6-digit pincode"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
-                    maxLength={6}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Address Line 2 (Optional)</label>
+                  <input
+                    type="text"
+                    name="addressLine2"
+                    value={addressForm.addressLine2}
+                    onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">City</label>
                   <input
                     type="text"
                     name="city"
                     value={addressForm.city}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                    placeholder="City"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">District</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">District</label>
                   <input
                     type="text"
                     name="district"
                     value={addressForm.district}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                    placeholder="District"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">State</label>
                   <select
                     name="state"
                     value={addressForm.state}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   >
                     <option value="">Select State</option>
@@ -957,84 +1071,122 @@ export default function Profile() {
                     ))}
                   </select>
                 </div>
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Pincode</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={addressForm.pincode}
+                      onChange={handleAddressInputChange}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                    {pincodeLoading && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <input
-                  type="checkbox"
-                  id="isDefault"
-                  name="isDefault"
-                  checked={addressForm.isDefault}
-                  onChange={handleAddressInputChange}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                />
-                <label htmlFor="isDefault" className="text-sm font-medium text-gray-700">
-                  Set as default address
-                </label>
+                type="checkbox"
+                id="isDefault"
+                name="isDefault"
+                checked={addressForm.isDefault}
+                onChange={handleAddressInputChange}
+                className="w-5 h-5 text-blue-600 rounded"
+              />
+              <label htmlFor="isDefault" className="text-sm font-medium text-gray-700 cursor-pointer">
+                Set as default address
+              </label>
               </div>
-              <button
-                type="submit"
-                className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
-              >
-                {editingAddress ? 'Update Address' : 'Add Address'}
-              </button>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowAddressModal(false)}
+                  className="flex-1 py-3 border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold"
+                >
+                  {editingAddress ? 'Update Address' : 'Save Address'}
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
 
+      {/* New Ticket Modal */}
       {showNewTicketModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full">
+          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-gray-900">Create New Support Ticket</h2>
-              <button onClick={() => setShowNewTicketModal(false)} className="text-gray-400 hover:text-gray-600">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <h2 className="text-xl font-bold text-gray-900">Create New Ticket</h2>
+              <button
+                onClick={() => setShowNewTicketModal(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <form onSubmit={handleCreateTicket} className="p-6 space-y-5">
+            <form onSubmit={handleCreateTicket} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Subject *</label>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Subject</label>
                 <input
                   type="text"
                   value={newTicketForm.subject}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, subject: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                  placeholder="Brief description of your issue"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
                 <select
                   value={newTicketForm.category}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, category: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="Order Issue">Order Issue</option>
+                  <option value="Order">Order</option>
+                  <option value="Product">Product</option>
+                  <option value="Payment">Payment</option>
                   <option value="Return/Refund">Return/Refund</option>
-                  <option value="Product Query">Product Query</option>
-                  <option value="Payment Issue">Payment Issue</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
                 <textarea
                   value={newTicketForm.description}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, description: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 min-h-[120px]"
-                  placeholder="Please describe your issue in detail"
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent h-32"
                   required
                 />
               </div>
-              <button
-                type="submit"
-                className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
-              >
-                Create Ticket
-              </button>
+              <div className="flex gap-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowNewTicketModal(false)}
+                  className="flex-1 py-3 border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold"
+                >
+                  Create Ticket
+                </button>
+              </div>
             </form>
           </div>
         </div>

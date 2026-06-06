@@ -66,7 +66,13 @@ export default function BusinessProducts() {
     }
   }, [form.categoryId, editing?.categoryId, categories, lastCategoryId])
   useEffect(() => {
-    api.get('/api/stores/profile').then(({ data }) => setMyStore(data)).catch(()=>{})
+    api.get('/api/stores/profile').then(({ data }) => {
+      setMyStore(data);
+      // Set default section if available
+      if (data?.sections?.length > 0) {
+        setForm(f => ({ ...f, section: data.sections[0] }));
+      }
+    }).catch(() => {})
   }, [])
 
   const create = async (e) => {
@@ -213,7 +219,7 @@ export default function BusinessProducts() {
         </div>
 
         <div className="flex flex-col gap-6">
-          <div className={`space-y-4 flex flex-col min-h-[320px] ${showAddProduct ? 'max-h-[min(48vh,480px)]' : 'max-h-[min(78vh,820px)]'}`}>
+          <div className="space-y-4 flex flex-col min-h-[320px] max-h-[min(78vh,820px)]">
             <div className="flex items-center justify-between px-2">
               <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">Live Inventory ({total})</h3>
               <div className="flex gap-2">
@@ -355,125 +361,136 @@ export default function BusinessProducts() {
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Creation Section — only when opened from header */}
-          {showAddProduct && (
-          <div className="flex flex-col bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden ring-1 ring-indigo-100/80 animate-in fade-in slide-in-from-top-2 duration-200">
-            <div className="p-5 sm:p-6 border-b border-gray-50 flex flex-wrap items-start justify-between gap-3">
+        {/* Add Product Modal */}
+        {showAddProduct && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 sm:p-8 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto">
+          <form
+            onSubmit={create}
+            className="bg-white border border-gray-100 rounded-[2rem] p-6 md:p-10 w-full max-w-4xl shadow-2xl space-y-8 animate-in zoom-in-95 duration-300 my-auto relative"
+          >
+            <div className="flex items-center justify-between border-b border-gray-100 pb-6">
               <div>
-                <h3 className="text-lg font-bold text-gray-900">Add New Product</h3>
-                <p className="text-[10px] text-blue-600 font-bold uppercase tracking-widest mt-0.5">Catalogue wizard</p>
+                <h3 className="text-2xl font-black text-gray-900 tracking-tight">Add New Product</h3>
+                <p className="text-[10px] text-blue-600 font-black uppercase tracking-[0.2em] mt-1">Catalogue wizard</p>
               </div>
-              <div className="flex items-start gap-3 flex-1 justify-end min-w-0">
-                <p className="text-[11px] text-gray-500 max-w-xl text-right max-md:text-left max-md:w-full">Variants and per-option SKUs: use <span className="font-bold text-indigo-600">Manage Variants</span> on the row after save.</p>
-                <button type="button" onClick={() => setShowAddProduct(false)} className="p-2 rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 shrink-0" title="Close">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+              <div className="flex items-start gap-3">
+                <button type="button" onClick={() => setShowAddProduct(false)} className="p-3 hover:bg-gray-100 rounded-2xl transition-all text-gray-400 hover:text-gray-900">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
               </div>
             </div>
-            
-            <form onSubmit={create} className="p-5 sm:p-6 space-y-5 overflow-y-auto max-h-[70vh] custom-scrollbar">
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                  <div className="space-y-4 sm:col-span-2 xl:col-span-3">
+
+            <div className="space-y-6 overflow-y-auto max-h-[60vh] pr-4 custom-scrollbar">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                <div className="space-y-4 sm:col-span-2 xl:col-span-3">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Product Name</label>
+                    <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="e.g. iPhone 16" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Product Name</label>
-                      <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. iPhone 16" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required />
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Price (₹)</label>
+                      <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="999" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
                     </div>
-                    
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Price (₹)</label>
-                        <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="999" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">MRP (₹)</label>
-                        <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="1299" value={form.mrp} onChange={e => setForm({ ...form, mrp: e.target.value })} />
-                      </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">MRP (₹)</label>
+                      <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="1299" value={form.mrp} onChange={e => setForm({ ...form, mrp: e.target.value })} />
                     </div>
+                  </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Category</label>
-                        <select className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none" value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value, subCategoryId: '' })} required>
-                          <option value="">Select Category...</option>
-                          {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-                        </select>
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Subcategory</label>
-                        <select className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none" value={form.subCategoryId} onChange={e => setForm({ ...form, subCategoryId: e.target.value })}>
-                          <option value="">Select Subcategory...</option>
-                          {subcategories.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-1 col-span-2">
-                      <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Store Section (Optional)</label>
-                      <select className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none appearance-none" value={form.section} onChange={e => setForm({ ...form, section: e.target.value })}>
-                        <option value="">Select section</option>
-                        {(myStore?.sections || []).map(sec => <option key={sec} value={sec}>{sec}</option>)}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Category</label>
+                      <select className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none appearance-none" value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value, subCategoryId: '' })} required>
+                        <option value="">Select Category...</option>
+                        {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
                       </select>
                     </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Subcategory</label>
+                      <select className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none appearance-none" value={form.subCategoryId} onChange={e => setForm({ ...form, subCategoryId: e.target.value })}>
+                        <option value="">Select Subcategory...</option>
+                        {subcategories.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                      </select>
+                    </div>
+                  </div>
 
-                    <div className="grid grid-cols-1 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Inventory Stock</label>
-                        <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="50" value={form.stock} onChange={e => setForm({ ...form, stock: e.target.value })} required />
-                      </div>
+                  <div className="space-y-1 col-span-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Store Section (Optional)</label>
+                    <select className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none appearance-none" value={form.section} onChange={e => setForm({ ...form, section: e.target.value })}>
+                      <option value="">Select section</option>
+                      {(myStore?.sections || []).map(sec => <option key={sec} value={sec}>{sec}</option>)}
+                    </select>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Inventory Stock</label>
+                      <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="50" value={form.stock} onChange={e => setForm({ ...form, stock: e.target.value })} required />
                     </div>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Images</label>
-                  <div className="flex gap-2">
-                    <input className="flex-1 bg-gray-50 border-none rounded-2xl px-4 py-3 text-[10px] font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Multiple URLs comma-separated" value={form.images} onChange={e => setForm({ ...form, images: e.target.value })} />
-                    <ImageUpload onUploaded={url => setForm(f => ({ ...f, images: (f.images ? f.images + ', ' : '') + url }))} />
-                  </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Images</label>
+                <div className="flex gap-2">
+                  <input className="flex-1 bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-[10px] font-bold transition-all outline-none" placeholder="Multiple URLs comma-separated" value={form.images} onChange={e => setForm({ ...form, images: e.target.value })} />
+                  <ImageUpload onUploaded={url => setForm(f => ({ ...f, images: (f.images ? f.images + ', ' : '') + url }))} />
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Description</label>
-                  <textarea className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none min-h-[80px]" placeholder="Product details..." value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Description</label>
+                <textarea className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-medium transition-all outline-none min-h-[80px]" placeholder="Product details..." value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Highlights</label>
+                <div className="flex gap-2">
+                  <input className="flex-1 bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="Add a highlight and press Add" value={form.highlightInput} onChange={e=>setForm({...form, highlightInput: e.target.value})} />
+                  <button type="button" onClick={()=>{ const h=(form.highlightInput||'').trim(); if(h){ setForm(f=>({ ...f, highlights:[...(f.highlights||[]), h], highlightInput:'' })) } }} className="px-4 py-3 rounded-2xl bg-gray-900 text-white text-sm font-bold">Add</button>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Highlights</label>
-                  <div className="flex gap-2">
-                    <input className="flex-1 bg-gray-50 rounded-2xl px-4 py-3 text-sm font-bold" placeholder="Add a highlight and press Add" value={form.highlightInput} onChange={e=>setForm({...form, highlightInput: e.target.value})} />
-                    <button type="button" onClick={()=>{ const h=(form.highlightInput||'').trim(); if(h){ setForm(f=>({ ...f, highlights:[...(f.highlights||[]), h], highlightInput:'' })) } }} className="px-4 py-3 rounded-2xl bg-gray-900 text-white text-sm font-bold">Add</button>
-                  </div>
-                  {(form.highlights||[]).length>0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {form.highlights.map((h,i)=>(
-                        <span key={i} className="px-3 py-1 rounded-xl bg-gray-50 border text-[11px] font-bold flex items-center gap-2">
-                          {h}
-                          <button type="button" className="text-red-600" onClick={()=>setForm(f=>({...f, highlights: f.highlights.filter((_,idx)=>idx!==i)}))}>✕</button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Specifications</label>
+                {(form.highlights||[]).length>0 && (
                   <div className="flex flex-wrap gap-2">
-                    <input className="flex-1 min-w-[120px] bg-gray-50 rounded-2xl px-4 py-3 text-sm font-bold" placeholder="Name (e.g. Material)" value={form.specKey} onChange={e=>setForm({...form, specKey: e.target.value})} />
-                    <input className="flex-1 min-w-[120px] bg-gray-50 rounded-2xl px-4 py-3 text-sm font-bold" placeholder="Value (e.g. Cotton)" value={form.specValue} onChange={e=>setForm({...form, specValue: e.target.value})} />
-                    <button type="button" onClick={()=>{ const k=(form.specKey||'').trim(); const v=(form.specValue||'').trim(); if(k&&v){ setForm(f=>({ ...f, specifications:[...(f.specifications||[]), {key:k, value:v}], specKey:'', specValue:'' })) } }} className="px-4 py-3 rounded-2xl bg-gray-900 text-white text-sm font-bold">Add</button>
+                    {form.highlights.map((h,i)=>(
+                      <span key={i} className="px-3 py-1 rounded-xl bg-gray-50 border text-[11px] font-bold flex items-center gap-2">
+                        {h}
+                        <button type="button" className="text-red-600" onClick={()=>setForm(f=>({...f, highlights: f.highlights.filter((_,idx)=>idx!==i)}))}>✕</button>
+                      </span>
+                    ))}
                   </div>
-                  {(form.specifications||[]).length>0 && (
-                    <div className="flex flex-col gap-1.5">
-                      {form.specifications.map((s,i)=>(
-                        <div key={i} className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-gray-50 border text-[11px] font-bold">
-                          <span><span className="text-gray-500">{s.key}:</span> {s.value}</span>
-                          <button type="button" className="text-red-600" onClick={()=>setForm(f=>({...f, specifications: f.specifications.filter((_,idx)=>idx!==i)}))}>✕</button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                )}
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Specifications</label>
+                <div className="flex flex-wrap gap-2">
+                  <input className="flex-1 min-w-[120px] bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="Name (e.g. Material)" value={form.specKey} onChange={e=>setForm({...form, specKey: e.target.value})} />
+                  <input className="flex-1 min-w-[120px] bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="Value (e.g. Cotton)" value={form.specValue} onChange={e=>setForm({...form, specValue: e.target.value})} />
+                  <button type="button" onClick={()=>{ const k=(form.specKey||'').trim(); const v=(form.specValue||'').trim(); if(k&&v){ setForm(f=>({ ...f, specifications:[...(f.specifications||[]), {key:k, value:v}], specKey:'', specValue:'' })) } }} className="px-4 py-3 rounded-2xl bg-gray-900 text-white text-sm font-bold">Add</button>
                 </div>
-                <button className="w-full bg-gray-900 text-white py-4 rounded-2xl text-sm font-black shadow-lg hover:bg-gray-800 transition-all transform hover:-translate-y-0.5 active:scale-95 uppercase tracking-widest">ADD TO INVENTORY</button>
-              </form>
+                {(form.specifications||[]).length>0 && (
+                  <div className="flex flex-col gap-1.5">
+                    {form.specifications.map((s,i)=>(
+                      <div key={i} className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-gray-50 border text-[11px] font-bold">
+                        <span><span className="text-gray-400">{s.key}:</span> {s.value}</span>
+                        <button type="button" className="text-red-600" onClick={()=>setForm(f=>({...f, specifications: f.specifications.filter((_,idx)=>idx!==i)}))}>✕</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+
+            <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
+              <p className="text-[11px] text-gray-500">Variants and per-option SKUs: use <span className="font-bold text-indigo-600">Manage Variants</span> on the row after save.</p>
+              <button type="submit" className="px-8 py-4 bg-gradient-to-r from-gray-900 to-gray-800 hover:from-gray-800 hover:to-gray-700 text-white rounded-2xl text-sm font-black shadow-lg transition-all transform hover:-translate-y-0.5 active:scale-95 uppercase tracking-widest">
+                Add To Inventory
+              </button>
+            </div>
+          </form>
+        </div>
+        )}
         </div>
 
       {editing && (

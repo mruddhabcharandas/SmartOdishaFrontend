@@ -27,9 +27,7 @@ export default function BusinessProfile() {
       pincode: ''
     },
     pickupName: '',
-    pickupPhone: '',
-    shiprocketEmail: '',
-    shiprocketPassword: ''
+    pickupPhone: ''
   })
 
   useEffect(() => {
@@ -60,9 +58,7 @@ export default function BusinessProfile() {
           pincode: data.pickupAddress?.pincode || ''
         },
         pickupName: data.pickupName || '',
-        pickupPhone: data.pickupPhone || '',
-        shiprocketEmail: data.shiprocketEmail || '',
-        shiprocketPassword: data.shiprocketPassword || ''
+        pickupPhone: data.pickupPhone || ''
       })
     } catch (err) {
       notify('Failed to load profile', 'error')
@@ -278,32 +274,7 @@ export default function BusinessProfile() {
             </div>
           </div>
 
-          {/* Shiprocket Credentials */}
-          <div className="border-t border-gray-100 pt-6">
-            <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider">Shiprocket Credentials</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Shiprocket Email</label>
-                <input
-                  type="email"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                  value={formData.shiprocketEmail}
-                  onChange={(e) => handleInputChange('shiprocketEmail', e.target.value)}
-                  placeholder="your@email.com"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Shiprocket Password</label>
-                <input
-                  type="password"
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                  value={formData.shiprocketPassword}
-                  onChange={(e) => handleInputChange('shiprocketPassword', e.target.value)}
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-          </div>
+
 
           <div className="flex justify-end pt-4 border-t border-gray-100">
             <button

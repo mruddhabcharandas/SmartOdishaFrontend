@@ -1856,41 +1856,54 @@ export default function ProductDetail() {
             {/* Delivery */}
             <div className="pd-delivery">
               <div className="pd-delivery-header">
-                {user?.savedAddresses && user.savedAddresses.length > 0 && (
-                  <div className="pd-delivery-info mb-4">
-                    <div className="pd-delivery-title mb-2">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" className="mr-2">
-                        <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z" />
-                      </svg>
-                      <span>Deliver to</span>
-                    </div>
-                    
-                    {/* Address Selector */}
-                    <div className="flex flex-col gap-2">
-                      <select
-                        value={selectedAddress?._id || ''}
-                        onChange={(e) => {
-                          const addr = user.savedAddresses.find(a => a._id === e.target.value) || user.savedAddresses[0];
-                          setSelectedAddress(addr);
-                          if (addr?.pincode) {
-                            setPincode(addr.pincode);
-                            checkDeliveryImpl(addr.pincode);
+                {user?.savedAddresses && user.savedAddresses.length > 0 && selectedAddress && (
+                  <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1">
+                        <div className="pd-delivery-title mb-1 flex items-center gap-2">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
+                            <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z" />
+                          </svg>
+                          <span className="text-blue-700 font-bold">Deliver to</span>
+                          {selectedAddress.isDefault && (
+                            <span className="text-[10px] bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full font-bold">DEFAULT</span>
+                          )}
+                        </div>
+                        
+                        {/* Address Display */}
+                        <div className="mt-2">
+                          <div className="font-bold text-gray-800">
+                            {selectedAddress.fullName}
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">
+                            {selectedAddress.addressLine1}
+                            {selectedAddress.addressLine2 && `, ${selectedAddress.addressLine2}`}
+                          </div>
+                          <div className="text-sm text-gray-700 mt-1 font-semibold">
+                            {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.pincode}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            📱 {selectedAddress.phone}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {/* Switch Address Button */}
+                      <button
+                        onClick={() => {
+                          // Show a simple address switcher dropdown
+                          const nextIndex = (user.savedAddresses.findIndex(a => a._id === selectedAddress._id) + 1) % user.savedAddresses.length;
+                          const nextAddr = user.savedAddresses[nextIndex];
+                          setSelectedAddress(nextAddr);
+                          if (nextAddr?.pincode) {
+                            setPincode(nextAddr.pincode);
+                            checkDeliveryImpl(nextAddr.pincode);
                           }
                         }}
-                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="px-3 py-2 bg-white border border-blue-200 rounded-xl text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all"
                       >
-                        {user.savedAddresses.map((addr) => (
-                          <option key={addr._id} value={addr._id}>
-                            {addr.addressLine1}, {addr.city}, {addr.state} - {addr.pincode} {addr.isDefault ? '(Default)' : ''}
-                          </option>
-                        ))}
-                      </select>
-                      
-                      {selectedAddress && (
-                        <div className="text-sm text-gray-600">
-                          {selectedAddress.fullName} • {selectedAddress.phone}
-                        </div>
-                      )}
+                        Switch
+                      </button>
                     </div>
                   </div>
                 )}
@@ -1934,19 +1947,21 @@ export default function ProductDetail() {
                   </div>
                 )}
 
-                {/* Pincode Input (if no saved addresses or want to change) */}
-                <form className="pd-delivery-form mt-3" onSubmit={checkDelivery}>
-                  <input
-                    type="text"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    placeholder="Enter pincode"
-                    className="pd-delivery-input"
-                  />
-                  <button type="submit" className="pd-delivery-btn" disabled={checkingDelivery || pincode.length !== 6}>
-                    {checkingDelivery ? 'Checking...' : 'Check'}
-                  </button>
-                </form>
+                {/* Pincode Input (only if no saved addresses or guest user) */}
+                {(!user?.savedAddresses || user.savedAddresses.length === 0) && (
+                  <form className="pd-delivery-form mt-3" onSubmit={checkDelivery}>
+                    <input
+                      type="text"
+                      value={pincode}
+                      onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder="Enter pincode"
+                      className="pd-delivery-input"
+                    />
+                    <button type="submit" className="pd-delivery-btn" disabled={checkingDelivery || pincode.length !== 6}>
+                      {checkingDelivery ? 'Checking...' : 'Check'}
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
 
