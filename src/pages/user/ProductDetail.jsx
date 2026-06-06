@@ -136,7 +136,7 @@ export default function ProductDetail() {
     const result = {};
     if (attrs && typeof attrs === 'object') {
       const obj = attrs instanceof Map ? Object.fromEntries(attrs) : attrs;
-      Object.entries(obj).forEach((k, v) => {
+      Object.entries(obj).forEach(([k, v]) => {
         if (k && k !== 'sku') result[k.toLowerCase().trim()] = String(v || '').trim();
       });
     }
@@ -234,7 +234,7 @@ export default function ProductDetail() {
         if (!val) return false;
 
         let matchVal = false;
-        Object.entries(vAttrs).forEach((vk, vv) => {
+        Object.entries(vAttrs).forEach(([vk, vv]) => {
           if (vk.toLowerCase().trim() === lowAttr && String(vv || '').toLowerCase().trim() === String(val || '').toLowerCase().trim()) {
             matchVal = true;
           }
@@ -421,7 +421,7 @@ export default function ProductDetail() {
     if (!p) return;
     const params = new URLSearchParams(location.search);
     let changed = false;
-    Object.entries(selected).forEach((k, v) => {
+    Object.entries(selected).forEach(([k, v]) => {
       if (v && params.get(k) !== v) {
         params.set(k, v);
         changed = true;
@@ -524,7 +524,7 @@ export default function ProductDetail() {
       p.variants.forEach(v => {
         if (v.isActive === false) return;
         const vAttrs = normalizeAttrs(v.attributes, v.sku, p.attributes);
-        Object.entries(vAttrs).forEach((vk, vv) => {
+        Object.entries(vAttrs).forEach(([vk, vv]) => {
           if (vk.toLowerCase().trim() === lowKey && vv) {
             set.add(vv.trim());
           }
@@ -550,17 +550,17 @@ export default function ProductDetail() {
       const vAttrs = normalizeAttrs(v.attributes, v.sku, p.attributes);
 
       let matchVal = false;
-      Object.entries(vAttrs).forEach((vk, vv) => {
+      Object.entries(vAttrs).forEach(([vk, vv]) => {
         if (vk.toLowerCase().trim() === lowKey && String(vv || '').toLowerCase().trim() === String(val || '').toLowerCase().trim()) {
           matchVal = true;
         }
       });
 
       if (matchVal) {
-        return Object.entries(otherSelections).every((ok, ov) => {
+        return Object.entries(otherSelections).every(([ok, ov]) => {
           if (!ov) return true;
           let matchOther = false;
-          Object.entries(vAttrs).forEach((vk, vv) => {
+          Object.entries(vAttrs).forEach(([vk, vv]) => {
             if (vk.toLowerCase().trim() === ok.toLowerCase().trim() && String(vv || '').toLowerCase().trim() === String(ov || '').toLowerCase().trim()) {
               matchOther = true;
             }
@@ -1805,7 +1805,7 @@ export default function ProductDetail() {
                             <button
                               key={optIdx}
                               className={`pd-var-btn ${isOn ? 'on' : ''} ${!enabled ? 'disabled' : ''}`}
-                              onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal)})))}
+                              onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal)}))}
                               disabled={!enabled}
                             >
                               {isColor ? (
