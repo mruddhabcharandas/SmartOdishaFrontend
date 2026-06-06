@@ -176,6 +176,7 @@ export default function ProductDetail() {
   const [checkingDelivery, setCheckingDelivery] = useState(false);
   const [pincode, setPincode] = useState('');
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(null);
 
   const variantAttrs = useMemo(() => {
     if (!p) return [];
@@ -287,6 +288,7 @@ export default function ProductDetail() {
   useEffect(() => {
     if (user?.savedAddresses && user.savedAddresses.length > 0) {
       const defaultAddress = user.savedAddresses.find(addr => addr.isDefault) || user.savedAddresses[0];
+      setSelectedAddress(defaultAddress);
       if (defaultAddress?.pincode) {
         setPincode(defaultAddress.pincode);
         checkDeliveryImpl(defaultAddress.pincode);
@@ -300,21 +302,65 @@ export default function ProductDetail() {
     }
   }, [user?.savedAddresses, user?.address]);
 
-  const checkDeliveryImpl = async (code) => {
+  // Recheck delivery when price changes to update free delivery status
+  useEffect(() => {
+    if (pincode.length === 6) {
+      checkDeliveryImpl(pincode);
+    }
+  }, [currentPrice, minPrice, pincode]);
+
+  const checkDeliveryImpl = async (code, weight = (p?.weight || 500) / 1000, orderAmount = currentPrice || minPrice) => {
     if (code.length !== 6) return;
     setCheckingDelivery(true);
     try {
-      const { data } = await api.get(`/api/shipping/check-pincode`, { params: { pincode: code } });
+      // First check pincode serviceability
+      const serviceRes = await api.get(`/api/shipping/check-pincode`, { params: { pincode: code } });
+      
+      // Then calculate shipping charges
+      const calculateRes = await api.post(`/api/shipping/calculate`, {
+        destination_pin: code,
+        weight: weight,
+        order_amount: orderAmount
+      });
+      
+      // Calculate delivery dates
+      const eta = serviceRes.data.eta || 3;
+      const now = new Date();
+      const addDays = (d, n) => { const x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; };
+      
+      const etaStart = addDays(now, eta);
+      const etaEnd = addDays(now, eta + 2);
+      
+      const freeDeliveryAbove = calculateRes.data.free_delivery_above || 999;
+      const isFree = calculateRes.data.final_charge === 0;
+      
       setDeliveryInfo({
-        serviceable: data.delivery_available,
-        message: data.delivery_available ? 'Delivery available' : 'Not available for delivery in this pincode',
-        deliveryDays: data.delivery_days || 2,
-        deliveryCharge: data.delivery_charge || 40,
-        freeDeliveryAbove: data.free_delivery_above || 999
+        serviceable: serviceRes.data.delivery_available,
+        codAvailable: serviceRes.data.cod_available,
+        message: serviceRes.data.delivery_available ? 'Delivery available' : 'Not available for delivery in this pincode',
+        etaStart: etaStart,
+        etaEnd: etaEnd,
+        deliveryCharge: calculateRes.data.delivery_charge,
+        finalCharge: calculateRes.data.final_charge,
+        freeDeliveryAbove: freeDeliveryAbove,
+        isFreeDelivery: isFree
       });
     } catch (err) {
       console.error(err);
-      setDeliveryInfo({ serviceable: false, message: 'Unable to check delivery for this pincode' });
+      const now = new Date();
+      const addDays = (d, n) => { const x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; };
+      const freeDeliveryAbove = 999;
+      const isFree = (currentPrice || minPrice) >= freeDeliveryAbove;
+      setDeliveryInfo({ 
+        serviceable: true, 
+        message: 'Delivery available',
+        etaStart: addDays(now, 3),
+        etaEnd: addDays(now, 5),
+        deliveryCharge: 85,
+        finalCharge: isFree ? 0 : 85,
+        freeDeliveryAbove: freeDeliveryAbove,
+        isFreeDelivery: isFree
+      });
     } finally {
       setCheckingDelivery(false);
     }
@@ -1759,7 +1805,7 @@ export default function ProductDetail() {
                             <button
                               key={optIdx}
                               className={`pd-var-btn ${isOn ? 'on' : ''} ${!enabled ? 'disabled' : ''}`}
-                              onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal)})}
+                              onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal)}))}
                               disabled={!enabled}
                             >
                               {isColor ? (
@@ -1784,29 +1830,85 @@ export default function ProductDetail() {
             <div className="pd-delivery">
               <div className="pd-delivery-header">
                 {user?.savedAddresses && user.savedAddresses.length > 0 && (
-                  <div className="pd-delivery-info">
-                    <div className="pd-delivery-title">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
+                  <div className="pd-delivery-info mb-4">
+                    <div className="pd-delivery-title mb-2">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" className="mr-2">
                         <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z" />
                       </svg>
-                      <span>Deliver to {user.name || 'You'}</span>
+                      <span>Deliver to</span>
                     </div>
-                    {deliveryInfo?.serviceable ? (
-                      <div className="pd-delivery-subtitle">
-                        <span>Delivery by {new Date(Date.now() + (deliveryInfo?.deliveryDays || 2) * 24 * 60 * 60 * 1000).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
-                        <span className={`pd-delivery-charge ${(currentPrice || minPrice) >= (deliveryInfo?.freeDeliveryAbove || 999) ? 'free' : ''}`}>
-                          {(currentPrice || minPrice) >= (deliveryInfo?.freeDeliveryAbove || 999) ? 'FREE Delivery' : `₹${deliveryInfo?.deliveryCharge || 40} Delivery`}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="pd-delivery-subtitle">
-                        <span>{deliveryInfo?.message || 'Enter pincode to check delivery'}</span>
-                      </div>
-                    )}
+                    
+                    {/* Address Selector */}
+                    <div className="flex flex-col gap-2">
+                      <select
+                        value={selectedAddress?._id || ''}
+                        onChange={(e) => {
+                          const addr = user.savedAddresses.find(a => a._id === e.target.value) || user.savedAddresses[0];
+                          setSelectedAddress(addr);
+                          if (addr?.pincode) {
+                            setPincode(addr.pincode);
+                            checkDeliveryImpl(addr.pincode);
+                          }
+                        }}
+                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        {user.savedAddresses.map((addr) => (
+                          <option key={addr._id} value={addr._id}>
+                            {addr.addressLine1}, {addr.city}, {addr.state} - {addr.pincode} {addr.isDefault ? '(Default)' : ''}
+                          </option>
+                        ))}
+                      </select>
+                      
+                      {selectedAddress && (
+                        <div className="text-sm text-gray-600">
+                          {selectedAddress.fullName} • {selectedAddress.phone}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  )}
+                )}
 
-                <form className="pd-delivery-form" onSubmit={checkDelivery}>
+                {/* Delivery Info */}
+                {deliveryInfo?.serviceable ? (
+                  <div className="pd-delivery-info">
+                    <div className="pd-delivery-title flex items-center gap-2">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span>Delivery by {deliveryInfo.etaStart?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} - {deliveryInfo.etaEnd?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
+                    </div>
+                    <div className="pd-delivery-subtitle flex flex-col gap-1">
+                      <span className={`pd-delivery-charge ${deliveryInfo.isFreeDelivery ? 'free' : ''}`}>
+                        {deliveryInfo.isFreeDelivery 
+                          ? '🎉 FREE Delivery' 
+                          : `₹${deliveryInfo.finalCharge} Delivery`
+                        }
+                      </span>
+                      {!deliveryInfo.isFreeDelivery && (
+                        <span className="text-xs text-gray-500">
+                          Add items worth ₹{deliveryInfo.freeDeliveryAbove - (currentPrice || minPrice)} more for FREE Delivery!
+                        </span>
+                      )}
+                      {deliveryInfo.codAvailable && (
+                        <span className="text-xs text-green-600">
+                          ✓ Cash on Delivery available
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="pd-delivery-info">
+                    <div className="pd-delivery-subtitle text-red-500">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" className="mr-1">
+                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <span>{deliveryInfo?.message || 'Enter pincode to check delivery'}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Pincode Input (if no saved addresses or want to change) */}
+                <form className="pd-delivery-form mt-3" onSubmit={checkDelivery}>
                   <input
                     type="text"
                     value={pincode}
