@@ -12,8 +12,8 @@ api.interceptors.request.use((config) => {
 
 /** Paths where 401 means "wrong email/password" (or similar), not "session expired" — never redirect or clear storage. */
 function isCredentialAuthRequest(config) {
-  const raw = config?.url || ''
-  const path = (raw.includes('://') ? new URL(raw).pathname : raw.split('?')[0]) || ''
+  const raw = String(config?.url || '')
+  const path = (typeof raw === 'string' && raw.includes('://') ? new URL(raw).pathname : raw.split('?')[0]) || ''
   const p = path.startsWith('/') ? path : `/${path}`
   const suffixes = [
     '/api/auth/login',

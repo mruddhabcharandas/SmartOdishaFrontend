@@ -19,7 +19,10 @@ export default function UserLayout() {
   const [searchQuery, setSearchQuery] = useState('')
 
   // Hide bottom nav on these paths
-  const hideBottomNav = ['/products', '/cart', '/profile', '/orders', '/enquiry', '/checkout', '/about', '/login', '/signup', '/reset-password'].some(path => String(location.pathname || '').includes(path))
+  const hideBottomNav = ['/products', '/cart', '/profile', '/orders', '/enquiry', '/checkout', '/about', '/login', '/signup', '/reset-password'].some(path => {
+    const pathname = String(location.pathname || '');
+    return typeof pathname === 'string' && pathname.includes(path);
+  })
 
   const bottomNavItems = [
     { to: '/', l: 'Home', i: (<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />) },
