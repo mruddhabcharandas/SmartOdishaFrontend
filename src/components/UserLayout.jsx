@@ -19,7 +19,7 @@ export default function UserLayout() {
   const [searchQuery, setSearchQuery] = useState('')
 
   // Hide bottom nav on these paths
-  const hideBottomNav = ['/products', '/cart', '/profile', '/orders', '/enquiry', '/checkout', '/about', '/login', '/signup', '/reset-password'].some(path => location.pathname.includes(path))
+  const hideBottomNav = ['/products', '/cart', '/profile', '/orders', '/enquiry', '/checkout', '/about', '/login', '/signup', '/reset-password'].some(path => String(location.pathname || '').includes(path))
 
   const bottomNavItems = [
     { to: '/', l: 'Home', i: (<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />) },
@@ -62,14 +62,14 @@ export default function UserLayout() {
         }
       `}</style>
 
-      {/* Main Header */}
-      <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-100">
+      {/* Main Header - Premium */}
+      <header className="sticky top-0 z-50 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700/50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
               <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-sm">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-lg shadow-blue-900/40">
                   <img
                     src="/logo.png"
                     alt="SmartOdisha"
@@ -77,29 +77,36 @@ export default function UserLayout() {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-black tracking-tighter leading-none">
-                    <span className="text-blue-700">SMART</span>
-                    <span className="text-orange-600">ODISHA</span>
+                  <span className="text-lg font-black tracking-tighter leading-none">
+                    <span className="text-blue-400">SMART</span>
+                    <span className="text-orange-400">ODISHA</span>
                   </span>
+                  <span className="text-[9px] font-semibold text-slate-400 tracking-widest mt-0.5" style={{ 
+                    background: 'linear-gradient(90deg, #3b82f6, #f97316, #10b981, #8b5cf6, #3b82f6)', 
+                    backgroundSize: '200% 100%', 
+                    WebkitBackgroundClip: 'text', 
+                    WebkitTextFillColor: 'transparent', 
+                    animation: 'gradientMove 3s linear infinite'
+                  }}>SMART CHOICE, SMART LIFE</span>
                 </div>
               </Link>
             </div>
 
             {/* Search Bar */}
             <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-4">
-              <div className="flex items-center w-full bg-gray-50 border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
+              <div className="flex items-center w-full bg-slate-800/70 border border-slate-700 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-blue-500/50 focus-within:border-blue-500/50 transition-all backdrop-blur">
                 <input
                   type="text"
                   placeholder="Search for products, brands and more..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="header-search-input px-3 py-2 bg-transparent"
+                  className="header-search-input px-4 py-3 bg-transparent text-white placeholder-slate-400"
                 />
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-white font-bold"
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-white font-bold shadow-lg shadow-blue-900/40"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <circle cx="11" cy="11" r="7" strokeWidth="2" />
                     <path d="M21 21l-4.3-4.3" strokeWidth="2" strokeLinecap="round" />
                   </svg>
@@ -113,7 +120,7 @@ export default function UserLayout() {
               <div className="hidden sm:flex items-center gap-3">
                 {user ? (
                   <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md overflow-hidden">
+                    <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-900/40 overflow-hidden">
                       {user?.avatar && (
                         <img
                           src={getCloudinaryUrl(user.avatar)}
@@ -133,13 +140,13 @@ export default function UserLayout() {
                         {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                       </span>
                     </div>
-                    <Link to="/profile" className="text-xs font-semibold text-slate-700 hover:text-blue-600 transition-colors">
+                    <Link to="/profile" className="text-xs font-semibold text-slate-200 hover:text-blue-400 transition-colors">
                       Hi, {user.name?.split(' ')[0] || 'User'}
                     </Link>
                     <button
                       type="button"
                       onClick={handleLogout}
-                      className="text-xs font-semibold text-slate-500 hover:text-red-600 transition-colors"
+                      className="text-xs font-semibold text-slate-400 hover:text-red-400 transition-colors"
                     >
                       Logout
                     </button>
@@ -149,7 +156,7 @@ export default function UserLayout() {
                     <Link
                       to="/login"
                       state={{ from: location.pathname + location.search }}
-                      className="text-xs font-semibold text-slate-700 hover:text-blue-600 transition-colors"
+                      className="text-xs font-semibold text-slate-200 hover:text-blue-400 transition-colors"
                     >
                       Login / Sign Up
                     </Link>
@@ -160,13 +167,13 @@ export default function UserLayout() {
               {/* Wishlist */}
               <Link
                 to="/wishlist"
-                className="group relative p-2 rounded-lg hover:bg-gray-50 transition-all"
+                className="group relative p-2 rounded-xl hover:bg-slate-800/70 transition-all"
               >
-                <svg className="w-5 h-5 text-gray-700 group-hover:text-blue-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-6 h-6 text-slate-200 group-hover:text-blue-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 {wishlistCount > 0 && (
-                  <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-blue-600 rounded-full">
+                  <span className="absolute top-0 right-0 h-4.5 w-4.5 flex items-center justify-center text-[9px] font-black text-white bg-orange-500 rounded-full shadow-lg shadow-orange-900/50">
                     {wishlistCount}
                   </span>
                 )}
@@ -175,15 +182,15 @@ export default function UserLayout() {
               {/* Cart */}
               <Link
                 to="/cart"
-                className="group relative p-2 rounded-lg hover:bg-gray-50 transition-all"
+                className="group relative p-2 rounded-xl hover:bg-slate-800/70 transition-all"
               >
-                <svg className="w-5 h-5 text-gray-700 group-hover:text-blue-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-6 h-6 text-slate-200 group-hover:text-blue-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M7 6h13l-1.2 7H9.2L7 6Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   <circle cx="10" cy="19" r="1.4" fill="currentColor" />
                   <circle cx="17" cy="19" r="1.4" fill="currentColor" />
                 </svg>
                 {cartCount > 0 && (
-                  <span className="absolute top-0 right-0 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-blue-600 rounded-full">
+                  <span className="absolute top-0 right-0 h-4.5 w-4.5 flex items-center justify-center text-[9px] font-black text-white bg-orange-500 rounded-full shadow-lg shadow-orange-900/50">
                     {cartCount}
                   </span>
                 )}

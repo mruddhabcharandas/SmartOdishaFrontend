@@ -314,13 +314,20 @@ export default function ProductDetail() {
     setCheckingDelivery(true);
     try {
       // First check pincode serviceability
-      const serviceRes = await api.get(`/api/shipping/check-pincode`, { params: { pincode: code, order_amount: orderAmount } });
+      const serviceRes = await api.get(`/api/shipping/check-pincode`, { 
+        params: { 
+          pincode: code, 
+          order_amount: orderAmount,
+          store_id: p?.store?._id || p?.store
+        } 
+      });
       
       // Then calculate shipping charges
       const calculateRes = await api.post(`/api/shipping/calculate`, {
         destination_pin: code,
         weight: weight,
-        order_amount: orderAmount
+        order_amount: orderAmount,
+        store_id: p?.store?._id || p?.store
       });
       
       // Calculate delivery dates
@@ -609,7 +616,7 @@ export default function ProductDetail() {
     : (p?.stock || 0);
 
   const stockStRaw = getStockStatus(currentStock ?? totalStock);
-  const stockSt = { ...stockStRaw, text: stockStRaw.text.includes('Only') ? 'Limited Stock' : stockStRaw.text };
+  const stockSt = { ...stockStRaw, text: String(stockStRaw.text || '').includes('Only') ? 'Limited Stock' : stockStRaw.text };
 
   const hasHighlights = p && Array.isArray(p.highlights) && p.highlights.length > 0;
   const hasSpecifications = p && Array.isArray(p.specifications) && p.specifications.length > 0;

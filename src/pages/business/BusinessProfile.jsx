@@ -10,15 +10,27 @@ export default function BusinessProfile() {
   const [profile, setProfile] = useState(null)
   const [formData, setFormData] = useState({
     name: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: '',
     phone: '',
-    gstin: '',
-    sections: []
+    gstNumber: '',
+    address: {
+      line1: '',
+      line2: '',
+      city: '',
+      state: '',
+      pincode: ''
+    },
+    pickupAddress: {
+      line1: '',
+      line2: '',
+      city: '',
+      state: '',
+      pincode: ''
+    },
+    pickupName: '',
+    pickupPhone: '',
+    shiprocketEmail: '',
+    shiprocketPassword: ''
   })
-  const [newSection, setNewSection] = useState('')
 
   useEffect(() => {
     loadProfile()
@@ -31,13 +43,26 @@ export default function BusinessProfile() {
       setProfile(data)
       setFormData({
         name: data.name || '',
-        address: data.address || '',
-        city: data.city || '',
-        state: data.state || '',
-        pincode: data.pincode || '',
         phone: data.phone || '',
-        gstin: data.gstin || '',
-        sections: data.sections || []
+        gstNumber: data.gstNumber || '',
+        address: {
+          line1: data.address?.line1 || '',
+          line2: data.address?.line2 || '',
+          city: data.address?.city || '',
+          state: data.address?.state || '',
+          pincode: data.address?.pincode || ''
+        },
+        pickupAddress: {
+          line1: data.pickupAddress?.line1 || '',
+          line2: data.pickupAddress?.line2 || '',
+          city: data.pickupAddress?.city || '',
+          state: data.pickupAddress?.state || '',
+          pincode: data.pickupAddress?.pincode || ''
+        },
+        pickupName: data.pickupName || '',
+        pickupPhone: data.pickupPhone || '',
+        shiprocketEmail: data.shiprocketEmail || '',
+        shiprocketPassword: data.shiprocketPassword || ''
       })
     } catch (err) {
       notify('Failed to load profile', 'error')
@@ -60,20 +85,17 @@ export default function BusinessProfile() {
     }
   }
 
-  const addSection = () => {
-    if (newSection.trim() && !formData.sections.includes(newSection.trim())) {
-      setFormData({
-        ...formData,
-        sections: [...formData.sections, newSection.trim()]
-      })
-      setNewSection('')
-    }
-  }
-
-  const removeSection = (index) => {
-    setFormData({
-      ...formData,
-      sections: formData.sections.filter((_, i) => i !== index)
+  const handleInputChange = (path, value) => {
+    const keys = path.split('.')
+    setFormData(prev => {
+      const newData = { ...prev }
+      let current = newData
+      for (let i = 0; i < keys.length - 1; i++) {
+        current[keys[i]] = { ...current[keys[i]] }
+        current = current[keys[i]]
+      }
+      current[keys[keys.length - 1]] = value
+      return newData
     })
   }
 
@@ -91,129 +113,199 @@ export default function BusinessProfile() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Store Profile</h2>
-            <p className="text-xs text-gray-500 mt-1">Manage your store details and settings</p>
+            <p className="text-xs text-gray-500 mt-1">Manage your store details, pickup address, and shipping settings</p>
           </div>
         </div>
 
-        <form onSubmit={handleSave} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Store Name</label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
-            </div>
+        <form onSubmit={handleSave} className="space-y-8">
+          {/* Basic Store Info */}
+          <div>
+            <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider">Basic Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Store Name</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  required
+                />
+              </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Phone Number</label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-              />
-            </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Phone Number</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                />
+              </div>
 
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">GSTIN</label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                value={formData.gstin}
-                onChange={(e) => setFormData({ ...formData, gstin: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Pincode</label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                value={formData.pincode}
-                onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">City</label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-              />
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">State</label>
-              <input
-                type="text"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                value={formData.state}
-                onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-              />
-            </div>
-
-            <div className="md:col-span-2 space-y-1">
-              <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Address</label>
-              <textarea
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none min-h-[100px]"
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              />
-            </div>
-          </div>
-
-          <div className="border-t border-gray-100 pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-sm font-bold text-gray-900">Store Sections</h3>
-                <p className="text-xs text-gray-500">Organize your products into sections</p>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">GSTIN</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.gstNumber}
+                  onChange={(e) => handleInputChange('gstNumber', e.target.value)}
+                />
               </div>
             </div>
-            
-            <div className="flex gap-2 mb-4">
-              <input
-                type="text"
-                placeholder="Add new section..."
-                className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                value={newSection}
-                onChange={(e) => setNewSection(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSection())}
-              />
-              <button
-                type="button"
-                onClick={addSection}
-                className="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:from-blue-700 hover:to-indigo-700 transition-all"
-              >
-                Add
-              </button>
-            </div>
+          </div>
 
-            <div className="flex flex-wrap gap-2">
-              {formData.sections.map((section, index) => (
-                <div key={index} className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-xl">
-                  <span className="text-sm font-bold text-blue-800">{section}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeSection(index)}
-                    className="text-blue-500 hover:text-red-600 text-sm"
-                  >
-                    &times;
-                  </button>
-                </div>
-              ))}
-              {formData.sections.length === 0 && (
-                <p className="text-sm text-gray-400">No sections added yet</p>
-              )}
+          {/* Store Address */}
+          <div className="border-t border-gray-100 pt-6">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider">Store Address</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2 space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Address Line 1</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.address.line1}
+                  onChange={(e) => handleInputChange('address.line1', e.target.value)}
+                />
+              </div>
+              <div className="md:col-span-2 space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Address Line 2</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.address.line2}
+                  onChange={(e) => handleInputChange('address.line2', e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">City</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.address.city}
+                  onChange={(e) => handleInputChange('address.city', e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">State</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.address.state}
+                  onChange={(e) => handleInputChange('address.state', e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Pincode</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.address.pincode}
+                  onChange={(e) => handleInputChange('address.pincode', e.target.value)}
+                />
+              </div>
             </div>
           </div>
 
-          <div className="flex justify-end pt-4">
+          {/* Pickup Address */}
+          <div className="border-t border-gray-100 pt-6">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider">Pickup Address (Shiprocket)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Pickup Name</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.pickupName}
+                  onChange={(e) => handleInputChange('pickupName', e.target.value)}
+                  placeholder="Warehouse / Store Name"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Pickup Phone</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.pickupPhone}
+                  onChange={(e) => handleInputChange('pickupPhone', e.target.value)}
+                />
+              </div>
+              <div className="md:col-span-2 space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Pickup Address Line 1</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.pickupAddress.line1}
+                  onChange={(e) => handleInputChange('pickupAddress.line1', e.target.value)}
+                />
+              </div>
+              <div className="md:col-span-2 space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Pickup Address Line 2</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.pickupAddress.line2}
+                  onChange={(e) => handleInputChange('pickupAddress.line2', e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Pickup City</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.pickupAddress.city}
+                  onChange={(e) => handleInputChange('pickupAddress.city', e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Pickup State</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.pickupAddress.state}
+                  onChange={(e) => handleInputChange('pickupAddress.state', e.target.value)}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Pickup Pincode</label>
+                <input
+                  type="text"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.pickupAddress.pincode}
+                  onChange={(e) => handleInputChange('pickupAddress.pincode', e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Shiprocket Credentials */}
+          <div className="border-t border-gray-100 pt-6">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider">Shiprocket Credentials</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Shiprocket Email</label>
+                <input
+                  type="email"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.shiprocketEmail}
+                  onChange={(e) => handleInputChange('shiprocketEmail', e.target.value)}
+                  placeholder="your@email.com"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Shiprocket Password</label>
+                <input
+                  type="password"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={formData.shiprocketPassword}
+                  onChange={(e) => handleInputChange('shiprocketPassword', e.target.value)}
+                  placeholder="••••••••"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
               type="submit"
               disabled={saving}

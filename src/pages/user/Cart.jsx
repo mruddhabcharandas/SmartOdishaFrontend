@@ -127,19 +127,24 @@ export default function Cart() {
     try {
       setShippingInfo(prev => ({ ...prev, loading: true }))
       const totalWeight = cart.reduce((sum, item) => sum + (Number(item.weight) || 0.5) * item.quantity, 0)
+      const firstItem = cart[0]
+      const storeId = firstItem?.store?._id || firstItem?.store
+      
       const { data } = await api.post('/api/shipping/calculate', {
         destination_pin: address.pincode,
         weight: totalWeight,
         order_amount: orderAmt,
-        payment_method: paymentMethod
+        payment_method: paymentMethod,
+        store_id: storeId
       })
+      
       setShippingInfo({
         loading: false,
-        deliveryCharge: data.shipping_charge || 0,
+        deliveryCharge: data.delivery_charge || 0,
         codCharge: data.cod_charge || 0,
         codAvailable: data.cod_available !== false,
-        isFreeDelivery: data.is_free || false,
-        deliveryAvailable: data.delivery_available !== false
+        isFreeDelivery: data.final_charge === 0 || false,
+        deliveryAvailable: true
       })
     } catch (err) {
       console.error('Failed to calculate shipping:', err)
@@ -791,7 +796,7 @@ export default function Cart() {
                 </div>
                 {bulkDiscount > 0 && (
                   <div className="ct-summary-row">
-                    <span className="ct-summary-label">Bulk Discount</span>
+                    <span className="ct-summary-label">Discount</span>
                     <span className="ct-summary-val green">−₹{bulkDiscount.toLocaleString()}</span>
                   </div>
                 )}
@@ -888,7 +893,7 @@ export default function Cart() {
                       ).toLocaleString()}
                     </div>
                     <div className="ct-savings-sub">
-                      Bulk
+                      Discount
                       {couponDiscount > 0 ? ' + Coupon' : ''}
                       {shippingInfo.isFreeDelivery ? ' + Free Delivery' : ''}
                     </div>
