@@ -322,18 +322,18 @@ export default function ManualPayment() {
               </div>
               <h1 className="mp-head-title">
                 Pay via <span>UPI</span>
-                {cod20 && <span style={{fontSize:'55%',color:'#6b7280',fontFamily:'DM Sans',fontWeight:700,letterSpacing:'.04em',display:'block',marginTop:2}}>20% COD Advance Payment</span>}
+                {cod20 && <span style={{fontSize:'55%',color:'#6b7280',fontFamily:'DM Sans',fontWeight:700,letterSpacing:'.04em',display:'block',marginTop:2}}>15% COD Advance Payment</span>}
               </h1>
               <p className="mp-head-sub">
-                {cod20 ? 'Pay 20% advance via UPI to confirm your COD order.' : 'Transfer the exact amount via UPI and submit your transaction details for verification.'}
+                {cod20 ? 'Pay 15% advance via UPI to confirm your COD order.' : 'Transfer the exact amount via UPI and submit your transaction details for verification.'}
               </p>
 
               {/* amount banner */}
               <div className="mp-amount-banner">
                 <div>
-                  <div className="mp-amount-label">{cod20 ? '20% Advance Amount' : 'Amount to Pay'}</div>
+                  <div className="mp-amount-label">{cod20 ? '15% Advance Amount' : 'Amount to Pay'}</div>
                   <div className="mp-amount-val">{totalText}</div>
-                  {cod20 && <div className="mp-cod-note">Remaining 80% payable on delivery</div>}
+                  {cod20 && <div className="mp-cod-note">Remaining 85% payable on delivery</div>}
                 </div>
                 <div className="mp-amount-tag">
                   <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">

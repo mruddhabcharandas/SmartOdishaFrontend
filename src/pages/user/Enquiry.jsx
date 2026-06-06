@@ -654,10 +654,16 @@ export default function Enquiry() {
                   </div>
                 )}
                 <div className="flex justify-between text-slate-700">
-                  <span>Convenience Fee</span>
+                  <span>Delivery Charge</span>
                   <div>
-                    <span className="text-slate-400 line-through mr-2">₹{(ship.amount || 85).toLocaleString()}</span>
-                    <span className="text-green-700 font-medium">FREE</span>
+                    {selectedPaymentMethod === 'COD' ? (
+                      <span>₹{(ship.amount || 85).toLocaleString()}</span>
+                    ) : (
+                      <>
+                        <span className="text-slate-400 line-through mr-2">₹{(ship.amount || 85).toLocaleString()}</span>
+                        <span className="text-green-700 font-medium">FREE</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-px bg-slate-200 my-3"></div>
@@ -694,19 +700,28 @@ export default function Enquiry() {
               <button
                 onClick={submit}
                 disabled={loading || visibleTotal < minAmount || !svc.available || !selectedAddress}
-                className={`w-full mt-6 py-4 rounded-lg font-bold text-lg transition-all ${
+                className={`w-full mt-6 py-4 rounded-2xl font-extrabold text-lg transition-all duration-300 relative overflow-hidden group ${
                   loading || visibleTotal < minAmount || !svc.available || !selectedAddress
                     ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                     : selectedPaymentMethod === 'COD'
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg'
-                    : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-xl hover:shadow-2xl hover:scale-[1.02]'
+                    : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-xl hover:shadow-2xl hover:scale-[1.02]'
                 }`}
               >
-                {loading ? 'Processing...' :
-                  visibleTotal < minAmount ? `Add ₹${minLeft.toLocaleString()} More` :
-                  selectedPaymentMethod === 'COD'
-                  ? `Pay ₹${Math.round(totalPayable * 0.25).toLocaleString()} & Place Order`
-                  : `Pay ₹${totalPayable.toLocaleString()} & Place Order`}
+                <div className="relative z-10 flex items-center justify-center gap-2">
+                  {loading ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Processing...
+                    </>
+                  ) : visibleTotal < minAmount ? (
+                    `Add ₹${minLeft.toLocaleString()} More`
+                  ) : selectedPaymentMethod === 'COD' ? (
+                    `Pay ₹${Math.round(totalPayable * 0.15).toLocaleString()} & Place Order`
+                  ) : (
+                    `Pay ₹${totalPayable.toLocaleString()} & Place Order`
+                  )}
+                </div>
               </button>
             </div>
           </div>
@@ -731,10 +746,16 @@ export default function Enquiry() {
                   </div>
                 )}
                 <div className="flex justify-between text-slate-700">
-                  <span>Convenience Fee</span>
+                  <span>Delivery Charge</span>
                   <div>
-                    <span className="text-slate-400 line-through mr-2">₹{(ship.amount || 85).toLocaleString()}</span>
-                    <span className="text-green-700 font-medium">FREE</span>
+                    {selectedPaymentMethod === 'COD' ? (
+                      <span>₹{(ship.amount || 85).toLocaleString()}</span>
+                    ) : (
+                      <>
+                        <span className="text-slate-400 line-through mr-2">₹{(ship.amount || 85).toLocaleString()}</span>
+                        <span className="text-green-700 font-medium">FREE</span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <div className="h-px bg-slate-200 my-2"></div>
@@ -811,19 +832,28 @@ export default function Enquiry() {
                 <button
                   onClick={submit}
                   disabled={loading || visibleTotal < minAmount || !svc.available || !selectedAddress}
-                  className={`w-full py-4 rounded-lg font-bold text-lg transition-all mt-4 ${
+                  className={`w-full py-4 rounded-2xl font-extrabold text-lg transition-all duration-300 relative overflow-hidden group mt-4 ${
                     loading || visibleTotal < minAmount || !svc.available || !selectedAddress
                       ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
                       : selectedPaymentMethod === 'COD'
-                      ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:shadow-lg'
-                      : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white hover:shadow-lg'
+                      ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-xl hover:shadow-2xl hover:scale-[1.01]'
+                      : 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-xl hover:shadow-2xl hover:scale-[1.01]'
                   }`}
                 >
-                  {loading ? 'Processing...' :
-                    visibleTotal < minAmount ? `Add ₹${minLeft.toLocaleString()} More` :
-                    selectedPaymentMethod === 'COD'
-                    ? `Pay ₹${Math.round(totalPayable * 0.25).toLocaleString()} & Place Order`
-                    : `Pay ₹${totalPayable.toLocaleString()} & Place Order`}
+                  <div className="relative z-10 flex items-center justify-center gap-2">
+                    {loading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Processing...
+                      </>
+                    ) : visibleTotal < minAmount ? (
+                      `Add ₹${minLeft.toLocaleString()} More`
+                    ) : selectedPaymentMethod === 'COD' ? (
+                      `Pay ₹${Math.round(totalPayable * 0.15).toLocaleString()} & Place Order`
+                    ) : (
+                      `Pay ₹${totalPayable.toLocaleString()} & Place Order`
+                    )}
+                  </div>
                 </button>
               </div>
 

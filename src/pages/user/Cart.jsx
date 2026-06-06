@@ -801,21 +801,24 @@ export default function Cart() {
                   </div>
                 )}
                 <div className="ct-summary-row">
-                  <span className="ct-summary-label">Delivery Fee</span>
+                  <span className="ct-summary-label">Delivery Charge</span>
                   <span className="ct-summary-val">
-                    {shippingInfo.isFreeDelivery ? (
+                    {/* For COD, never show free delivery */}
+                    {paymentMethod === 'cod' ? (
+                      `₹{shippingInfo.deliveryCharge}`
+                    ) : shippingInfo.isFreeDelivery ? (
                       <>
                         <span style={{ textDecoration: 'line-through', color: '#9ca3af', marginRight: 8 }}>₹{shippingInfo.deliveryCharge}</span>
                         <span className="free">FREE</span>
                       </>
                     ) : (
-                      `₹${shippingInfo.deliveryCharge}`
+                      `₹{shippingInfo.deliveryCharge}`
                     )}
                   </span>
                 </div>
                 {paymentMethod === 'cod' && shippingInfo.codCharge > 0 && (
                   <div className="ct-summary-row">
-                    <span className="ct-summary-label">COD Charge (15%)</span>
+                    <span className="ct-summary-label">COD Charge</span>
                     <span className="ct-summary-val">₹{shippingInfo.codCharge}</span>
                   </div>
                 )}
@@ -837,6 +840,24 @@ export default function Cart() {
                 <span className="ct-summary-total-label">Total Payable</span>
                 <span className="ct-summary-total-val">₹{finalTotalPayable.toLocaleString()}</span>
               </div>
+              
+              {/* COD Breakdown */}
+              {paymentMethod === 'cod' && (
+                <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-2xl p-4 mb-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-orange-600">💵</span>
+                    <span className="font-bold text-orange-800 text-sm">Payment Breakdown</span>
+                  </div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-orange-700 text-sm font-medium">Pay Now (15% Advance)</span>
+                    <span className="font-black text-orange-800 text-lg">₹{Math.round(finalTotalPayable * 0.15).toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-orange-600 text-sm">Pay on Delivery</span>
+                    <span className="font-bold text-orange-700">₹{Math.round(finalTotalPayable * 0.85).toLocaleString()}</span>
+                  </div>
+                </div>
+              )}
 
               {/* Coupon Section */}
               <div className="mb-6">
