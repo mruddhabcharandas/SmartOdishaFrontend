@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import api from '../lib/api'
-import { getCloudinaryUrl } from '../lib/cloudinary'
+import { getImageUrl } from '../lib/cloudinary'
 import { useCart } from '../lib/CartContext'
 
 export default function ProductCard({ p, authed = false, addToCart: propAddToCart, navigate: propNavigate, index, setRecOpen, setRecItems }) {
@@ -31,10 +31,20 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
       const num = Number(val)
       return isNaN(num) || !isFinite(num) ? 0 : num
     }
-    if (!p || !Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p?.price || 0)
-    const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.price || 0) > 0)
-    if (activeVariants.length === 0) return safeNumber(p?.price || 0)
-    return Math.min(...activeVariants.map(v => safeNumber(v.price || 0)))
+    let basePrice
+    if (!p || !Array.isArray(p.variants) || p.variants.length === 0) {
+      basePrice = safeNumber(p?.originalStorePrice ?? p?.price ?? 0)
+    } else {
+      const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.originalStorePrice ?? v.price ?? 0) > 0)
+      if (activeVariants.length === 0) {
+        basePrice = safeNumber(p?.originalStorePrice ?? p?.price ?? 0)
+      } else {
+        basePrice = Math.min(...activeVariants.map(v => safeNumber(v.originalStorePrice ?? v.price ?? 0)))
+      }
+    }
+    // Apply store percentage if available
+    const storePercentage = safeNumber(p?.store?.storePercentage ?? 0)
+    return basePrice * (1 + storePercentage / 100)
   }, [p])
 
   const displayMrp = useMemo(() => {
@@ -113,7 +123,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
 
         {p.images?.length ? (
           <img
-            src={getCloudinaryUrl(p.images[0].url, 500)}
+            src={getImageUrl(p.images[0].url, 500)}
             alt={p.name}
             loading="lazy"
             style={{

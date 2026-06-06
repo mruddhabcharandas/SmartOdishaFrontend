@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import api from '../../lib/api'
-import { getCloudinaryUrl } from '../../lib/cloudinary'
+import { getImageUrl } from '../../lib/cloudinary'
 import { useAuth } from '../../lib/AuthContext'
 import { useToast } from '../../components/Toast'
 import LoadingSpinner from '../../components/LoadingSpinner'
@@ -637,7 +637,7 @@ export default function OrderHistory() {
                                 >
                                   <div className="oh-item-img">
                                     {item.image
-                                      ? <img src={getCloudinaryUrl(item.image, 100)} alt={item.name} loading="lazy" width="50" height="50" />
+                                      ? <img src={getImageUrl(item.image, 100)} alt={item.name} loading="lazy" width="50" height="50" />
                                       : <div className="oh-item-placeholder" />
                                     }
                                   </div>

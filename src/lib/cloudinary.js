@@ -6,7 +6,7 @@
  * @param {boolean} blur - Whether to blur (not used for AWS).
  * @returns {string} - Original image URL.
  */
-export const getCloudinaryUrl = (url, width, blur = false) => {
+export const getImageUrl = (url, width, blur = false) => {
   // Just return the URL as-is since we're using AWS
   return url;
 };

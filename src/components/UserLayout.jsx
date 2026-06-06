@@ -4,7 +4,7 @@ import { useCart } from '../lib/CartContext'
 import { useWishlist } from '../lib/WishlistContext'
 import { useAuth } from '../lib/AuthContext'
 import { CONFIG } from '../shared/lib/config.js'
-import { getCloudinaryUrl } from '../lib/cloudinary'
+import { getImageUrl } from '../lib/cloudinary'
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -126,7 +126,7 @@ export default function UserLayout() {
                     <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-900/40 overflow-hidden">
                       {user?.avatar && (
                         <img
-                          src={getCloudinaryUrl(user.avatar)}
+                          src={getImageUrl(user.avatar)}
                           alt={user.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {

@@ -1,7 +1,7 @@
 import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 import api from '../../lib/api'
-import { getCloudinaryUrl } from '../../lib/cloudinary'
+import { getImageUrl } from '../../lib/cloudinary'
 import { useCart } from '../../lib/CartContext'
 import { useToast } from '../../components/Toast'
 import { useAuth } from '../../lib/AuthContext'
@@ -864,7 +864,7 @@ export default function Enquiry() {
                     <div className="w-16 h-16 rounded-lg bg-slate-50 flex items-center justify-center flex-shrink-0 overflow-hidden border border-slate-200">
                       {it.image ? (
                         <img
-                          src={getCloudinaryUrl(it.image, 100)}
+                          src={getImageUrl(it.image, 100)}
                           alt={it.name}
                           className="w-full h-full object-cover"
                         />

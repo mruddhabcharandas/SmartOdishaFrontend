@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { CONFIG } from '../../shared/lib/config.js'
 import { setSEO, injectJsonLd } from '../../shared/lib/seo.js'
 import api from '../../lib/api'
-import { getCloudinaryUrl } from '../../lib/cloudinary'
+import { getImageUrl } from '../../lib/cloudinary'
 import { useAuth } from '../../lib/AuthContext'
 
 export default function Home() {
@@ -790,7 +790,7 @@ export default function Home() {
                 <div className="store-image-container">
                   {store.sellerAvatar || store.logo || store.image ? (
                     <img
-                      src={getCloudinaryUrl(store.sellerAvatar?.url || store.logo || store.image?.url || store.image, 600)}
+                      src={getImageUrl(store.sellerAvatar?.url || store.logo || store.image?.url || store.image, 600)}
                       alt={store.name}
                       className="store-image"
                       onError={(e) => {
@@ -835,7 +835,7 @@ export default function Home() {
                 <div key={i} className="offer-card">
                   {offer.bannerImage && (
                     <img
-                      src={getCloudinaryUrl(offer.bannerImage, 1000)}
+                      src={getImageUrl(offer.bannerImage, 1000)}
                       alt={offer.title}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, opacity: 0.35 }}
                     />

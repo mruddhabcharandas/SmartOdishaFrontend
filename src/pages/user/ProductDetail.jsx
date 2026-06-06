@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
-import { getCloudinaryUrl } from '../../lib/cloudinary';
+import { getImageUrl } from '../../lib/cloudinary';
 import { useCart, getStockStatus } from '../../lib/CartContext';
 import { useWishlist } from '../../lib/WishlistContext';
 import { setSEO, injectJsonLd } from '../../shared/lib/seo.js';
@@ -266,15 +266,53 @@ export default function ProductDetail() {
       const num = Number(val);
       return isNaN(num) || !isFinite(num) ? 0 : num;
     };
+    let basePrice;
     if (!p) return 0;
-    if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.price || 0);
-    const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.price || 0) > 0);
-    if (activeVariants.length === 0) return safeNumber(p.price || 0);
-    return Math.min(...activeVariants.map(v => safeNumber(v.price || 0)));
+    if (!Array.isArray(p.variants) || p.variants.length === 0) {
+      basePrice = safeNumber(p.originalStorePrice ?? p.price ?? 0);
+    } else {
+      const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.originalStorePrice ?? v.price ?? 0) > 0);
+      if (activeVariants.length === 0) {
+        basePrice = safeNumber(p.originalStorePrice ?? p.price ?? 0);
+      } else {
+        basePrice = Math.min(...activeVariants.map(v => safeNumber(v.originalStorePrice ?? v.price ?? 0)));
+      }
+    }
+    // Apply store percentage if available
+    const storePercentage = safeNumber(p?.store?.storePercentage ?? 0);
+    return basePrice * (1 + storePercentage / 100);
   }, [p]);
 
-  const currentPrice = matchedVariant?.price ?? p?.price;
-  const currentMrp = matchedVariant?.mrp ?? p?.mrp;
+  const currentPrice = useMemo(() => {
+    const safeNumber = (val) => {
+      const num = Number(val);
+      return isNaN(num) || !isFinite(num) ? 0 : num;
+    };
+    let basePrice;
+    if (matchedVariant) {
+      basePrice = safeNumber(matchedVariant.originalStorePrice ?? matchedVariant.price ?? 0);
+    } else {
+      basePrice = safeNumber(p?.originalStorePrice ?? p?.price ?? 0);
+    }
+    const storePercentage = safeNumber(p?.store?.storePercentage ?? 0);
+    return basePrice * (1 + storePercentage / 100);
+  }, [matchedVariant, p]);
+
+  const currentMrp = useMemo(() => {
+    const safeNumber = (val) => {
+      const num = Number(val);
+      return isNaN(num) || !isFinite(num) ? 0 : num;
+    };
+    let baseMrp;
+    if (matchedVariant) {
+      baseMrp = safeNumber(matchedVariant.mrp ?? 0);
+    } else {
+      baseMrp = safeNumber(p?.mrp ?? 0);
+    }
+    const storePercentage = safeNumber(p?.store?.storePercentage ?? 0);
+    if (baseMrp === 0) return 0;
+    return baseMrp * (1 + storePercentage / 100);
+  }, [matchedVariant, p]);
   const currentStock = matchedVariant?.stock ?? p?.stock;
   const isAvailable = currentStock > 0;
 
@@ -283,10 +321,25 @@ export default function ProductDetail() {
       const num = Number(val);
       return isNaN(num) || !isFinite(num) ? 0 : num;
     };
+    let baseMrp;
     if (!p) return 0;
-    if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.mrp || p.price || 0);
-    const variantWithMinPrice = p.variants.find(v => v.isActive !== false && safeNumber(v.price || 0) === minPrice);
-    return safeNumber(variantWithMinPrice?.mrp || p.mrp || minPrice || 0);
+    if (!Array.isArray(p.variants) || p.variants.length === 0) {
+      baseMrp = safeNumber(p.mrp ?? p.originalStorePrice ?? p.price ?? 0);
+    } else {
+      const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.originalStorePrice ?? v.price ?? 0) > 0);
+      if (activeVariants.length === 0) {
+        baseMrp = safeNumber(p.mrp ?? p.originalStorePrice ?? p.price ?? 0);
+      } else {
+        // Find variant with lowest base price (originalStorePrice)
+        const variantWithMinPrice = activeVariants.reduce((a, b) => 
+          safeNumber(a.originalStorePrice ?? a.price ?? 0) < safeNumber(b.originalStorePrice ?? b.price ?? 0) ? a : b
+        );
+        baseMrp = safeNumber(variantWithMinPrice?.mrp ?? p.mrp ?? 0);
+      }
+    }
+    const storePercentage = safeNumber(p?.store?.storePercentage ?? 0);
+    if (baseMrp === 0) return 0;
+    return baseMrp * (1 + storePercentage / 100);
   }, [p, minPrice]);
 
   const discount = displayMrp > minPrice ? Math.round(((displayMrp - minPrice) / displayMrp) * 100) : 0;
@@ -1431,6 +1484,42 @@ export default function ProductDetail() {
           align-items: center;
           gap: 4px;
         }
+
+        .pd-specifications {
+          background: white;
+          border: 1px solid rgba(59, 130, 246, 0.15);
+          border-radius: 16px;
+          padding: 16px;
+          margin-bottom: 16px;
+        }
+
+        @media (min-width: 640px) {
+          .pd-specifications { padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        }
+
+        .pd-spec-item {
+          display: flex;
+          padding: 10px 0;
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        .pd-spec-item:last-child {
+          border-bottom: none;
+        }
+
+        .pd-spec-label {
+          width: 40%;
+          font-size: 13px;
+          font-weight: 600;
+          color: #64748b;
+        }
+
+        .pd-spec-value {
+          flex: 1;
+          font-size: 13px;
+          font-weight: 600;
+          color: #1e293b;
+        }
         
         .pd-cta {
           display: flex;
@@ -1695,7 +1784,7 @@ export default function ProductDetail() {
             >
               {imgs[activeImg] ? (
                 <img
-                  src={getCloudinaryUrl(imgs[activeImg], 800)}
+                  src={getImageUrl(imgs[activeImg], 800)}
                   alt={p.name}
                   onLoad={() => setImgLoading(false)}
                   style={{ display: imgLoading ? 'none' : 'block' }}
@@ -1718,7 +1807,7 @@ export default function ProductDetail() {
                     onClick={() => setActiveImg(i)}
                   >
                     <img
-                      src={getCloudinaryUrl(img, 200)}
+                      src={getImageUrl(img, 200)}
                       alt={p.name + ' - View ' + (i + 1)}
                     />
                   </button>
@@ -1774,6 +1863,36 @@ export default function ProductDetail() {
                 {p.ratingCount || 0} Ratings
               </span>
             </div>
+
+            {/* Seller/Store Info */}
+            {p.store && (
+              <div className="mb-4 p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-100">
+                <div className="flex items-center gap-3">
+                  {p.store.sellerAvatar && (
+                    <img
+                      src={getImageUrl(p.store.sellerAvatar, 100)}
+                      alt={p.store.name}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-orange-200"
+                    />
+                  )}
+                  <div>
+                    <div className="text-sm font-bold text-gray-800">
+                      Sold by
+                    </div>
+                    <div className="text-base font-bold text-orange-700">
+                      {p.store.name}
+                    </div>
+                  </div>
+                  <div className="ml-auto flex items-center gap-1 text-xs font-semibold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 11.08V12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2c3.02 0 5.74 1.35 7.57 3.53" />
+                      <polyline points="22 4 12 14.01 9 11.01" />
+                    </svg>
+                    Verified Store
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Price */}
             <div className="pd-price-block">
@@ -2003,6 +2122,39 @@ export default function ProductDetail() {
                     </svg>
                   </button>
                 )}
+              </div>
+            )}
+
+            {/* Specifications */}
+            {hasSpecifications && (
+              <div className="pd-specifications">
+                <h3 className="pd-section-title">Specifications</h3>
+                <div>
+                  {p.specifications.map((spec, i) => {
+                    // Check if spec is an object with key/value or a string
+                    if (typeof spec === 'object' && spec !== null) {
+                      return (
+                        <div key={i} className="pd-spec-item">
+                          <span className="pd-spec-label">{spec.key || spec.label || 'Key'}</span>
+                          <span className="pd-spec-value">{spec.value || spec.val}</span>
+                        </div>
+                      );
+                    } else if (typeof spec === 'string') {
+                      // If it's a string, try to split it into key-value pair
+                      const parts = spec.split(':').map(s => s.trim());
+                      if (parts.length === 2) {
+                        return (
+                          <div key={i} className="pd-spec-item">
+                            <span className="pd-spec-label">{parts[0]}</span>
+                            <span className="pd-spec-value">{parts[1]}</span>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }
+                    return null;
+                  })}
+                </div>
               </div>
             )}
 

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useWishlist } from '../../lib/WishlistContext'
 import { useCart } from '../../lib/CartContext'
-import { getCloudinaryUrl } from '../../lib/cloudinary'
+import { getImageUrl } from '../../lib/cloudinary'
 
 export default function Wishlist() {
   const { wishlist, removeFromWishlist } = useWishlist()
@@ -62,7 +62,7 @@ export default function Wishlist() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {displayItems.map((product, idx) => {
           const productId = product._id || product.id
-          const imageUrl = product.images?.[0]?.url ? getCloudinaryUrl(product.images[0].url, 400) : product.images?.[0] ? getCloudinaryUrl(product.images[0], 400) : 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=80'
+          const imageUrl = product.images?.[0]?.url ? getImageUrl(product.images[0].url, 400) : product.images?.[0] ? getImageUrl(product.images[0], 400) : 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=400&q=80'
           
           const minPrice = getMinPrice(product)
           const displayMrp = getDisplayMrp(product, minPrice)

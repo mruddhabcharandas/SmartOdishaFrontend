@@ -4,7 +4,7 @@ import api from '../../lib/api';
 import { useAuth } from '../../lib/AuthContext';
 import { useToast } from '../../components/Toast';
 import LoadingSpinner from '../../components/LoadingSpinner';
-import { getCloudinaryUrl } from '../../lib/cloudinary';
+import { getImageUrl } from '../../lib/cloudinary';
 
 const INDIAN_STATES = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -394,7 +394,7 @@ export default function Profile() {
             </div>
             <div className="flex items-center gap-3">
               {user?.avatar ? (
-                <img src={getCloudinaryUrl(user.avatar)} alt={user.name} className="w-10 h-10 rounded-full object-cover border-2 border-white/30" />
+                <img src={getImageUrl(user.avatar)} alt={user.name} className="w-10 h-10 rounded-full object-cover border-2 border-white/30" />
               ) : (
                 <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold border-2 border-white/30">
                   {user?.name?.charAt(0)?.toUpperCase() || 'U'}
@@ -1014,25 +1014,22 @@ export default function Profile() {
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Address Line 1</label>
-                  <input
-                    type="text"
-                    name="addressLine1"
-                    value={addressForm.addressLine1}
-                    onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Address Line 2 (Optional)</label>
-                  <input
-                    type="text"
-                    name="addressLine2"
-                    value={addressForm.addressLine2}
-                    onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Pincode</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      name="pincode"
+                      value={addressForm.pincode}
+                      onChange={handleAddressInputChange}
+                      className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                    />
+                    {pincodeLoading && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-1">City</label>
@@ -1071,23 +1068,26 @@ export default function Profile() {
                     ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Pincode</label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      name="pincode"
-                      value={addressForm.pincode}
-                      onChange={handleAddressInputChange}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      required
-                    />
-                    {pincodeLoading && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                      </div>
-                    )}
-                  </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Address Line 1</label>
+                  <input
+                    type="text"
+                    name="addressLine1"
+                    value={addressForm.addressLine1}
+                    onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-sm font-bold text-gray-700 mb-1">Address Line 2 (Optional)</label>
+                  <input
+                    type="text"
+                    name="addressLine2"
+                    value={addressForm.addressLine2}
+                    onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
                 </div>
               </div>
               <div className="flex items-center gap-2">

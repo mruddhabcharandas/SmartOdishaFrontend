@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState, useRef } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import api from '../../lib/api'
-import { getCloudinaryUrl } from '../../lib/cloudinary'
+import { getImageUrl } from '../../lib/cloudinary'
 import { useCart } from '../../lib/CartContext'
 import { useAuth } from '../../lib/AuthContext'
 import { setSEO } from '../../shared/lib/seo.js'
@@ -23,7 +23,7 @@ function SuggestList({ items, setQ }) {
           }}
         >
           <div className="ct-sug-thumb">
-            {item.image && <img src={getCloudinaryUrl(item.image, 200)} alt="" />}
+            {item.image && <img src={getImageUrl(item.image, 200)} alt="" />}
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div className="ct-sug-name">{item.name}</div>
@@ -579,21 +579,6 @@ export default function Catalogue() {
                 onChange={(e) => setQ(e.target.value)}
               />
               {showSug && sug.length > 0 && <SuggestList items={sug} setQ={setQ} />}
-            </div>
-          </div>
-
-          <div className="ct-trust">
-            <div className="ct-trust-item">
-              <span style={{ fontSize: '16px' }}>🚚</span>
-              <span>Fast Delivery</span>
-            </div>
-            <div className="ct-trust-item">
-              <span style={{ fontSize: '16px' }}>🔒</span>
-              <span>Secure Payment</span>
-            </div>
-            <div className="ct-trust-item">
-              <span style={{ fontSize: '16px' }}>↩</span>
-              <span>Easy Return</span>
             </div>
           </div>
         </div>
