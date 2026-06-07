@@ -9,7 +9,7 @@ export default function BusinessInventory() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
-  const [filterType, setFilterType] = useState('all') // 'all', 'low_stock', 'out_of_stock'
+  const [filterType, setFilterType] = useState('all')
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [showAdjustModal, setShowAdjustModal] = useState(false)
   const [adjustData, setAdjustData] = useState({ quantity: '', type: 'add', variantId: '' })
@@ -33,12 +33,9 @@ export default function BusinessInventory() {
     loadProducts()
   }, [loadProducts])
 
-  // Filter products
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()))
-
-    // Check main or variant stock
     const totalStock = p.variants && p.variants.length > 0
       ? p.variants.reduce((acc, v) => acc + v.stock, 0)
       : p.stock
@@ -51,7 +48,6 @@ export default function BusinessInventory() {
     return matchesSearch
   })
 
-  // Open adjust stock modal
   const handleOpenAdjust = (product) => {
     setSelectedProduct(product)
     setAdjustData({
@@ -62,7 +58,6 @@ export default function BusinessInventory() {
     setShowAdjustModal(true)
   }
 
-  // Adjust stock API call
   const handleAdjustStock = async (e) => {
     e.preventDefault()
     const qty = parseInt(adjustData.quantity)
@@ -93,7 +88,6 @@ export default function BusinessInventory() {
     }
   }
 
-  // Open stock history modal
   const handleOpenHistory = async (product) => {
     setHistoryProduct(product)
     setHistoryLoading(true)
@@ -172,7 +166,7 @@ export default function BusinessInventory() {
           >
             {type.replace('_', ' ')}
           </button>
-        )}
+        ))}
       </div>
 
       {/* Desktop Table View */}
@@ -239,11 +233,9 @@ export default function BusinessInventory() {
                     </td>
                   </tr>
 
-                  {/* Variant Rows (if any) */}
+                  {/* Variant Rows */}
                   {p.variants && p.variants.length > 0 && p.variants.map((v) => {
-                    const vAttrs = (v.attributes && typeof v.attributes === 'object' && !(v.attributes instanceof Map === false))
-                      ? v.attributes
-                      : (v.attributes instanceof Map ? Object.fromEntries(v.attributes) : {})
+                    const vAttrs = v.attributes && typeof v.attributes === 'object' ? v.attributes : {}
                     const attrLabel = Object.entries(vAttrs).map(([k, val]) => `${k}: ${val}`).join(', ')
 
                     return (
@@ -265,11 +257,7 @@ export default function BusinessInventory() {
                           <button
                             onClick={() => {
                               setSelectedProduct(p)
-                              setAdjustData({
-                                quantity: '',
-                                type: 'add',
-                                variantId: v._id
-                              })
+                              setAdjustData({ quantity: '', type: 'add', variantId: v._id })
                               setShowAdjustModal(true)
                             }}
                             className="px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 transition-all"
@@ -286,7 +274,7 @@ export default function BusinessInventory() {
             {filteredProducts.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-6 py-12 text-center text-gray-500 font-medium">
-                No products found matching filters.
+                  No products found matching filters.
                 </td>
               </tr>
             )}
@@ -316,7 +304,7 @@ export default function BusinessInventory() {
                     </div>
                   ) : (
                     <div className="text-sm text-gray-500">
-                    SKU: {p.sku || 'No SKU'}
+                      SKU: {p.sku || 'No SKU'}
                     </div>
                   )}
                   <div className="flex items-center gap-3 mt-2">
@@ -332,16 +320,14 @@ export default function BusinessInventory() {
               </div>
               <div className="mt-3 flex gap-2 pt-3 border-t border-gray-100">
                 <button type="button" onClick={() => handleOpenHistory(p)} className="panel-btn-ghost text-xs py-1">History</button>
-                {(!p.variants || p.variants.length === 0 && (
+                {(!p.variants || p.variants.length === 0) && (
                   <button type="button" onClick={() => handleOpenAdjust(p)} className="panel-btn-outline text-xs py-1">Adjust</button>
                 )}
               </div>
               {p.variants?.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
                   {p.variants.map((v) => {
-                    const vAttrs = (v.attributes && typeof v.attributes === 'object' && !(v.attributes instanceof Map === false))
-                      ? v.attributes
-                      : (v.attributes instanceof Map ? Object.fromEntries(v.attributes) : {})
+                    const vAttrs = v.attributes && typeof v.attributes === 'object' ? v.attributes : {}
                     const attrLabel = Object.entries(vAttrs).map(([k, val]) => `${k}: ${val}`).join(', ')
                     return (
                       <div key={v._id} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
@@ -350,15 +336,11 @@ export default function BusinessInventory() {
                           <span className="text-xs font-bold text-slate-600">{attrLabel || 'Default Variant'}</span>
                         </div>
                         <div className="flex items-center gap-3">
-                          <span className={`text-[9px] font-bold text-slate-700">{v.stock}</span>
+                          <span className="text-[9px] font-bold text-slate-700">{v.stock}</span>
                           <button
                             onClick={() => {
                               setSelectedProduct(p)
-                              setAdjustData({
-                                quantity: '',
-                                type: 'add',
-                                variantId: v._id
-                              })
+                              setAdjustData({ quantity: '', type: 'add', variantId: v._id })
                               setShowAdjustModal(true)
                             }}
                             className="px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-wider bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 transition-all"
@@ -403,11 +385,11 @@ export default function BusinessInventory() {
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
                   >
                     {selectedProduct.variants.map((v) => {
-                      const vAttrs = (v.attributes && typeof v.attributes === 'object' && !(v.attributes instanceof Map === false)) ? v.attributes : (v.attributes instanceof Map ? Object.fromEntries(v.attributes) : {})
+                      const vAttrs = v.attributes && typeof v.attributes === 'object' ? v.attributes : {}
                       const label = Object.entries(vAttrs).map(([k, val]) => `${k}: ${val}`).join(', ')
                       return (
                         <option key={v._id} value={v._id}>
-                          {label} (Stock: {v.stock}, SKU: {v.sku || 'No SKU')
+                          {label} (Stock: {v.stock}, SKU: {v.sku || 'No SKU'})
                         </option>
                       )
                     })}
@@ -471,7 +453,6 @@ export default function BusinessInventory() {
         </div>
       )}
 
-      {/* History Modal */}
       {historyProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
@@ -482,14 +463,13 @@ export default function BusinessInventory() {
               </div>
               <button type="button" onClick={() => setHistoryProduct(null)} className="text-gray-400 hover:text-gray-800 transition-colors p-1 text-2xl leading-none">&times;</button>
             </div>
-
             <div className="p-6 overflow-y-auto flex-1">
               {historyLoading ? (
                 <div className="flex justify-center py-12">
                   <LoadingSpinner text="Fetching transaction logs..." />
                 </div>
               ) : historyItems.length === 0 ? (
-                <div className="text-center py-12 text-slate-400 text-sm font-medium">No stock adjustment history logs found for this product.</div>
+                <div className="text-center py-12 text-slate-400 text-sm font-medium">No stock adjustment history found.</div>
               ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -498,39 +478,36 @@ export default function BusinessInventory() {
                         <th className="px-4 py-3 text-left">Date</th>
                         <th className="px-4 py-3 text-left">SKU/Attributes</th>
                         <th className="px-4 py-3 text-center">Change</th>
-                        <th className="px-4 py-3 text-left">Note/Reference</th>
+                        <th className="px-4 py-3 text-left">Note</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {historyItems.map((h) => {
-                        return (
-                          <tr key={h._id} className="hover:bg-slate-50/40 transition-colors text-xs">
-                            <td className="px-4 py-3 text-slate-500">
-                              {new Date(h.createdAt).toLocaleString('en-IN', {
-                                day: '2-digit',
-                                month: 'short',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </td>
-                            <td className="px-4 py-3 text-slate-700 font-semibold">
-                              {h.variantSku ? `SKU: ${h.variantSku}` : 'Main Product'}
-                            </td>
-                            <td className={`px-4 py-3 text-center font-extrabold ${h.quantity > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                              {h.quantity > 0 ? `+${h.quantity}` : h.quantity}
-                            </td>
-                            <td className="px-4 py-3 text-slate-500 leading-tight">
-                              {h.note || 'Manual Adjustment'}
-                            </td>
-                          </tr>
-                        )
-                      })}
+                      {historyItems.map((h) => (
+                        <tr key={h._id} className="hover:bg-slate-50/40 transition-colors text-xs">
+                          <td className="px-4 py-3 text-slate-500">
+                            {new Date(h.createdAt).toLocaleString('en-IN', {
+                              day: '2-digit',
+                              month: 'short',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </td>
+                          <td className="px-4 py-3 text-slate-700 font-semibold">
+                            {h.variantSku ? `SKU: ${h.variantSku}` : 'Main Product'}
+                          </td>
+                          <td className={`px-4 py-3 text-center font-extrabold ${h.quantity > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                            {h.quantity > 0 ? `+${h.quantity}` : h.quantity}
+                          </td>
+                          <td className="px-4 py-3 text-slate-500 leading-tight">
+                            {h.note || 'Manual Adjustment'}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
               )}
             </div>
-
             <div className="px-5 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
               <button
                 type="button"

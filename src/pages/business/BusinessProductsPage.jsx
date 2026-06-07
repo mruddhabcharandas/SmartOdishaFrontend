@@ -249,7 +249,11 @@ export default function BusinessProductsPage() {
   )
 
   if (loading) {
-    return <div className="flex justify-center p-16"><LoadingSpinner text="Loading your products..." /></div>
+    return (
+      <div className="flex justify-center p-12">
+        <LoadingSpinner text="Loading your products..." />
+      </div>
+    )
   }
 
   return (
@@ -272,11 +276,11 @@ export default function BusinessProductsPage() {
         <table className="panel-table">
           <thead>
             <tr>
-              <th className="px-4 py-3">Product</th>
-              <th className="px-4 py-3">Price</th>
-              <th className="px-4 py-3">Stock</th>
-              <th className="px-4 py-3">Weight</th>
-              <th className="px-4 py-3 text-right">Actions</th>
+              <th className="px-6 py-4 text-left">Product</th>
+              <th className="px-6 py-4 text-center">Price</th>
+              <th className="px-6 py-4 text-center">Stock</th>
+              <th className="px-6 py-4 text-center">Weight</th>
+              <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y">
@@ -285,7 +289,7 @@ export default function BusinessProductsPage() {
               const thumb = p.images?.[0]?.url || p.images?.[0]
               return (
                 <tr key={p._id}>
-                  <td>
+                  <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       {thumb && <img src={thumb} alt="" className="panel-img-thumb" />}
                       <div>
@@ -294,12 +298,12 @@ export default function BusinessProductsPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="font-semibold">₹{Number(p.price).toLocaleString('en-IN')}</td>
-                  <td>
-                    <span className={`panel-badge ${stock <= 0 ? 'panel-badge-red' : stock <= 10 ? 'panel-badge-amber' : 'panel-badge-green'}">{stock}</span>
+                  <td className="px-6 py-4 text-center font-semibold">₹{Number(p.price).toLocaleString('en-IN')}</td>
+                  <td className="px-6 py-4 text-center">
+                    <span className={`panel-badge ${stock <= 0 ? 'panel-badge-red' : stock <= 10 ? 'panel-badge-amber' : 'panel-badge-green'}`}>{stock}</span>
                   </td>
-                  <td className="text-gray-500">{p.weight ? `${p.weight}g` : '—'}</td>
-                  <td className="text-right">
+                  <td className="px-6 py-4 text-center text-gray-500">{p.weight ? `${p.weight}g` : '—'}</td>
+                  <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button type="button" onClick={() => setManagingVariants(p)} className="panel-btn-outline text-xs py-1">Variants</button>
                       <button type="button" onClick={() => openEdit(p)} className="panel-btn-outline text-xs py-1">Edit</button>
@@ -309,7 +313,13 @@ export default function BusinessProductsPage() {
                 </tr>
               )
             })}
-            {filtered.length === 0 && <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-400">No products found</td></tr>}
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-6 py-12 text-center text-gray-500 font-medium">
+                  No products found
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -325,7 +335,7 @@ export default function BusinessProductsPage() {
                 {thumb && <img src={thumb} alt="" className="w-16 h-16 rounded-lg object-cover bg-gray-50" />}
                 <div className="flex-1 min-w-0">
                   <div className="font-bold text-gray-900">{p.name}</div>
-                  <div className="text-sm text-gray-500">{p.variants?.length ? `${p.variants.length} variants` : 'Simple product'}</div>
+                  <div className="text-xs text-gray-500">{p.variants?.length ? `${p.variants.length} variants` : 'Simple product'}</div>
                   <div className="flex items-center gap-3 mt-2">
                     <div className="font-bold text-gray-900">₹{Number(p.price).toLocaleString('en-IN')}</div>
                     <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${stock <= 0 ? 'bg-red-100 text-red-700' : stock <= 10 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>Stock: {stock}</span>
@@ -341,14 +351,18 @@ export default function BusinessProductsPage() {
             </div>
           )
         })}
-        {filtered.length === 0 && <div className="panel-card p-12 text-center text-gray-400">No products found</div>}
+        {filtered.length === 0 && (
+          <div className="panel-card p-12 text-center text-gray-500 font-medium">
+            No products found
+          </div>
+        )}
       </div>
 
       {showAdd && (
         <div className="panel-modal-overlay">
           <form onSubmit={create} className="panel-modal" style={{ maxWidth: 640 }} onClick={e => e.stopPropagation()}>
             <div className="panel-modal-header">
-              <h2 className="panel-title">Add New Product</h2>
+              <h3 className="panel-title">Add New Product</h3>
               <button type="button" onClick={() => setShowAdd(false)} className="panel-btn-ghost">✕ Close</button>
             </div>
             <div className="panel-modal-body">
@@ -366,11 +380,15 @@ export default function BusinessProductsPage() {
         <div className="panel-modal-overlay">
           <form onSubmit={saveEdit} className="panel-modal" style={{ maxWidth: 640 }} onClick={e => e.stopPropagation()}>
             <div className="panel-modal-header">
-              <h2 className="panel-title">Edit Product</h2>
+              <h3 className="panel-title">Edit Product</h3>
               <button type="button" onClick={() => setEditing(null)} className="panel-btn-ghost">✕ Close</button>
             </div>
             <div className="panel-modal-body">
-              {editing.stock != null && <div className="text-sm text-gray-500 bg-gray-50 rounded-sm px-4 py-2 mb-4">Current stock: <strong>{editing.stock}</strong> — manage via Inventory</div>}
+              {editing.stock != null && (
+                <div className="text-sm text-gray-500 bg-gray-50 rounded-sm px-4 py-2 mb-4">
+                  Current stock: <strong>{editing.stock}</strong> — manage via Inventory
+                </div>
+              )}
               <ProductFormFields data={editing} setData={setEditing} isEdit />
             </div>
             <div className="panel-modal-footer">
@@ -389,7 +407,14 @@ export default function BusinessProductsPage() {
           onClose={() => setManagingVariants(null)}
         />
       )}
-      <ConfirmModal open={!!toDelete} title="Delete Product" message={`Delete "${toDelete?.name}"?`} onConfirm={confirmDelete} onCancel={() => setToDelete(null)} />
+
+      <ConfirmModal
+        open={!!toDelete}
+        title="Delete Product"
+        message={`Delete "${toDelete?.name}"?`}
+        onConfirm={confirmDelete}
+        onCancel={() => setToDelete(null)}
+      />
     </div>
   )
 }
