@@ -95,10 +95,14 @@ export function CartProvider({ children }) {
             (item._id === pid && (item.variantSku || '') === (vsku || '')) ? { ...item, quantity: item.quantity + addQty } : item
           )
         }
-        const price = vsku ? (variant?.price ?? product.price) : product.price
+        const safeNum = (val) => { const n = Number(val); return isNaN(n) || !isFinite(n) ? 0 : n; }
+        const storePercentage = safeNum(product?.store?.storePercentage ?? 0)
+        const basePrice = vsku ? safeNum(variant?.originalStorePrice ?? variant?.price ?? product.price) : safeNum(product.originalStorePrice ?? product.price)
+        const price = basePrice * (1 + storePercentage / 100)
+        const mrp = vsku ? safeNum(variant?.mrp ?? product.mrp) : safeNum(product.mrp)
         const image = vsku ? (variant?.images?.[0] || product.images?.[0]) : product.images?.[0]
         const attributes = variant?.attributes
-        return [...prev, { ...product, _id: pid, variantSku: vsku, attributes, price, image, quantity: addQty, stock: available, minOrderQty: minQty, weight: product.weight }]
+        return [...prev, { ...product, _id: pid, variantSku: vsku, attributes, price, mrp, image, quantity: addQty, stock: available, minOrderQty: minQty, weight: product.weight }]
       })
       return success
     }

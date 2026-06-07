@@ -176,8 +176,7 @@ export default function ProductDetail() {
 
   const currentMrp = useMemo(() => {
     const base = matchedVariant ? safeNum(matchedVariant.mrp ?? 0) : safeNum(p?.mrp ?? 0);
-    if (base === 0) return 0;
-    return base * (1 + safeNum(p?.store?.storePercentage ?? 0) / 100);
+    return base;
   }, [matchedVariant, p]);
 
   const currentStock = matchedVariant?.stock ?? p?.stock;
@@ -196,8 +195,7 @@ export default function ProductDetail() {
         base = safeNum(minVar?.mrp ?? p.mrp ?? 0);
       }
     }
-    if (base === 0) return 0;
-    return base * (1 + safeNum(p?.store?.storePercentage ?? 0) / 100);
+    return base;
   }, [p, minPrice]);
 
   const discount = displayMrp > minPrice ? Math.round(((displayMrp - minPrice) / displayMrp) * 100) : 0;
@@ -478,65 +476,82 @@ export default function ProductDetail() {
   return (
     <div className="pd-root">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
         :root {
-          --ink: #0f0e17;
+          --ink: #1e1b2e;
           --ink2: #3d3d4e;
-          --ink3: #8888a0;
-          --surface: #fafaf8;
+          --ink3: #6b7280;
+          --surface: #f0f9ff;
           --card: #ffffff;
-          --border: rgba(0,0,0,0.07);
-          --accent: #e8521a;
-          --accent2: #1a3557;
-          --accent-soft: rgba(232,82,26,0.08);
-          --green: #1e9b6b;
-          --green-soft: rgba(30,155,107,0.08);
+          --border: rgba(30,58,138,0.14);
+          --accent: #f97316;
+          --accent2: #1e3a8a;
+          --accent-soft: rgba(249,115,22,0.08);
+          --green: #059669;
+          --green-soft: rgba(5,150,105,0.08);
           --radius-lg: 20px;
           --radius-xl: 28px;
-          --shadow-card: 0 2px 24px rgba(0,0,0,0.06);
-          --shadow-hover: 0 8px 40px rgba(0,0,0,0.1);
+          --shadow-card: 0 2px 24px rgba(30,58,138,0.06);
+          --shadow-hover: 0 8px 40px rgba(30,58,138,0.12);
         }
 
         .pd-root {
-          font-family: 'Outfit', system-ui, sans-serif;
+          font-family: 'DM Sans', system-ui, sans-serif;
           background: var(--surface);
           min-height: 100vh;
           color: var(--ink);
           padding-bottom: 88px;
+          position: relative;
+          overflow-x: hidden;
+        }
+
+        .pd-root::before {
+          content: '';
+          position: fixed;
+          inset: 0;
+          pointer-events: none;
+          z-index: 0;
+          background-image:
+            linear-gradient(rgba(30,58,138,0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(30,58,138,0.04) 1px, transparent 1px);
+          background-size: 60px 60px;
         }
 
         /* ─── Breadcrumb ─── */
         .pd-breadcrumb {
-          max-width: 1240px;
+          max-width: 1200px;
           margin: 0 auto;
-          padding: 20px 20px 0;
+          padding: 20px 16px 0;
           display: flex;
           align-items: center;
           gap: 6px;
-          font-size: 12.5px;
+          font-size: 13px;
           font-weight: 500;
           color: var(--ink3);
           flex-wrap: wrap;
         }
+        @media(min-width:600px){.pd-breadcrumb{padding:28px 24px 0;}}
         .pd-breadcrumb a { color: var(--ink3); text-decoration: none; }
         .pd-breadcrumb a:hover { color: var(--accent); }
         .pd-breadcrumb-sep { color: var(--border); font-size: 11px; }
 
         /* ─── Main Grid ─── */
         .pd-wrap {
-          max-width: 1240px;
+          max-width: 1200px;
           margin: 0 auto;
-          padding: 24px 20px 40px;
+          padding: 24px 16px 40px;
           display: grid;
           grid-template-columns: 1fr;
-          gap: 28px;
+          gap: 24px;
+          position: relative;
+          z-index: 1;
         }
-
-        @media (min-width: 1024px) {
+        @media(min-width:600px){.pd-wrap{padding:36px 24px 40px;}}
+        @media (min-width: 960px) {
           .pd-wrap {
             grid-template-columns: minmax(0, 440px) 1fr;
-            gap: 48px;
+            gap: 32px;
             align-items: start;
           }
         }
@@ -697,12 +712,13 @@ export default function ProductDetail() {
         }
 
         .pd-title {
-          font-family: 'Syne', sans-serif;
-          font-size: clamp(20px, 3vw, 27px);
-          font-weight: 800;
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: clamp(28px, 5vw, 40px);
+          font-weight: 400;
           color: var(--ink);
-          line-height: 1.2;
-          margin-bottom: 16px;
+          line-height: 1.1;
+          margin-bottom: 12px;
+          letter-spacing: 0.02em;
         }
 
         .pd-meta-row {
@@ -765,12 +781,12 @@ export default function ProductDetail() {
         }
 
         .pd-price {
-          font-family: 'Syne', sans-serif;
-          font-size: 42px;
-          font-weight: 800;
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 48px;
+          font-weight: 400;
           color: var(--ink);
           line-height: 1;
-          letter-spacing: -0.02em;
+          letter-spacing: 0.02em;
         }
 
         .pd-price-mrp {
@@ -1116,7 +1132,8 @@ export default function ProductDetail() {
         .pd-mob-cart:disabled, .pd-mob-buy:disabled { background: #ddd; color: #999; cursor: not-allowed; }
 
         /* Similar / Recommended */
-        .pd-recs { max-width: 1240px; margin: 0 auto; padding: 0 20px 40px; }
+        .pd-recs { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; position: relative; z-index:1; }
+        @media(min-width:600px){.pd-recs{padding:0 24px 40px;}}
         .pd-recs-header {
           display: flex;
           align-items: center;
@@ -1124,10 +1141,11 @@ export default function ProductDetail() {
           margin-bottom: 24px;
         }
         .pd-recs-title {
-          font-family: 'Syne', sans-serif;
-          font-size: 24px;
-          font-weight: 800;
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 28px;
+          font-weight: 400;
           color: var(--ink);
+          letter-spacing: 0.03em;
         }
         .pd-recs-line { flex: 1; height: 1px; background: var(--border); }
         .pd-recs-grid {

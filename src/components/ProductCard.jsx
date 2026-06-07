@@ -54,10 +54,8 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
     }
     if (!p || !Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p?.mrp || p?.price || 0)
     const variantWithMinPrice = p.variants.find(v => v.isActive !== false && safeNumber(v.price || 0) === minPrice)
-    // Apply store percentage to MRP
-    const storePercentage = safeNumber(p?.store?.storePercentage ?? 0)
     const baseMrp = safeNumber(variantWithMinPrice?.mrp || p?.mrp || minPrice || 0)
-    return baseMrp * (1 + storePercentage / 100)
+    return baseMrp
   }, [p, minPrice])
 
   const discount = displayMrp > minPrice

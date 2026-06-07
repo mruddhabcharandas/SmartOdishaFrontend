@@ -16,39 +16,25 @@ export default function Cart() {
   const [appliedCoupon, setAppliedCoupon] = useState(null)
   const [couponError, setCouponError] = useState('')
   const [isApplying, setIsApplying] = useState(false)
+  const [savedAddresses, setSavedAddresses] = useState([])
+  const [selectedAddress, setSelectedAddress] = useState(null)
+  const [shippingInfo, setShippingInfo] = useState({
+    loading: false,
+    deliveryCharge: 0,
+    codCharge: 0,
+    codAvailable: true,
+    isFreeDelivery: false,
+    deliveryAvailable: true
+  })
+  const [paymentMethod, setPaymentMethod] = useState('prepaid')
   const minAmount = Number(import.meta.env.VITE_MIN_ORDER_AMOUNT || 5000)
 
-  const handleApplyCoupon = async (e) => {
-    e?.preventDefault()
-    if (!couponCode.trim()) return
-    setIsApplying(true)
-    setCouponError('')
-    try {
-      const { data } = await api.post('/api/coupons/validate', {
-        code: couponCode.trim().toUpperCase(),
-        amount: effTotal
-      })
-      if (data.valid) {
-        setAppliedCoupon(data)
-        setCouponCode('')
-        notify('Coupon applied!', 'success')
-      }
-    } catch (err) {
-      const msg = err?.response?.data?.error || 'Invalid coupon'
-      if (msg.startsWith('min_order_value_not_met:')) {
-        const val = msg.split(':')[1]
-        setCouponError(`Min order value ₹${Number(val).toLocaleString()} required`)
-      } else if (msg === 'coupon_expired') setCouponError('Coupon has expired')
-      else if (msg === 'usage_limit_reached') setCouponError('Coupon usage limit reached')
-      else setCouponError(msg)
-    } finally {
-      setIsApplying(false)
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: '/cart' } })
+      return
     }
-  }
-
-  const handleRemoveCoupon = () => {
-    setAppliedCoupon(null)
-    setCouponError('')
+    navigate('/order', { state: { appliedCoupon } })
   }
 
   /* ── price helpers ── */
@@ -81,13 +67,121 @@ export default function Cart() {
     return s + lineTotal(it);
   }, 0)
   const bulkDiscount = Math.max(0, mrpTotal - effTotal)
-  const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0
-  const totalPayable = effTotal - couponDiscount
+  const totalPayable = effTotal
   const etaText = (() => {
     const d = new Date(); d.setDate(d.getDate()+4)
     return d.toLocaleDateString('en-IN', { day:'2-digit', month:'short' })
   })()
   const minLeft = Math.max(0, minAmount - totalPayable)
+
+  const handleApplyCoupon = async (e) => {
+    e?.preventDefault()
+    if (!couponCode.trim()) return
+    setIsApplying(true)
+    setCouponError('')
+    try {
+      const { data } = await api.post('/api/coupons/validate', { 
+        code: couponCode.trim().toUpperCase(),
+        amount: totalPayable 
+      })
+      if (data.valid) {
+        setAppliedCoupon(data)
+        setCouponCode('')
+      }
+    } catch (err) {
+      const msg = err?.response?.data?.error || ''
+      if (msg.startsWith('min_order_value_not_met:')) {
+        const val = msg.split(':')[1]
+        setCouponError(`Min order value ₹${Number(val).toLocaleString()} required`)
+      } else if (msg === 'coupon_expired') setCouponError('Coupon has expired')
+      else if (msg === 'usage_limit_reached') setCouponError('Coupon usage limit reached')
+      else setCouponError('Invalid or inactive coupon')
+    } finally {
+      setIsApplying(false)
+    }
+  }
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null)
+    setCouponError('')
+  }
+
+  // Load user addresses
+  const loadAddresses = async () => {
+    if (!isAuthenticated) return
+    try {
+      const { data } = await api.get('/api/user/addresses')
+      setSavedAddresses(data)
+      if (data.length > 0) {
+        const defaultAddr = data.find(a => a.isDefault) || data[0]
+        setSelectedAddress(defaultAddr)
+      }
+    } catch (err) {
+      console.error('Failed to load addresses:', err)
+    }
+  }
+
+  // Calculate shipping charges
+  const calculateShipping = async (address, orderAmt, paymentMethod) => {
+    if (!address) return
+    try {
+      setShippingInfo(prev => ({ ...prev, loading: true }))
+      const totalWeight = cart.reduce((sum, item) => sum + (Number(item.weight) || 0.5) * item.quantity, 0)
+      const firstItem = cart[0]
+      const storeId = firstItem?.store?._id || firstItem?.store
+      
+      const { data } = await api.post('/api/shipping/calculate', {
+        destination_pin: address.pincode,
+        weight: totalWeight,
+        order_amount: orderAmt,
+        payment_method: paymentMethod,
+        store_id: storeId
+      })
+      
+      setShippingInfo({
+        loading: false,
+        deliveryCharge: data.delivery_charge || 0,
+        codCharge: data.cod_charge || 0,
+        finalCharge: data.final_charge || 0,
+        codAvailable: data.cod_available !== false,
+        isFreeDelivery: data.final_charge === 0 && paymentMethod === 'prepaid',
+        deliveryAvailable: true
+      })
+    } catch (err) {
+      console.error('Failed to calculate shipping:', err)
+      // Calculate default shipping in case API fails
+      const freeDeliveryAbove = 999
+      const isPrepaidFree = orderAmt >= freeDeliveryAbove && paymentMethod === 'prepaid'
+      const deliveryCharge = isPrepaidFree ? 0 : 85
+      const codCharge = paymentMethod === "cod" ? Math.min(Math.max(Math.round(orderAmt * 0.05), 40), 100) : 0
+      const finalCharge = deliveryCharge + codCharge
+      
+      setShippingInfo({
+        loading: false,
+        deliveryCharge,
+        codCharge,
+        finalCharge,
+        codAvailable: true,
+        isFreeDelivery: finalCharge === 0 && paymentMethod === 'prepaid',
+        deliveryAvailable: true
+      })
+    }
+  }
+
+  const finalTotalPayable = (appliedCoupon ? appliedCoupon.payable : totalPayable) + shippingInfo.finalCharge
+  const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0
+
+  // Load addresses on mount
+  useEffect(() => {
+    loadAddresses()
+  }, [isAuthenticated])
+
+  // Calculate shipping when address, cart total, or payment method changes
+  useEffect(() => {
+    if (selectedAddress) {
+      calculateShipping(selectedAddress, totalPayable, paymentMethod)
+    }
+  }, [selectedAddress, totalPayable, paymentMethod])
 
   useEffect(() => {
     const first = cart[0]
@@ -162,7 +256,7 @@ export default function Cart() {
         }
         .ct-blob{position:fixed;top:-180px;left:50%;transform:translateX(-50%);width:800px;height:500px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(ellipse,rgba(30,58,138,.07),transparent 65%);}
 
-        .ct-wrap{max-width:1000px;margin:0 auto;padding:36px 16px 24px;position:relative;z-index:1;}
+        .ct-wrap{max-width:1200px;margin:0 auto;padding:36px 16px 24px;position:relative;z-index:1;}
         @media(min-width:600px){.ct-wrap{padding:48px 24px 24px;}}
 
         /* page header */
@@ -175,8 +269,9 @@ export default function Cart() {
         .ct-sub{font-size:13px;color:#6b7280;}
         .ct-count-pill{display:inline-flex;align-items:center;gap:7px;padding:8px 16px;border-radius:100px;background:rgba(30,58,138,.08);border:1px solid rgba(30,58,138,.18);color:#f97316;font-size:12px;font-weight:700;white-space:nowrap;}
 
-        /* items container */
-        .ct-items{display:flex;flex-direction:column;gap:12px;}
+        /* main grid */
+        .ct-grid{display:grid;grid-template-columns:1fr;gap:20px;}
+        @media(min-width:960px){.ct-grid{grid-template-columns:1fr 360px;align-items:start;gap:24px;}}
 
         /* ── ITEM CARD ── */
         .ct-item{
@@ -278,7 +373,7 @@ export default function Cart() {
         @media(max-width:500px){.ct-line-total{flex-direction:row;align-items:center;justify-content:space-between;}}
 
         /* suggestions */
-        .ct-sugg-section{margin-top:16px;}
+        .ct-sugg-section{margin-top:8px;}
         .ct-sugg-label{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#9ca3af;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
         .ct-sugg-label::before{content:'';width:20px;height:2px;background:rgba(30,58,138,.35);border-radius:2px;}
         .ct-sugg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;}
@@ -291,90 +386,83 @@ export default function Cart() {
         .ct-sugg-add{padding:6px 12px;border-radius:8px;background:#f97316;color:white;border:none;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;transition:all .15s;}
         .ct-sugg-add:hover{background:#6d28d9;}
 
-        /* checkout section */
-        .ct-checkout-section{
-          margin-top:24px;
-          background:white;
-          border:1px solid rgba(30,58,138,.14);
-          border-radius:18px;
-          padding:24px;
-          animation:ctUp .5s ease both;
-          animation-delay:.1s;
+        /* ── ORDER SUMMARY CARD ── */
+        .ct-summary{
+          background:white; border:1px solid rgba(30,58,138,.14);
+          border-radius:20px; padding:24px; position:relative; overflow:hidden;
           box-shadow:0 4px 24px rgba(30,58,138,.07);
+          animation:ctUp .5s .1s ease both;
         }
-        .ct-checkout-title{
-          font-family:'Bebas Neue',sans-serif;
-          font-size:22px;
-          color:#1e1b2e;
-          margin-bottom:8px;
+        .ct-summary::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#f97316,transparent);}
+
+        .ct-summary-title{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#1e1b2e;letter-spacing:.03em;margin-bottom:20px;}
+
+        .ct-summary-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+        .ct-summary-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;}
+        .ct-summary-label{color:#6b7280;font-weight:500;}
+        .ct-summary-val{font-weight:700;color:#1e1b2e;}
+        .ct-summary-val.green{color:#059669;}
+        .ct-summary-val.free{color:#059669;font-weight:900;}
+
+        @media(max-width:480px){
+          .ct-summary-row { font-size: 11px; }
+          .ct-summary-total-val { font-size: 26px; }
+          .ct-summary-title { font-size: 20px; }
+          .ct-savings-badge { padding: 10px; }
+          .ct-savings-text { font-size: 11px; }
+          .ct-savings-sub { font-size: 9px; }
         }
-        .ct-checkout-info{
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          gap:16px;
-          margin-bottom:16px;
+
+        .ct-summary-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(30,58,138,.15),transparent);margin:12px 0;}
+
+        .ct-summary-total-row{display:flex;align-items:baseline;justify-content:space-between;}
+        .ct-summary-total-label{font-size:13px;font-weight:700;color:#1e1b2e;text-transform:uppercase;letter-spacing:.08em;}
+        .ct-summary-total-val{font-family:'Bebas Neue',sans-serif;font-size:32px;color:#f97316;letter-spacing:.03em;}
+
+        /* min order progress */
+        .ct-min-progress{margin:16px 0;}
+        .ct-min-track{height:5px;background:rgba(30,58,138,.12);border-radius:100px;overflow:hidden;margin-bottom:7px;}
+        .ct-min-fill{height:5px;border-radius:100px;transition:width .4s;background:linear-gradient(90deg,#f97316,#f97316);}
+        .ct-min-text{font-size:11px;font-weight:600;color:#9ca3af;}
+        .ct-min-text b{color:#f97316;}
+        .ct-min-text.met{color:#059669;font-weight:700;}
+
+        /* savings badge */
+        .ct-savings-badge{
+          display:flex;align-items:center;gap:8px;
+          background:rgba(5,150,105,.07);border:1px solid rgba(5,150,105,.18);
+          border-radius:12px;padding:12px 14px;margin-bottom:16px;
         }
-        .ct-checkout-total-label{
-          font-size:13px;
-          color:#6b7280;
-          font-weight:500;
-        }
-        .ct-checkout-total-val{
-          font-family:'Bebas Neue',sans-serif;
-          font-size:28px;
-          color:#f97316;
-        }
+        .ct-savings-ico{width:32px;height:32px;border-radius:8px;background:rgba(5,150,105,.12);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+        .ct-savings-text{font-size:13px;font-weight:700;color:#059669;}
+        .ct-savings-sub{font-size:11px;font-weight:500;color:#6b7280;}
+
+        /* checkout button */
         .ct-checkout-btn{
-          width:100%;
-          padding:16px;
-          border-radius:14px;
-          border:none;
-          font-size:12px;
-          font-weight:800;
-          letter-spacing:.16em;
-          text-transform:uppercase;
-          cursor:pointer;
-          font-family:'DM Sans',sans-serif;
+          width:100%;padding:16px;border-radius:14px;border:none;
+          font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+          cursor:pointer;font-family:'DM Sans',sans-serif;
           transition:all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          gap:10px;
-          position: relative;
-          overflow: hidden;
+          display:flex;align-items:center;justify-content:center;gap:10px;
+          position: relative; overflow: hidden;
+        }
+        .ct-checkout-btn::after {
+          content: ''; position: absolute; inset: 0;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+          transform: translateX(-100%); transition: transform 0.6s;
         }
         .ct-checkout-btn.ready{
-          background: linear-gradient(135deg, #f97316, #1e3a8a);
-          color:white;
+          background: linear-gradient(135deg, #f97316, #1e3a8a); color:white;
           box-shadow:0 8px 24px rgba(124,58,237,.3);
         }
         .ct-checkout-btn.ready:hover{
-          transform: translateY(-4px) scale(1.02);
+          transform: translateY(-4px) scale(1.02); 
           box-shadow: 0 16px 48px rgba(124,58,237,.45);
         }
-        .ct-checkout-btn.ready:hover::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-          transform: translateX(100%);
-          transition: transform 0.6s;
-        }
-        .ct-checkout-btn.disabled{
-          background:#f3f4f6;
-          color:#d1d5db;
-          cursor:not-allowed;
-        }
-        .ct-min-text{
-          font-size:11px;
-          font-weight:600;
-          color:#9ca3af;
-          margin-top:12px;
-          text-align:center;
-        }
-        .ct-min-text b{color:#f97316;}
-        .ct-min-text.met{color:#059669;font-weight:700;}
+        .ct-checkout-btn.ready:hover::after { transform: translateX(100%); }
+        .ct-checkout-btn.disabled{background:#f3f4f6;color:#d1d5db;cursor:not-allowed;}
+
+        .ct-secure-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#9ca3af;margin-top:12px;font-weight:500;}
 
         /* ── STICKY MOBILE BAR ── */
         .ct-mobile-bar{
@@ -402,7 +490,7 @@ export default function Cart() {
 
         @keyframes ctUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
-        /* hide mobile bar on desktop */
+        /* hide mobile bar on desktop summary visible */
         @media(min-width:960px){.ct-mobile-bar{display:none;}}
       `}</style>
 
@@ -425,399 +513,550 @@ export default function Cart() {
             </div>
           </div>
 
-          {/* ── CART ITEMS ── */}
-          <div className="ct-items">
-            {cart.map((item, idx) => {
-              const tiers   = getBulkTiers(item)
-              const next    = getNextTier(item.quantity, tiers)
-              const maxQ    = tiers.length ? Math.max(item.quantity, tiers[tiers.length-1].quantity) : item.quantity
-              const pct     = tiers.length ? Math.min(100, Math.round((item.quantity/maxQ)*100)) : 100
-              const itemStock = item.variantSku 
-                ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock)
-                : (item.productId?.stock ?? item.stock);
-              const stockSt = getStockStatus(itemStock)
-              const isOutOfStock = itemStock <= 0
-              const imgSrc  = item.image || item.images?.[0]?.url
-              const itemId  = item.productId || item._id
-              const itemSku = item.variantSku || ''
+          {/* ── 2-COL GRID ── */}
+          <div className="ct-grid">
 
-              // Get attributes from either item.attributes or item.productId.variants (for server-side cart)
-              const getAttrs = (it) => {
-                if (it.attributes) {
-                  return it.attributes instanceof Map ? Object.fromEntries(it.attributes) : it.attributes;
-                }
-                // If attributes are missing on item, find in variants if productId is populated
-                if (it.productId && typeof it.productId === 'object' && it.variantSku && it.productId.variants) {
-                  const variant = it.productId.variants.find(v => v.sku === it.variantSku);
-                  if (variant && variant.attributes) {
-                    return variant.attributes instanceof Map ? Object.fromEntries(variant.attributes) : variant.attributes;
+            {/* LEFT — items */}
+            <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+
+              {cart.map((item, idx) => {
+                const tiers   = getBulkTiers(item)
+                const next    = getNextTier(item.quantity, tiers)
+                const maxQ    = tiers.length ? Math.max(item.quantity, tiers[tiers.length-1].quantity) : item.quantity
+                const pct     = tiers.length ? Math.min(100, Math.round((item.quantity/maxQ)*100)) : 100
+                const itemStock = item.variantSku 
+                  ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock)
+                  : (item.productId?.stock ?? item.stock);
+                const stockSt = getStockStatus(itemStock)
+                const isOutOfStock = itemStock <= 0
+                const imgSrc  = item.image || item.images?.[0]?.url
+                const itemId  = item.productId || item._id
+                const itemSku = item.variantSku || ''
+
+                // Get attributes from either item.attributes or item.productId.variants (for server-side cart)
+                const getAttrs = (it) => {
+                  if (it.attributes) {
+                    return it.attributes instanceof Map ? Object.fromEntries(it.attributes) : it.attributes;
                   }
-                }
-                return {};
-              };
-              const displayAttributes = getAttrs(item);
-              const hasAttributes = displayAttributes && Object.entries(displayAttributes).filter(([, v]) => v).length > 0;
-
-              return (
-                <div key={`${itemId}-${itemSku}`} className={`ct-item ${isOutOfStock ? 'ct-oos' : ''}`} style={{ 
-                  animationDelay:`${idx*50}ms`,
-                  opacity: isOutOfStock ? 0.6 : 1,
-                  filter: isOutOfStock ? 'grayscale(0.4)' : 'none'
-                }}>
-                  {isOutOfStock && (
-                    <div style={{
-                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                      background: 'rgba(255,255,255,0.4)', zIndex: 5,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      pointerEvents: 'none'
-                    }}>
-                      <div style={{
-                        background: '#ef4444', color: 'white', padding: '4px 12px',
-                        borderRadius: '8px', fontSize: '10px', fontWeight: 800,
-                        textTransform: 'uppercase', letterSpacing: '0.1em'
-                      }}>Currently Unavailable</div>
-                    </div>
-                  )}
-
-                  {/* image */}
-                  <div className="ct-img" style={{ cursor: 'pointer' }} onClick={() => navigate(`/products/${itemId}`)}>
-                    {imgSrc
-                      ? <img src={getImageUrl(imgSrc, 200)} alt={item.name} loading="lazy" width="80" height="80" />
-                      : <span className="ct-img-ph">📦</span>
+                  // If attributes are missing on item, find in variants if productId is populated
+                  if (it.productId && typeof it.productId === 'object' && it.variantSku && it.productId.variants) {
+                    const variant = it.productId.variants.find(v => v.sku === it.variantSku);
+                    if (variant && variant.attributes) {
+                      return variant.attributes instanceof Map ? Object.fromEntries(variant.attributes) : variant.attributes;
                     }
-                  </div>
+                  }
+                  return {};
+                };
+                const displayAttributes = getAttrs(item);
+                const hasAttributes = displayAttributes && Object.entries(displayAttributes).filter(([, v]) => v).length > 0;
 
-                  {/* body */}
-                  <div className="ct-item-body">
-                    <div className="ct-item-name" style={{ cursor: 'pointer' }} onClick={() => navigate(`/products/${itemId}`)}>
-                      {item.name}
-                      {hasAttributes && (
-                        <span style={{ marginLeft: 8, color: '#6b7280', fontSize: '0.9em', fontWeight: 500 }}>
-                          ({Object.values(displayAttributes).filter(v => v).map(v => String(v).toUpperCase()).join(', ')})
-                        </span>
-                      )}
-                    </div>
-                    <div className="ct-item-meta">
-                      <span className="ct-unit-price">₹{unitPrice(item).toLocaleString()} / unit</span>
-                      <span style={{ fontSize:9, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase',
-                        padding:'2px 8px', borderRadius:100,
-                        background: isOutOfStock ? 'rgba(220,38,38,.1)' : itemStock <= 5 ? 'rgba(245,158,11,.1)' : 'rgba(5,150,105,.1)',
-                        color: isOutOfStock ? '#dc2626' : itemStock <= 5 ? '#d97706' : '#059669',
-                        border: `1px solid ${isOutOfStock ? 'rgba(220,38,38,.2)' : itemStock <= 5 ? 'rgba(245,158,11,.2)' : 'rgba(5,150,105,.2)'}`
+                return (
+                  <div key={`${itemId}-${itemSku}`} className={`ct-item ${isOutOfStock ? 'ct-oos' : ''}`} style={{ 
+                    animationDelay:`${idx*50}ms`,
+                    opacity: isOutOfStock ? 0.6 : 1,
+                    filter: isOutOfStock ? 'grayscale(0.4)' : 'none'
+                  }}>
+                    {isOutOfStock && (
+                      <div style={{
+                        position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                        background: 'rgba(255,255,255,0.4)', zIndex: 5,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        pointerEvents: 'none'
                       }}>
-                        {stockSt.text}
-                      </span>
-                    </div>
-                    <div className="ct-delivery">
-                      <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{display:'inline',marginRight:4,verticalAlign:'middle'}}>
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
-                      </svg>
-                      Delivery by <b>{etaText}</b>
-                    </div>
-
-                    {/* bulk tier nudge */}
-                    {tiers.length > 0 && (
-                      <div className="ct-tier-nudge" style={{ background: 'rgba(124, 58, 237, 0.05)', border: '1px solid rgba(124, 58, 237, 0.15)' }}>
-                        <div className="ct-tier-bar-track" style={{ background: 'rgba(124, 58, 237, 0.1)' }}>
-                          <div className="ct-tier-bar-fill" style={{ width:`${pct}%`, background: '#f97316' }}/>
-                        </div>
-                        <div className="ct-tier-nudge-row">
-                          {next ? (() => {
-                            const delta     = next.quantity - item.quantity
-                            const perOff    = Number(next.priceReduction||0)
-                            const effUnit   = Math.max(0, Number(item.price||0) - perOff)
-                            const estSave   = perOff * (item.quantity + delta)
-                            return (
-                              <>
-                                <div className="ct-tier-text" style={{ color: '#f97316' }}>
-                                  Add {delta} more to save ₹{estSave.toLocaleString()} (₹{effUnit.toLocaleString()}/unit)
-                                </div>
-                                <button className="ct-tier-add-btn"
-                                  style={{ background: '#f97316' }}
-                                  onClick={() => updateQuantity(itemId, itemSku, next.quantity)}>
-                                  Add {delta} units
-                                </button>
-                              </>
-                            )
-                          })() : (
-                            <div className="ct-tier-max" style={{ color: '#059669' }}>✓ Max bulk savings applied</div>
-                          )}
-                        </div>
+                        <div style={{
+                          background: '#ef4444', color: 'white', padding: '4px 12px',
+                          borderRadius: '8px', fontSize: '10px', fontWeight: 800,
+                          textTransform: 'uppercase', letterSpacing: '0.1em'
+                        }}>Currently Unavailable</div>
                       </div>
                     )}
 
-                    {/* qty + actions */}
-                    <div className="ct-qty-row" style={{ pointerEvents: isOutOfStock ? 'none' : 'auto' }}>
-                      <div className="ct-qty-ctrl" style={{ opacity: isOutOfStock ? 0.4 : 1 }}>
-                        <button className="ct-qty-btn"
-                          disabled={isOutOfStock || item.quantity <= Math.max(1, Number(item.minOrderQty||0))}
-                          onClick={() => updateQuantity(itemId, itemSku, Math.max(Number(item.minOrderQty||1), item.quantity-1))}>−</button>
-                        <input 
-                          className="ct-qty-val" 
-                          type="number"
-                          value={item.quantity} 
-                          disabled={isOutOfStock}
-                          onChange={(e) => {
-                            const v = parseInt(e.target.value) || 0
-                            updateQuantity(itemId, itemSku, Math.max(0, v))
-                          }}
-                          onBlur={(e) => {
-                            const min = Math.max(1, Number(item.minOrderQty||0))
-                            const v = parseInt(e.target.value) || min
-                            updateQuantity(itemId, itemSku, Math.max(min, v))
-                          }}
-                        />
-                        <button className="ct-qty-btn"
-                          disabled={isOutOfStock || item.quantity >= itemStock}
-                          onClick={() => updateQuantity(itemId, itemSku, item.quantity+1)}>+</button>
-                      </div>
-
-                      <button className="ct-action-btn remove"
-                        style={{ pointerEvents: 'auto' }}
-                        onClick={() => removeFromCart(itemId, itemSku)}>
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* line total */}
-                  <div className="ct-line-total">
-                    <div className="ct-line-price">₹{lineTotal(item).toLocaleString()}</div>
-                    {(() => {
-                      const it = (item.bulkTiers || item.bulkDiscountQuantity) ? item : (item.productId && typeof item.productId === 'object' ? item.productId : item);
-                      const bulkQty = it.bulkDiscountQuantity || (it.bulkTiers && it.bulkTiers[0]?.quantity);
-                      if (bulkQty > 0 && item.quantity < bulkQty) {
-                        return (
-                          <div className="ct-line-unlock">
-                            Add {bulkQty - item.quantity} more to unlock bulk price
-                          </div>
-                        );
-                      }
-                      return null;
-                    })()}
-                  </div>
-
-                </div>
-              )
-            })}
-          </div>
-
-          {/* SUGGESTIONS */}
-          {suggestions.length > 0 && (
-            <div className="ct-sugg-section" style={{ animationDelay:`${cart.length*50}ms` }}>
-              <div className="ct-sugg-label">Frequently Bought Together</div>
-              <div className="ct-sugg-grid">
-                {suggestions.map(p => (
-                  <div key={p._id||p.id} className="ct-sugg-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/products/${p._id || p.id}`)}>
-                    <div className="ct-sugg-img">
-                      {p.images?.[0]?.url
-                        ? <img src={getImageUrl(p.images[0].url, 200)} alt={p.name} loading="lazy" width="60" height="60" />
-                        : <span style={{fontSize:18}}>📦</span>
+                    {/* image */}
+                    <div className="ct-img" style={{ cursor: 'pointer' }} onClick={() => navigate(`/products/${itemId}`)}>
+                      {imgSrc
+                        ? <img src={getImageUrl(imgSrc, 200)} alt={item.name} loading="lazy" width="80" height="80" />
+                        : <span className="ct-img-ph">📦</span>
                       }
                     </div>
-                    <div style={{ flex:1, minWidth:0 }}>
-                      <div className="ct-sugg-name">{p.name}</div>
-                      <div className="ct-sugg-price">{p.price!=null?`₹${Number(p.price).toLocaleString()}`:'—'}</div>
-                    </div>
-                    <button className="ct-sugg-add" onClick={(e) => { e.stopPropagation(); addToCart(p); }}>Add</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
-          {/* CHECKOUT SECTION */}
-          <div className="ct-checkout-section">
-            <div className="ct-checkout-title">Ready to Checkout?</div>
-
-            {/* Coupon Code Section */}
-            <div style={{ marginBottom: '16px' }}>
-              {!appliedCoupon ? (
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <input
-                    type="text"
-                    style={{
-                      flex: 1,
-                      padding: '10px 16px',
-                      border: '1.5px solid rgba(30,58,138,.2)',
-                      borderRadius: '10px',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
-                      outline: 'none',
-                      transition: 'all .2s',
-                      background: 'white'
-                    }}
-                    placeholder="COUPON CODE"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                  />
-                  <button
-                    onClick={handleApplyCoupon}
-                    disabled={isApplying || !couponCode.trim()}
-                    style={{
-                      padding: '10px 20px',
-                      borderRadius: '10px',
-                      background: 'linear-gradient(135deg, #f97316, #1e3a8a)',
-                      color: 'white',
-                      border: 'none',
-                      fontSize: '11px',
-                      fontWeight: 800,
-                      letterSpacing: '0.12em',
-                      textTransform: 'uppercase',
-                      cursor: 'pointer',
-                      transition: 'all .2s',
-                      opacity: isApplying || !couponCode.trim() ? '0.5' : '1',
-                      pointerEvents: isApplying || !couponCode.trim() ? 'none' : 'auto'
-                    }}
-                  >
-                    {isApplying ? '...' : 'Apply'}
-                  </button>
-                </div>
-              ) : (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  background: 'rgba(5,150,105,.06)',
-                  border: '1px solid rgba(5,150,105,.18)',
-                  borderRadius: '10px',
-                  padding: '10px 16px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '16px' }}>🎟️</span>
-                    <div>
-                      <div style={{ fontSize: '10px', fontWeight: 800, color: '#059669', textTransform: 'uppercase', letterSpacing: '0.15em' }}>
-                        {appliedCoupon.code} Applied
+                    {/* body */}
+                    <div className="ct-item-body">
+                      <div className="ct-item-name" style={{ cursor: 'pointer' }} onClick={() => navigate(`/products/${itemId}`)}>
+                        {item.name}
+                        {hasAttributes && (
+                          <span style={{ marginLeft: 8, color: '#6b7280', fontSize: '0.9em', fontWeight: 500 }}>
+                            ({Object.values(displayAttributes).filter(v => v).map(v => String(v).toUpperCase()).join(', ')})
+                          </span>
+                        )}
                       </div>
-                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#059669' }}>
-                        ₹{couponDiscount.toLocaleString()} Saved
+                      <div className="ct-item-meta">
+                        <span className="ct-unit-price">₹{unitPrice(item).toLocaleString()} / unit</span>
+                        <span style={{ fontSize:9, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase',
+                          padding:'2px 8px', borderRadius:100,
+                          background: isOutOfStock ? 'rgba(220,38,38,.1)' : itemStock <= 5 ? 'rgba(245,158,11,.1)' : 'rgba(5,150,105,.1)',
+                          color: isOutOfStock ? '#dc2626' : itemStock <= 5 ? '#d97706' : '#059669',
+                          border: `1px solid ${isOutOfStock ? 'rgba(220,38,38,.2)' : itemStock <= 5 ? 'rgba(245,158,11,.2)' : 'rgba(5,150,105,.2)'}`
+                        }}>
+                          {stockSt.text}
+                        </span>
                       </div>
-                    </div>
-                  </div>
-                  <button
-                    onClick={handleRemoveCoupon}
-                    style={{
-                      background: 'none',
-                      border: 'none',
-                      color: '#ef4444',
-                      fontSize: '10px',
-                      fontWeight: 800,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.12em',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Remove
-                  </button>
-                </div>
-              )}
-              {couponError && (
-                <div style={{
-                  marginTop: '8px',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  color: '#ef4444'
-                }}>
-                  {couponError}
-                </div>
-              )}
-            </div>
-
-            {/* Price Breakdown */}
-            <div style={{
-              padding: '12px 16px',
-              background: 'rgba(30,58,138,.04)',
-              borderRadius: '12px',
-              marginBottom: '16px',
-              border: '1px solid rgba(30,58,138,.1)'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#6b7280' }}>Subtotal</span>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#1e1b2e' }}>₹{effTotal.toLocaleString()}</span>
-              </div>
-              {bulkDiscount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#6b7280' }}>Bulk Discount</span>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#059669' }}>-₹{bulkDiscount.toLocaleString()}</span>
-                </div>
-              )}
-              {couponDiscount > 0 && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 600, color: '#6b7280' }}>Coupon Discount</span>
-                  <span style={{ fontSize: '14px', fontWeight: 700, color: '#059669' }}>-₹{couponDiscount.toLocaleString()}</span>
-                </div>
-              )}
-              <div style={{ height: '1px', background: 'rgba(30,58,138,.15)', margin: '10px 0' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e1b2e' }}>Total</span>
-                <span style={{ fontSize: '20px', fontWeight: 800, color: '#f97316', fontFamily: 'Bebas Neue, sans-serif' }}>
-                  ₹{totalPayable.toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            <div className="ct-checkout-info">
-              <div className="ct-checkout-total-label">Total Amount</div>
-              <div className="ct-checkout-total-val">₹{totalPayable.toLocaleString()}</div>
-            </div>
-            <button
-              className={`ct-checkout-btn ${minLeft > 0 ? 'disabled' : 'ready'}`}
-              onClick={() => {
-                if (minLeft > 0) return;
-                if (!isAuthenticated) {
-                  navigate('/login', { state: { from: '/cart' } });
-                  return;
-                }
-                navigate('/order', { state: { appliedCoupon } });
-              }}
-              disabled={minLeft > 0}
-            >
-              {minLeft > 0 
-                ? `Add ₹${minLeft.toLocaleString()} More to Continue`
-                : (
-                  <>
-                    Proceed to Checkout
-                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                    </svg>
-                  </>
-                )
-              }
-            </button>
-            <div className={`ct-min-text ${minLeft === 0 ? 'met' : ''}`}>
-              {minLeft === 0 
-                ? '✓ Minimum order amount met'
-                : `Minimum order amount: ₹${minAmount.toLocaleString()}`
-              }
-            </div>
-          </div>
-
+                      <div className="ct-delivery">
+          <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{display:'inline',marginRight:4,verticalAlign:'middle'}}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
+          </svg>
+          Delivery by <b>{etaText}</b>
         </div>
 
-        {/* MOBILE STICKY BAR */}
+                      {/* bulk tier nudge */}
+                      {tiers.length > 0 && (
+                        <div className="ct-tier-nudge" style={{ background: 'rgba(124, 58, 237, 0.05)', border: '1px solid rgba(124, 58, 237, 0.15)' }}>
+                          <div className="ct-tier-bar-track" style={{ background: 'rgba(124, 58, 237, 0.1)' }}>
+                            <div className="ct-tier-bar-fill" style={{ width:`${pct}%`, background: '#f97316' }}/>
+                          </div>
+                          <div className="ct-tier-nudge-row">
+                            {next ? (() => {
+                              const delta     = next.quantity - item.quantity
+                              const perOff    = Number(next.priceReduction||0)
+                              const effUnit   = Math.max(0, Number(item.price||0) - perOff)
+                              const estSave   = perOff * (item.quantity + delta)
+                              return (
+                                <>
+                                  <div className="ct-tier-text" style={{ color: '#f97316' }}>
+                                    Add {delta} more to save ₹{estSave.toLocaleString()} (₹{effUnit.toLocaleString()}/unit)
+                                  </div>
+                                  <button className="ct-tier-add-btn"
+                                    style={{ background: '#f97316' }}
+                                    onClick={() => updateQuantity(itemId, itemSku, next.quantity)}>
+                                    Add {delta} units
+                                  </button>
+                                </>
+                              )
+                            })() : (
+                              <div className="ct-tier-max" style={{ color: '#059669' }}>✓ Max bulk savings applied</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* qty + actions */}
+                      <div className="ct-qty-row" style={{ pointerEvents: isOutOfStock ? 'none' : 'auto' }}>
+                        <div className="ct-qty-ctrl" style={{ opacity: isOutOfStock ? 0.4 : 1 }}>
+                          <button className="ct-qty-btn"
+                            disabled={isOutOfStock || item.quantity <= Math.max(1, Number(item.minOrderQty||0))}
+                            onClick={() => updateQuantity(itemId, itemSku, Math.max(Number(item.minOrderQty||1), item.quantity-1))}>−</button>
+                          <input 
+                            className="ct-qty-val" 
+                            type="number"
+                            value={item.quantity} 
+                            disabled={isOutOfStock}
+                            onChange={(e) => {
+                              const v = parseInt(e.target.value) || 0
+                              updateQuantity(itemId, itemSku, Math.max(0, v))
+                            }}
+                            onBlur={(e) => {
+                              const min = Math.max(1, Number(item.minOrderQty||0))
+                              const v = parseInt(e.target.value) || min
+                              updateQuantity(itemId, itemSku, Math.max(min, v))
+                            }}
+                          />
+                          <button className="ct-qty-btn"
+                            disabled={isOutOfStock || item.quantity >= itemStock}
+                            onClick={() => updateQuantity(itemId, itemSku, item.quantity+1)}>+</button>
+                        </div>
+
+                        <button className="ct-action-btn remove"
+                          style={{ pointerEvents: 'auto' }}
+                          onClick={() => removeFromCart(itemId, itemSku)}>
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* line total */}
+                    <div className="ct-line-total">
+                      <div className="ct-line-price">₹{lineTotal(item).toLocaleString()}</div>
+                      {(() => {
+                        const it = (item.bulkTiers || item.bulkDiscountQuantity) ? item : (item.productId && typeof item.productId === 'object' ? item.productId : item);
+                        const bulkQty = it.bulkDiscountQuantity || (it.bulkTiers && it.bulkTiers[0]?.quantity);
+                        if (bulkQty > 0 && item.quantity < bulkQty) {
+                          return (
+                            <div className="ct-line-unlock">
+                              Add {bulkQty - item.quantity} more to unlock bulk price
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
+
+                  </div>
+                )
+              })}
+
+              {/* SUGGESTIONS */}
+              {suggestions.length > 0 && (
+                <div className="ct-sugg-section" style={{ animationDelay:`${cart.length*50}ms` }}>
+                  <div className="ct-sugg-label">Frequently Bought Together</div>
+                  <div className="ct-sugg-grid">
+                    {suggestions.map(p => (
+                      <div key={p._id||p.id} className="ct-sugg-card" style={{ cursor: 'pointer' }} onClick={() => navigate(`/products/${p._id || p.id}`)}>
+                        <div className="ct-sugg-img">
+                          {p.images?.[0]?.url
+                            ? <img src={getImageUrl(p.images[0].url, 200)} alt={p.name} loading="lazy" width="60" height="60" />
+                            : <span style={{fontSize:18}}>📦</span>
+                          }
+                        </div>
+                        <div style={{ flex:1, minWidth:0 }}>
+                          <div className="ct-sugg-name">{p.name}</div>
+                          <div className="ct-sugg-price">{p.price!=null?`₹${Number(p.price).toLocaleString()}`:'—'}</div>
+                        </div>
+                        <button className="ct-sugg-add" onClick={(e) => { e.stopPropagation(); addToCart(p); }}>Add</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* RIGHT — order summary */}
+            <div className="ct-summary">
+              <div className="ct-summary-title">Order Summary</div>
+
+              {/* Address Selection */}
+              {savedAddresses.length > 0 && (
+                <div className="mb-6">
+                  <div className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Delivery Address
+                  </div>
+                  <div className="space-y-3">
+                    {savedAddresses.map(addr => (
+                      <div
+                        key={addr._id}
+                        onClick={() => setSelectedAddress(addr)}
+                        className={`p-5 rounded-2xl border-2 cursor-pointer transition-all ${
+                          selectedAddress?._id === addr._id
+                            ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg'
+                            : 'border-gray-100 bg-white hover:border-blue-200 hover:bg-blue-50/30'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                              selectedAddress?._id === addr._id 
+                                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white' 
+                                : 'bg-gray-100 text-gray-500'
+                            }`}>
+                              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <div className={`font-bold text-sm ${selectedAddress?._id === addr._id ? 'text-blue-900' : 'text-gray-800'}`}>{addr.fullName}</div>
+                              <div className={`text-xs ${selectedAddress?._id === addr._id ? 'text-blue-700' : 'text-gray-500'}`}>📞 {addr.phone}</div>
+                            </div>
+                          </div>
+                          {addr.isDefault && (
+                            <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-[0.2em] bg-blue-100 px-4 py-1.5 rounded-full">Default</span>
+                          )}
+                          {selectedAddress?._id === addr._id && (
+                            <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 ml-2">
+                              <svg width="14" height="14" fill="white" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                        <div className={`text-xs leading-relaxed ${selectedAddress?._id === addr._id ? 'text-blue-800' : 'text-gray-600'}`}>
+                          {addr.addressLine1}, {addr.addressLine2 ? `${addr.addressLine2}, ` : ''}
+                          {addr.city}, {addr.state} - {addr.pincode}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Payment Method Selection */}
+              <div className="mb-6">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                  </svg>
+                  Payment Method
+                </div>
+                <div className="space-y-3">
+                  <button
+                    type="button"
+                    onClick={() => setPaymentMethod('prepaid')}
+                    className={`w-full p-4 rounded-2xl text-left transition-all flex items-center gap-4 ${
+                      paymentMethod === 'prepaid'
+                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-500 shadow-lg'
+                        : 'bg-white border-2 border-gray-100 hover:border-blue-200 hover:bg-blue-50/30'
+                    }`}
+                  >
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      paymentMethod === 'prepaid' 
+                        ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white' 
+                        : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className={`font-bold text-sm ${paymentMethod === 'prepaid' ? 'text-blue-900' : 'text-gray-800'}`}>Prepaid</div>
+                      <div className={`text-xs mt-1 ${paymentMethod === 'prepaid' ? 'text-blue-700 font-semibold' : 'text-gray-500'}`}>Free delivery on orders above ₹999</div>
+                    </div>
+                    {paymentMethod === 'prepaid' && (
+                      <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                        <svg width="14" height="14" fill="white" viewBox="0 0 24 24">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (shippingInfo.codAvailable) setPaymentMethod('cod')
+                      else notify('COD not available for this order', 'error')
+                    }}
+                    disabled={!shippingInfo.codAvailable}
+                    className={`w-full p-4 rounded-2xl text-left transition-all flex items-center gap-4 ${
+                      !shippingInfo.codAvailable
+                        ? 'bg-gray-50 border-2 border-gray-100 opacity-50 cursor-not-allowed'
+                        : paymentMethod === 'cod'
+                        ? 'bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-500 shadow-lg'
+                        : 'bg-white border-2 border-gray-100 hover:border-orange-200 hover:bg-orange-50/30'
+                    }`}
+                  >
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      !shippingInfo.codAvailable 
+                        ? 'bg-gray-100 text-gray-400' 
+                        : paymentMethod === 'cod' 
+                        ? 'bg-gradient-to-br from-orange-500 to-amber-600 text-white' 
+                        : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className={`font-bold text-sm ${
+                        !shippingInfo.codAvailable ? 'text-gray-400' : paymentMethod === 'cod' ? 'text-orange-900' : 'text-gray-800'
+                      }`}>
+                        {!shippingInfo.codAvailable ? 'COD Unavailable' : 'Cash on Delivery'}
+                      </div>
+                      <div className={`text-xs mt-1 ${
+                        !shippingInfo.codAvailable ? 'text-gray-400' : paymentMethod === 'cod' ? 'text-orange-700 font-semibold' : 'text-gray-500'
+                      }`}>
+                        {!shippingInfo.codAvailable ? 'Not available for this order' : 'Pay when you receive your order'}
+                      </div>
+                    </div>
+                    {paymentMethod === 'cod' && (
+                      <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
+                        <svg width="14" height="14" fill="white" viewBox="0 0 24 24">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* rows */}
+              <div className="ct-summary-rows">
+                <div className="ct-summary-row">
+                  <span className="ct-summary-label">MRP Total</span>
+                  <span className="ct-summary-val">₹{mrpTotal.toLocaleString()}</span>
+                </div>
+                {bulkDiscount > 0 && (
+                  <div className="ct-summary-row">
+                    <span className="ct-summary-label">Discount</span>
+                    <span className="ct-summary-val green">−₹{bulkDiscount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="ct-summary-row">
+                  <span className="ct-summary-label">Delivery Charge</span>
+                  <span className="ct-summary-val">
+                    {shippingInfo.isFreeDelivery && paymentMethod === 'prepaid' ? (
+                      <>
+                        {shippingInfo.deliveryCharge > 0 && (
+                          <span style={{ textDecoration: 'line-through', color: '#9ca3af', marginRight: 8 }}>₹{shippingInfo.deliveryCharge}</span>
+                        )}
+                        <span className="free font-bold text-green-600">FREE</span>
+                      </>
+                    ) : (
+                      `₹${shippingInfo.deliveryCharge}`
+                    )}
+                  </span>
+                </div>
+                {paymentMethod === 'cod' && shippingInfo.codCharge > 0 && (
+                  <div className="ct-summary-row">
+                    <span className="ct-summary-label">COD Charge</span>
+                    <span className="ct-summary-val">₹{shippingInfo.codCharge}</span>
+                  </div>
+                )}
+                <div className="ct-summary-row">
+                  <span className="ct-summary-label">GST</span>
+                  <span className="ct-summary-val">Included</span>
+                </div>
+                {couponDiscount > 0 && (
+                  <div className="ct-summary-row">
+                    <span className="ct-summary-label">Coupon Discount</span>
+                    <span className="ct-summary-val green">−₹{couponDiscount.toLocaleString()}</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="ct-summary-divider"/>
+
+              <div className="ct-summary-total-row" style={{ marginBottom:16 }}>
+                <span className="ct-summary-total-label">Total Payable</span>
+                <span className="ct-summary-total-val">₹{finalTotalPayable.toLocaleString()}</span>
+              </div>
+              
+              {/* COD Breakdown */}
+              {paymentMethod === 'cod' && (() => {
+                const advance = Math.round(finalTotalPayable * 0.15);
+                const codDue = finalTotalPayable - advance;
+                return (
+                  <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-2xl p-4 mb-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-orange-600">💵</span>
+                      <span className="font-bold text-orange-800 text-sm">Payment Breakdown</span>
+                    </div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-orange-700 text-sm font-medium">Pay Now (15% Advance)</span>
+                      <span className="font-black text-orange-800 text-lg">₹{advance.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-orange-600 text-sm">Pay on Delivery</span>
+                      <span className="font-bold text-orange-700">₹{codDue.toLocaleString()}</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Coupon Section */}
+              <div className="mb-6">
+                {!appliedCoupon ? (
+                  <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                    <input 
+                      className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold uppercase tracking-widest outline-none focus:border-indigo-400"
+                      placeholder="Coupon Code"
+                      value={couponCode}
+                      onChange={e => setCouponCode(e.target.value.toUpperCase())}
+                    />
+                    <button 
+                      type="submit"
+                      disabled={isApplying || !couponCode.trim()}
+                      className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-50 transition-all"
+                    >
+                      {isApplying ? 'Applying…' : 'Apply'}
+                    </button>
+                  </form>
+                ) : (
+                  <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-black text-emerald-600 uppercase tracking-widest leading-none mb-1">{appliedCoupon.code} Applied</div>
+                        <div className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest">₹{couponDiscount.toLocaleString()} Saved</div>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={handleRemoveCoupon}
+                      className="text-emerald-700 hover:text-emerald-900 font-black text-[10px] uppercase tracking-widest p-2"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+                {couponError && <div className="text-[10px] font-bold text-rose-500 uppercase tracking-widest mt-2 px-1">{couponError}</div>}
+              </div>
+
+              {/* savings badge */}
+              {(bulkDiscount > 0 || couponDiscount > 0 || shippingInfo.isFreeDelivery) && (
+                <div className="ct-savings-badge">
+                  <div className="ct-savings-ico">🎉</div>
+                  <div>
+                    <div className="ct-savings-text">
+                      You're saving ₹{(
+                        bulkDiscount + 
+                        couponDiscount + 
+                        (shippingInfo.isFreeDelivery ? shippingInfo.deliveryCharge : 0)
+                      ).toLocaleString()}
+                    </div>
+                    <div className="ct-savings-sub">
+                      Discount
+                      {couponDiscount > 0 ? ' + Coupon' : ''}
+                      {shippingInfo.isFreeDelivery ? ' + Free Delivery' : ''}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* min order progress */}
+              <div className="ct-min-progress">
+                <div className="ct-min-track">
+                  <div className="ct-min-fill" style={{ width:`${Math.min(100,(totalPayable/minAmount)*100)}%` }}/>
+                </div>
+                {minLeft > 0
+                  ? <div className="ct-min-text">Add <b>₹{minLeft.toLocaleString()}</b> more to reach minimum order</div>
+                  : <div className="ct-min-text met">✓ Minimum order value reached</div>
+                }
+              </div>
+
+              {/* checkout button */}
+              <button
+                className={`ct-checkout-btn ${totalPayable >= minAmount ? 'ready' : 'disabled'}`}
+                disabled={totalPayable < minAmount || cart.every(item => (item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock)) <= 0)}
+                onClick={handleCheckout}
+              >
+                {totalPayable < minAmount
+                  ? `Need ₹${minLeft.toLocaleString()} more`
+                  : <>
+                      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                      </svg>
+                      Proceed to Checkout
+                    </>
+                }
+              </button>
+
+              <div className="ct-secure-note">
+                <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                </svg>
+                Secure checkout · SmartOdisha
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {/* ── STICKY MOBILE BAR ── */}
         <div className="ct-mobile-bar">
           <div className="ct-mobile-total">
-            <div className="ct-mobile-total-label">Total</div>
-            <div className="ct-mobile-total-val">₹{totalPayable.toLocaleString()}</div>
+            <div className="ct-mobile-total-label">Total Payable</div>
+            <div className="ct-mobile-total-val">₹{finalTotalPayable.toLocaleString()}</div>
           </div>
           <button
-            className={`ct-mobile-btn ${minLeft > 0 ? 'disabled' : ''}`}
-            onClick={() => {
-              if (minLeft > 0) return;
-              if (!isAuthenticated) {
-                navigate('/login', { state: { from: '/cart' } });
-                return;
-              }
-              navigate('/order', { state: { appliedCoupon } });
-            }}
-            disabled={minLeft > 0}
+            className={`ct-mobile-btn ${totalPayable >= minAmount && !cart.every(item => (item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock)) <= 0) ? '' : 'disabled'}`}
+            disabled={totalPayable < minAmount || cart.every(item => (item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock)) <= 0)}
+            onClick={handleCheckout}
           >
-            {minLeft > 0 
-              ? `Add ₹${minLeft.toLocaleString()} More`
-              : 'Checkout'
-            }
+            {totalPayable < minAmount ? `₹${minLeft.toLocaleString()} more needed` : 'Place Order →'}
           </button>
         </div>
 
