@@ -37,6 +37,7 @@ import ManualPayment from './pages/user/ManualPayment.jsx'
 import PrivacyPolicy from './pages/user/PrivacyPolicy.jsx'
 import TermsOfService from './pages/user/TermsOfService.jsx'
 import Wishlist from './pages/user/Wishlist.jsx'
+import OrderSuccess from './pages/user/OrderSuccess.jsx'
 import BusinessLogin from './pages/business/Login.jsx'
 import BusinessForgotPassword from './pages/business/ForgotPassword.jsx'
 import BusinessResetPassword from './pages/business/ResetPassword.jsx'
@@ -118,6 +119,7 @@ export default function App() {
         <Route path="wishlist" element={<Wishlist />} />
         <Route path="cart" element={<Cart />} />
         <Route path="manual-payment" element={<ManualPayment />} />
+        <Route path="order-success" element={<OrderSuccess />} />
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
         <Route path="terms-of-service" element={<TermsOfService />} />
       </Route>

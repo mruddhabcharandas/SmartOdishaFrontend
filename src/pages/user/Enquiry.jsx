@@ -160,11 +160,13 @@ export default function Enquiry() {
       const firstItem = cart[0]
       const storeId = firstItem?.store?._id || firstItem?.store
       
+      const shippingPaymentMethod = paymentMethod === 'CASHFREE' ? 'prepaid' : paymentMethod.toLowerCase()
+      
       const { data } = await api.post('/api/shipping/calculate', {
         destination_pin: pin,
         weight: totalWeight,
         order_amount: orderAmt,
-        payment_method: paymentMethod,
+        payment_method: shippingPaymentMethod,
         store_id: storeId
       })
       
@@ -174,15 +176,15 @@ export default function Enquiry() {
         codCharge: data.cod_charge || 0,
         finalCharge: data.final_charge || 0,
         codAvailable: data.cod_available !== false,
-        isFreeDelivery: data.final_charge === 0 && paymentMethod === 'prepaid',
+        isFreeDelivery: data.final_charge === 0 && paymentMethod === 'CASHFREE',
         deliveryAvailable: true
       })
     } catch (err) {
       console.error('Failed to calculate shipping:', err)
       const freeDeliveryAbove = 999
-      const isPrepaidFree = orderAmt >= freeDeliveryAbove && paymentMethod === 'prepaid'
+      const isPrepaidFree = orderAmt >= freeDeliveryAbove && paymentMethod === 'CASHFREE'
       const deliveryCharge = isPrepaidFree ? 0 : 85
-      const codCharge = paymentMethod === 'cod' ? Math.min(Math.max(Math.round(orderAmt * 0.05), 40), 100) : 0
+      const codCharge = paymentMethod === 'COD' ? Math.min(Math.max(Math.round(orderAmt * 0.05), 40), 100) : 0
       const finalCharge = deliveryCharge + codCharge
       
       setShippingInfo({
@@ -191,7 +193,7 @@ export default function Enquiry() {
         codCharge,
         finalCharge,
         codAvailable: true,
-        isFreeDelivery: finalCharge === 0 && paymentMethod === 'prepaid',
+        isFreeDelivery: finalCharge === 0 && paymentMethod === 'CASHFREE',
         deliveryAvailable: true
       })
     }
@@ -376,7 +378,7 @@ export default function Enquiry() {
       const cashfree = window.Cashfree({ mode })
       cashfree.checkout({
         paymentSessionId: paymentSessionId,
-        returnUrl: `${window.location.origin}/orders?order_id={order_id}`
+        returnUrl: `${window.location.origin}/checkout?order_id={order_id}`
       })
     } catch (err) {
       notify(err?.message || 'Payment gateway error', 'error')
@@ -422,7 +424,10 @@ export default function Enquiry() {
         deliveryAddress: selectedAddress
       })
 
-      setPrepareData({ ...data, items: cleanItems, deliveryAddress: selectedAddress, couponCode: appliedCoupon?.code || '', paymentMethod: selectedPaymentMethod, totalAmount: data.totalAmount, codDueAmount: data.codDueAmount })
+      const newPrepareData = { ...data, items: cleanItems, deliveryAddress: selectedAddress, couponCode: appliedCoupon?.code || '', paymentMethod: selectedPaymentMethod, totalAmount: data.totalAmount, codDueAmount: data.codDueAmount, productTotal: data.productTotal, shippingCost: data.shippingCost, codCharge: data.codCharge }
+      setPrepareData(newPrepareData)
+      // Store in localStorage to survive page reload
+      localStorage.setItem('prepareData', JSON.stringify(newPrepareData))
 
       if (data.paymentSessionId) {
         // Open Cashfree checkout for both CASHFREE and COD (advance payment)
@@ -444,23 +449,46 @@ export default function Enquiry() {
       const cashfreePaymentId = queryParams.get('payment_id')
       const cashfreeSignature = queryParams.get('signature')
       
-      if (orderId && cashfreePaymentId && cashfreeSignature && prepareData) {
+      // Try to get prepareData from state first, then from localStorage
+      let dataToUse = prepareData
+      if (!dataToUse) {
+        const stored = localStorage.getItem('prepareData')
+        if (stored) {
+          try {
+            dataToUse = JSON.parse(stored)
+          } catch (e) {
+            console.error('Failed to parse prepareData from localStorage:', e)
+          }
+        }
+      }
+      
+      if (orderId && cashfreePaymentId && cashfreeSignature && dataToUse) {
         try {
           setLoading(true)
-          await api.post('/api/orders/create-after-verify', {
-            ...prepareData,
-            cashfreeOrderId: orderId,
-            cashfreePaymentId,
-            cashfreeSignature
-          })
-          notify('Order placed successfully!', 'success')
-          clearCart()
-          navigate('/orders')
+          const response = await api.post('/api/orders/create-after-verify', {
+        ...dataToUse,
+        cashfreeOrderId: orderId,
+        cashfreePaymentId,
+        cashfreeSignature
+      })
+      // Clear prepareData
+      localStorage.removeItem('prepareData')
+      setPrepareData(null)
+      // Navigate to order success page
+      navigate('/order-success', { 
+        state: { 
+          orderId: response.data.orderId,
+          orderNumber: response.data.orderNumber,
+          totalAmount: dataToUse.totalAmount,
+          paymentMethod: dataToUse.paymentMethod 
+        } 
+      })
         } catch (err) {
           notify(err?.response?.data?.error || 'Order failed', 'error')
+          localStorage.removeItem('prepareData')
+          setPrepareData(null)
         } finally {
           setLoading(false)
-          setPrepareData(null)
         }
       }
     }
