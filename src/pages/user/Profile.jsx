@@ -437,7 +437,6 @@ export default function Profile() {
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <h1 className="text-2xl font-black tracking-tight">My Account</h1>
-                  <span className="profile-premium-badge">Premium</span>
                 </div>
                 <p className="text-indigo-200/80 text-sm font-medium">Manage orders, addresses & preferences</p>
               </div>

@@ -594,11 +594,11 @@ export default function Cart() {
                         </span>
                       </div>
                       <div className="ct-delivery">
-                        <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{display:'inline',marginRight:4,verticalAlign:'middle'}}>
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
-                        </svg>
-                        Delivery by <b>{etaText}</b> · Free Delivery
-                      </div>
+          <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{display:'inline',marginRight:4,verticalAlign:'middle'}}>
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/>
+          </svg>
+          Delivery by <b>{etaText}</b>
+        </div>
 
                       {/* bulk tier nudge */}
                       {tiers.length > 0 && (

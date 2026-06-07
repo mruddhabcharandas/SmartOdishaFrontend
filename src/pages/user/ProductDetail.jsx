@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
@@ -845,8 +845,7 @@ export default function ProductDetail() {
         
         /* Left Column: Image Area */
         .pd-images {
-          position: sticky;
-          top: 24px;
+          /* position: sticky; top: 24px; removed so image scrolls with page */
         }
 
         .pd-img-main {
@@ -1679,50 +1678,55 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Delivery pincode checker */}
+            {/* Delivery section */}
             <div className="pd-card">
-              <div className="pd-delivery-title">Delivery &amp; Pincode</div>
-              <form className="pd-delivery-form" onSubmit={checkDelivery}>
-                <input
-                  type="text"
-                  value={pincode}
-                  onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="Enter 6-digit Pincode"
-                  className="pd-delivery-input"
-                />
-                <button type="submit" className="pd-delivery-btn" disabled={checkingDelivery || pincode.length !== 6}>
-                  {checkingDelivery ? 'Checking...' : 'Check'}
-                </button>
-              </form>
-
-              {user?.savedAddresses && user.savedAddresses.length > 0 && selectedAddress && (
-                <div className="pd-address-card">
-                  <div className="pd-address-header">
-                    <span className="pd-address-title">DELIVER TO:</span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const nextIndex = (user.savedAddresses.findIndex(a => a._id === selectedAddress._id) + 1) % user.savedAddresses.length;
-                        const nextAddr = user.savedAddresses[nextIndex];
-                        setSelectedAddress(nextAddr);
-                        if (nextAddr?.pincode) {
-                          setPincode(nextAddr.pincode);
-                          checkDeliveryImpl(nextAddr.pincode);
-                        }
-                      }}
-                      className="pd-address-switch-btn"
-                    >
-                      Change Address
+              <div className="pd-delivery-title">Delivery</div>
+              
+              {user?.savedAddresses && user.savedAddresses.length > 0 ? (
+                <>
+                  <div className="pd-address-card">
+                    <div className="pd-address-header">
+                      <span className="pd-address-title">DELIVER TO:</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const nextIndex = (user.savedAddresses.findIndex(a => a._id === selectedAddress._id) + 1) % user.savedAddresses.length;
+                          const nextAddr = user.savedAddresses[nextIndex];
+                          setSelectedAddress(nextAddr);
+                          if (nextAddr?.pincode) {
+                            setPincode(nextAddr.pincode);
+                            checkDeliveryImpl(nextAddr.pincode);
+                          }
+                        }}
+                        className="pd-address-switch-btn"
+                      >
+                        Change Address
+                      </button>
+                    </div>
+                    <div className="pd-address-body">
+                      {selectedAddress.fullName} • {selectedAddress.city} - {selectedAddress.pincode}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <form className="pd-delivery-form" onSubmit={checkDelivery}>
+                    <input
+                      type="text"
+                      value={pincode}
+                      onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder="Enter 6-digit Pincode"
+                      className="pd-delivery-input"
+                    />
+                    <button type="submit" className="pd-delivery-btn" disabled={checkingDelivery || pincode.length !== 6}>
+                      {checkingDelivery ? 'Checking...' : 'Check'}
                     </button>
-                  </div>
-                  <div className="pd-address-body">
-                    {selectedAddress.fullName} • {selectedAddress.city} - {selectedAddress.pincode}
-                  </div>
-                </div>
+                  </form>
+                </>
               )}
 
               {deliveryInfo && (
-                <div className="pd-delivery-status">
+                <div className="pd-delivery-status mt-3">
                   {deliveryInfo.serviceable ? (
                     <div className="space-y-1 bg-green-50 border border-green-100 rounded-xl p-3 text-green-800">
                       <div className="font-bold flex items-center gap-1.5">
@@ -1730,16 +1734,16 @@ export default function ProductDetail() {
                         <span>Delivery by {deliveryInfo.etaStart?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} - {deliveryInfo.etaEnd?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
                       </div>
                       <div className="text-xs font-semibold space-y-1 pt-1 border-t border-green-200/50 mt-1">
-                        <div>Prepaid Shipping: <span className="font-bold text-green-700">FREE</span></div>
+                        <div>Prepaid Shipping: <span className="font-bold text-green-700">{deliveryInfo.isFreeDelivery ? 'FREE' : `₹${deliveryInfo.deliveryCharge || 85}`}</span></div>
                         {deliveryInfo.codAvailable ? (
-                          <div>COD Shipping: <span className="font-bold text-slate-700">₹{deliveryInfo.deliveryCharge || 85}</span></div>
+                          <div>COD Shipping: <span className="font-bold text-slate-700">₹{(deliveryInfo.deliveryCharge || 85) + (deliveryInfo.codCharge || 0)}</span></div>
                         ) : (
                           <div className="text-orange-600">✗ Cash on Delivery not available</div>
                         )}
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-red-800 font-bold">
+                    <div className="bg-red-50 border border-red-100 rounded-xl p-3 text-red-800 font-bold mt-3">
                       ✗ {deliveryInfo.message || 'Product not deliverable to this pincode'}
                     </div>
                   )}
