@@ -44,35 +44,23 @@ const Icon = ({ name }) => {
 };
 
 export default function Profile() {
-  const { user, token, refreshProfile } = useAuth()
-  const { notify } = useToast()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const { user, token, refreshProfile } = useAuth();
+  const { notify } = useToast();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [openSections, setOpenSections] = useState({
-    dashboard: true,
-    personal: false,
-    addresses: false,
-    orders: false,
-    wishlist: false,
-    support: false,
-    settings: false
-  })
+  // ✅ FIX: Single active section instead of multiple open sections
+  const [activeSection, setActiveSection] = useState('dashboard');
 
-  const toggleSection = (section) => {
-    setOpenSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }))
+  const setSection = (section) => {
+    setActiveSection(section);
   };
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
   const [showPasswordChange, setShowPasswordChange] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: ''
-  });
+  const [formData, setFormData] = useState({ name: '', phone: '' });
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: '',
     newPassword: '',
@@ -82,26 +70,17 @@ export default function Profile() {
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
   const [addressForm, setAddressForm] = useState({
-    fullName: '',
-    phone: '',
-    addressLine1: '',
-    addressLine2: '',
-    city: '',
-    district: '',
-    state: '',
-    pincode: '',
-    isDefault: false
+    fullName: '', phone: '', addressLine1: '', addressLine2: '',
+    city: '', district: '', state: '', pincode: '', isDefault: false
   });
   const [pincodeLoading, setPincodeLoading] = useState(false);
-  
+
   const [tickets, setTickets] = useState([]);
   const [ticketsLoading, setTicketsLoading] = useState(false);
   const [showNewTicketModal, setShowNewTicketModal] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [newTicketForm, setNewTicketForm] = useState({
-    subject: '',
-    description: '',
-    category: 'Other'
+    subject: '', description: '', category: 'Other'
   });
   const [messageInput, setMessageInput] = useState('');
 
@@ -112,18 +91,19 @@ export default function Profile() {
     }
     loadProfile();
     loadAddresses();
-    if (openSections.support) {
+  }, [token]);
+
+  // ✅ FIX: Load tickets when support section becomes active
+  useEffect(() => {
+    if (activeSection === 'support') {
       loadTickets();
     }
-  }, [token, openSections.support]);
+  }, [activeSection]);
 
   const loadProfile = async () => {
     try {
       const { data } = await api.get('/api/user/me');
-      setFormData({
-        name: data.name || '',
-        phone: data.phone || ''
-      });
+      setFormData({ name: data.name || '', phone: data.phone || '' });
     } catch (err) {
       console.error('Failed to load profile:', err);
     } finally {
@@ -155,7 +135,7 @@ export default function Profile() {
   const handleCreateTicket = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await api.post('/api/support-tickets', newTicketForm);
+      await api.post('/api/support-tickets', newTicketForm);
       notify('Ticket created successfully!', 'success');
       setShowNewTicketModal(false);
       setNewTicketForm({ subject: '', description: '', category: 'Other' });
@@ -201,25 +181,19 @@ export default function Profile() {
   const handleAddressInputChange = async (e) => {
     const { name, value, type, checked } = e.target;
     let processedValue = value;
-    if (name === 'phone') {
-      processedValue = value.replace(/\D/g, '').slice(0, 10);
-    }
+    if (name === 'phone') processedValue = value.replace(/\D/g, '').slice(0, 10);
     if (name === 'pincode') {
       processedValue = value.replace(/\D/g, '').slice(0, 6);
-      
       if (processedValue.length === 6) {
         setPincodeLoading(true);
         try {
           const response = await fetch(`https://api.postalpincode.in/pincode/${processedValue}`);
           const data = await response.json();
-          
           if (data[0]?.Status === 'Success' && data[0]?.PostOffice?.length > 0) {
             const postOffice = data[0].PostOffice[0];
             setAddressForm(prev => ({
-              ...prev,
-              pincode: processedValue,
-              district: postOffice.District,
-              state: postOffice.State
+              ...prev, pincode: processedValue,
+              district: postOffice.District, state: postOffice.State
             }));
             return;
           } else {
@@ -232,7 +206,6 @@ export default function Profile() {
         }
       }
     }
-    
     setAddressForm(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : processedValue
@@ -247,7 +220,6 @@ export default function Profile() {
       await refreshProfile();
       notify('Profile updated successfully!', 'success');
     } catch (err) {
-      console.error('Failed to update profile:', err);
       notify(err?.response?.data?.error || 'Failed to update profile', 'error');
     } finally {
       setSaving(false);
@@ -274,7 +246,6 @@ export default function Profile() {
       setShowPasswordChange(false);
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      console.error('Failed to change password:', err);
       notify(err?.response?.data?.error || 'Failed to change password', 'error');
     } finally {
       setChangingPassword(false);
@@ -284,14 +255,8 @@ export default function Profile() {
   const handleAddAddress = () => {
     setEditingAddress(null);
     setAddressForm({
-      fullName: '',
-      phone: '',
-      addressLine1: '',
-      addressLine2: '',
-      city: '',
-      district: '',
-      state: '',
-      pincode: '',
+      fullName: '', phone: '', addressLine1: '', addressLine2: '',
+      city: '', district: '', state: '', pincode: '',
       isDefault: savedAddresses.length === 0
     });
     setShowAddressModal(true);
@@ -300,29 +265,18 @@ export default function Profile() {
   const handleEditAddress = (address) => {
     setEditingAddress(address);
     setAddressForm({
-      fullName: address.fullName,
-      phone: address.phone,
-      addressLine1: address.addressLine1,
-      addressLine2: address.addressLine2,
-      city: address.city,
-      district: address.district,
-      state: address.state,
-      pincode: address.pincode,
-      isDefault: address.isDefault
+      fullName: address.fullName, phone: address.phone,
+      addressLine1: address.addressLine1, addressLine2: address.addressLine2,
+      city: address.city, district: address.district,
+      state: address.state, pincode: address.pincode, isDefault: address.isDefault
     });
     setShowAddressModal(true);
   };
 
   const handleSaveAddress = async (e) => {
     e.preventDefault();
-    if (addressForm.phone.length !== 10) {
-      notify('Phone number must be 10 digits', 'error');
-      return;
-    }
-    if (addressForm.pincode.length !== 6) {
-      notify('Pincode must be 6 digits', 'error');
-      return;
-    }
+    if (addressForm.phone.length !== 10) { notify('Phone number must be 10 digits', 'error'); return; }
+    if (addressForm.pincode.length !== 6) { notify('Pincode must be 6 digits', 'error'); return; }
     try {
       if (editingAddress) {
         await api.put(`/api/user/addresses/${editingAddress._id}`, addressForm);
@@ -335,7 +289,6 @@ export default function Profile() {
       await refreshProfile();
       setShowAddressModal(false);
     } catch (err) {
-      console.error('Failed to save address:', err);
       notify(err?.response?.data?.error || 'Failed to save address', 'error');
     }
   };
@@ -348,7 +301,6 @@ export default function Profile() {
       await refreshProfile();
       notify('Address deleted successfully!', 'success');
     } catch (err) {
-      console.error('Failed to delete address:', err);
       notify(err?.response?.data?.error || 'Failed to delete address', 'error');
     }
   };
@@ -360,7 +312,6 @@ export default function Profile() {
       await refreshProfile();
       notify('Default address updated!', 'success');
     } catch (err) {
-      console.error('Failed to set default address:', err);
       notify(err?.response?.data?.error || 'Failed to set default address', 'error');
     }
   };
@@ -379,19 +330,24 @@ export default function Profile() {
     );
   }
 
-    return (
+  // ✅ Nav items config — cleaner to map over
+  const navItems = [
+    { id: 'dashboard', label: 'Account Overview', icon: 'dashboard' },
+    { id: 'personal', label: 'Personal Information', icon: 'personal' },
+    { id: 'addresses', label: 'Manage Addresses', icon: 'addresses' },
+    { id: 'support', label: 'Help & Support', icon: 'support' },
+    { id: 'settings', label: 'Settings', icon: 'settings' },
+  ];
+
+  return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-slate-100 pb-12 profile-premium">
       <style>{`
-        .profile-premium {
-          font-family: 'Inter', system-ui, sans-serif;
-        }
+        .profile-premium { font-family: 'Inter', system-ui, sans-serif; }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade-in {
-          animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        .animate-fade-in { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
         .profile-header-pattern {
           background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 50%),
                             radial-gradient(circle at 80% 20%, rgba(99,102,241,0.3) 0%, transparent 40%);
@@ -400,6 +356,9 @@ export default function Profile() {
           background: linear-gradient(90deg, rgba(79,70,229,0.08) 0%, rgba(99,102,241,0.04) 100%);
           color: #4f46e5;
           border-left: 3px solid #4f46e5;
+        }
+        .profile-nav-inactive {
+          border-left: 3px solid transparent;
         }
         .profile-stat-card {
           background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
@@ -410,16 +369,6 @@ export default function Profile() {
           border-color: #c7d2fe;
           box-shadow: 0 8px 24px rgba(79,70,229,0.08);
           transform: translateY(-2px);
-        }
-        .profile-premium-badge {
-          background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-          color: #78350f;
-          font-size: 10px;
-          font-weight: 800;
-          letter-spacing: 0.08em;
-          padding: 3px 10px;
-          border-radius: 999px;
-          text-transform: uppercase;
         }
       `}</style>
 
@@ -435,9 +384,7 @@ export default function Profile() {
                 </svg>
               </button>
               <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <h1 className="text-2xl font-black tracking-tight">My Account</h1>
-                </div>
+                <h1 className="text-2xl font-black tracking-tight">My Account</h1>
                 <p className="text-indigo-200/80 text-sm font-medium">Manage orders, addresses & preferences</p>
               </div>
             </div>
@@ -458,12 +405,12 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8 dashboard-container">
+      <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          
-          {/* Left Sidebar Menu */}
+
+          {/* ✅ Left Sidebar — single active section nav */}
           <div className="lg:col-span-1 space-y-5">
-            {/* User Avatar Summary Card */}
+            {/* User Avatar Summary */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-indigo-100/50 border border-white p-5 flex items-center gap-4">
               {user?.avatar ? (
                 <img src={getImageUrl(user.avatar)} alt={user.name} className="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-100 shadow-md" />
@@ -479,60 +426,43 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Menu options list */}
+            {/* Nav Menu */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-indigo-100/50 border border-white overflow-hidden divide-y divide-slate-100/80">
-              <button
-                onClick={() => toggleSection('dashboard')}
-                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.dashboard ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
-              >
-                <Icon name="dashboard" />
-                <span>Account Overview</span>
-              </button>
-              <button
-                onClick={() => toggleSection('personal')}
-                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.personal ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
-              >
-                <Icon name="personal" />
-                <span>Personal Information</span>
-              </button>
-              <button
-                onClick={() => toggleSection('addresses')}
-                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.addresses ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
-              >
-                <Icon name="addresses" />
-                <span>Manage Addresses</span>
-              </button>
+              {navItems.map(({ id, label, icon }) => (
+                <button
+                  key={id}
+                  onClick={() => setSection(id)}
+                  className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all profile-nav-inactive ${
+                    activeSection === id ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'
+                  }`}
+                >
+                  <Icon name={icon} />
+                  <span>{label}</span>
+                </button>
+              ))}
+
+              {/* Orders — navigates away */}
               <button
                 onClick={() => navigate('/orders')}
-                className="w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm text-slate-600 hover:bg-slate-50/50 transition-colors"
+                className="w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm text-slate-600 hover:bg-slate-50/50 transition-colors profile-nav-inactive"
               >
                 <Icon name="orders" />
                 <span>My Orders</span>
               </button>
+
+              {/* Wishlist — navigates away */}
               <button
                 onClick={() => navigate('/wishlist')}
-                className="w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm text-slate-600 hover:bg-slate-50/50 transition-colors"
+                className="w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm text-slate-600 hover:bg-slate-50/50 transition-colors profile-nav-inactive"
               >
                 <Icon name="wishlist" />
                 <span>My Wishlist</span>
               </button>
-              <button
-                onClick={() => toggleSection('support')}
-                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.support ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
-              >
-                <Icon name="support" />
-                <span>Help &amp; Support</span>
-              </button>
-              <button
-                onClick={() => toggleSection('settings')}
-                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.settings ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
-              >
-                <Icon name="settings" />
-                <span>Settings</span>
-              </button>
+
+              {/* Logout */}
               <button
                 onClick={handleLogout}
-                className="w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm text-red-600 hover:bg-red-50/55 transition-colors"
+                className="w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm text-red-600 hover:bg-red-50/55 transition-colors profile-nav-inactive"
               >
                 <Icon name="logout" />
                 <span>Logout</span>
@@ -540,21 +470,19 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Right Active Content Panel */}
-          <div className="lg:col-span-3 space-y-6">
-            
-            {/* Dashboard active */}
-            {openSections.dashboard && (
+          {/* ✅ Right Content Panel — only one section renders at a time */}
+          <div className="lg:col-span-3">
+
+            {/* Dashboard */}
+            {activeSection === 'dashboard' && (
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
                 <h2 className="text-2xl font-black text-slate-800 mb-1">Welcome Back, {user?.name?.split(' ')[0] || 'User'}!</h2>
                 <p className="text-slate-500 mb-8 font-medium">Your premium SmartOdisha account — manage everything in one place.</p>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                   <div className="profile-stat-card p-5 rounded-2xl cursor-pointer" onClick={() => navigate('/orders')}>
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
-                        <Icon name="orders" />
-                      </div>
+                      <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl"><Icon name="orders" /></div>
                       <div>
                         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Orders</div>
                         <div className="font-black text-slate-800 text-lg">Track Orders</div>
@@ -563,20 +491,16 @@ export default function Profile() {
                   </div>
                   <div className="profile-stat-card p-5 rounded-2xl cursor-pointer" onClick={() => navigate('/wishlist')}>
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-rose-100 text-rose-600 rounded-xl">
-                        <Icon name="wishlist" />
-                      </div>
+                      <div className="p-3 bg-rose-100 text-rose-600 rounded-xl"><Icon name="wishlist" /></div>
                       <div>
                         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Wishlist</div>
                         <div className="font-black text-slate-800 text-lg">Saved Items</div>
                       </div>
                     </div>
                   </div>
-                  <div className="profile-stat-card p-5 rounded-2xl cursor-pointer" onClick={() => toggleSection('addresses')}>
+                  <div className="profile-stat-card p-5 rounded-2xl cursor-pointer" onClick={() => setSection('addresses')}>
                     <div className="flex items-center gap-3">
-                      <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
-                        <Icon name="addresses" />
-                      </div>
+                      <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl"><Icon name="addresses" /></div>
                       <div>
                         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Addresses</div>
                         <div className="font-black text-slate-800 text-lg">{savedAddresses.length} Saved</div>
@@ -588,26 +512,21 @@ export default function Profile() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="p-5 border border-indigo-100/80 rounded-2xl bg-gradient-to-br from-indigo-50/50 to-white hover:border-indigo-200 transition-all">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
-                        <Icon name="personal" />
-                      </div>
+                      <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl"><Icon name="personal" /></div>
                       <div>
                         <div className="font-extrabold text-slate-800 text-base">Profile</div>
                         <div className="text-xs text-slate-500 font-semibold mt-0.5">{user?.name}</div>
-                        <button onClick={() => toggleSection('personal')} className="text-indigo-600 font-bold text-xs mt-2 hover:underline block">Edit details →</button>
+                        <button onClick={() => setSection('personal')} className="text-indigo-600 font-bold text-xs mt-2 hover:underline block">Edit details →</button>
                       </div>
                     </div>
                   </div>
-
                   <div className="p-5 border border-indigo-100/80 rounded-2xl bg-gradient-to-br from-violet-50/50 to-white hover:border-violet-200 transition-all">
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-violet-100 text-violet-600 rounded-xl">
-                        <Icon name="addresses" />
-                      </div>
+                      <div className="p-3 bg-violet-100 text-violet-600 rounded-xl"><Icon name="addresses" /></div>
                       <div>
                         <div className="font-extrabold text-slate-800 text-base">Addresses</div>
                         <div className="text-xs text-slate-500 font-semibold mt-0.5">{savedAddresses.length} saved address(es)</div>
-                        <button onClick={() => toggleSection('addresses')} className="text-indigo-600 font-bold text-xs mt-2 hover:underline block">Manage addresses →</button>
+                        <button onClick={() => setSection('addresses')} className="text-indigo-600 font-bold text-xs mt-2 hover:underline block">Manage addresses →</button>
                       </div>
                     </div>
                   </div>
@@ -615,62 +534,43 @@ export default function Profile() {
               </div>
             )}
 
-            {/* Personal info active */}
-            {openSections.personal && (
+            {/* Personal Info */}
+            {activeSection === 'personal' && (
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
                 <h2 className="text-xl font-extrabold text-slate-800 mb-6">Personal Information</h2>
                 <form onSubmit={handleSaveProfile} className="space-y-5 max-w-lg">
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Full Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
+                    <input type="text" name="name" value={formData.name} onChange={handleInputChange}
                       className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 text-slate-800 font-semibold outline-none transition-all"
-                      placeholder="Full Name"
-                    />
+                      placeholder="Full Name" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
-                    <input
-                      type="email"
-                      value={user?.email || ''}
-                      disabled
-                      className="w-full px-4 py-3.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-400 font-semibold cursor-not-allowed"
-                    />
+                    <input type="email" value={user?.email || ''} disabled
+                      className="w-full px-4 py-3.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-400 font-semibold cursor-not-allowed" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Phone Number</label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange}
                       className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 text-slate-800 font-semibold outline-none transition-all"
-                      placeholder="Phone Number"
-                    />
+                      placeholder="Phone Number" />
                   </div>
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50"
-                  >
+                  <button type="submit" disabled={saving}
+                    className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50">
                     {saving ? 'Saving...' : 'Save Profile Changes'}
                   </button>
                 </form>
               </div>
             )}
 
-            {/* Addresses active */}
-            {openSections.addresses && (
+            {/* Addresses */}
+            {activeSection === 'addresses' && (
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-extrabold text-slate-800">Saved Addresses</h2>
-                  <button
-                    onClick={handleAddAddress}
-                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs shadow-md shadow-blue-500/10"
-                  >
+                  <button onClick={handleAddAddress}
+                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs shadow-md shadow-blue-500/10">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                     </svg>
@@ -685,10 +585,8 @@ export default function Profile() {
                     </div>
                     <h3 className="text-lg font-bold text-slate-800 mb-1">No Saved Addresses</h3>
                     <p className="text-slate-400 text-sm mb-6">Save delivery addresses to speed up checkout</p>
-                    <button
-                      onClick={handleAddAddress}
-                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md shadow-blue-500/10"
-                    >
+                    <button onClick={handleAddAddress}
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md shadow-blue-500/10">
                       Add Address
                     </button>
                   </div>
@@ -713,20 +611,14 @@ export default function Profile() {
                             </div>
                           </div>
                           <div className="flex gap-2 flex-shrink-0">
-                            <button
-                              onClick={() => handleEditAddress(address)}
-                              className="p-2 text-blue-600 hover:bg-blue-100/50 rounded-lg transition-colors"
-                              title="Edit"
-                            >
+                            <button onClick={() => handleEditAddress(address)}
+                              className="p-2 text-blue-600 hover:bg-blue-100/50 rounded-lg transition-colors" title="Edit">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
                             </button>
-                            <button
-                              onClick={() => handleDeleteAddress(address._id)}
-                              className="p-2 text-red-600 hover:bg-red-100/50 rounded-lg transition-colors"
-                              title="Delete"
-                            >
+                            <button onClick={() => handleDeleteAddress(address._id)}
+                              className="p-2 text-red-600 hover:bg-red-100/50 rounded-lg transition-colors" title="Delete">
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
@@ -734,10 +626,8 @@ export default function Profile() {
                           </div>
                         </div>
                         {!address.isDefault && (
-                          <button
-                            onClick={() => handleSetDefault(address._id)}
-                            className="mt-3 text-blue-600 text-xs font-bold hover:underline"
-                          >
+                          <button onClick={() => handleSetDefault(address._id)}
+                            className="mt-3 text-blue-600 text-xs font-bold hover:underline">
                             Set as Default
                           </button>
                         )}
@@ -748,15 +638,13 @@ export default function Profile() {
               </div>
             )}
 
-            {/* Support active */}
-            {openSections.support && (
+            {/* Support */}
+            {activeSection === 'support' && (
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-extrabold text-slate-800">Support Requests</h2>
-                  <button
-                    onClick={() => setShowNewTicketModal(true)}
-                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs shadow-md shadow-blue-500/10"
-                  >
+                  <button onClick={() => setShowNewTicketModal(true)}
+                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs shadow-md shadow-blue-500/10">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                     </svg>
@@ -765,9 +653,7 @@ export default function Profile() {
                 </div>
 
                 {ticketsLoading ? (
-                  <div className="text-center py-8">
-                    <LoadingSpinner text="Loading tickets..." />
-                  </div>
+                  <div className="text-center py-8"><LoadingSpinner text="Loading tickets..." /></div>
                 ) : tickets.length === 0 ? (
                   <div className="text-center py-12">
                     <div className="w-16 h-16 mx-auto mb-4 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
@@ -775,19 +661,15 @@ export default function Profile() {
                     </div>
                     <h3 className="text-lg font-bold text-slate-800 mb-1">No Active Tickets</h3>
                     <p className="text-slate-400 text-sm mb-6">Create a support ticket for items, payments, returns, etc.</p>
-                    <button
-                      onClick={() => setShowNewTicketModal(true)}
-                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md shadow-blue-500/10"
-                    >
+                    <button onClick={() => setShowNewTicketModal(true)}
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md shadow-blue-500/10">
                       Create Ticket
                     </button>
                   </div>
                 ) : selectedTicket ? (
                   <div className="space-y-4">
-                    <button
-                      onClick={() => setSelectedTicket(null)}
-                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-sm"
-                    >
+                    <button onClick={() => setSelectedTicket(null)}
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-sm">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
                       </svg>
@@ -803,10 +685,8 @@ export default function Profile() {
                             </div>
                           </div>
                           {selectedTicket.status !== 'Resolved' && (
-                            <button
-                              onClick={() => handleResolveTicket(selectedTicket._id)}
-                              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-green-500/10"
-                            >
+                            <button onClick={() => handleResolveTicket(selectedTicket._id)}
+                              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-xs rounded-xl transition-all">
                               Resolve
                             </button>
                           )}
@@ -815,7 +695,7 @@ export default function Profile() {
                       <div className="p-5 max-h-96 overflow-y-auto space-y-4 bg-slate-50/20">
                         {selectedTicket.messages && selectedTicket.messages.map((msg, idx) => (
                           <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[75%] p-4 rounded-2xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-800'}`}>
+                            <div className={`max-w-[75%] p-4 rounded-2xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white' : 'bg-white border border-slate-100 text-slate-800'}`}>
                               <p className="text-sm font-semibold leading-relaxed">{msg.message}</p>
                               <p className={`text-[10px] mt-2 font-bold ${msg.sender === 'user' ? 'text-blue-200' : 'text-slate-400'}`}>
                                 {new Date(msg.createdAt).toLocaleString()}
@@ -826,19 +706,12 @@ export default function Profile() {
                       </div>
                       <div className="p-4 border-t border-slate-100 bg-white">
                         <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={messageInput}
-                            onChange={(e) => setMessageInput(e.target.value)}
+                          <input type="text" value={messageInput} onChange={(e) => setMessageInput(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleAddMessage(selectedTicket._id)}
                             placeholder="Type your reply here..."
-                            className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 font-semibold text-sm outline-none"
-                          />
-                          <button
-                            onClick={() => handleAddMessage(selectedTicket._id)}
-                            disabled={!messageInput.trim()}
-                            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-500/10 disabled:opacity-50"
-                          >
+                            className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 font-semibold text-sm outline-none" />
+                          <button onClick={() => handleAddMessage(selectedTicket._id)} disabled={!messageInput.trim()}
+                            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all disabled:opacity-50">
                             Send
                           </button>
                         </div>
@@ -848,23 +721,18 @@ export default function Profile() {
                 ) : (
                   <div className="space-y-4">
                     {tickets.map((ticket) => (
-                      <div
-                        key={ticket._id}
-                        onClick={() => setSelectedTicket(ticket)}
-                        className="p-5 border border-slate-100 rounded-2xl hover:border-blue-200 hover:bg-blue-50/30 cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                      >
+                      <div key={ticket._id} onClick={() => setSelectedTicket(ticket)}
+                        className="p-5 border border-slate-100 rounded-2xl hover:border-blue-200 hover:bg-blue-50/30 cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                           <div className="font-extrabold text-slate-800 text-base mb-1">{ticket.subject}</div>
                           <p className="text-slate-500 text-sm mb-2 font-medium line-clamp-1">{ticket.description}</p>
                           <p className="text-[10px] text-slate-400 font-bold">Updated: {new Date(ticket.updatedAt).toLocaleString()}</p>
                         </div>
                         <span className={`px-3 py-1 rounded-full text-xs font-extrabold flex-shrink-0 self-start sm:self-center border ${
-                          ticket.status === 'Open' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' : 
-                          ticket.status === 'In Progress' ? 'bg-blue-50 text-blue-600 border-blue-100' : 
+                          ticket.status === 'Open' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' :
+                          ticket.status === 'In Progress' ? 'bg-blue-50 text-blue-600 border-blue-100' :
                           'bg-green-50 text-green-600 border-green-100'
-                        }`}>
-                          {ticket.status}
-                        </span>
+                        }`}>{ticket.status}</span>
                       </div>
                     ))}
                   </div>
@@ -872,19 +740,15 @@ export default function Profile() {
               </div>
             )}
 
-            {/* Settings active */}
-            {openSections.settings && (
+            {/* Settings */}
+            {activeSection === 'settings' && (
               <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
                 <h2 className="text-xl font-extrabold text-slate-800 mb-6">Security Settings</h2>
                 <div className="space-y-4 max-w-lg">
                   {!showPasswordChange ? (
-                    <button
-                      onClick={() => setShowPasswordChange(true)}
-                      className="w-full p-5 border border-slate-100 rounded-2xl hover:border-slate-200 hover:bg-slate-50/40 transition-all text-left flex items-center gap-4"
-                    >
-                      <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
-                        <Icon name="lock" />
-                      </div>
+                    <button onClick={() => setShowPasswordChange(true)}
+                      className="w-full p-5 border border-slate-100 rounded-2xl hover:border-slate-200 hover:bg-slate-50/40 transition-all text-left flex items-center gap-4">
+                      <div className="p-3 bg-blue-100 text-blue-600 rounded-xl"><Icon name="lock" /></div>
                       <div className="flex-1">
                         <div className="font-extrabold text-slate-800">Change Password</div>
                         <div className="text-xs text-slate-400 font-semibold mt-0.5">Update and secure your account credentials</div>
@@ -895,13 +759,8 @@ export default function Profile() {
                     </button>
                   ) : (
                     <div className="border border-slate-100 rounded-2xl p-6 bg-slate-50/10">
-                      <button
-                        onClick={() => {
-                          setShowPasswordChange(false);
-                          setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
-                        }}
-                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-sm mb-6"
-                      >
+                      <button onClick={() => { setShowPasswordChange(false); setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' }); }}
+                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-sm mb-6">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
                         </svg>
@@ -910,42 +769,24 @@ export default function Profile() {
                       <form onSubmit={handlePasswordUpdate} className="space-y-5">
                         <div>
                           <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Current Password</label>
-                          <input
-                            type="password"
-                            name="currentPassword"
-                            value={passwordForm.currentPassword}
-                            onChange={handlePasswordChange}
+                          <input type="password" name="currentPassword" value={passwordForm.currentPassword} onChange={handlePasswordChange}
                             className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 font-semibold text-slate-800 outline-none"
-                            placeholder="Current Password"
-                          />
+                            placeholder="Current Password" />
                         </div>
                         <div>
                           <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">New Password</label>
-                          <input
-                            type="password"
-                            name="newPassword"
-                            value={passwordForm.newPassword}
-                            onChange={handlePasswordChange}
+                          <input type="password" name="newPassword" value={passwordForm.newPassword} onChange={handlePasswordChange}
                             className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 font-semibold text-slate-800 outline-none"
-                            placeholder="New Password (min 6 characters)"
-                          />
+                            placeholder="New Password (min 6 characters)" />
                         </div>
                         <div>
                           <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Confirm New Password</label>
-                          <input
-                            type="password"
-                            name="confirmPassword"
-                            value={passwordForm.confirmPassword}
-                            onChange={handlePasswordChange}
+                          <input type="password" name="confirmPassword" value={passwordForm.confirmPassword} onChange={handlePasswordChange}
                             className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 font-semibold text-slate-800 outline-none"
-                            placeholder="Confirm New Password"
-                          />
+                            placeholder="Confirm New Password" />
                         </div>
-                        <button
-                          type="submit"
-                          disabled={changingPassword || passwordForm.newPassword !== passwordForm.confirmPassword}
-                          className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50"
-                        >
+                        <button type="submit" disabled={changingPassword || passwordForm.newPassword !== passwordForm.confirmPassword}
+                          className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50">
                           {changingPassword ? 'Updating Password...' : 'Update Password'}
                         </button>
                       </form>
@@ -967,10 +808,8 @@ export default function Profile() {
               <h2 className="text-xl font-extrabold text-slate-800">
                 {editingAddress ? 'Edit Address' : 'Add New Address'}
               </h2>
-              <button
-                onClick={() => setShowAddressModal(false)}
-                className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"
-              >
+              <button onClick={() => setShowAddressModal(false)}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -980,37 +819,19 @@ export default function Profile() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Full Name</label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={addressForm.fullName}
-                    onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                    required
-                  />
+                  <input type="text" name="fullName" value={addressForm.fullName} onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none" required />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Phone Number</label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={addressForm.phone}
-                    onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                    required
-                  />
+                  <input type="tel" name="phone" value={addressForm.phone} onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none" required />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Pincode</label>
                   <div className="relative">
-                    <input
-                      type="text"
-                      name="pincode"
-                      value={addressForm.pincode}
-                      onChange={handleAddressInputChange}
-                      className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                      required
-                    />
+                    <input type="text" name="pincode" value={addressForm.pincode} onChange={handleAddressInputChange}
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none" required />
                     {pincodeLoading && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2">
                         <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
@@ -1020,88 +841,47 @@ export default function Profile() {
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">City</label>
-                  <input
-                    type="text"
-                    name="city"
-                    value={addressForm.city}
-                    onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                    required
-                  />
+                  <input type="text" name="city" value={addressForm.city} onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none" required />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">District</label>
-                  <input
-                    type="text"
-                    name="district"
-                    value={addressForm.district}
-                    onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                    required
-                  />
+                  <input type="text" name="district" value={addressForm.district} onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none" required />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">State</label>
-                  <select
-                    name="state"
-                    value={addressForm.state}
-                    onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                    required
-                  >
+                  <select name="state" value={addressForm.state} onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none" required>
                     <option value="">Select State</option>
-                    {INDIAN_STATES.map(state => (
-                      <option key={state} value={state}>{state}</option>
-                    ))}
+                    {INDIAN_STATES.map(state => <option key={state} value={state}>{state}</option>)}
                   </select>
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Address Line 1</label>
-                  <input
-                    type="text"
-                    name="addressLine1"
-                    value={addressForm.addressLine1}
-                    onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                    required
-                  />
+                  <input type="text" name="addressLine1" value={addressForm.addressLine1} onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none" required />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Address Line 2 (Optional)</label>
-                  <input
-                    type="text"
-                    name="addressLine2"
-                    value={addressForm.addressLine2}
-                    onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                  />
+                  <input type="text" name="addressLine2" value={addressForm.addressLine2} onChange={handleAddressInputChange}
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none" />
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-2">
-                <input
-                  type="checkbox"
-                  id="isDefault"
-                  name="isDefault"
-                  checked={addressForm.isDefault}
-                  onChange={handleAddressInputChange}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                />
+                <input type="checkbox" id="isDefault" name="isDefault" checked={addressForm.isDefault} onChange={handleAddressInputChange}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500" />
                 <label htmlFor="isDefault" className="text-xs font-bold text-slate-500 cursor-pointer uppercase tracking-wider">
                   Set as default address
                 </label>
               </div>
               <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowAddressModal(false)}
-                  className="flex-1 py-3.5 border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-colors text-sm"
-                >
+                <button type="button" onClick={() => setShowAddressModal(false)}
+                  className="flex-1 py-3.5 border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-colors text-sm">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/10"
-                >
+                <button type="submit"
+                  className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/10">
                   {editingAddress ? 'Update' : 'Save'}
                 </button>
               </div>
@@ -1116,10 +896,8 @@ export default function Profile() {
           <div className="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100">
             <div className="p-6 border-b border-slate-100 flex items-center justify-between">
               <h2 className="text-xl font-extrabold text-slate-800">Create New Support Ticket</h2>
-              <button
-                onClick={() => setShowNewTicketModal(false)}
-                className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"
-              >
+              <button onClick={() => setShowNewTicketModal(false)}
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -1128,21 +906,15 @@ export default function Profile() {
             <form onSubmit={handleCreateTicket} className="p-6 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Subject</label>
-                <input
-                  type="text"
-                  value={newTicketForm.subject}
+                <input type="text" value={newTicketForm.subject}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, subject: e.target.value })}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                  required
-                />
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none" required />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Category</label>
-                <select
-                  value={newTicketForm.category}
+                <select value={newTicketForm.category}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, category: e.target.value })}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
-                >
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none">
                   <option value="Order">Order</option>
                   <option value="Product">Product</option>
                   <option value="Payment">Payment</option>
@@ -1152,25 +924,17 @@ export default function Profile() {
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Description</label>
-                <textarea
-                  value={newTicketForm.description}
+                <textarea value={newTicketForm.description}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, description: e.target.value })}
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm h-32 outline-none resize-none"
-                  required
-                />
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm h-32 outline-none resize-none" required />
               </div>
               <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setShowNewTicketModal(false)}
-                  className="flex-1 py-3.5 border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-colors text-sm"
-                >
+                <button type="button" onClick={() => setShowNewTicketModal(false)}
+                  className="flex-1 py-3.5 border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-colors text-sm">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/10"
-                >
+                <button type="submit"
+                  className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/10">
                   Submit Ticket
                 </button>
               </div>

@@ -144,7 +144,7 @@ export default function Cart() {
         codCharge: data.cod_charge || 0,
         finalCharge: data.final_charge || 0,
         codAvailable: data.cod_available !== false,
-        isFreeDelivery: data.final_charge === 0 || false,
+        isFreeDelivery: data.final_charge === 0 && paymentMethod === 'prepaid',
         deliveryAvailable: true
       })
     } catch (err) {
@@ -164,7 +164,7 @@ export default function Cart() {
         codCharge,
         finalCharge,
         codAvailable: true,
-        isFreeDelivery: finalCharge === 0,
+        isFreeDelivery: finalCharge === 0 && paymentMethod === 'prepaid',
         deliveryAvailable: true
       })
     }
@@ -806,16 +806,15 @@ export default function Cart() {
                 <div className="ct-summary-row">
                   <span className="ct-summary-label">Delivery Charge</span>
                   <span className="ct-summary-val">
-                    {/* For COD, never show free delivery */}
-                    {paymentMethod === 'cod' ? (
-                      `₹${shippingInfo.deliveryCharge}`
-                    ) : (
+                    {shippingInfo.isFreeDelivery && paymentMethod === 'prepaid' ? (
                       <>
                         {shippingInfo.deliveryCharge > 0 && (
                           <span style={{ textDecoration: 'line-through', color: '#9ca3af', marginRight: 8 }}>₹{shippingInfo.deliveryCharge}</span>
                         )}
                         <span className="free font-bold text-green-600">FREE</span>
                       </>
+                    ) : (
+                      `₹${shippingInfo.deliveryCharge}`
                     )}
                   </span>
                 </div>
