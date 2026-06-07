@@ -104,6 +104,7 @@ export default function App() {
         <Route path="brand/:slug" element={<BrandPage />} />
         <Route path="products/:idOrSlug" element={<ProductDetail />} />
         <Route path="order" element={<Enquiry />} />
+        <Route path="checkout" element={<Enquiry />} />
         <Route path="partner" element={<Partner />} />
         <Route path="partner/dashboard" element={
           <PartnerProtectedRoute>

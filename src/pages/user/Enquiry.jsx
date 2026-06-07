@@ -378,7 +378,7 @@ export default function Enquiry() {
       const cashfree = window.Cashfree({ mode })
       cashfree.checkout({
         paymentSessionId: paymentSessionId,
-        returnUrl: `${window.location.origin}/checkout?order_id={order_id}`
+        returnUrl: `${window.location.origin}/checkout?order_id={order_id}&payment_id={payment_id}&signature={signature}`
       })
     } catch (err) {
       notify(err?.message || 'Payment gateway error', 'error')
@@ -444,15 +444,19 @@ export default function Enquiry() {
   // Handle cashfree callback
   useEffect(() => {
     const handleCashfreeCallback = async () => {
+      console.log('=== Checking Cashfree callback ===')
       const queryParams = new URLSearchParams(location.search)
       const orderId = queryParams.get('order_id')
       const cashfreePaymentId = queryParams.get('payment_id')
       const cashfreeSignature = queryParams.get('signature')
+      console.log('Query params:', { orderId, cashfreePaymentId, cashfreeSignature })
       
       // Try to get prepareData from state first, then from localStorage
       let dataToUse = prepareData
+      console.log('prepareData from state:', dataToUse)
       if (!dataToUse) {
         const stored = localStorage.getItem('prepareData')
+        console.log('prepareData from localStorage:', stored)
         if (stored) {
           try {
             dataToUse = JSON.parse(stored)
@@ -463,33 +467,38 @@ export default function Enquiry() {
       }
       
       if (orderId && cashfreePaymentId && cashfreeSignature && dataToUse) {
+        console.log('All required params present, creating order...')
         try {
           setLoading(true)
           const response = await api.post('/api/orders/create-after-verify', {
-        ...dataToUse,
-        cashfreeOrderId: orderId,
-        cashfreePaymentId,
-        cashfreeSignature
-      })
-      // Clear prepareData
-      localStorage.removeItem('prepareData')
-      setPrepareData(null)
-      // Navigate to order success page
-      navigate('/order-success', { 
-        state: { 
-          orderId: response.data.orderId,
-          orderNumber: response.data.orderNumber,
-          totalAmount: dataToUse.totalAmount,
-          paymentMethod: dataToUse.paymentMethod 
-        } 
-      })
+            ...dataToUse,
+            cashfreeOrderId: orderId,
+            cashfreePaymentId,
+            cashfreeSignature
+          })
+          console.log('Order created response:', response.data)
+          // Clear prepareData
+          localStorage.removeItem('prepareData')
+          setPrepareData(null)
+          // Navigate to order success page
+          navigate('/order-success', { 
+            state: { 
+              orderId: response.data.orderId,
+              orderNumber: response.data.orderNumber,
+              totalAmount: dataToUse.totalAmount,
+              paymentMethod: dataToUse.paymentMethod 
+            } 
+          })
         } catch (err) {
+          console.error('Error creating order:', err)
           notify(err?.response?.data?.error || 'Order failed', 'error')
           localStorage.removeItem('prepareData')
           setPrepareData(null)
         } finally {
           setLoading(false)
         }
+      } else {
+        console.log('Missing required params for callback!')
       }
     }
     handleCashfreeCallback()

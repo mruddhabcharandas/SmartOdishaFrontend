@@ -52,7 +52,7 @@ export default function OrderSuccess() {
           <div className="bg-gray-50 rounded-lg p-4 w-full mb-6">
             <p className="text-sm text-gray-500 mb-1">Order ID</p>
             <p className="text-lg font-semibold text-gray-900">
-              {state.orderNumber || state.orderId}
+              {state.orderNumber || (state.orderId ? state.orderId.substring(0, 20) + '...' : '')}
             </p>
           </div>
           
