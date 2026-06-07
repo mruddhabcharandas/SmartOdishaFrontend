@@ -47,11 +47,18 @@ export function CartProvider({ children }) {
         const localItems = saved ? JSON.parse(saved) : []
         if (localItems.length) {
           for (const item of localItems) {
-            await api.post('/api/cart/add', {
-              productId: item._id || item.id,
-              variantSku: item.variantSku,
-              quantity: item.quantity || 1
-            });
+            try {
+              const productId = item.productId || item._id || item.id
+              if (!productId) continue
+              await api.post('/api/cart/add', {
+                productId,
+                variantSku: item.variantSku,
+                quantity: item.quantity || 1
+              });
+            } catch (itemErr) {
+              console.error('Failed to add item during sync:', itemErr)
+              // continue with next item
+            }
           }
           localStorage.removeItem('cart');
           mergedRef.current = true;

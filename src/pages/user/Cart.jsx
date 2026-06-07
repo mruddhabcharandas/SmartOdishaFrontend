@@ -18,6 +18,11 @@ export default function Cart() {
   const [isApplying, setIsApplying] = useState(false)
   const minAmount = Number(import.meta.env.VITE_MIN_ORDER_AMOUNT || 5000)
 
+  const safeNum = (val) => {
+    const n = Number(val)
+    return isNaN(n) || !isFinite(n) ? 0 : n
+  }
+
   const handleCheckout = () => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: '/cart' } })
@@ -30,29 +35,29 @@ export default function Cart() {
   const getBulkTiers = (item) => {
     const it = (item.bulkTiers || item.bulkDiscountQuantity) ? item : (item.productId && typeof item.productId === 'object' ? item.productId : item);
     if (Array.isArray(it.bulkTiers) && it.bulkTiers.length)
-      return it.bulkTiers.slice().sort((a,b) => a.quantity - b.quantity)
-    if (it.bulkDiscountQuantity > 0)
-      return [{ quantity: it.bulkDiscountQuantity, priceReduction: it.bulkDiscountPriceReduction || 0 }]
+      return it.bulkTiers.slice().sort((a,b) => safeNum(a.quantity) - safeNum(b.quantity))
+    if (safeNum(it.bulkDiscountQuantity) > 0)
+      return [{ quantity: safeNum(it.bulkDiscountQuantity), priceReduction: safeNum(it.bulkDiscountPriceReduction || 0) }]
     return []
   }
-  const getNextTier = (qty, tiers) => tiers.find(t => qty < t.quantity) || null
-  const unitPrice = (it) => {
-    let p = Number(it.price || 0)
-    const qty = Math.max(1, Number(it.quantity || 1))
-    const tiers = getBulkTiers(it)
+  const getNextTier = (qty, tiers) => tiers.find(t => safeNum(qty) < safeNum(t.quantity)) || null
+  const unitPrice = (item) => {
+    let p = safeNum(item.price || 0)
+    const qty = Math.max(1, safeNum(item.quantity || 1))
+    const tiers = getBulkTiers(item)
     if (tiers.length) {
-      const applicable = tiers.filter(t => qty >= Number(t.quantity || 0)).pop()
-      if (applicable) p = Math.max(0, p - Number(applicable.priceReduction || 0))
+      const applicable = tiers.filter(t => qty >= safeNum(t.quantity || 0)).pop()
+      if (applicable) p = Math.max(0, p - safeNum(applicable.priceReduction || 0))
     }
     return p
   }
-  const lineTotal   = (it) => unitPrice(it) * Math.max(1, Number(it.quantity || 1))
-  const mrpTotal    = cart.reduce((s,it) => s + Number(it.mrp||it.price||0) * Math.max(1,Number(it.quantity||1)), 0)
+  const lineTotal   = (item) => unitPrice(item) * Math.max(1, safeNum(item.quantity || 1))
+  const mrpTotal    = cart.reduce((s,it) => s + safeNum(it.mrp||it.price||0) * Math.max(1,safeNum(it.quantity||1)), 0)
   const effTotal    = cart.reduce((s,it) => {
     const itemStock = it.variantSku 
       ? (it.productId?.variants?.find(v => v.sku === it.variantSku)?.stock ?? it.stock)
       : (it.productId?.stock ?? it.stock);
-    if (itemStock <= 0) return s;
+    if (safeNum(itemStock) <= 0) return s;
     return s + lineTotal(it);
   }, 0)
   const bulkDiscount = Math.max(0, mrpTotal - effTotal)
@@ -334,7 +339,7 @@ export default function Cart() {
               <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
               </svg>
-              ₹{totalPayable.toLocaleString()}
+              ₹{safeNum(totalPayable).toLocaleString()}
             </div>
           </div>
 
@@ -409,7 +414,7 @@ export default function Cart() {
                       )}
                     </div>
                     <div className="ct-item-meta">
-                      <span className="ct-unit-price">₹{unitPrice(item).toLocaleString()} / unit</span>
+                      <span className="ct-unit-price">₹{safeNum(unitPrice(item)).toLocaleString()} / unit</span>
                       <span style={{ fontSize:9, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase',
                         padding:'2px 8px', borderRadius:100,
                         background: isOutOfStock ? 'rgba(220,38,38,.1)' : itemStock <= 5 ? 'rgba(245,158,11,.1)' : 'rgba(5,150,105,.1)',
@@ -435,7 +440,7 @@ export default function Cart() {
                             return (
                               <>
                                 <div className="ct-tier-text" style={{ color: '#f97316' }}>
-                                  Add {delta} more to save ₹{estSave.toLocaleString()} (₹{effUnit.toLocaleString()}/unit)
+                                  Add {delta} more to save ₹{safeNum(estSave).toLocaleString()} (₹{safeNum(effUnit).toLocaleString()}/unit)
                                 </div>
                                 <button className="ct-tier-add-btn"
                                   style={{ background: '#f97316' }}
@@ -487,7 +492,7 @@ export default function Cart() {
 
                   {/* line total */}
                   <div className="ct-line-total">
-                    <div className="ct-line-price">₹{lineTotal(item).toLocaleString()}</div>
+                    <div className="ct-line-price">₹{safeNum(lineTotal(item)).toLocaleString()}</div>
                     {(() => {
                       const it = (item.bulkTiers || item.bulkDiscountQuantity) ? item : (item.productId && typeof item.productId === 'object' ? item.productId : item);
                       const bulkQty = it.bulkDiscountQuantity || (it.bulkTiers && it.bulkTiers[0]?.quantity);
@@ -521,7 +526,7 @@ export default function Cart() {
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
                         <div className="ct-sugg-name">{p.name}</div>
-                        <div className="ct-sugg-price">{p.price!=null?`₹${Number(p.price).toLocaleString()}`:'—'}</div>
+                        <div className="ct-sugg-price">{p.price!=null?`₹${safeNum(p.price).toLocaleString()}`:'—'}</div>
                       </div>
                       <button className="ct-sugg-add" onClick={(e) => { e.stopPropagation(); addToCart(p); }}>Add</button>
                     </div>
@@ -538,10 +543,10 @@ export default function Cart() {
           <div className="ct-checkout-wrap">
             <div className="ct-checkout-total">
               <span className="ct-checkout-label">Total Amount</span>
-              <span className="ct-checkout-price">₹{totalPayable.toLocaleString()}</span>
+              <span className="ct-checkout-price">₹{safeNum(totalPayable).toLocaleString()}</span>
               <div className="ct-min-text">
                 {totalPayable < minAmount
-                  ? <>Add <b>₹{minLeft.toLocaleString()}</b> more to place order</>
+                  ? <>Add <b>₹{safeNum(minLeft).toLocaleString()}</b> more to place order</>
                   : <span className="met">✓ Min order requirement met</span>
                 }
               </div>

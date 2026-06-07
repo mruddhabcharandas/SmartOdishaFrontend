@@ -31,13 +31,27 @@ function orderLineProductId(item) {
   return ''
 }
 
-const fmtIST = (d) => new Date(d).toLocaleString('en-IN', {
-  timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric',
-  hour: '2-digit', minute: '2-digit', hour12: true
-})
-const fmtDate = (d) => new Date(d).toLocaleDateString('en-IN', {
-  timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric', year: 'numeric'
-})
+const fmtIST = (d) => {
+  if (!d) return ''
+  const date = new Date(d)
+  if (isNaN(date.getTime())) return ''
+  return date.toLocaleString('en-IN', {
+    timeZone: 'Asia/Kolkata', year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: true
+  })
+}
+const fmtDate = (d) => {
+  if (!d) return ''
+  const date = new Date(d)
+  if (isNaN(date.getTime())) return ''
+  return date.toLocaleDateString('en-IN', {
+    timeZone: 'Asia/Kolkata', month: 'short', day: 'numeric', year: 'numeric'
+  })
+}
+const safeNumber = (num) => {
+  const n = Number(num)
+  return isNaN(n) || !isFinite(n) ? 0 : n
+}
 
 const STATUS_STEPS = ['Placed', 'Processing', 'Packed', 'Shipped', 'Delivered']
 
@@ -507,11 +521,11 @@ export default function OrderHistory() {
                         </div>
 
                         <div className="oh-meta-item">
-                          <div className="oh-meta-label">Total</div>
-                          <div className="oh-meta-val" style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:18, color:'#f97316', letterSpacing:'.03em' }}>
-                            ₹{order.totalEstimate?.toLocaleString()}
-                          </div>
-                        </div>
+                <div className="oh-meta-label">Total</div>
+                <div className="oh-meta-val" style={{ fontFamily:'Bebas Neue,sans-serif', fontSize:18, color:'#f97316', letterSpacing:'.03em' }}>
+                  ₹{safeNumber(order.totalEstimate).toLocaleString()}
+                </div>
+              </div>
 
                         <div className="oh-meta-item">
                           <div className="oh-meta-label">Items</div>
@@ -570,11 +584,11 @@ export default function OrderHistory() {
                           </div>
                           {statusIdx < 4 && (
                             <div className="oh-eta">
-                              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                              </svg>
-                              Estimated Delivery: <b>{eta.toLocaleDateString('en-IN', { month:'short', day:'2-digit' })}</b>
-                            </div>
+                          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                          </svg>
+                          Estimated Delivery: <b>{!isNaN(eta.getTime()) ? eta.toLocaleDateString('en-IN', { month:'short', day:'2-digit' }) : ''}</b>
+                        </div>
                           )}
                         </div>
 
@@ -654,7 +668,7 @@ export default function OrderHistory() {
                                       <span className="oh-item-qty">Qty: {item.quantity} · ₹{item.price} each</span>
                                     </div>
                                   </div>
-                                  <div className="oh-item-price">₹{(item.price * item.quantity).toLocaleString()}</div>
+                                  <div className="oh-item-price">₹{safeNumber(safeNumber(item.price) * safeNumber(item.quantity)).toLocaleString()}</div>
                                 </div>
                                 {canRateProduct && (
                                   <div className="oh-rate-row" onClick={(e) => e.stopPropagation()}>
