@@ -117,86 +117,67 @@ export default function BusinessInventory() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white border rounded-2xl p-5 shadow-sm flex items-center justify-between">
+    <div className="space-y-4">
+      <div className="panel-card">
+        <div className="panel-card-header">
           <div>
-            <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Total SKUs</div>
-            <div className="text-2xl font-extrabold text-gray-900 mt-1">
-              {products.reduce((acc, p) => acc + (p.variants?.length || 1), 0)}
-            </div>
+            <h1 className="panel-title">Inventory</h1>
+            <p className="panel-subtitle">Track stock levels and adjust quantities</p>
           </div>
-          <div className="h-10 w-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg font-bold">📦</div>
-        </div>
-        <div className="bg-white border rounded-2xl p-5 shadow-sm flex items-center justify-between">
-          <div>
-            <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Low Stock Items</div>
-            <div className="text-2xl font-extrabold text-red-600 mt-1">
-              {products.filter(p => {
-                const stock = p.variants && p.variants.length > 0 
-                  ? p.variants.reduce((acc, v) => acc + v.stock, 0)
-                  : p.stock
-                return stock > 0 && stock <= 10
-              }).length}
-            </div>
-          </div>
-          <div className="h-10 w-10 bg-red-50 text-red-600 rounded-xl flex items-center justify-center text-lg font-bold">⚠️</div>
-        </div>
-        <div className="bg-white border rounded-2xl p-5 shadow-sm flex items-center justify-between">
-          <div>
-            <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Out of Stock</div>
-            <div className="text-2xl font-extrabold text-slate-500 mt-1">
-              {products.filter(p => {
-                const stock = p.variants && p.variants.length > 0 
-                  ? p.variants.reduce((acc, v) => acc + v.stock, 0)
-                  : p.stock
-                return stock === 0
-              }).length}
-            </div>
-          </div>
-          <div className="h-10 w-10 bg-slate-50 text-slate-600 rounded-xl flex items-center justify-center text-lg font-bold">🛑</div>
         </div>
       </div>
 
-      {/* Filter and Search controls */}
-      <div className="bg-white border rounded-2xl p-5 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-80">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-            </svg>
-          </span>
-          <input
-            type="text"
-            placeholder="Search catalog by name/SKU..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2.5 text-sm font-semibold text-gray-800 outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
-          />
+      <div className="panel-kpi-grid">
+        <div className="panel-kpi">
+          <div className="panel-kpi-label">Total SKUs</div>
+          <div className="panel-kpi-value">
+            {products.reduce((acc, p) => acc + (p.variants?.length || 1), 0)}
+          </div>
         </div>
-        <div className="flex gap-2 w-full md:w-auto overflow-x-auto">
-          {['all', 'low_stock', 'out_of_stock'].map((type) => (
-            <button
-              key={type}
-              onClick={() => setFilterType(type)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-all ${
-                filterType === type 
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-200' 
-                  : 'bg-slate-50 border text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              {type.replace('_', ' ')}
-            </button>
-          ))}
+        <div className="panel-kpi">
+          <div className="panel-kpi-label">Low Stock</div>
+          <div className="panel-kpi-value" style={{ color: '#e53935' }}>
+            {products.filter(p => {
+              const stock = p.variants?.length ? p.variants.reduce((acc, v) => acc + v.stock, 0) : p.stock
+              return stock > 0 && stock <= 10
+            }).length}
+          </div>
+        </div>
+        <div className="panel-kpi">
+          <div className="panel-kpi-label">Out of Stock</div>
+          <div className="panel-kpi-value" style={{ color: '#878787' }}>
+            {products.filter(p => {
+              const stock = p.variants?.length ? p.variants.reduce((acc, v) => acc + v.stock, 0) : p.stock
+              return stock === 0
+            }).length}
+          </div>
         </div>
       </div>
 
-      {/* Inventory Table */}
-      <div className="bg-white border rounded-2xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px] border-b">
+      <div className="panel-filter-bar">
+        <input
+          type="text"
+          placeholder="Search by name or SKU..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="panel-input"
+          style={{ maxWidth: 280, flex: '1 1 200px' }}
+        />
+        {['all', 'low_stock', 'out_of_stock'].map((type) => (
+          <button
+            key={type}
+            type="button"
+            onClick={() => setFilterType(type)}
+            className={`panel-filter-btn ${filterType === type ? 'active' : ''}`}
+          >
+            {type.replace('_', ' ')}
+          </button>
+        ))}
+      </div>
+
+      <div className="panel-card panel-table-wrap">
+          <table className="panel-table">
+            <thead>
               <tr>
                 <th className="px-6 py-4 text-left">Product & Attributes</th>
                 <th className="px-6 py-4 text-center">SKU</th>
@@ -217,8 +198,8 @@ export default function BusinessInventory() {
                     <tr className="hover:bg-slate-50/40 transition-colors">
                       <td className="px-6 py-4 flex items-center gap-3">
                         <div className="w-10 h-10 bg-slate-50 border rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
-                          {p.images?.[0]?.url ? (
-                            <img src={p.images[0].url} alt="" className="w-full h-full object-contain p-1" />
+                          {(p.images?.[0]?.url || p.images?.[0]) ? (
+                            <img src={p.images[0].url || p.images[0]} alt="" className="panel-img-thumb" />
                           ) : (
                             <span className="text-lg">📦</span>
                           )}
@@ -250,19 +231,9 @@ export default function BusinessInventory() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right space-x-2">
-                        <button
-                          onClick={() => handleOpenHistory(p)}
-                          className="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 border hover:bg-slate-50 transition-all"
-                        >
-                          History
-                        </button>
+                        <button type="button" onClick={() => handleOpenHistory(p)} className="panel-btn-ghost text-xs py-1">History</button>
                         {(!p.variants || p.variants.length === 0) && (
-                          <button
-                            onClick={() => handleOpenAdjust(p)}
-                            className="px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 transition-all border border-blue-100"
-                          >
-                            Adjust Stock
-                          </button>
+                          <button type="button" onClick={() => handleOpenAdjust(p)} className="panel-btn-outline text-xs py-1">Adjust</button>
                         )}
                       </td>
                     </tr>
@@ -320,16 +291,14 @@ export default function BusinessInventory() {
               )}
             </tbody>
           </table>
-        </div>
       </div>
 
-      {/* Adjust Stock Modal */}
       {showAdjustModal && selectedProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-          <form onSubmit={handleAdjustStock} className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-              <h3 className="font-extrabold text-slate-900 text-base">Adjust Product Stock</h3>
-              <button type="button" onClick={() => setShowAdjustModal(false)} className="text-gray-400 hover:text-gray-800 transition-colors p-1 text-2xl leading-none">&times;</button>
+        <div className="panel-modal-overlay">
+          <form onSubmit={handleAdjustStock} className="panel-modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+            <div className="panel-modal-header">
+              <h3 className="panel-title">Adjust Stock</h3>
+              <button type="button" onClick={() => setShowAdjustModal(false)} className="panel-btn-ghost">✕ Close</button>
             </div>
             <div className="p-6 space-y-4">
               <div>

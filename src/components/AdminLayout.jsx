@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { CONFIG } from '../shared/lib/config.js'
+import '../styles/panel.css'
 
 const Icon = ({ name }) => (
   <span className="inline-block w-4 h-4 mr-2 align-middle">
@@ -121,12 +122,7 @@ export default function AdminLayout() {
         end={end}
         onClick={() => setOpen(false)}
         className={({ isActive }) =>
-          [
-            'flex items-center px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-200 group',
-            isActive
-              ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-200 scale-[1.02]'
-              : 'text-gray-500 hover:bg-gradient-to-br from-blue-50 to-indigo-50 hover:text-gray-900 hover:pl-5'
-          ].join(' ')
+          ['panel-nav-link', isActive ? 'active' : ''].join(' ')
         }
       >
         {label}
@@ -135,14 +131,8 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-gray-900 selection:bg-blue-100 selection:text-blue-900">
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfdbfe; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #93c5fd; }
-      `}</style>
-      <div className="flex h-20 items-center justify-between border-b border-blue-100 bg-white/80 backdrop-blur-md px-6 md:px-10 sticky top-0 z-30">
+    <div className="min-h-screen panel-root">
+      <div className="flex h-14 items-center justify-between panel-header px-6 md:px-10 sticky top-0 z-30">
         <div className="flex items-center gap-4">
           <button
             className="md:hidden p-2 rounded-xl hover:bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 transition-colors"
@@ -151,15 +141,15 @@ export default function AdminLayout() {
             <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
           <div className="flex items-center gap-3">
-            <span className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center overflow-hidden">
+            <span className="h-10 w-10 rounded-sm bg-white flex items-center justify-center overflow-hidden">
               <img src="/logo.png" alt="SmartOdisha" className="h-full w-full object-contain" />
             </span>
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-base font-black tracking-tight text-gray-900">{CONFIG.BRAND_NAME}</span>
-                <span className="px-2 py-0.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-[10px] font-black text-white rounded-lg tracking-widest uppercase">{role}</span>
+                <span className="text-base font-semibold text-white">{CONFIG.BRAND_NAME}</span>
+                <span className="px-2 py-0.5 bg-[#ffe500] text-[#2874f0] text-[10px] font-bold rounded-sm uppercase">{role}</span>
               </div>
-              <div className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">{role === 'admin' ? 'Admin Panel' : 'Staff Panel'}</div>
+              <div className="text-[10px] text-white/80">{role === 'admin' ? 'Admin Panel' : 'Staff Panel'}</div>
             </div>
           </div>
         </div>
@@ -168,7 +158,7 @@ export default function AdminLayout() {
           onClick={logout}
           title="Sign out"
           aria-label="Sign out"
-          className="group inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-gray-200 text-gray-600 transition-all hover:bg-red-50 hover:border-red-100 hover:text-red-600 active:scale-95"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-sm text-white/90 hover:bg-white/10"
         >
           <svg className="w-5 h-5 transition-transform group-hover:-translate-x-px" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -176,11 +166,11 @@ export default function AdminLayout() {
         </button>
       </div>
 
-      <div className="grid min-h-[calc(100vh-5rem)] md:grid-cols-[280px_minmax(0,1fr)]">
+      <div className="grid min-h-[calc(100vh-3.5rem)] md:grid-cols-[240px_minmax(0,1fr)]">
         <aside
-          className={`border-r border-blue-100 bg-white/50 backdrop-blur-sm ${
-            open ? 'fixed inset-0 z-40 bg-white pt-20' : 'hidden'
-          } md:block sticky top-20 h-[calc(100vh-5rem)]`}
+          className={`panel-sidebar ${
+            open ? 'fixed inset-0 z-40 bg-white pt-16' : 'hidden'
+          } md:block sticky top-14 h-[calc(100vh-3.5rem)]`}
         >
           <div className="h-full flex flex-col p-6 overflow-hidden">
             <nav className="flex-1 space-y-2 overflow-y-auto pr-2 custom-scrollbar">
@@ -300,8 +290,8 @@ export default function AdminLayout() {
           </div>
         </aside>
 
-        <main className="bg-blue-50/30">
-          <div className="max-w-[1400px] mx-auto p-6 md:p-10">
+        <main className="panel-main">
+          <div className="panel-page p-4 md:p-6">
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
               <Outlet />
             </div>

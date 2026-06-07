@@ -57,6 +57,7 @@ export default function Catalogue() {
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
   const [sortBy, setSortBy] = useState('newest')
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const searchRef = useRef(null)
   const limit = 20
 
@@ -152,9 +153,9 @@ export default function Catalogue() {
   }, [q])
 
   useEffect(() => {
-    const title = category ? `${category} · Shop | SmartOdisha` : q ? `Search: ${q} | SmartOdisha` : 'Products | SmartOdisha'
+    const title = category ? `${categories.find(c => c._id === category)?.name || 'Category'} · Shop | SmartOdisha` : q ? `Search: ${q} | SmartOdisha` : 'Products | SmartOdisha'
     setSEO(title, 'Discover quality products with best prices, fast delivery across Odisha.')
-  }, [q, category])
+  }, [q, category, categories])
 
   const filteredSorted = useMemo(() => {
     const safeNumber = (val) => {
@@ -194,115 +195,314 @@ export default function Catalogue() {
     })
   }
 
-  if (loadingProducts && items.length === 0) {
-    return (
-      <div className="ct-loading flex items-center justify-center min-h-screen">
-        <LoadingSpinner text="Loading products..." />
-      </div>
-    )
+  const clearAllFilters = () => {
+    setCategory('')
+    setSubCategory('')
+    setBrand('')
+    setStore('')
+    setMinPrice('')
+    setMaxPrice('')
+    setQ('')
   }
 
   return (
-    <div className="ct-wrapper">
-      <style jsx>{`
-        .ct-wrapper {
-          font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-          background: #f8fafc;
-          color: #0f172a;
+    <div className="ct-premium-wrapper">
+      <style>{`
+        .ct-premium-wrapper {
+          font-family: 'Inter', system-ui, -apple-system, sans-serif;
+          background: #f1f3f6;
+          color: #212121;
           min-height: 100vh;
-          overflow-x: hidden;
+          padding: 8px 0 40px;
         }
-
-        .ct-hero {
-          padding: 16px 12px 12px;
-          margin: 0 -12px;
-          position: relative;
-          overflow: hidden;
-          background: #f8fafc;
+        .ct-main-container {
+          max-width: 1440px;
+          margin: 0 auto;
+          display: flex;
+          gap: 12px;
+          padding: 0 8px;
         }
-
-        @media (min-width: 768px) {
-          .ct-hero {
-            padding: 16px 24px 12px;
-            margin: 0 -24px;
+        
+        /* Sidebar Styles (Flipkart Look) */
+        .ct-sidebar {
+          width: 280px;
+          flex-shrink: 0;
+          background: #ffffff;
+          border-radius: 4px;
+          box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+          height: fit-content;
+          position: sticky;
+          top: 12px;
+          display: none;
+        }
+        @media (min-width: 1024px) {
+          .ct-sidebar {
+            display: block;
           }
         }
+        .ct-sidebar-header {
+          padding: 16px;
+          border-bottom: 1px solid #f0f0f0;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .ct-sidebar-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #212121;
+        }
+        .ct-clear-link {
+          font-size: 12px;
+          color: #2874f0;
+          font-weight: 700;
+          cursor: pointer;
+          border: none;
+          background: none;
+        }
+        .ct-filter-section {
+          padding: 16px;
+          border-bottom: 1px solid #f0f0f0;
+        }
+        .ct-filter-lbl {
+          font-size: 12px;
+          font-weight: 700;
+          text-transform: uppercase;
+          color: #212121;
+          margin-bottom: 12px;
+          letter-spacing: 0.5px;
+        }
+        .ct-filter-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          max-height: 200px;
+          overflow-y: auto;
+        }
+        .ct-filter-item {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 13px;
+          color: #212121;
+          cursor: pointer;
+        }
+        .ct-filter-item input {
+          width: 15px;
+          height: 15px;
+          cursor: pointer;
+        }
+        .ct-price-inputs {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .ct-price-input {
+          width: 100%;
+          padding: 6px 10px;
+          border: 1px solid #e0e0e0;
+          border-radius: 2px;
+          font-size: 13px;
+          outline: none;
+        }
+        .ct-price-to {
+          font-size: 12px;
+          color: #878787;
+        }
 
-        .ct-container {
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 0 12px 40px;
+        /* Products Section Styles */
+        .ct-content-area {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        
+        /* Top Search & Category Panel */
+        .ct-top-panel {
+          background: #ffffff;
+          border-radius: 4px;
+          padding: 12px 16px;
+          box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .ct-search-row {
+          display: flex;
+          gap: 12px;
+          align-items: center;
           position: relative;
-          z-index: 1;
         }
-
-        @media (min-width: 768px) {
-          .ct-container {
-            padding: 0 24px 56px;
-          }
-        }
-
-        .ct-search-wrap {
-          max-width: 720px;
-          margin: 0 auto;
+        .ct-search-box {
+          flex: 1;
           position: relative;
         }
-
         .ct-search-input {
           width: 100%;
-          padding: 12px 18px;
-          border: 1px solid #e2e8f0;
-          border-radius: 12px;
+          padding: 11px 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
           font-size: 14px;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+        .ct-search-input:focus {
+          border-color: #2874f0;
+        }
+        .ct-mobile-filter-trigger {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 10px 16px;
+          border: 1px solid #e0e0e0;
+          border-radius: 4px;
+          font-size: 13px;
+          font-weight: 700;
+          background: #ffffff;
+          cursor: pointer;
+        }
+        @media (min-width: 1024px) {
+          .ct-mobile-filter-trigger {
+            display: none;
+          }
+        }
+        
+        .ct-category-chips {
+          display: flex;
+          gap: 8px;
+          overflow-x: auto;
+          scrollbar-width: none;
+          padding-bottom: 2px;
+        }
+        .ct-category-chips::-webkit-scrollbar {
+          display: none;
+        }
+        .ct-chip {
+          padding: 6px 14px;
+          border-radius: 100px;
+          font-size: 12px;
+          font-weight: 600;
+          border: 1px solid #e0e0e0;
+          background: #ffffff;
+          color: #666666;
+          cursor: pointer;
+          white-space: nowrap;
+          transition: all 0.15s;
+        }
+        .ct-chip:hover {
+          border-color: #2874f0;
+          color: #2874f0;
+        }
+        .ct-chip.active {
+          background: #2874f0;
+          border-color: #2874f0;
+          color: #ffffff;
+        }
+
+        /* Results List Section */
+        .ct-results-card {
+          background: #ffffff;
+          border-radius: 4px;
+          padding: 16px;
+          box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+          min-height: 400px;
+          display: flex;
+          flex-direction: column;
+        }
+        .ct-results-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #f0f0f0;
+          margin-bottom: 16px;
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .ct-results-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #212121;
+        }
+        .ct-results-count {
+          font-size: 12px;
+          color: #878787;
           font-weight: 500;
+          margin-top: 2px;
+        }
+        .ct-sorting-widgets {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .ct-sort-label {
+          font-size: 12px;
+          font-weight: 700;
+          color: #878787;
+          text-transform: uppercase;
+        }
+        .ct-sort-select {
+          padding: 6px 12px;
+          border-radius: 4px;
+          border: 1px solid #e0e0e0;
+          font-size: 13px;
+          font-weight: 600;
+          color: #212121;
           outline: none;
           background: white;
-          color: #0f172a;
-          transition: all 0.2s;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+          cursor: pointer;
         }
 
-        .ct-search-input::placeholder {
-          color: #94a3b8;
+        /* Responsive Grid */
+        .ct-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 8px;
         }
-
-        .ct-search-input:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-          background: white;
+        @media (min-width: 640px) {
+          .ct-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+          }
         }
-
+        @media (min-width: 1200px) {
+          .ct-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+          }
+        }
+        
+        /* Suggest Box UI */
         .ct-suggest {
           position: absolute;
           top: 100%;
           left: 0;
           right: 0;
-          background: white;
-          border-radius: 12px;
-          margin-top: 8px;
-          overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+          background: #ffffff;
+          border-radius: 4px;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.12);
           z-index: 1000;
-          border: 1px solid #e2e8f0;
+          border: 1px solid #e0e0e0;
+          margin-top: 4px;
+          max-height: 320px;
+          overflow-y: auto;
         }
-
         .ct-suggest-item {
           display: flex;
           align-items: center;
           gap: 12px;
-          padding: 12px 16px;
+          padding: 10px 16px;
           cursor: pointer;
-          transition: background 0.2s ease;
+          transition: background 0.15s;
         }
-
         .ct-suggest-item:hover {
-          background: #f1f5f9;
+          background: #f8fafc;
         }
-
         .ct-sug-thumb {
-          width: 40px;
-          height: 40px;
-          border-radius: 8px;
+          width: 32px;
+          height: 32px;
+          border-radius: 4px;
           background: #f1f5f9;
           display: flex;
           align-items: center;
@@ -310,386 +510,448 @@ export default function Catalogue() {
           overflow: hidden;
           flex-shrink: 0;
         }
-
         .ct-sug-thumb img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
         }
-
         .ct-sug-name {
           font-size: 13px;
           font-weight: 600;
-          color: #1e293b;
-          margin-bottom: 2px;
+          color: #212121;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
-
         .ct-sug-cat {
           font-size: 11px;
-          font-weight: 500;
-          color: #94a3b8;
+          color: #878787;
         }
-
         .ct-sug-fill {
           margin-left: auto;
-          color: #94a3b8;
+          color: #c2c2c2;
         }
 
-        .ct-trust {
+        /* Mobile Filter Modal */
+        .ct-mobile-drawer {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,0.5);
+          z-index: 2000;
           display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 24px;
-          margin: 12px auto 0;
-          padding: 10px 0;
+          justify-content: flex-end;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s;
         }
-
-        .ct-trust-item {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 12px;
-          font-weight: 500;
-          color: #64748b;
+        .ct-mobile-drawer.open {
+          opacity: 1;
+          pointer-events: auto;
         }
-
-        .ct-categories {
-          display: flex;
-          gap: 8px;
-          overflow-x: auto;
-          margin: 12px 0 16px;
-          padding: 2px 2px 8px;
-          scrollbar-width: none;
-        }
-
-        .ct-categories::-webkit-scrollbar {
-          display: none;
-        }
-
-        .ct-category-chip {
-          padding: 8px 16px;
-          border: none;
-          border-radius: 100px;
-          background: transparent;
-          font-size: 13px;
-          font-weight: 500;
-          cursor: pointer;
-          white-space: nowrap;
-          transition: all 0.2s;
-          color: #64748b;
-        }
-
-        .ct-category-chip:hover {
-          color: #0f172a;
-        }
-
-        .ct-category-chip.active {
-          background: #0f172a;
-          color: white;
-        }
-
-        .ct-header-section {
-          display: flex;
-          flex-direction: row;
-          gap: 16px;
-          margin-bottom: 16px;
-          align-items: center;
-          justify-content: space-between;
-          padding: 0;
-          background: transparent;
-        }
-
-        .ct-title {
-          font-size: 18px;
-          font-weight: 700;
-          color: #0f172a;
-          letter-spacing: -0.02em;
-        }
-
-        .ct-count {
-          font-size: 12px;
-          color: #94a3b8;
-          font-weight: 500;
-        }
-
-        .ct-filters {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-          align-items: center;
-        }
-
-        .ct-filter-select {
-          padding: 8px 12px;
-          border-radius: 10px;
-          border: 1px solid #e2e8f0;
-          font-size: 12px;
-          font-weight: 500;
-          color: #64748b;
+        .ct-mobile-drawer-content {
+          width: 85%;
+          max-width: 320px;
           background: white;
-          cursor: pointer;
-          transition: all 0.2s;
-          outline: none;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          transform: translateX(100%);
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          overflow-y: auto;
         }
-
-        .ct-filter-select:focus, .ct-filter-select:hover {
-          border-color: #3b82f6;
-          color: #0f172a;
-        }
-
-        .ct-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
-        }
-
-        @media (min-width: 550px) {
-          .ct-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-          }
-        }
-
-        @media (min-width: 900px) {
-          .ct-grid {
-            grid-template-columns: repeat(4, 1fr);
-          }
-        }
-
-        @media (min-width: 1200px) {
-          .ct-grid {
-            grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
-          }
-        }
-
-        .ct-loading {
-          font-family: 'Inter', system-ui, sans-serif;
-          background: #f8fafc;
-          min-height: 100vh;
-          padding: 40px 12px;
-        }
-
-        .ct-loading-grid {
-          max-width: 1400px;
-          margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 18px;
-        }
-
-        @media (min-width: 550px) {
-          .ct-loading-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
-          }
-        }
-
-        @media (min-width: 900px) {
-          .ct-loading-grid {
-            grid-template-columns: repeat(4, 1fr);
-          }
-        }
-
-        @media (min-width: 1200px) {
-          .ct-loading-grid {
-            grid-template-columns: repeat(5, 1fr);
-            gap: 28px;
-          }
-        }
-
-        .ct-loading-card {
-          aspect-ratio: 1;
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-          animation: pulse 1.5s infinite ease-in-out;
-        }
-
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-
-        .ct-load-more {
-          text-align: center;
-          margin: 32px 0 20px;
+        .ct-mobile-drawer.open .ct-mobile-drawer-content {
+          transform: translateX(0);
         }
 
         .ct-load-btn {
-          padding: 12px 32px;
-          background: #0f172a;
+          width: 100%;
+          max-width: 240px;
+          padding: 12px 24px;
+          background: #2874f0;
           color: white;
           border: none;
-          border-radius: 12px;
+          border-radius: 4px;
           font-size: 13px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .ct-load-btn:hover:not(:disabled) {
-          background: #1e293b;
-        }
-
-        .ct-load-btn:disabled {
-          background: #e2e8f0;
-          color: #94a3b8;
-          cursor: not-allowed;
-        }
-
-        .ct-empty {
-          text-align: center;
-          padding: 60px 24px;
-          background: white;
-          border-radius: 16px;
-          margin-top: 24px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-        }
-
-        .ct-empty-icon {
-          font-size: 48px;
-          margin-bottom: 16px;
-        }
-
-        .ct-empty-title {
-          font-size: 18px;
           font-weight: 700;
-          color: #0f172a;
-          margin-bottom: 8px;
+          cursor: pointer;
+          transition: background 0.15s;
+          box-shadow: 0 2px 4px rgba(40,116,240,0.1);
         }
-
-        .ct-empty-desc {
-          font-size: 13px;
-          color: #64748b;
-          max-width: 420px;
-          margin: 0 auto;
+        .ct-load-btn:hover:not(:disabled) {
+          background: #145cdb;
         }
       `}</style>
 
-      <div className="ct-container">
-        <div className="ct-hero">
-          <div className="ct-search-wrap">
-            <div style={{ position: 'relative' }}>
-              <input
-                ref={searchRef}
-                className="ct-search-input"
-                placeholder="Search for products, brands, categories..."
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-              />
-              {showSug && sug.length > 0 && <SuggestList items={sug} setQ={setQ} />}
-            </div>
-          </div>
-        </div>
-
-        <div className="ct-categories">
-          <button
-            className={`ct-category-chip${category === '' ? ' active' : ''}`}
-            onClick={() => { setCategory(''); setSubCategory('') }}
-          >
-            All
-          </button>
-          {categories.map((c) => (
-            <button
-              key={c._id}
-              className={`ct-category-chip${category === c._id ? ' active' : ''}`}
-              onClick={() => { setCategory(c._id); setSubCategory('') }}
-            >
-              {capitalizeText(c.name)}
-            </button>
-          ))}
-        </div>
-
-        {category && subCategories.length > 0 && (
-          <div className="ct-categories">
-            <button
-              className={`ct-category-chip${subCategory === '' ? ' active' : ''}`}
-              onClick={() => setSubCategory('')}
-            >
-              All {categories.find(c => c._id === category)?.name}
-            </button>
-            {subCategories.map((s) => (
-              <button
-                key={s._id}
-                className={`ct-category-chip${subCategory === s._id ? ' active' : ''}`}
-                onClick={() => setSubCategory(s._id)}
-              >
-                {capitalizeText(s.name)}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div className="ct-header-section">
-          <div>
-            <h1 className="ct-title">
-              {q ? `Search: "${q}"` : (subCategory ? subCategories.find(s => s._id === subCategory)?.name : (category ? categories.find(c => c._id === category)?.name : 'All Products'))}
-            </h1>
-            <div className="ct-count">
-              {total} {total === 1 ? 'product' : 'products'} available
-            </div>
+      <div className="ct-main-container">
+        
+        {/* Desktop Sidebar (Flipkart Filters Panel) */}
+        <aside className="ct-sidebar">
+          <div className="ct-sidebar-header">
+            <span className="ct-sidebar-title">Filters</span>
+            <button className="ct-clear-link" onClick={clearAllFilters}>CLEAR ALL</button>
           </div>
 
-          <div className="ct-filters">
-            <select
-              className="ct-filter-select"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="newest">Sort: Newest</option>
-              <option value="price-low">Sort: Price Low</option>
-              <option value="price-high">Sort: Price High</option>
-            </select>
-            <select
-              className="ct-filter-select"
-              value={store}
-              onChange={(e) => setStore(e.target.value)}
-            >
-              <option value="">All Stores</option>
-              {stores.map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {filteredSorted.length === 0 && !loadingProducts ? (
-          <div className="ct-empty">
-            <div className="ct-empty-icon">📦</div>
-            <div className="ct-empty-title">No products found</div>
-            <div className="ct-empty-desc">Try adjusting your search or filters to find what you're looking for! New products are added regularly!</div>
-          </div>
-        ) : (
-          <>
-            <div className="ct-grid">
-              {filteredSorted.map((product, idx) => (
-                <ProductCard
-                  key={product._id || idx}
-                  p={product}
-                  authed={authed}
-                  addToCart={addToCart}
-                  navigate={navigate}
-                  index={idx}
+          {/* Categories */}
+          <div className="ct-filter-section">
+            <div className="ct-filter-lbl">Categories</div>
+            <div className="ct-filter-list">
+              <label className="ct-filter-item">
+                <input
+                  type="radio"
+                  name="sidebar-cat"
+                  checked={category === ''}
+                  onChange={() => { setCategory(''); setSubCategory('') }}
                 />
+                <span>All Categories</span>
+              </label>
+              {categories.map(c => (
+                <label key={c._id} className="ct-filter-item">
+                  <input
+                    type="radio"
+                    name="sidebar-cat"
+                    checked={category === c._id}
+                    onChange={() => { setCategory(c._id); setSubCategory('') }}
+                  />
+                  <span>{capitalizeText(c.name)}</span>
+                </label>
               ))}
             </div>
-            {hasNextPage && (
-              <div className="ct-load-more">
+          </div>
+
+          {/* Subcategories (Dynamic) */}
+          {category && subCategories.length > 0 && (
+            <div className="ct-filter-section">
+              <div className="ct-filter-lbl">Subcategories</div>
+              <div className="ct-filter-list">
+                <label className="ct-filter-item">
+                  <input
+                    type="radio"
+                    name="sidebar-subcat"
+                    checked={subCategory === ''}
+                    onChange={() => setSubCategory('')}
+                  />
+                  <span>All in Category</span>
+                </label>
+                {subCategories.map(s => (
+                  <label key={s._id} className="ct-filter-item">
+                    <input
+                      type="radio"
+                      name="sidebar-subcat"
+                      checked={subCategory === s._id}
+                      onChange={() => setSubCategory(s._id)}
+                    />
+                    <span>{capitalizeText(s.name)}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Brands */}
+          {brands.length > 0 && (
+            <div className="ct-filter-section">
+              <div className="ct-filter-lbl">Brand</div>
+              <div className="ct-filter-list">
+                <label className="ct-filter-item">
+                  <input
+                    type="radio"
+                    name="sidebar-brand"
+                    checked={brand === ''}
+                    onChange={() => setBrand('')}
+                  />
+                  <span>All Brands</span>
+                </label>
+                {brands.map(b => (
+                  <label key={b._id} className="ct-filter-item">
+                    <input
+                      type="radio"
+                      name="sidebar-brand"
+                      checked={brand === b._id}
+                      onChange={() => setBrand(b._id)}
+                    />
+                    <span>{capitalizeText(b.name)}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Stores */}
+          {stores.length > 0 && (
+            <div className="ct-filter-section">
+              <div className="ct-filter-lbl">Sellers & Stores</div>
+              <div className="ct-filter-list">
+                <label className="ct-filter-item">
+                  <input
+                    type="radio"
+                    name="sidebar-store"
+                    checked={store === ''}
+                    onChange={() => setStore('')}
+                  />
+                  <span>All Stores</span>
+                </label>
+                {stores.map(s => (
+                  <label key={s._id} className="ct-filter-item">
+                    <input
+                      type="radio"
+                      name="sidebar-store"
+                      checked={store === s._id}
+                      onChange={() => setStore(s._id)}
+                    />
+                    <span>{s.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Price Filters */}
+          <div className="ct-filter-section" style={{ borderBottom: 'none' }}>
+            <div className="ct-filter-lbl">Price Range</div>
+            <div className="ct-price-inputs">
+              <input
+                type="number"
+                placeholder="Min ₹"
+                className="ct-price-input"
+                value={minPrice}
+                onChange={e => setMinPrice(e.target.value)}
+              />
+              <span className="ct-price-to">to</span>
+              <input
+                type="number"
+                placeholder="Max ₹"
+                className="ct-price-input"
+                value={maxPrice}
+                onChange={e => setMaxPrice(e.target.value)}
+              />
+            </div>
+          </div>
+        </aside>
+
+        {/* Content Area */}
+        <main className="ct-content-area">
+          
+          {/* Top Panel (Search & Mobile Filters) */}
+          <div className="ct-top-panel">
+            <div className="ct-search-row">
+              <div className="ct-search-box">
+                <input
+                  ref={searchRef}
+                  className="ct-search-input"
+                  placeholder="Search for premium products, categories, stores..."
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                />
+                {showSug && sug.length > 0 && <SuggestList items={sug} setQ={setQ} />}
+              </div>
+              
+              <button 
+                className="ct-mobile-filter-trigger"
+                onClick={() => setMobileFiltersOpen(true)}
+              >
+                <span>⚙️ Filters</span>
+              </button>
+            </div>
+
+            {/* Category horizontal scrolling bar */}
+            <div className="ct-category-chips">
+              <button
+                className={`ct-chip${category === '' ? ' active' : ''}`}
+                onClick={() => { setCategory(''); setSubCategory('') }}
+              >
+                All Categories
+              </button>
+              {categories.map((c) => (
                 <button
-                  className="ct-load-btn"
-                  onClick={() => fetchNextPage()}
-                  disabled={isFetchingNextPage}
+                  key={c._id}
+                  className={`ct-chip${category === c._id ? ' active' : ''}`}
+                  onClick={() => { setCategory(c._id); setSubCategory('') }}
                 >
-                  {isFetchingNextPage ? 'Loading More Products...' : 'Load More Products'}
+                  {capitalizeText(c.name)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Results Block */}
+          <div className="ct-results-card">
+            
+            <div className="ct-results-header">
+              <div>
+                <h1 className="ct-results-title">
+                  {q ? `Results for "${q}"` : (subCategory ? subCategories.find(s => s._id === subCategory)?.name : (category ? categories.find(c => c._id === category)?.name : 'Shop Products'))}
+                </h1>
+                <div className="ct-results-count">
+                  Showing {filteredSorted.length} of {total} products
+                </div>
+              </div>
+
+              {/* Sorting options */}
+              <div className="ct-sorting-widgets">
+                <span className="ct-sort-label">Sort By:</span>
+                <select
+                  className="ct-sort-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Products Grid */}
+            {filteredSorted.length === 0 && !loadingProducts ? (
+              <div className="ct-empty" style={{ margin: 'auto', border: 'none', boxShadow: 'none' }}>
+                <div className="ct-empty-icon">📦</div>
+                <div className="ct-empty-title">No products matches found</div>
+                <div className="ct-empty-desc">We couldn't find any items matching your filters. Try clearing some filters or search query to explore products.</div>
+                <button 
+                  className="ct-load-btn" 
+                  style={{ marginTop: 20 }}
+                  onClick={clearAllFilters}
+                >
+                  Reset Filters
                 </button>
               </div>
+            ) : (
+              <>
+                <div className="ct-grid">
+                  {filteredSorted.map((product, idx) => (
+                    <ProductCard
+                      key={product._id || idx}
+                      p={product}
+                      authed={authed}
+                      addToCart={addToCart}
+                      navigate={navigate}
+                      index={idx}
+                    />
+                  ))}
+                </div>
+
+                {hasNextPage && (
+                  <div style={{ textAlign: 'center', marginTop: 32 }}>
+                    <button
+                      className="ct-load-btn"
+                      onClick={() => fetchNextPage()}
+                      disabled={isFetchingNextPage}
+                    >
+                      {isFetchingNextPage ? 'Loading...' : 'Load More Products'}
+                    </button>
+                  </div>
+                )}
+              </>
             )}
-          </>
-        )}
+
+          </div>
+
+        </main>
       </div>
+
+      {/* Mobile Filters Drawer Modal */}
+      <div className={`ct-mobile-drawer${mobileFiltersOpen ? ' open' : ''}`} onClick={() => setMobileFiltersOpen(false)}>
+        <div className="ct-mobile-drawer-content" onClick={e => e.stopPropagation()}>
+          <div className="ct-sidebar-header">
+            <span className="ct-sidebar-title">Filters</span>
+            <button className="ct-clear-link" onClick={() => { clearAllFilters(); setMobileFiltersOpen(false); }}>RESET</button>
+          </div>
+          
+          <div className="ct-filter-section">
+            <div className="ct-filter-lbl">Category</div>
+            <select
+              className="ct-price-input"
+              value={category}
+              onChange={e => { setCategory(e.target.value); setSubCategory(''); }}
+            >
+              <option value="">All Categories</option>
+              {categories.map(c => (
+                <option key={c._id} value={c._id}>{capitalizeText(c.name)}</option>
+              ))}
+            </select>
+          </div>
+
+          {category && subCategories.length > 0 && (
+            <div className="ct-filter-section">
+              <div className="ct-filter-lbl">Subcategory</div>
+              <select
+                className="ct-price-input"
+                value={subCategory}
+                onChange={e => setSubCategory(e.target.value)}
+              >
+                <option value="">All in Category</option>
+                {subCategories.map(s => (
+                  <option key={s._id} value={s._id}>{capitalizeText(s.name)}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {brands.length > 0 && (
+            <div className="ct-filter-section">
+              <div className="ct-filter-lbl">Brand</div>
+              <select
+                className="ct-price-input"
+                value={brand}
+                onChange={e => setBrand(e.target.value)}
+              >
+                <option value="">All Brands</option>
+                {brands.map(b => (
+                  <option key={b._id} value={b._id}>{capitalizeText(b.name)}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {stores.length > 0 && (
+            <div className="ct-filter-section">
+              <div className="ct-filter-lbl">Store / Seller</div>
+              <select
+                className="ct-price-input"
+                value={store}
+                onChange={e => setStore(e.target.value)}
+              >
+                <option value="">All Stores</option>
+                {stores.map(s => (
+                  <option key={s._id} value={s._id}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div className="ct-filter-section">
+            <div className="ct-filter-lbl">Price Range</div>
+            <div className="ct-price-inputs" style={{ marginBottom: 12 }}>
+              <input
+                type="number"
+                placeholder="Min ₹"
+                className="ct-price-input"
+                value={minPrice}
+                onChange={e => setMinPrice(e.target.value)}
+              />
+              <span className="ct-price-to">to</span>
+              <input
+                type="number"
+                placeholder="Max ₹"
+                className="ct-price-input"
+                value={maxPrice}
+                onChange={e => setMaxPrice(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div style={{ padding: 16 }}>
+            <button 
+              className="ct-load-btn" 
+              style={{ width: '100%', maxWidth: 'none' }}
+              onClick={() => setMobileFiltersOpen(false)}
+            >
+              Apply Filters
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
   )
 }

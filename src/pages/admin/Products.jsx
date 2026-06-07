@@ -1,8 +1,15 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
 import ConfirmModal from '../../components/ConfirmModal'
 import ImageUpload from '../../components/ImageUpload'
+import VariantManagerPanel from '../../components/panel/VariantManagerPanel'
+
+const emptyProductForm = {
+  name: '', price: '', mrp: '', brandId: '', categoryId: '', subCategoryId: '', stock: '', weight: '', hsnCode: '', gst: '',
+  imageUrls: [], description: '', highlights: [], highlightInput: '', specifications: [], specKey: '', specValue: '',
+  store: '', section: '', variantDisplayType: 'selector'
+}
 
 export default function Products() {
   const { notify } = useToast()
@@ -10,12 +17,11 @@ export default function Products() {
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [q, setQ] = useState('')
-  const [form, setForm] = useState({ name:'', price:'', mrp:'', brandId: '', categoryId:'', subCategoryId:'', stock:'', weight:'', hsnCode:'', gst:'', images: '', description:'', highlights: [], highlightInput:'', specifications: [], specKey:'', specValue:'', minOrderQty:'', bulkDiscountQuantity: '', bulkDiscountPriceReduction: '', bulkTiers: [], store:'', section:'', variantDisplayType: 'selector', packSize: '' })
+  const [form, setForm] = useState({ ...emptyProductForm })
   const [editing, setEditing] = useState(null)
   const [viewing, setViewing] = useState(null)
   const [toDelete, setToDelete] = useState(null)
   const [managingVariants, setManagingVariants] = useState(null)
-  const [editingVariant, setEditingVariant] = useState(null)
   const [brands, setBrands] = useState([])
   const [categories, setCategories] = useState([])
   const [subcategories, setSubcategories] = useState([])
@@ -71,7 +77,6 @@ export default function Products() {
 
   const create = async (e) => {
     e.preventDefault()
-    const images = form.images.split(',').map(s=>s.trim()).filter(Boolean)
     const stockNum = Number(form.stock)
     await api.post('/api/products', { 
       name: form.name,
@@ -80,15 +85,10 @@ export default function Products() {
       weight: Number(form.weight || 0),
       gst: Number(form.gst||0), 
       mrp: form.mrp ? Number(form.mrp) : undefined,
-      minOrderQty: Number(form.minOrderQty || 0),
-      packSize: Number(form.packSize || 1),
       description: form.description || '',
       highlights: (form.highlights || []).map(h => String(h).trim()).filter(Boolean),
       specifications: (form.specifications || []).map(s => ({ key: String(s.key||'').trim(), value: String(s.value||'').trim() })).filter(s => s.key && s.value),
-      bulkDiscountQuantity: form.bulkTiers?.[0]?.quantity ? Number(form.bulkTiers[0].quantity) : Number(form.bulkDiscountQuantity||0),
-      bulkDiscountPriceReduction: form.bulkTiers?.[0]?.priceReduction ? Number(form.bulkTiers[0].priceReduction) : Number(form.bulkDiscountPriceReduction||0),
-      bulkTiers: (form.bulkTiers || []).map(t => ({ quantity: Number(t.quantity||0), priceReduction: Number(t.priceReduction||0) })),
-      images,
+      images: form.imageUrls,
       brandId: form.brandId || undefined,
       categoryId: form.categoryId,
       subCategoryId: form.subCategoryId || undefined,
@@ -99,7 +99,7 @@ export default function Products() {
       variantDisplayType: form.variantDisplayType || 'selector',
       variants: []
     })
-    setForm({ name:'', price:'', mrp:'', brandId:'', categoryId:'', subCategoryId:'', stock:'', weight: '', hsnCode: '', gst:'', images: '', description:'', highlights: [], highlightInput:'', specifications: [], specKey:'', specValue:'', minOrderQty:'', bulkDiscountQuantity: '', bulkDiscountPriceReduction: '', bulkTiers: [], store:'', section:'', variantDisplayType: 'selector', packSize: '' }); setShowAddProduct(false); load(page); notify('Product added','success')
+    setForm({ ...emptyProductForm }); setShowAddProduct(false); load(page); notify('Product added','success')
   }
 
   const reduceStock = async (id) => {
@@ -115,7 +115,7 @@ export default function Products() {
       subCategoryId: p.subCategory?._id || p.subCategory || '',
       weight: p.weight || '',
       hsnCode: p.hsnCode || '',
-      images: (p.images||[]).map(i=>i.url||i).join(', '),
+      imageUrls: (p.images||[]).map(i=>i.url||i),
       attributes: Array.isArray(p.attributes) ? p.attributes : [],
       variants: (p.variants || []).map(v => ({
         ...v,
@@ -126,13 +126,8 @@ export default function Products() {
         weight: v.weight || '',
         images: (v.images || []).map(i => i.url || i).join(', ')
       })),
-      bulkDiscountQuantity: p.bulkDiscountQuantity || '',
-      bulkDiscountPriceReduction: p.bulkDiscountPriceReduction || '',
-      minOrderQty: p.minOrderQty || '',
-      packSize: p.packSize ?? '',
       highlights: Array.isArray(p.highlights) ? p.highlights : [],
       highlightInput: '',
-      bulkTiers: Array.isArray(p.bulkTiers) ? p.bulkTiers.map(t => ({ quantity: t.quantity, priceReduction: t.priceReduction })) : [],
       specifications: Array.isArray(p.specifications) ? p.specifications.map(s => ({ key: s.key || '', value: s.value || '' })).filter(s => s.key && s.value) : [],
       specKey: '',
       specValue: '',
@@ -154,14 +149,9 @@ export default function Products() {
       hsnCode: editing.hsnCode || '',
       gst: Number(editing.gst || 0),
       mrp: editing.mrp ? Number(editing.mrp) : undefined,
-      minOrderQty: Number(editing.minOrderQty || 0),
-      packSize: Number(editing.packSize || 1),
       highlights: (editing.highlights || []).map(h => String(h).trim()).filter(Boolean),
       specifications: (editing.specifications || []).map(s => ({ key: String(s.key||'').trim(), value: String(s.value||'').trim() })).filter(s => s.key && s.value),
-      bulkDiscountQuantity: editing.bulkTiers?.[0]?.quantity ? Number(editing.bulkTiers[0].quantity) : Number(editing.bulkDiscountQuantity||0),
-      bulkDiscountPriceReduction: editing.bulkTiers?.[0]?.priceReduction ? Number(editing.bulkTiers[0].priceReduction) : Number(editing.bulkDiscountPriceReduction||0),
-      bulkTiers: (editing.bulkTiers || []).map(t => ({ quantity: Number(t.quantity||0), priceReduction: Number(t.priceReduction||0) })),
-      images: (editing.images||'').split(',').map(s=>s.trim()).filter(Boolean),
+      images: editing.imageUrls || [],
       store: editing.store || '',
       section: editing.section || '',
       attributes: editing.attributes || [],
@@ -226,8 +216,8 @@ export default function Products() {
             <div className="flex items-center justify-between px-2">
               <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-400">Live Inventory ({total})</h3>
               <div className="flex gap-2">
-                <span className="flex items-center gap-1.5 text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100 uppercase">● In Stock</span>
-                <span className="flex items-center gap-1.5 text-[10px] font-black text-red-600 bg-red-50 px-2 py-1 rounded-lg border border-red-100 uppercase">● Low Stock</span>
+                <span className="flex items-center gap-1.5 text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100 uppercase">â— In Stock</span>
+                <span className="flex items-center gap-1.5 text-[10px] font-black text-red-600 bg-red-50 px-2 py-1 rounded-lg border border-red-100 uppercase">â— Low Stock</span>
               </div>
             </div>
             <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm flex flex-col flex-1">
@@ -281,8 +271,8 @@ export default function Products() {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="font-bold text-gray-900">₹{p.price.toLocaleString()}</div>
-                            <div className="text-[10px] text-gray-400 font-medium">MRP: ₹{p.mrp?.toLocaleString()} · {p.gst}% GST</div>
+                            <div className="font-bold text-gray-900">â‚¹{p.price.toLocaleString()}</div>
+                            <div className="text-[10px] text-gray-400 font-medium">MRP: â‚¹{p.mrp?.toLocaleString()} Â· {p.gst}% GST</div>
                           </td>
                           <td className="px-6 py-4">
                             <div className={`inline-flex flex-col px-3 py-1 rounded-lg border ${p.stock <= 5 ? 'bg-red-50 text-red-600 border-red-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100'}`}>
@@ -365,7 +355,7 @@ export default function Products() {
             </div>
           </div>
 
-          {/* Creation Section — only when opened from header */}
+          {/* Creation Section â€” only when opened from header */}
           {showAddProduct && (
           <div className="flex flex-col bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden ring-1 ring-indigo-100/80 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="p-5 sm:p-6 border-b border-gray-50 flex flex-wrap items-start justify-between gap-3">
@@ -391,11 +381,11 @@ export default function Products() {
                     
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Price (₹)</label>
+                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Price (â‚¹)</label>
                         <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="999" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">MRP (₹)</label>
+                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">MRP (â‚¹)</label>
                         <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="1299" value={form.mrp} onChange={e => setForm({ ...form, mrp: e.target.value })} />
                       </div>
                     </div>
@@ -449,19 +439,9 @@ export default function Products() {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-3 gap-3">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Min Order Qty</label>
-                        <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 5" value={form.minOrderQty} onChange={e => setForm({ ...form, minOrderQty: e.target.value })} />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Pack Size</label>
-                        <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 12" value={form.packSize} onChange={e => setForm({ ...form, packSize: e.target.value })} />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Inventory Stock</label>
-                        <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="50" value={form.stock} onChange={e => setForm({ ...form, stock: e.target.value })} required />
-                      </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Inventory Stock</label>
+                      <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="50" value={form.stock} onChange={e => setForm({ ...form, stock: e.target.value })} required />
                     </div>
 
                     <div className="flex items-center justify-between p-3 bg-gray-50/50 rounded-2xl border border-gray-100">
@@ -482,44 +462,19 @@ export default function Products() {
                       </button>
                     </div>
                     
-                    <div className="space-y-2 p-3 bg-gray-50/50 rounded-2xl border border-gray-100">
-                      <div className="text-[10px] font-bold text-gray-500 uppercase ml-1">Bulk Options</div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Bulk Qty</label>
-                          <input className="w-full bg-white border border-gray-100 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 10" value={form.bulkDiscountQuantity} onChange={e => setForm({ ...form, bulkDiscountQuantity: e.target.value })} />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Reduction (₹)/Unit</label>
-                          <input className="w-full bg-white border border-gray-100 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g. 50" value={form.bulkDiscountPriceReduction} onChange={e => setForm({ ...form, bulkDiscountPriceReduction: e.target.value })} />
-                        </div>
-                      </div>
-                      <button type="button" onClick={() => {
-                        const q = Number(form.bulkDiscountQuantity||0)
-                        const r = Number(form.bulkDiscountPriceReduction||0)
-                        if (Number.isFinite(q) && q > 0 && Number.isFinite(r) && r >= 0) {
-                          setForm(f => ({ ...f, bulkTiers: [...(f.bulkTiers||[]), { quantity: q, priceReduction: r }], bulkDiscountQuantity: '', bulkDiscountPriceReduction: '' }))
-                        }
-                      }} className="px-3 py-2 rounded-xl bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest hover:bg-blue-100">Add Bulk Offer</button>
-                      {(form.bulkTiers || []).length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {form.bulkTiers.map((t, i) => (
-                            <div key={i} className="inline-flex items-center gap-2 text-[10px] font-black bg-white border rounded-xl px-2 py-1">
-                              <span className="text-gray-700">{t.quantity}+: -₹{t.priceReduction}</span>
-                              <button type="button" className="text-red-600" onClick={() => setForm(f => ({ ...f, bulkTiers: f.bulkTiers.filter((_, idx) => idx !== i) }))}>✕</button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Images</label>
-                  <div className="flex gap-2">
-                    <input className="flex-1 bg-gray-50 border-none rounded-2xl px-4 py-3 text-[10px] font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Multiple URLs comma-separated" value={form.images} onChange={e => setForm({ ...form, images: e.target.value })} />
-                    <ImageUpload onUploaded={url => setForm(f => ({ ...f, images: (f.images ? f.images + ', ' : '') + url }))} />
+                <div className="space-y-2">
+                  <label className="panel-label">Product Images</label>
+                  <div className="panel-img-grid mb-2">
+                    {(form.imageUrls || []).map((url, i) => (
+                      <div key={i} className="panel-img-wrap">
+                        <img src={url} alt="" className="panel-img-thumb" />
+                        <button type="button" className="panel-img-remove" onClick={() => setForm(f => ({ ...f, imageUrls: f.imageUrls.filter((_, idx) => idx !== i) }))}>Ã—</button>
+                      </div>
+                    ))}
                   </div>
+                  <ImageUpload multiple onUploaded={url => setForm(f => ({ ...f, imageUrls: [...(f.imageUrls || []), url] }))} />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Description</label>
@@ -536,7 +491,7 @@ export default function Products() {
                       {form.highlights.map((h,i)=>(
                         <span key={i} className="px-3 py-1 rounded-xl bg-gray-50 border text-[11px] font-bold flex items-center gap-2">
                           {h}
-                          <button type="button" className="text-red-600" onClick={()=>setForm(f=>({...f, highlights: f.highlights.filter((_,idx)=>idx!==i)}))}>✕</button>
+                          <button type="button" className="text-red-600" onClick={()=>setForm(f=>({...f, highlights: f.highlights.filter((_,idx)=>idx!==i)}))}>âœ•</button>
                         </span>
                       ))}
                     </div>
@@ -554,7 +509,7 @@ export default function Products() {
                       {form.specifications.map((s,i)=>(
                         <div key={i} className="flex items-center justify-between gap-2 px-3 py-2 rounded-xl bg-gray-50 border text-[11px] font-bold">
                           <span><span className="text-gray-500">{s.key}:</span> {s.value}</span>
-                          <button type="button" className="text-red-600" onClick={()=>setForm(f=>({...f, specifications: f.specifications.filter((_,idx)=>idx!==i)}))}>✕</button>
+                          <button type="button" className="text-red-600" onClick={()=>setForm(f=>({...f, specifications: f.specifications.filter((_,idx)=>idx!==i)}))}>âœ•</button>
                         </div>
                       ))}
                     </div>
@@ -588,11 +543,11 @@ export default function Products() {
                 <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="Name" value={editing.name} onChange={e => setEditing({ ...editing, name: e.target.value })} required />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Price (₹)</label>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Price (â‚¹)</label>
                 <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="Price" value={editing.price} onChange={e => setEditing({ ...editing, price: e.target.value })} required />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">MRP (₹)</label>
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">MRP (â‚¹)</label>
                 <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="1099" value={editing.mrp || ''} onChange={e => setEditing({ ...editing, mrp: e.target.value })} />
               </div>
               <div className="space-y-1">
@@ -671,67 +626,17 @@ export default function Products() {
               <div className="space-y-1 md:col-span-3">
                 <p className="text-[11px] text-gray-500 bg-violet-50/80 border border-violet-100 rounded-xl px-3 py-2">Option SKUs and variant stock are managed in <span className="font-bold text-violet-700">Manage Variants</span>, not here.</p>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Min Order Qty</label>
-                <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="e.g. 5" value={editing.minOrderQty || ''} onChange={e => setEditing({ ...editing, minOrderQty: e.target.value })} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Pack Size</label>
-                <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="e.g. 12" value={editing.packSize ?? ''} onChange={e => setEditing({ ...editing, packSize: e.target.value })} />
-              </div>
-              
-              <div className="space-y-4 md:col-span-2 bg-gray-50/50 p-4 rounded-3xl border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Bulk Pricing Tiers</label>
-                  <div className="text-[10px] font-bold text-blue-600">Multiple discounts based on Qty</div>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-400 uppercase ml-1">Target Qty</label>
-                    <input className="w-full bg-white border-none rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="10" value={editing.bulkDiscountQuantity} onChange={e => setEditing({ ...editing, bulkDiscountQuantity: e.target.value })} />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-gray-400 uppercase ml-1">Price Off (₹)</label>
-                    <input className="w-full bg-white border-none rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" placeholder="50" value={editing.bulkDiscountPriceReduction} onChange={e => setEditing({ ...editing, bulkDiscountPriceReduction: e.target.value })} />
-                  </div>
-                </div>
-                <button type="button" onClick={() => {
-                  const qv = Number(editing.bulkDiscountQuantity||0)
-                  const rv = Number(editing.bulkDiscountPriceReduction||0)
-                  if (Number.isFinite(qv) && qv > 0 && Number.isFinite(rv) && rv >= 0) {
-                    setEditing(ed => ({ ...ed, bulkTiers: [...(ed.bulkTiers||[]), { quantity: qv, priceReduction: rv }], bulkDiscountQuantity: '', bulkDiscountPriceReduction: '' }))
-                  }
-                }} className="w-full py-2.5 rounded-xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-sm">Add Discount Tier</button>
-                
-                {(editing.bulkTiers || []).length > 0 && (
-                  <div className="flex flex-wrap gap-2 pt-2">
-                    {editing.bulkTiers.map((t, i) => (
-                      <div key={i} className="inline-flex items-center gap-2 text-[10px] font-black bg-white border border-gray-100 rounded-xl px-3 py-1.5 shadow-sm">
-                        <span className="text-gray-700">{t.quantity}+ units: -₹{t.priceReduction}</span>
-                        <button type="button" className="text-red-600 hover:scale-110 transition-transform" onClick={() => setEditing(ed => ({ ...ed, bulkTiers: ed.bulkTiers.filter((_, idx) => idx !== i) }))}>✕</button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1 md:col-span-3">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Product Images (URLs)</label>
-                <div className="flex gap-2">
-                  <input className="flex-1 bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-[10px] font-bold transition-all outline-none" placeholder="Paste image URLs separated by comma" value={editing.images} onChange={e => setEditing({ ...editing, images: e.target.value })} />
-                  <ImageUpload onUploaded={url => setEditing(f => ({ ...f, images: (f.images ? f.images + ', ' : '') + url }))} />
-                </div>
-                <div className="flex gap-3 flex-wrap mt-3">
-                  {(editing.images || '').split(',').map(s => s.trim()).filter(Boolean).map((url, i) => (
-                    <div key={i} className="group relative">
-                      <img src={url} className="h-16 w-16 object-contain bg-gray-50 border-2 border-gray-100 rounded-2xl p-1 transition-all group-hover:border-blue-200" />
-                      <button type="button" onClick={() => {
-                        const imgs = editing.images.split(',').map(s=>s.trim()).filter(Boolean);
-                        setEditing({ ...editing, images: imgs.filter((_,idx)=>idx!==i).join(', ') })
-                      }} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">✕</button>
+              <div className="space-y-2 md:col-span-3">
+                <label className="panel-label">Product Images</label>
+                <div className="panel-img-grid mb-2">
+                  {(editing.imageUrls || []).map((url, i) => (
+                    <div key={i} className="panel-img-wrap">
+                      <img src={url} alt="" className="panel-img-thumb" />
+                      <button type="button" className="panel-img-remove" onClick={() => setEditing({ ...editing, imageUrls: editing.imageUrls.filter((_, idx) => idx !== i) })}>Ã—</button>
                     </div>
                   ))}
                 </div>
+                <ImageUpload multiple onUploaded={url => setEditing(f => ({ ...f, imageUrls: [...(f.imageUrls || []), url] }))} />
               </div>
 
               <div className="space-y-1 md:col-span-3">
@@ -750,7 +655,7 @@ export default function Products() {
                     {editing.highlights.map((h,i)=>(
                       <span key={i} className="px-4 py-2 rounded-2xl bg-white border-2 border-gray-50 text-[11px] font-bold text-gray-700 flex items-center gap-3 shadow-sm">
                         {h}
-                        <button type="button" className="text-red-500 hover:scale-125 transition-transform" onClick={() => setEditing(ed => ({ ...ed, highlights: ed.highlights.filter((_,idx)=>idx!==i)}))}>✕</button>
+                        <button type="button" className="text-red-500 hover:scale-125 transition-transform" onClick={() => setEditing(ed => ({ ...ed, highlights: ed.highlights.filter((_,idx)=>idx!==i)}))}>âœ•</button>
                       </span>
                     ))}
                   </div>
@@ -769,7 +674,7 @@ export default function Products() {
                     {editing.specifications.map((s,i)=>(
                       <div key={i} className="flex items-center justify-between gap-2 px-4 py-2 rounded-2xl bg-gray-50 border border-gray-100 text-[11px] font-bold">
                         <span><span className="text-gray-500">{s.key}:</span> {s.value}</span>
-                        <button type="button" className="text-red-500" onClick={() => setEditing(ed => ({ ...ed, specifications: ed.specifications.filter((_,idx)=>idx!==i)}))}>✕</button>
+                        <button type="button" className="text-red-500" onClick={() => setEditing(ed => ({ ...ed, specifications: ed.specifications.filter((_,idx)=>idx!==i)}))}>âœ•</button>
                       </div>
                     ))}
                   </div>
@@ -786,32 +691,12 @@ export default function Products() {
         )}
 
       {managingVariants && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-md overflow-y-auto">
-          <div className="bg-white rounded-[2rem] p-6 md:p-8 w-full max-w-2xl shadow-2xl animate-in zoom-in-95 my-auto relative">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
-              <div>
-                <h3 className="text-xl font-black text-gray-900 tracking-tight">Manage Variants</h3>
-                <p className="text-[9px] text-blue-600 font-black uppercase tracking-widest">{managingVariants.name}</p>
-              </div>
-              <button type="button" onClick={() => setManagingVariants(null)} className="p-2 hover:bg-gray-100 rounded-xl text-gray-400">✕</button>
-            </div>
-            
-            <VariantManager 
-              product={managingVariants} 
-              setEditing={setManagingVariants}
-              editingVariant={editingVariant}
-              setEditingVariant={setEditingVariant}
-              onChanged={() => { 
-                api.get(`/api/products/${managingVariants._id}`).then(({data}) => {
-                  setManagingVariants(data)
-                  load(page)
-                })
-              }} 
-              price={managingVariants.price}
-              weight={managingVariants.weight}
-            />
-          </div>
-        </div>
+        <VariantManagerPanel
+          product={managingVariants}
+          apiPrefix="/api/products"
+          onChanged={() => load(page)}
+          onClose={() => setManagingVariants(null)}
+        />
       )}
 
       <ConfirmModal
@@ -846,11 +731,11 @@ export default function Products() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-gray-50 p-4 rounded-2xl">
                     <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Price</div>
-                    <div className="text-xl font-black text-gray-900">₹{viewing.price?.toLocaleString()}</div>
+                    <div className="text-xl font-black text-gray-900">â‚¹{viewing.price?.toLocaleString()}</div>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-2xl">
                     <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">MRP</div>
-                    <div className="text-xl font-black text-gray-400 line-through">₹{viewing.mrp?.toLocaleString()}</div>
+                    <div className="text-xl font-black text-gray-400 line-through">â‚¹{viewing.mrp?.toLocaleString()}</div>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-2xl">
                     <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Current Stock</div>
@@ -921,7 +806,7 @@ export default function Products() {
                                 ))}
                               </div>
                               <div className="h-3 w-[1px] bg-gray-200" />
-                              <div className="text-[11px] font-black text-gray-900">₹{v.price.toLocaleString()}</div>
+                              <div className="text-[11px] font-black text-gray-900">â‚¹{v.price.toLocaleString()}</div>
                             </div>
                             <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                               <span className={v.stock <= 0 ? 'text-red-500' : 'text-emerald-600'}>{v.stock} in stock</span>
@@ -954,507 +839,3 @@ export default function Products() {
     </>
   )
 }
-
-function VariantManager({ product, setEditing, onChanged, editingVariant, setEditingVariant, price = '', weight = '' }) {
-  const { notify } = useToast()
-  const [attrInput, setAttrInput] = useState('')
-  const [valInput, setValInput] = useState({}) // { attrName: 'currentInput' }
-
-  const toggleActive = async (v) => {
-    try {
-      await api.put(`/api/products/${product._id}/variants/${v._id}`, { isActive: !v.isActive })
-      notify('Variant updated','success')
-      onChanged && onChanged()
-    } catch { notify('Update failed','error') }
-  }
-
-  const deleteVariant = async (v) => {
-    if (!window.confirm('Delete variant?')) return
-    try {
-      await api.delete(`/api/products/${product._id}/variants/${v._id}`)
-      notify('Variant deleted','success')
-      onChanged && onChanged()
-    } catch { notify('Delete failed','error') }
-  }
-
-  const updateAttributes = async (next) => {
-    try {
-      await api.put(`/api/products/${product._id}`, { attributes: next })
-      setEditing(prev => ({ ...prev, attributes: next }))
-      // No need for notify here to avoid spamming, but we can if preferred
-    } catch { notify('Failed to save attributes', 'error') }
-  }
-
-  const addAttr = async () => {
-    const val = attrInput.trim().toLowerCase()
-    if (!val) return
-    const currentAttrs = Array.isArray(product.attributes) ? product.attributes : []
-    const attrNames = currentAttrs.map(a => a.split(':')[0])
-    if (attrNames.includes(val)) return notify('Attribute already exists', 'error')
-    
-    const next = [...currentAttrs, `${val}:`]
-    await updateAttributes(next)
-    setAttrInput('')
-  }
-
-  const removeAttr = async (a) => {
-    if (!window.confirm('Remove this attribute and all its values?')) return
-    const currentAttrs = Array.isArray(product.attributes) ? product.attributes : []
-    const next = currentAttrs.filter(x => x !== a)
-    await updateAttributes(next)
-  }
-
-  const addAttrValue = async (attrName, value) => {
-    const rawVal = value.trim()
-    if (!rawVal) return
-    const newVals = rawVal.split(',').map(v => v.trim().toLowerCase()).filter(Boolean)
-    
-    const currentAttrs = [...(product.attributes || [])]
-    const idx = currentAttrs.findIndex(a => a.startsWith(`${attrName}:`))
-    if (idx === -1) return
-
-    const [name, valuesStr] = currentAttrs[idx].split(':')
-    const existingValues = valuesStr ? valuesStr.split(',').filter(Boolean).map(v => v.toLowerCase()) : []
-    
-    const finalValues = [...new Set([...existingValues, ...newVals])]
-    
-    currentAttrs[idx] = `${name}:${finalValues.join(',')}`
-    await updateAttributes(currentAttrs)
-    setValInput(prev => ({ ...prev, [attrName]: '' }))
-  }
-
-  const removeAttrValue = async (attrName, valToRemove) => {
-    const currentAttrs = [...(product.attributes || [])]
-    const idx = currentAttrs.findIndex(a => a.startsWith(`${attrName}:`))
-    if (idx === -1) return
-
-    const [name, valuesStr] = currentAttrs[idx].split(':')
-    const values = valuesStr.split(',').filter(v => v !== valToRemove)
-    
-    currentAttrs[idx] = `${name}:${values.join(',')}`
-    await updateAttributes(currentAttrs)
-  }
-
-  const handleQuickAdd = async (v) => {
-    try {
-      const images = v.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url }));
-      
-      await api.post(`/api/products/${product._id}/variants`, {
-        attributes: v.attributes,
-        price: Number(v.price),
-        mrp: v.mrp ? Number(v.mrp) : undefined,
-        stock: Number(v.stock),
-        sku: v.sku || undefined,
-        weight: Number(v.weight || 0),
-        images: images
-      })
-      notify('Variant added','success')
-      onChanged && onChanged()
-    } catch (err) { notify(err.response?.data?.error || 'Failed to add','error') }
-  }
-
-  const handleUpdateVariant = async (e) => {
-    e.preventDefault()
-    try {
-      const images = typeof editingVariant.images === 'string' 
-        ? editingVariant.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url }))
-        : editingVariant.images;
-
-      await api.put(`/api/products/${product._id}/variants/${editingVariant._id}`, {
-        ...editingVariant,
-        price: Number(editingVariant.price),
-        mrp: editingVariant.mrp ? Number(editingVariant.mrp) : undefined,
-        stock: Number(editingVariant.stock),
-        weight: Number(editingVariant.weight || 0),
-        images: images
-      })
-      notify('Variant updated','success')
-      setEditingVariant(null)
-      onChanged && onChanged()
-    } catch (err) { notify(err.response?.data?.error || 'Failed to update','error') }
-  }
-
-  const generateCombinations = () => {
-    const attrs = (product.attributes || []).map(a => {
-      const [name, valuesStr] = a.split(':');
-      const values = valuesStr ? valuesStr.split(',').filter(Boolean) : [];
-      return { name, values };
-    }).filter(a => a.values.length > 0);
-
-    if (attrs.length === 0) return [];
-
-    const combine = (index, current) => {
-      if (index === attrs.length) return [current];
-      const result = [];
-      for (const val of attrs[index].values) {
-        result.push(...combine(index + 1, { ...current, [attrs[index].name]: val }));
-      }
-      return result;
-    };
-
-    const all = combine(0, {});
-    const existing = (product.variants || []).map(v => {
-      const vAttrs = v.attributes instanceof Map ? Object.fromEntries(v.attributes) : (v.attributes || {});
-      const normalized = {};
-      Object.entries(vAttrs).forEach(([k, val]) => { normalized[k.toLowerCase().trim()] = String(val).toLowerCase().trim() });
-      const sorted = Object.keys(normalized).sort().reduce((obj, key) => {
-        obj[key] = normalized[key];
-        return obj;
-      }, {});
-      return JSON.stringify(sorted);
-    });
-
-    return all.filter(combo => {
-      const normalized = {};
-      Object.entries(combo).forEach(([k, val]) => { normalized[k.toLowerCase().trim()] = String(val).toLowerCase().trim() });
-      const sorted = Object.keys(normalized).sort().reduce((obj, key) => {
-        obj[key] = normalized[key];
-        return obj;
-      }, {});
-      return !existing.includes(JSON.stringify(sorted));
-    });
-  };
-
-  const missingCombinations = generateCombinations();
-
-  const getSku = (combo) => {
-    const nameParts = product.name.split(' ').filter(Boolean)
-    let nameCode = ''
-    if (nameParts.length >= 2) {
-      nameCode = nameParts.map(p => p[0]).join('').substring(0, 4)
-    } else {
-      nameCode = product.name.substring(0, 3)
-    }
-    const cleanValues = Object.values(combo).map(val => 
-      val.toLowerCase().replace(/[^a-z0-9]/g, '').trim()
-    ).join('-')
-    return `${nameCode.toUpperCase()}-${cleanValues.toUpperCase()}`
-  }
-
-  const addCombination = async (combo) => {
-    try {
-      const images = typeof product.images === 'string' 
-        ? product.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url }))
-        : (product.images || []);
-
-      await api.post(`/api/products/${product._id}/variants`, {
-        attributes: combo,
-        price: Number(price || 0),
-        mrp: product.mrp ? Number(product.mrp) : undefined,
-        stock: 0,
-        weight: Number(weight || 0),
-        images: images,
-        sku: getSku(combo),
-        isActive: true
-      });
-      notify('Variant added', 'success');
-      onChanged && onChanged();
-    } catch (err) { notify(err.response?.data?.error || 'Failed to add', 'error'); }
-  };
-
-  const addAllCombinations = async () => {
-    if (!window.confirm(`Create ${missingCombinations.length} variant(s)?`)) return;
-    let success = 0;
-    const images = typeof product.images === 'string' 
-      ? product.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url }))
-      : (product.images || []);
-
-    // Create variants sequentially to avoid race conditions/duplicate errors
-    for (const combo of missingCombinations) {
-      try {
-        await api.post(`/api/products/${product._id}/variants`, {
-          attributes: combo,
-          price: Number(price || 0),
-          mrp: product.mrp ? Number(product.mrp) : undefined,
-          stock: 0,
-          weight: Number(weight || 0),
-          images: images,
-          sku: getSku(combo),
-          isActive: true
-        });
-        success++;
-      } catch (e) { 
-        console.error("Failed to create variant:", combo, e); 
-      }
-    }
-    notify(`Created ${success} variants`, 'success');
-    onChanged && onChanged();
-  };
-
-  return (
-    <div className="space-y-6">
-      {/* Step 1: Define Attributes */}
-      <div className="p-4 bg-gray-50 border border-gray-100 rounded-3xl space-y-4">
-        <div className="flex items-center justify-between">
-          <h5 className="text-[9px] font-black uppercase tracking-widest text-gray-400">1. Define Attributes & Values</h5>
-          <div className="flex gap-2">
-            <input 
-              className="bg-white border rounded-xl px-3 py-1.5 text-[11px] font-bold outline-none focus:ring-2 focus:ring-blue-500 w-28" 
-              placeholder="e.g. Color" 
-              value={attrInput} 
-              onChange={e=>setAttrInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && addAttr()}
-            />
-            <button type="button" onClick={addAttr} className="p-1.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"/></svg>
-            </button>
-          </div>
-        </div>
-        
-        <div className="space-y-3">
-          {Array.isArray(product.attributes) && product.attributes.length > 0 ? (
-            product.attributes.map(attr => {
-              const [name, valuesStr] = attr.split(':');
-              const values = valuesStr ? valuesStr.split(',').filter(Boolean) : [];
-              return (
-                <div key={name} className="bg-white p-3 rounded-2xl border border-gray-100 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-blue-600 uppercase">{name}</span>
-                    <button type="button" onClick={() => removeAttr(attr)} className="text-gray-300 hover:text-red-500">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                    </button>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-1.5">
-                    {values.map(v => (
-                      <span key={v} className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-gray-50 border border-gray-100 rounded-lg text-[9px] font-bold text-gray-600 uppercase">
-                        {v}
-                        <button type="button" onClick={() => removeAttrValue(name, v)} className="text-gray-300 hover:text-red-500">✕</button>
-                      </span>
-                    ))}
-                    <div className="flex gap-1 items-center ml-1">
-                      <input 
-                        className="bg-gray-50 border rounded-lg px-2 py-0.5 text-[10px] font-bold outline-none w-20" 
-                        placeholder="Add value..."
-                        value={valInput[name] || ''}
-                        onChange={e => setValInput(prev => ({ ...prev, [name]: e.target.value }))}
-                        onKeyDown={e => e.key === 'Enter' && addAttrValue(name, valInput[name])}
-                      />
-                      <button type="button" onClick={() => addAttrValue(name, valInput[name])} className="p-0.5 text-blue-600 hover:scale-110">
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )
-            })
-          ) : (
-            <div className="text-[9px] text-gray-400 font-bold italic text-center py-2">Add attributes to start...</div>
-          )}
-        </div>
-      </div>
-
-      {/* Step 2: Create Variants */}
-      {Array.isArray(product.attributes) && product.attributes.length > 0 && (
-        <div className="p-4 bg-white border border-gray-100 rounded-3xl space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h5 className="text-[9px] font-black uppercase tracking-widest text-gray-400">2. Create Variants from Values</h5>
-              {product.attributes.filter(a => a.split(':')[1]).length > 0 && (
-                <p className="text-[8px] font-black text-blue-600 uppercase mt-1">
-                  {product.attributes.filter(a => a.split(':')[1]).map(a => {
-                    const [name, vals] = a.split(':');
-                    return `${vals.split(',').filter(Boolean).length} ${name}`;
-                  }).join(' x ')} = {missingCombinations.length + (product.variants || []).length} Total Combinations
-                </p>
-              )}
-            </div>
-            {missingCombinations.length > 1 && (
-              <button 
-                onClick={addAllCombinations}
-                className="px-4 py-1.5 bg-blue-600 text-white text-[9px] font-black uppercase rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-50"
-              >Create All ({missingCombinations.length})</button>
-            )}
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {missingCombinations.length > 0 ? (
-              missingCombinations.map((combo, i) => (
-                <button
-                  key={i}
-                  onClick={() => addCombination(combo)}
-                  className="group flex flex-col items-start p-3 bg-gray-50 border border-gray-100 rounded-2xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left min-w-[120px]"
-                >
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {Object.entries(combo).map(([k, v]) => (
-                      <span key={k} className="text-[8px] font-black text-gray-400 uppercase tracking-tighter">
-                        {v}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">+ Add</span>
-                    <svg className="w-3 h-3 text-blue-400 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
-                  </div>
-                </button>
-              ))
-            ) : (
-              <div className="w-full py-4 text-center border-2 border-dashed border-gray-50 rounded-2xl">
-                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">All combinations created!</p>
-                <p className="text-[8px] text-gray-300 mt-1">Define more values in Step 1 to create more variants.</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Step 3: Inventory */}
-      <div className="space-y-2 pt-3 border-t border-gray-50">
-        {(product.variants || []).length > 0 && (
-          <div className="px-1 flex items-center justify-between">
-            <h5 className="text-[9px] font-black uppercase tracking-widest text-gray-400">3. Inventory / Active Variants ({product.variants.length})</h5>
-          </div>
-        )}
-
-        <div className="space-y-2">
-          {/* Header for table-like layout */}
-          {(product.variants || []).length > 0 && (
-            <div className="hidden md:flex items-center gap-4 px-4 py-1.5 text-[8px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
-              <div className="w-[180px]">Attributes & Values</div>
-              <div className="w-[80px]">Price</div>
-              <div className="w-[80px]">Stock</div>
-              <div className="w-[60px]">Weight</div>
-              <div className="flex-1">SKU</div>
-              <div className="w-[120px] text-right">Actions</div>
-            </div>
-          )}
-
-          {(product.variants || []).map(v => (
-            <div key={v._id} className="p-3 bg-white rounded-xl border border-gray-100 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 group hover:border-blue-100 transition-all">
-              <div className="flex-1 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 overflow-hidden">
-                {/* Attributes */}
-                <div className="flex flex-wrap gap-2 w-full md:w-[180px]">
-                  {(() => {
-                    const attrs = v.attributes instanceof Map ? Object.fromEntries(v.attributes) : (v.attributes || {});
-                    const entries = Object.entries(attrs);
-                    if (entries.length === 0) return <span className="text-[9px] text-gray-300 italic">No attributes</span>;
-                    return entries.map(([k,val]) => (
-                      <div key={k} className="flex flex-col md:flex-row md:items-center gap-1">
-                        <span className="text-[7px] md:hidden font-black text-gray-400 uppercase">{k}</span>
-                        <span className="px-2 py-0.5 bg-blue-50 text-blue-700 text-[10px] font-black rounded-lg uppercase border border-blue-100/50">
-                          {val}
-                        </span>
-                      </div>
-                    ));
-                  })()}
-                </div>
-
-                {/* Price */}
-                <div className="flex flex-col md:w-[80px]">
-                  <span className="text-[7px] md:hidden font-black text-gray-400 uppercase">Price</span>
-                  <div className="text-[12px] font-black text-gray-900">
-                    ₹{v.price.toLocaleString()}
-                  </div>
-                </div>
-
-                {/* Stock */}
-                <div className="flex flex-col md:w-[80px]">
-                  <span className="text-[7px] md:hidden font-black text-gray-400 uppercase">Stock</span>
-                  <div className={`text-[11px] font-black ${v.stock <= 0 ? 'text-red-500' : 'text-emerald-600'}`}>
-                    {v.stock} pcs
-                  </div>
-                </div>
-
-                {/* Weight */}
-                <div className="flex flex-col md:w-[60px]">
-                  <span className="text-[7px] md:hidden font-black text-gray-400 uppercase">Weight</span>
-                  <div className="text-[11px] font-black text-gray-500">
-                    {v.weight || 0}g
-                  </div>
-                </div>
-
-                {/* SKU */}
-                {v.sku && (
-                  <div className="flex flex-col flex-1 min-w-[100px]">
-                    <span className="text-[7px] md:hidden font-black text-gray-400 uppercase">SKU</span>
-                    <div className="font-mono lowercase text-[9px] text-gray-400 truncate">
-                      {v.sku}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center gap-1.5 justify-end md:w-[120px]">
-                <button type="button" onClick={() => setEditingVariant({ 
-                  ...v, 
-                  attributes: v.attributes instanceof Map ? Object.fromEntries(v.attributes) : (v.attributes || {}),
-                  images: (v.images || []).map(img => img.url).join(', ') 
-                })} className="p-1.5 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                </button>
-                <button type="button" onClick={() => toggleActive(v)} className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase transition-all ${v.isActive ? 'text-emerald-600 bg-emerald-50' : 'text-gray-400 bg-gray-50'}`}>
-                  {v.isActive ? 'Live' : 'Hidden'}
-                </button>
-                <button type="button" onClick={() => deleteVariant(v)} className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Edit Variant Modal */}
-      {editingVariant && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] backdrop-blur-sm p-4">
-          <form onSubmit={handleUpdateVariant} className="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 animate-in zoom-in-95">
-            <div className="flex items-center justify-between">
-              <h6 className="text-sm font-black uppercase tracking-widest text-gray-900">Edit Variant</h6>
-              <button type="button" onClick={() => setEditingVariant(null)} className="text-gray-400">✕</button>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              {(product.attributes || []).map(attr => (
-                <div key={attr} className="space-y-1">
-                  <label className="text-[9px] font-bold text-gray-400 uppercase">{attr}</label>
-                  <input 
-                    className="w-full bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold" 
-                    value={editingVariant.attributes?.[attr] || ''} 
-                    onChange={e => setEditingVariant({
-                      ...editingVariant,
-                      attributes: {
-                        ...(editingVariant.attributes || {}),
-                        [attr]: e.target.value
-                      }
-                    })} 
-                    required 
-                  />
-                </div>
-              ))}
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-gray-400 uppercase">Price</label>
-                <input className="w-full bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold" value={editingVariant.price} onChange={e=>setEditingVariant({...editingVariant, price: e.target.value})} required />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-gray-400 uppercase">MRP</label>
-                <input className="w-full bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold" value={editingVariant.mrp || ''} onChange={e=>setEditingVariant({...editingVariant, mrp: e.target.value})} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-gray-400 uppercase">Stock</label>
-                <input className="w-full bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold" value={editingVariant.stock} onChange={e=>setEditingVariant({...editingVariant, stock: e.target.value})} required />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[9px] font-bold text-gray-400 uppercase">Weight (g)</label>
-                <input className="w-full bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold" value={editingVariant.weight || ''} onChange={e=>setEditingVariant({...editingVariant, weight: e.target.value})} />
-              </div>
-            </div>
-
-            <div className="space-y-1">
-              <label className="text-[9px] font-bold text-gray-400 uppercase">Images (Comma separated)</label>
-              <textarea className="w-full bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold min-h-[60px]" value={editingVariant.images} onChange={e=>setEditingVariant({...editingVariant, images: e.target.value})} />
-              <div className="flex justify-end mt-1">
-                <ImageUpload onUploaded={(url) => {
-                  const current = (editingVariant.images || '').split(',').map(s=>s.trim()).filter(Boolean)
-                  setEditingVariant({ ...editingVariant, images: [...current, url].join(', ') })
-                }} />
-              </div>
-            </div>
-
-            <button className="w-full py-3 bg-gray-900 text-white rounded-xl text-xs font-black uppercase tracking-widest">Update Variant</button>
-          </form>
-        </div>
-      )}
-    </div>
-  )
-}
-

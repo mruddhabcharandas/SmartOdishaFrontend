@@ -792,1157 +792,938 @@ export default function ProductDetail() {
   return (
     <div className="pd">
       <style jsx>{`
+        /* Flipkart Colors and Fonts */
         .pd {
-          font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-          background: #f8fafc;
-          color: #0f172a;
+          font-family: 'Roboto', 'Inter', -apple-system, sans-serif;
+          background-color: #f1f3f6;
+          color: #212121;
           min-height: 100vh;
-          overflow-x: hidden;
-          width: 100%;
+          padding-bottom: 80px;
         }
-        
+
         .pd-wrap {
-          max-width: 1200px;
+          max-width: 1248px;
           margin: 0 auto;
-          padding: 16px 12px 80px;
-          position: relative;
-          z-index: 1;
+          padding: 8px;
         }
-        
-        @media (min-width: 480px) {
-          .pd-wrap { padding: 20px 16px 80px; }
-        }
-        
+
         @media (min-width: 768px) {
-          .pd-wrap { padding: 32px 24px 80px; }
+          .pd-wrap {
+            padding: 16px;
+          }
         }
-        
-        @media (min-width: 1024px) {
-          .pd-wrap { padding: 40px 32px 80px; }
+
+        /* Breadcrumbs */
+        .pd-breadcrumbs {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 12px;
+          color: #878787;
+          margin-bottom: 12px;
+          flex-wrap: wrap;
         }
-        
+        .pd-breadcrumbs a {
+          color: #878787;
+          text-decoration: none;
+        }
+        .pd-breadcrumbs a:hover {
+          color: #2874f0;
+        }
+        .pd-breadcrumbs .separator {
+          font-size: 10px;
+        }
+
+        /* 2-Column Grid Layout */
         .pd-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 24px;
+          gap: 16px;
+          background: #fff;
+          border-radius: 4px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+          padding: 16px;
         }
-        
+
         @media (min-width: 1024px) {
           .pd-grid {
-            grid-template-columns: 440px 1fr;
-            gap: 48px;
+            grid-template-columns: 40% 60%;
+            gap: 24px;
             align-items: start;
+            padding: 24px;
           }
         }
-        
+
+        /* Left Column: Image Gallery & Actions */
+        .pd-left-col {
+          display: flex;
+          flex-direction: column;
+          position: sticky;
+          top: 80px;
+        }
+
+        .pd-gallery-container {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        @media (min-width: 1024px) {
+          .pd-gallery-container {
+            flex-direction: row-reverse;
+            gap: 16px;
+          }
+        }
+
+        /* Main Image */
         .pd-img-main {
-          background: linear-gradient(145deg, #ffffff 0%, #eff6ff 50%, #dbeafe 100%);
-          border: 1px solid rgba(59, 130, 246, 0.1);
-          border-radius: 20px;
-          overflow: hidden;
+          flex: 1;
+          border: 1px solid #f0f0f0;
+          background: #fff;
           aspect-ratio: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           position: relative;
           cursor: zoom-in;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          box-shadow: 0 12px 40px -16px rgba(15, 23, 42, 0.2);
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          width: 100%;
+          overflow: hidden;
+          min-height: 300px;
         }
-        
-        @media (min-width: 640px) {
-          .pd-img-main { border-radius: 28px; }
-        }
-        
-        .pd-img-main img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          padding: 20px;
-        }
-        
         @media (min-width: 768px) {
-          .pd-img-main img { padding: 32px; }
+          .pd-img-main {
+            min-height: 400px;
+          }
         }
-        
-        .pd-img-main:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 20px 56px -20px rgba(15, 23, 42, 0.3);
-          border-color: rgba(59, 130, 246, 0.25);
+        .pd-img-main img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+          padding: 8px;
+          transition: transform 0.3s ease;
         }
-        
+        .pd-img-main:hover img {
+          transform: scale(1.05);
+        }
+
+        /* Thumbnails */
         .pd-thumbs {
           display: flex;
+          flex-direction: row;
           gap: 8px;
-          padding: 12px 0 20px;
           overflow-x: auto;
-          scrollbar-width: thin;
-          scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
-          -webkit-overflow-scrolling: touch;
+          padding: 4px 0;
+          scrollbar-width: none;
         }
-        
-        @media (min-width: 640px) {
-          .pd-thumbs { gap: 10px; padding: 16px 0 24px; }
-        }
-        
         .pd-thumbs::-webkit-scrollbar {
-          height: 4px;
+          display: none;
         }
-        
-        .pd-thumbs::-webkit-scrollbar-thumb {
-          background: rgba(59, 130, 246, 0.3);
-          border-radius: 100px;
-        }
-        
-        .pd-thumb {
-          width: 60px;
-          height: 60px;
-          flex-shrink: 0;
-          background: white;
-          border: 2px solid rgba(59, 130, 246, 0.12);
-          border-radius: 14px;
-          overflow: hidden;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
-        }
-        
-        @media (min-width: 480px) {
-          .pd-thumb { width: 68px; height: 68px; border-radius: 16px; }
-        }
-        
-        @media (min-width: 640px) {
-          .pd-thumb { width: 76px; height: 76px; border-radius: 18px; }
-        }
-        
-        .pd-thumb:hover {
-          border-color: rgba(59, 130, 246, 0.35);
-          transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
-        }
-        
-        .pd-thumb.on {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 8px 28px rgba(59, 130, 246, 0.25);
-          transform: translateY(-3px) scale(1.02);
-        }
-        
-        .pd-thumb img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          padding: 10px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-thumb img { padding: 12px; }
-        }
-        
-        .pd-variants {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-          margin-top: 16px;
-          padding: 18px 14px;
-          background: rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(24px);
-          border-radius: 20px;
-          border: 1px solid rgba(255, 255, 255, 0.95);
-          box-shadow: 0 10px 32px -16px rgba(15, 23, 42, 0.12);
-          position: relative;
-          z-index: 10;
-          overflow: hidden;
-        }
-        
-        @media (min-width: 480px) {
-          .pd-variants { padding: 20px 16px; gap: 18px; }
-        }
-        
-        @media (min-width: 640px) {
-          .pd-variants { padding: 24px 20px; gap: 20px; border-radius: 24px; }
-        }
-        
-        .pd-var-sec {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          position: relative;
-          z-index: 1;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-var-sec { gap: 12px; }
-        }
-        
-        .pd-var-header {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          flex-wrap: wrap;
-          gap: 8px;
-        }
-        
-        .pd-var-lbl {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 12px;
-          font-weight: 700;
-          letter-spacing: 0.02em;
-          color: #374151;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-var-lbl { gap: 10px; font-size: 13px; }
-        }
-        
-        .pd-var-icon {
-          width: 32px;
-          height: 32px;
-          background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-          border-radius: 12px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 15px;
-          box-shadow: 0 3px 12px rgba(59, 130, 246, 0.12);
-        }
-        
-        @media (min-width: 640px) {
-          .pd-var-icon { width: 36px; height: 36px; font-size: 17px; border-radius: 14px; }
-        }
-        
-        .pd-var-name {
-          text-transform: uppercase;
-          font-weight: 800;
-          color: #6b7280;
-          letter-spacing: 0.1em;
-          font-size: 10px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-var-name { font-size: 11px; }
-        }
-        
-        .pd-var-selected {
-          color: #3b82f6;
-          font-weight: 800;
-          padding: 5px 10px;
-          border-radius: 12px;
-          background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-          font-size: 11px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-var-selected { padding: 6px 14px; font-size: 12px; border-radius: 14px; }
-        }
-        
-        .pd-var-opts {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 8px;
-          align-items: stretch;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-var-opts { gap: 10px; }
-        }
-        
-        .pd-var-opts.has-many {
-          flex-wrap: nowrap;
-          overflow-x: auto;
-          gap: 10px;
-          padding: 2px 2px 10px;
-          margin: 0 -2px;
-          scroll-snap-type: x proximity;
-          -webkit-overflow-scrolling: touch;
-        }
-        
-        .pd-var-btn {
-          min-width: auto;
-          padding: 10px 16px;
-          background: white;
-          border: 2px solid rgba(59, 130, 246, 0.15);
-          border-radius: 12px;
-          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
-        }
-        
-        @media (min-width: 480px) {
-          .pd-var-btn { padding: 12px 18px; border-radius: 14px; }
-        }
-        
-        @media (min-width: 640px) {
-          .pd-var-btn { padding: 14px 20px; border-radius: 16px; }
-        }
-        
-        .pd-var-btn:hover:not(.disabled):not(.on) {
-          border-color: rgba(59, 130, 246, 0.4);
-          background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
-          transform: translateY(-2px);
-          box-shadow: 0 10px 28px -8px rgba(59, 130, 246, 0.25);
-        }
-        
-        .pd-var-btn.on {
-          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
-          border-color: #3b82f6;
-          box-shadow: 0 12px 36px -12px rgba(59, 130, 246, 0.4);
-          transform: translateY(-3px);
-        }
-        
-        .pd-var-btn.on .pd-var-val {
-          color: white;
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-        }
-        
-        .pd-var-val {
-          font-size: 12px;
-          font-weight: 800;
-          color: #0f172a;
-          transition: color 0.3s;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-var-val { font-size: 13px; }
-        }
-        
-        .pd-var-btn.disabled {
-          opacity: 0.45;
-          cursor: not-allowed;
-          background: #f1f5f9;
-          border-color: rgba(148, 163, 184, 0.3);
-        }
-        
-        .pd-info {
-          margin-top: 12px;
-        }
-        
         @media (min-width: 1024px) {
-          .pd-info {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.95);
-            border-radius: 28px;
-            padding: 32px 28px 40px;
-            margin-top: 0;
-            box-shadow: 0 18px 56px -24px rgba(15, 23, 42, 0.12);
-            }
+          .pd-thumbs {
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            width: 64px;
+            height: 400px;
+            flex-shrink: 0;
+          }
         }
-        
-        .pd-meta-compact {
+
+        .pd-thumb {
+          width: 56px;
+          height: 56px;
+          border: 1px solid #e0e0e0;
+          background: #fff;
+          cursor: pointer;
           display: flex;
-          flex-wrap: wrap;
           align-items: center;
-          gap: 6px;
+          justify-content: center;
+          flex-shrink: 0;
+          padding: 4px;
+          border-radius: 2px;
+          transition: border-color 0.2s;
+        }
+        .pd-thumb:hover, .pd-thumb.on {
+          border-color: #2874f0;
+          box-shadow: 0 0 3px rgba(40,116,240,0.3);
+        }
+        .pd-thumb img {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+
+        /* Left Column Action Buttons (Desktop only) */
+        .pd-left-actions {
+          display: none;
+        }
+        @media (min-width: 1024px) {
+          .pd-left-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+          }
+        }
+
+        /* Flipkart Buttons */
+        .pd-btn-cart {
+          flex: 1;
+          background: #ff9f00;
+          color: #fff;
+          border: none;
+          padding: 16px 20px;
+          font-size: 15px;
+          font-weight: 700;
+          border-radius: 2px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+          text-transform: uppercase;
+          transition: background 0.2s;
+        }
+        .pd-btn-cart:hover:not(:disabled) {
+          background: #f29700;
+        }
+        .pd-btn-buy {
+          flex: 1;
+          background: #fb641b;
+          color: #fff;
+          border: none;
+          padding: 16px 20px;
+          font-size: 15px;
+          font-weight: 700;
+          border-radius: 2px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+          text-transform: uppercase;
+          transition: background 0.2s;
+        }
+        .pd-btn-buy:hover:not(:disabled) {
+          background: #df5615;
+        }
+        .pd-btn-cart:disabled, .pd-btn-buy:disabled {
+          background: #cccccc;
+          color: #ffffff;
+          cursor: not-allowed;
+        }
+
+        /* Right Column: Info & Specs */
+        .pd-right-col {
+          display: flex;
+          flex-direction: column;
+        }
+
+        /* Brand and Title */
+        .pd-brand {
+          font-size: 14px;
+          color: #878787;
+          margin-bottom: 4px;
+        }
+        .pd-title-text {
+          font-size: 18px;
+          font-weight: 400;
+          color: #212121;
+          line-height: 1.4;
+          margin-bottom: 8px;
+        }
+
+        /* Ratings Pill & Reviews */
+        .pd-rating-container {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           margin-bottom: 12px;
         }
-        
-        @media (min-width: 640px) {
-          .pd-meta-compact { gap: 8px; margin-bottom: 16px; }
-        }
-        
-        .pd-badges {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin-bottom: 0;
-          align-items: center;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-badges { gap: 8px; }
-        }
-        
-        .pd-badge {
+        .pd-rating-pill {
+          background: #388e3c;
+          color: #fff;
+          padding: 2px 6px;
+          font-size: 12px;
+          font-weight: 700;
+          border-radius: 3px;
           display: inline-flex;
           align-items: center;
-          gap: 5px;
+          gap: 2px;
+        }
+        .pd-rating-count {
+          font-size: 13px;
+          font-weight: 500;
+          color: #878787;
+        }
+
+        /* Assured Badge */
+        .pd-assured-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 2px;
+          background: linear-gradient(135deg, #2874f0 0%, #1a5ac2 100%);
+          color: #fff;
+          padding: 2px 6px;
+          border-radius: 999px;
           font-size: 10px;
           font-weight: 800;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.5px;
           text-transform: uppercase;
-          padding: 5px 10px;
-          border-radius: 999px;
+          box-shadow: 0 1px 3px rgba(40,116,240,0.25);
+          margin-left: 8px;
         }
-        
-        @media (min-width: 640px) {
-          .pd-badge { font-size: 11px; padding: 6px 12px; }
+        .pd-assured-badge .star-icon {
+          color: #ffe500;
+          font-size: 9px;
         }
-        
-        .pd-badge-v {
-          background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(79, 70, 229, 0.08) 100%);
-          border: 1px solid rgba(59, 130, 246, 0.2);
-          color: #3b82f6;
-        }
-        
-        .pd-badge-g {
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%);
-          border: 1px solid rgba(16, 185, 129, 0.2);
-          color: #059669;
-        }
-        
-        .pd-badge-a {
-          background: linear-gradient(135deg, rgba(249, 115, 22, 0.08) 0%, rgba(234, 88, 12, 0.08) 100%);
-          border: 1px solid rgba(249, 115, 22, 0.2);
-          color: #f97316;
-        }
-        
-        .pd-name {
-          font-size: clamp(20px, 5vw, 36px);
-          font-weight: 900;
-          line-height: 1.15;
-          background: linear-gradient(135deg, #0f172a 0%, #475569 100%);
-          background-clip: text;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          margin-bottom: 10px;
-          letter-spacing: -0.03em;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-name { margin-bottom: 14px; }
-        }
-        
-        .pd-rating-row {
+
+        /* Price block */
+        .pd-price-row {
           display: flex;
-          align-items: center;
-          gap: 10px;
-          margin-bottom: 18px;
-          flex-wrap: wrap;
+          align-items: baseline;
+          gap: 12px;
+          margin-bottom: 4px;
         }
-        
-        @media (min-width: 640px) {
-          .pd-rating-row { gap: 12px; margin-bottom: 22px; }
+        .pd-price {
+          font-size: 28px;
+          font-weight: 700;
+          color: #212121;
         }
-        
-        .pd-rating {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-          color: white;
-          padding: 7px 14px;
-          border-radius: 999px;
-          font-weight: 800;
-          box-shadow: 0 6px 20px -8px rgba(5, 150, 105, 0.4);
-          font-size: 13px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-rating { padding: 8px 16px; gap: 8px; font-size: 14px; }
-        }
-        
-        .pd-price-block {
-          background: linear-gradient(165deg, #ffffff 0%, #f8fafc 50%, #eff6ff 100%);
-          border: 1px solid rgba(59, 130, 246, 0.15);
-          border-radius: 20px;
-          padding: 18px 16px 16px;
-          margin-bottom: 18px;
-          position: relative;
-          overflow: hidden;
-          box-shadow: 0 14px 44px -20px rgba(59, 130, 246, 0.18);
-        }
-        
-        @media (min-width: 640px) {
-          .pd-price-block {
-            border-radius: 24px;
-            padding: 24px 20px 20px;
-            margin-bottom: 22px;
-            }
-        }
-        
-        .pd-price-block::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 4px;
-          background: linear-gradient(90deg, transparent 0%, #3b82f6 25%, #4f46e5 50%, #3b82f6 75%, transparent 100%);
-        }
-        
-        .pd-price-main {
-          font-size: clamp(28px, 7vw, 48px);
-          font-weight: 900;
-          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
-          background-clip: text;
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          font-family: 'Inter', system-ui, sans-serif;
-        }
-        
-        .pd-price-mrp {
-          font-size: 14px;
-          color: #94a3b8;
+        .pd-mrp {
+          font-size: 16px;
           text-decoration: line-through;
-          font-weight: 600;
+          color: #878787;
         }
-        
-        @media (min-width: 640px) {
-          .pd-price-mrp { font-size: 16px; }
+        .pd-discount {
+          font-size: 16px;
+          font-weight: 700;
+          color: #388e3c;
         }
-        
-        .pd-price-save {
-          font-size: 11px;
-          color: #059669;
-          font-weight: 800;
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.08) 100%);
-          border: 1px solid rgba(16, 185, 129, 0.2);
-          padding: 5px 10px;
-          border-radius: 999px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-price-save { font-size: 12px; padding: 6px 14px; }
-        }
-        
-        .pd-delivery {
-          background: white;
-          border: 1px solid rgba(59, 130, 246, 0.15);
-          border-radius: 16px;
-          padding: 16px;
+        .pd-taxes-info {
+          font-size: 12px;
+          color: #878787;
           margin-bottom: 16px;
+          font-weight: 500;
         }
-        
-        @media (min-width: 640px) {
-          .pd-delivery { padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+
+        /* Available Offers styling */
+        .pd-offers-sec {
+          margin-bottom: 20px;
         }
-        
-        .pd-delivery-header {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-        }
-        
-        .pd-delivery-info {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-        
-        .pd-delivery-title {
-          display: flex;
-          align-items: center;
-          gap: 8px;
+        .pd-offers-title {
           font-size: 14px;
           font-weight: 700;
-          color: #0f172a;
+          color: #212121;
+          margin-bottom: 10px;
         }
-        
-        .pd-delivery-subtitle {
+        .pd-offer-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 10px;
+          font-size: 13px;
+          color: #212121;
+          margin-bottom: 8px;
+          line-height: 1.4;
+        }
+        .pd-offer-tag {
+          color: #26a541;
+          font-size: 14px;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+        .pd-offer-highlight {
+          font-weight: 700;
+        }
+        .pd-offer-link {
+          color: #2874f0;
+          text-decoration: none;
+          font-weight: 500;
+          margin-left: 4px;
+          cursor: pointer;
+        }
+
+        /* Pincode & Shipping */
+        .pd-delivery-sec {
+          border-top: 1px solid #f0f0f0;
+          border-bottom: 1px solid #f0f0f0;
+          padding: 16px 0;
+          margin-bottom: 20px;
+        }
+        .pd-delivery-row {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          flex-wrap: wrap;
+        }
+        .pd-delivery-label {
+          font-size: 14px;
+          color: #878787;
+          font-weight: 500;
+          width: 80px;
+        }
+        .pd-pincode-wrapper {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid #2874f0;
+          position: relative;
+          padding-bottom: 2px;
+          width: 180px;
+        }
+        .pd-pincode-icon {
+          color: #2874f0;
+          margin-right: 6px;
+        }
+        .pd-pincode-input {
+          border: none;
+          outline: none;
+          font-size: 14px;
+          font-weight: 700;
+          color: #212121;
+          width: 100%;
+        }
+        .pd-pincode-btn {
+          border: none;
+          background: none;
+          color: #2874f0;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          padding: 0;
+        }
+        .pd-pincode-btn:disabled {
+          color: #878787;
+          cursor: not-allowed;
+        }
+
+        /* Delivery output details */
+        .pd-delivery-status {
+          margin-top: 10px;
+          padding-left: 104px;
+          font-size: 13px;
+          line-height: 1.5;
+        }
+        .pd-delivery-date {
+          font-weight: 700;
+          color: #212121;
+        }
+        .pd-delivery-charge-text {
+          color: #388e3c;
+          font-weight: 700;
+        }
+        .pd-delivery-cod {
+          margin-top: 4px;
+          color: #878787;
+        }
+
+        /* Highlights list */
+        .pd-highlights-sec {
+          margin-bottom: 20px;
+        }
+        .pd-highlights-title {
+          font-size: 14px;
+          font-weight: 700;
+          color: #212121;
+          margin-bottom: 10px;
+        }
+        .pd-highlights-list {
+          list-style-type: disc;
+          padding-left: 20px;
+          font-size: 13px;
+          color: #212121;
+          line-height: 1.6;
+        }
+        .pd-highlights-list li {
+          margin-bottom: 6px;
+        }
+
+        /* Seller Section */
+        .pd-seller-sec {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          padding: 16px 0;
+          border-bottom: 1px solid #f0f0f0;
+          margin-bottom: 20px;
+          flex-wrap: wrap;
+        }
+        .pd-seller-label {
+          font-size: 14px;
+          color: #878787;
+          font-weight: 500;
+          width: 80px;
+        }
+        .pd-seller-value {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 12px;
-          color: #64748b;
         }
-        
-        .pd-delivery-charge {
-          font-weight: 600;
-          color: #3b82f6;
+        .pd-seller-name {
+          font-size: 14px;
+          font-weight: 700;
+          color: #2874f0;
         }
-        
-        .pd-delivery-charge.free {
-          color: #059669;
+        .pd-seller-rating {
+          background: #388e3c;
+          color: #fff;
+          font-size: 10px;
+          font-weight: 700;
+          padding: 1px 4px;
+          border-radius: 2px;
         }
-        
-        .pd-delivery-form {
-          display: flex;
-          gap: 8px;
+
+        /* Specifications (Flipkart styled table) */
+        .pd-specs-sec {
+          margin-bottom: 20px;
+        }
+        .pd-specs-title {
+          font-size: 18px;
+          font-weight: 700;
+          color: #212121;
+          margin-bottom: 12px;
+          border-bottom: 1px solid #f0f0f0;
+          padding-bottom: 8px;
+        }
+        .pd-specs-table {
+          width: 100%;
+          border-collapse: collapse;
           margin-top: 8px;
         }
-        
-        .pd-delivery-input {
-          flex: 1;
-          padding: 10px 14px;
-          border: 2px solid rgba(148, 163, 184, 0.3);
-          border-radius: 10px;
+        .pd-specs-row {
+          border-bottom: 1px solid #f0f0f0;
+        }
+        .pd-specs-label {
+          width: 30%;
+          padding: 12px 8px;
+          font-size: 13px;
+          color: #878787;
+          vertical-align: top;
+          font-weight: 400;
+        }
+        .pd-specs-val {
+          padding: 12px 8px;
+          font-size: 13px;
+          color: #212121;
+          vertical-align: top;
+          font-weight: 500;
+        }
+
+        /* Description */
+        .pd-desc-sec {
+          margin-bottom: 20px;
+          border-bottom: 1px solid #f0f0f0;
+          padding-bottom: 16px;
+        }
+        .pd-desc-title {
           font-size: 14px;
-          font-weight: 600;
-          outline: none;
-          transition: all 0.2s;
+          font-weight: 700;
+          color: #212121;
+          margin-bottom: 10px;
         }
-        
-        .pd-delivery-input:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        .pd-desc-content {
+          font-size: 13px;
+          line-height: 1.6;
+          color: #212121;
         }
-        
-        .pd-delivery-btn {
-          padding: 10px 16px;
-          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
-          color: white;
+        .pd-desc-toggle-btn {
+          background: none;
           border: none;
-          border-radius: 10px;
+          color: #2874f0;
           font-size: 13px;
           font-weight: 700;
           cursor: pointer;
-          transition: all 0.2s;
-        }
-        
-        .pd-delivery-btn:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 6px 20px -8px rgba(59, 130, 246, 0.5);
-        }
-        
-        .pd-highlights {
-          background: white;
-          border: 1px solid rgba(59, 130, 246, 0.15);
-          border-radius: 16px;
-          padding: 16px;
-          margin-bottom: 16px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-highlights { padding: 20px; border-radius: 20px; margin-bottom: 20px; }
-        }
-        
-        .pd-highlights-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 10px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-highlights-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        
-        .pd-highlight-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 14px;
-          font-weight: 600;
-          color: #374151;
-        }
-        
-        .pd-highlight-check {
-          width: 20px;
-          height: 20px;
-          border-radius: 999px;
-          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-        
-        .pd-highlight-check svg {
-          width: 12px;
-          height: 12px;
-          fill: none;
-          stroke: white;
-          stroke-width: 3;
-        }
-        
-        .pd-section-title {
-          font-size: 16px;
-          font-weight: 900;
-          color: #0f172a;
-          margin-bottom: 12px;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-        
-        .pd-description {
-          background: white;
-          border: 1px solid rgba(59, 130, 246, 0.15);
-          border-radius: 16px;
-          padding: 16px;
-          margin-bottom: 16px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-description { padding: 20px; border-radius: 20px; margin-bottom: 20px; }
-        }
-        
-        .pd-description-text {
-          font-size: 14px;
-          line-height: 1.7;
-          color: #475569;
-          margin-bottom: 12px;
-        }
-        
-        .pd-description-toggle {
-          font-size: 13px;
-          font-weight: 800;
-          color: #3b82f6;
-          background: none;
-          border: none;
           padding: 0;
-          cursor: pointer;
-          display: inline-flex;
+          margin-top: 6px;
+          display: flex;
           align-items: center;
           gap: 4px;
         }
 
-        .pd-specifications {
-          background: white;
-          border: 1px solid rgba(59, 130, 246, 0.15);
-          border-radius: 16px;
-          padding: 16px;
+        /* Share & Wishlist overlay buttons on main image */
+        .pd-action-overlays {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          z-index: 10;
+        }
+        .pd-action-btn {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: #fff;
+          border: 1px solid #f0f0f0;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          color: #878787;
+          transition: transform 0.2s, color 0.2s;
+        }
+        .pd-action-btn:hover {
+          transform: scale(1.05);
+          color: #212121;
+        }
+        .pd-action-btn.wishlisted {
+          color: #ef4444;
+        }
+
+        /* Mobile action buttons container (at bottom of info, hidden on desktop) */
+        .pd-info-actions {
+          display: flex;
+          gap: 12px;
+          margin-top: 16px;
           margin-bottom: 16px;
         }
-
-        @media (min-width: 640px) {
-          .pd-specifications { padding: 20px; border-radius: 20px; margin-bottom: 20px; }
+        @media (min-width: 1024px) {
+          .pd-info-actions {
+            display: none;
+          }
         }
 
-        .pd-spec-item {
-          display: flex;
-          padding: 10px 0;
-          border-bottom: 1px solid #f1f5f9;
-        }
-
-        .pd-spec-item:last-child {
-          border-bottom: none;
-        }
-
-        .pd-spec-label {
-          width: 40%;
-          font-size: 13px;
-          font-weight: 600;
-          color: #64748b;
-        }
-
-        .pd-spec-value {
-          flex: 1;
-          font-size: 13px;
-          font-weight: 600;
-          color: #1e293b;
-        }
-        
-        .pd-cta {
-          display: flex;
-          gap: 10px;
-          flex-direction: column;
-          margin-top: 20px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-cta { flex-direction: row; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-        }
-        
-        .pd-btn-primary {
-          flex: 1;
-          min-width: 140px;
-          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
-          background-size: 200% 200%;
-          color: white;
-          border: none;
-          padding: 14px 28px;
-          border-radius: 16px;
-          font-size: 12px;
-          font-weight: 900;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          cursor: pointer;
-          font-family: 'Inter', system-ui, sans-serif;
-          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 10px 32px -10px rgba(59, 130, 246, 0.4);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          position: relative;
-          overflow: hidden;
-          width: 100%;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-btn-primary { padding: 16px 32px; border-radius: 18px; font-size: 13px; gap: 10px; }
-        }
-        
-        .pd-btn-primary::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-          transform: translateX(-100%);
-          transition: transform 0.6s;
-        }
-        
-        .pd-btn-primary:hover:not(:disabled) {
-          transform: translateY(-4px);
-          box-shadow: 0 18px 48px -12px rgba(59, 130, 246, 0.5);
-        }
-        
-        .pd-btn-primary:hover:not(:disabled)::after {
-          transform: translateX(100%);
-        }
-        
-        .pd-btn-primary:active:not(:disabled) {
-          transform: translateY(-2px) scale(0.98);
-        }
-        
-        .pd-btn-primary:disabled {
-          background: #e2e8f0;
-          color: #94a3b8;
-          box-shadow: none;
-          cursor: not-allowed;
-          transform: none;
-        }
-        
-        .pd-btn-buy-now {
-          flex: 1;
-          min-width: 140px;
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-          background-size: 200% 200%;
-          color: white;
-          border: none;
-          padding: 14px 28px;
-          border-radius: 16px;
-          font-size: 12px;
-          font-weight: 900;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          cursor: pointer;
-          font-family: 'Inter', system-ui, sans-serif;
-          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 10px 32px -10px rgba(249, 115, 22, 0.4);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          position: relative;
-          overflow: hidden;
-          width: 100%;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-btn-buy-now { padding: 16px 32px; border-radius: 18px; font-size: 13px; gap: 10px; }
-        }
-        
-        .pd-btn-buy-now::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-          transform: translateX(-100%);
-          transition: transform 0.6s;
-        }
-        
-        .pd-btn-buy-now:hover:not(:disabled) {
-          transform: translateY(-4px);
-          box-shadow: 0 18px 48px -12px rgba(249, 115, 22, 0.5);
-        }
-        
-        .pd-btn-buy-now:hover:not(:disabled)::after {
-          transform: translateX(100%);
-        }
-        
-        .pd-btn-buy-now:active:not(:disabled) {
-          transform: translateY(-2px) scale(0.98);
-        }
-        
-        .pd-btn-secondary {
-          background: white;
-          color: #3b82f6;
-          border: 2px solid rgba(59, 130, 246, 0.2);
-          padding: 10px 12px;
-          border-radius: 12px;
-          cursor: pointer;
-          font-family: 'Inter', system-ui, sans-serif;
-          transition: all 0.3s;
-          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: auto;
-          min-width: 48px;
-          height: 48px;
-        }
-        
-        @media (min-width: 640px) {
-          .pd-btn-secondary { padding: 12px; border-radius: 14px; min-width: 56px; height: 56px; }
-        }
-        
-        .pd-btn-secondary:hover {
-          border-color: #3b82f6;
-          background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 100%);
-          transform: translateY(-2px);
-          box-shadow: 0 10px 28px -8px rgba(59, 130, 246, 0.25);
-        }
-        
+        /* Mobile Sticky bottom actions */
         .pd-sticky-cta {
           position: fixed;
           bottom: 0;
           left: 0;
           right: 0;
-          background: white;
-          border-top: 1px solid rgba(148, 163, 184, 0.2);
-          padding: 12px 16px;
-          box-shadow: 0 -4px 24px -12px rgba(15, 23, 42, 0.2);
-          z-index: 50;
-          display: none;
+          background: #fff;
+          box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+          z-index: 99;
+          display: block;
         }
-        
-        @media (max-width: 1024px) {
-          .pd-sticky-cta { display: block; }
+        @media (min-width: 1024px) {
+          .pd-sticky-cta {
+            display: none;
+          }
         }
-        
         .pd-sticky-inner {
-          max-width: 1200px;
-          margin: 0 auto;
           display: flex;
-          gap: 10px;
-          align-items: center;
+          height: 52px;
         }
-        
-        .pd-sticky-price {
+        .pd-sticky-btn-cart {
           flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-        
-        .pd-sticky-price-main {
-          font-size: 20px;
-          font-weight: 900;
-          color: #0f172a;
-        }
-        
-        .pd-sticky-price-mrp {
-          font-size: 12px;
-          color: #94a3b8;
-          text-decoration: line-through;
-          font-weight: 600;
-        }
-        
-        .pd-sticky-actions {
-          display: flex;
-          gap: 8px;
-        }
-        
-        .pd-sticky-btn-primary {
-          padding: 12px 20px;
-          background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
-          color: white;
+          height: 100%;
+          background: #ff9f00;
+          color: #fff;
           border: none;
-          border-radius: 10px;
-          font-size: 12px;
-          font-weight: 900;
-          letter-spacing: 0.08em;
-          text-transform: uppercase;
+          font-size: 14px;
+          font-weight: 700;
           cursor: pointer;
-        }
-        
-        .pd-sticky-btn-secondary {
-          padding: 12px 20px;
-          background: white;
-          border: 2px solid rgba(59, 130, 246, 0.2);
-          border-radius: 10px;
-          font-size: 12px;
-          font-weight: 900;
-          letter-spacing: 0.08em;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
           text-transform: uppercase;
-          cursor: pointer;
-          color: #3b82f6;
         }
-        
+        .pd-sticky-btn-buy {
+          flex: 1;
+          height: 100%;
+          background: #fb641b;
+          color: #fff;
+          border: none;
+          font-size: 14px;
+          font-weight: 700;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          text-transform: uppercase;
+        }
+        .pd-sticky-btn-cart:disabled, .pd-sticky-btn-buy:disabled {
+          background: #cccccc;
+          color: #ffffff;
+          cursor: not-allowed;
+        }
+
+        /* Recommendations */
         .pd-similar {
-          margin-top: 40px;
+          margin-top: 32px;
+          background: #fff;
+          padding: 16px;
+          border-radius: 4px;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        
         .pd-similar-title {
           font-size: 20px;
-          font-weight: 900;
-          color: #0f172a;
-          margin-bottom: 20px;
+          font-weight: 700;
+          color: #212121;
+          margin-bottom: 16px;
+          border-bottom: 1px solid #f0f0f0;
+          padding-bottom: 10px;
         }
-        
         .pd-similar-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
           gap: 12px;
         }
-        
         @media (min-width: 768px) {
-          .pd-similar-grid { grid-template-columns: repeat(4, 1fr); }
+          .pd-similar-grid {
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+          }
+        }
+
+        /* Address Switch Card */
+        .pd-address-card {
+          background: #f5f9ff;
+          border: 1px solid #d0e4ff;
+          border-radius: 4px;
+          padding: 12px;
+          margin-bottom: 12px;
+        }
+        .pd-address-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 8px;
+        }
+        .pd-address-title {
+          font-size: 12px;
+          font-weight: 700;
+          color: #2874f0;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .pd-address-switch-btn {
+          background: none;
+          border: none;
+          color: #2874f0;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          padding: 0;
+        }
+        .pd-address-body {
+          font-size: 13px;
+          color: #212121;
+          line-height: 1.4;
         }
       `}</style>
 
       <div className="pd-wrap">
+        {/* Breadcrumbs */}
+        <div className="pd-breadcrumbs">
+          <Link to="/">Home</Link>
+          <span className="separator">&gt;</span>
+          <Link to="/products">Products</Link>
+          {p.category && (
+            <>
+              <span className="separator">&gt;</span>
+              <Link to={`/products?category=${p.category._id || p.category}`}>{p.category.name || p.category}</Link>
+            </>
+          )}
+          <span className="separator">&gt;</span>
+          <span className="truncate max-w-[150px] sm:max-w-xs">{p.name}</span>
+        </div>
+
         <div className="pd-grid">
-          {/* Left: Product Images */}
-          <div className="pd-images">
-            <div
-              className="pd-img-main"
-              onTouchStart={onMainImgTouchStart}
-              onTouchEnd={onMainImgTouchEnd}
-              onTouchCancel={onMainImgTouchCancel}
-              onClick={onMainImgClick}
-            >
-              {imgs[activeImg] ? (
-                <img
-                  src={getImageUrl(imgs[activeImg], 800)}
-                  alt={p.name}
-                  onLoad={() => setImgLoading(false)}
-                  style={{ display: imgLoading ? 'none' : 'block' }}
-                />
-              ) : (
+          {/* Left Column: Images & Gallery */}
+          <div className="pd-left-col">
+            <div className="pd-gallery-container">
+              {/* Main Image Container */}
+              <div
+                className="pd-img-main"
+                onTouchStart={onMainImgTouchStart}
+                onTouchEnd={onMainImgTouchEnd}
+                onTouchCancel={onMainImgTouchCancel}
+                onClick={onMainImgClick}
+              >
+                {/* Overlay Action Buttons (Wishlist, Share) */}
+                <div className="pd-action-overlays" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    className="pd-action-btn"
+                    onClick={handleShare}
+                    title="Share"
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" />
+                    </svg>
+                  </button>
+                  <button
+                    className={`pd-action-btn ${isInWishlist(p._id || p.id) ? 'wishlisted' : ''}`}
+                    onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
+                    title={isInWishlist(p._id || p.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                  >
+                    {isInWishlist(p._id || p.id) ? (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                      </svg>
+                    ) : (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+
+                {imgs[activeImg] ? (
+                  <img
+                    src={getImageUrl(imgs[activeImg], 800)}
+                    alt={p.name}
+                    onLoad={() => setImgLoading(false)}
+                    style={{ display: imgLoading ? 'none' : 'block' }}
+                  />
+                ) : (
                   <div className="flex items-center justify-center text-slate-400">
-                    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+                    <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
                       <rect x="3" y="3" width="18" height="18" rx="2" />
                       <path d="m9 12l2 2 4-4" />
                     </svg>
                   </div>
+                )}
+              </div>
+
+              {/* Thumbnails Container */}
+              {imgs.length > 1 && (
+                <div className="pd-thumbs animate-fade-in">
+                  {imgs.map((img, i) => (
+                    <button
+                      key={i}
+                      className={`pd-thumb ${i === activeImg ? 'on' : ''}`}
+                      onClick={() => setActiveImg(i)}
+                    >
+                      <img
+                        src={getImageUrl(img, 200)}
+                        alt={p.name + ' - View ' + (i + 1)}
+                      />
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
-            {imgs.length > 1 && (
-              <div className="pd-thumbs">
-                {imgs.map((img, i) => (
-                  <button
-                    key={i}
-                    className={`pd-thumb ${i === activeImg ? 'on' : ''}`}
-                    onClick={() => setActiveImg(i)}
-                  >
-                    <img
-                      src={getImageUrl(img, 200)}
-                      alt={p.name + ' - View ' + (i + 1)}
-                    />
-                  </button>
-                ))}
-              </div>
-            )}
+
+            {/* Left Action Buttons (Desktop only) */}
+            <div className="pd-left-actions">
+              <button
+                className="pd-btn-cart"
+                onClick={handleAddToCart}
+                disabled={!canAddToCart}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
+                Add to Cart
+              </button>
+              <button
+                className="pd-btn-buy"
+                onClick={handleBuyNow}
+                disabled={!canAddToCart}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10" />
+                </svg>
+                Buy Now
+              </button>
+            </div>
           </div>
 
-          {/* Right: Product Info */}
-          <div className="pd-info">
-            {/* Action buttons at top */}
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <button
-                  className="pd-btn-secondary"
-                  onClick={handleShare}
-                  title="Share"
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" strokeWidth="2" />
-                  </svg>
-                </button>
-                <button
-                  className="pd-btn-secondary"
-                  onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
-                  title={isInWishlist(p._id || p.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                >
-                  {isInWishlist(p._id || p.id) ? (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444" stroke="#ef4444" strokeWidth="2">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                    </svg>
-                  ) : (
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                    </svg>
-                  )}
-                </button>
+          {/* Right Column: Info & Specs */}
+          <div className="pd-right-col">
+            {/* Brand */}
+            {p.brand && (
+              <div className="pd-brand">
+                {p.brand.name || p.brand}
               </div>
-            </div>
+            )}
 
-            {/* Product name */}
-            <h1 className="pd-name">{p.name}</h1>
+            {/* Title */}
+            <h1 className="pd-title-text">{p.name}</h1>
 
-            {/* Rating */}
-            <div className="pd-rating-row">
-              <div className="pd-rating">
+            {/* Rating summary */}
+            <div className="pd-rating-container">
+              <div className="pd-rating-pill">
                 <span>{Number(p.ratingAvg || 4.3).toFixed(1)}</span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                </svg>
+                <span className="star-icon">â˜…</span>
               </div>
-              <span className="text-sm font-semibold text-slate-600">
-                {p.ratingCount || 0} Ratings
+              <span className="pd-rating-count">
+                {p.ratingCount || 12} Ratings &amp; {Math.round((p.ratingCount || 12) * 0.4)} Reviews
+              </span>
+              <span className="pd-assured-badge">
+                Assured <span className="star-icon">â˜…</span>
               </span>
             </div>
 
-            {/* Seller/Store Info */}
-            {p.store && (
-              <div className="mb-4 p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-100">
-                <div className="flex items-center gap-3">
-                  {p.store.sellerAvatar && (
-                    <img
-                      src={getImageUrl(p.store.sellerAvatar, 100)}
-                      alt={p.store.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-orange-200"
-                    />
-                  )}
-                  <div>
-                    <div className="text-sm font-bold text-gray-800">
-                      Sold by
-                    </div>
-                    <div className="text-base font-bold text-orange-700">
-                      {p.store.name}
-                    </div>
-                  </div>
-                  <div className="ml-auto flex items-center gap-1 text-xs font-semibold text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M22 11.08V12c0 5.52-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2c3.02 0 5.74 1.35 7.57 3.53" />
-                      <polyline points="22 4 12 14.01 9 11.01" />
-                    </svg>
-                    Verified Store
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Price */}
-            <div className="pd-price-block">
-              <div className="flex items-end gap-3">
-                <span className="pd-price-main">
-                  ₹{Math.round(currentPrice || minPrice || 0).toLocaleString()}
+            {/* Pricing */}
+            <div className="pd-price-sec">
+              <div className="text-xs font-bold text-green-700 mb-1">Special Price</div>
+              <div className="pd-price-row">
+                <span className="pd-price">
+                  â‚¹{Math.round(currentPrice || minPrice || 0).toLocaleString()}
                 </span>
                 {currentMrp && currentMrp > currentPrice && (
                   <>
-                    <span className="pd-price-mrp">
-                    ₹{Math.round(currentMrp || displayMrp || 0).toLocaleString()}
-                  </span>
-                    <span className="pd-price-save">
-                      {discount}% OFF
+                    <span className="pd-mrp">
+                      â‚¹{Math.round(currentMrp || displayMrp || 0).toLocaleString()}
+                    </span>
+                    <span className="pd-discount">
+                      {discount}% off
                     </span>
                   </>
                 )}
               </div>
-              {p.gst > 0 && (
-                <div className="mt-2 text-xs font-semibold text-slate-500">
-                  Inclusive of all taxes
-                </div>
-              )}
+              <div className="pd-taxes-info">
+                {p.gst > 0 ? `Inclusive of ${p.gst}% GST` : 'Inclusive of all taxes'}
+              </div>
             </div>
 
-            {/* Variants */}
+            {/* Available Offers */}
+            <div className="pd-offers-sec">
+              <div className="pd-offers-title">Available Offers</div>
+              <div className="pd-offer-item">
+                <span className="pd-offer-tag">ðŸ·ï¸</span>
+                <span>
+                  <span className="pd-offer-highlight">Bank Offer</span> 5% Cashback on SmartOdisha Axis Bank Card <span className="pd-offer-link">T&C</span>
+                </span>
+              </div>
+              <div className="pd-offer-item">
+                <span className="pd-offer-tag">ðŸ·ï¸</span>
+                <span>
+                  <span className="pd-offer-highlight">Special Price</span> Get extra 10% off (price inclusive of cashback/coupon) <span className="pd-offer-link">T&C</span>
+                </span>
+              </div>
+              {deliveryInfo?.isFreeDelivery && (
+                <div className="pd-offer-item">
+                  <span className="pd-offer-tag">ðŸ·ï¸</span>
+                  <span>
+                    <span className="pd-offer-highlight">Free Shipping</span> Enjoy FREE delivery on this order <span className="pd-offer-link">T&C</span>
+                  </span>
+                </div>
+              )}
+              <div className="pd-offer-item">
+                <span className="pd-offer-tag">ðŸ·ï¸</span>
+                <span>
+                  <span className="pd-offer-highlight">Partner Offer</span> Sign up for Pay Later & get a surprise cashback reward <span className="pd-offer-link">T&C</span>
+                </span>
+              </div>
+            </div>
+
+            {/* Variant Selector */}
             {variantAttrs.length > 0 && (
-              <div className="pd-variants">
+              <div className="mb-6 border-t border-b border-gray-100 py-4">
                 {variantAttrs.map((attr, attrIdx) => {
                   const lowAttr = attr.toLowerCase().trim();
                   const opts = variantOpts(attr);
-                  const isMany = opts.length >= 6;
                   const isColor = ['color', 'colour', 'finish', 'shade'].includes(lowAttr);
 
                   return (
-                    <div key={attrIdx} className="pd-var-sec">
-                      <div className="pd-var-header">
-                        <div className="pd-var-lbl">
-                          <span className="pd-var-icon">
-                            <VariantIcon name={lowAttr} />
-                          </span>
-                          <span className="pd-var-name">{attr}</span>
-                        </div>
+                    <div key={attrIdx} className="mb-4 last:mb-0">
+                      <div className="flex items-center gap-4 mb-2">
+                        <span className="text-sm font-semibold text-gray-500 w-20 capitalize">{attr}:</span>
                         {selected[lowAttr] && (
-                          <span className="pd-var-selected">
+                          <span className="text-sm font-bold text-gray-800 bg-gray-100 px-3 py-0.5 rounded">
                             {selected[lowAttr]}
                           </span>
                         )}
                       </div>
-                      <div className={`pd-var-opts ${isMany ? 'has-many' : ''}`}>
+                      <div className="flex flex-wrap gap-2">
                         {opts.map((optVal, optIdx) => {
                           const enabled = isOptEnabled(attr, optVal);
                           const isOn = selected[lowAttr]?.toLowerCase() === String(optVal).toLowerCase();
@@ -1950,17 +1731,27 @@ export default function ProductDetail() {
                           return (
                             <button
                               key={optIdx}
-                              className={`pd-var-btn ${isOn ? 'on' : ''} ${!enabled ? 'disabled' : ''}`}
+                              className={`px-4 py-2 text-xs font-bold border rounded transition-all ${
+                                isOn
+                                  ? 'border-blue-500 bg-blue-50 text-blue-600 shadow-sm'
+                                  : enabled
+                                  ? 'border-gray-200 bg-white text-gray-800 hover:border-gray-300'
+                                  : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
+                              }`}
                               onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal)}))}
                               disabled={!enabled}
+                              style={isColor ? { minWidth: '40px' } : {}}
                             >
                               {isColor ? (
-                                <div
-                                  className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                                  style={{ backgroundColor: optVal.toLowerCase() }}
-                                />
+                                <div className="flex items-center gap-2">
+                                  <div
+                                    className="w-4 h-4 rounded-full border border-gray-300"
+                                    style={{ backgroundColor: optVal.toLowerCase() }}
+                                  />
+                                  <span>{optVal}</span>
+                                </div>
                               ) : (
-                                <span className="pd-var-val">{optVal}</span>
+                                optVal
                               )}
                             </button>
                           );
@@ -1972,154 +1763,125 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Delivery */}
-            <div className="pd-delivery">
-              <div className="pd-delivery-header">
-                {user?.savedAddresses && user.savedAddresses.length > 0 && selectedAddress && (
-                  <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-100">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex-1">
-                        <div className="pd-delivery-title mb-1 flex items-center gap-2">
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2">
-                            <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4z" />
-                          </svg>
-                          <span className="text-blue-700 font-bold">Deliver to</span>
-                          {selectedAddress.isDefault && (
-                            <span className="text-[10px] bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full font-bold">DEFAULT</span>
-                          )}
-                        </div>
-                        
-                        {/* Address Display */}
-                        <div className="mt-2">
-                          <div className="font-bold text-gray-800">
-                            {selectedAddress.fullName}
-                          </div>
-                          <div className="text-sm text-gray-600 mt-1">
-                            {selectedAddress.addressLine1}
-                            {selectedAddress.addressLine2 && `, ${selectedAddress.addressLine2}`}
-                          </div>
-                          <div className="text-sm text-gray-700 mt-1 font-semibold">
-                            {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.pincode}
-                          </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            📱 {selectedAddress.phone}
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Switch Address Button */}
-                      <button
-                        onClick={() => {
-                          // Show a simple address switcher dropdown
-                          const nextIndex = (user.savedAddresses.findIndex(a => a._id === selectedAddress._id) + 1) % user.savedAddresses.length;
-                          const nextAddr = user.savedAddresses[nextIndex];
-                          setSelectedAddress(nextAddr);
-                          if (nextAddr?.pincode) {
-                            setPincode(nextAddr.pincode);
-                            checkDeliveryImpl(nextAddr.pincode);
-                          }
-                        }}
-                        className="px-3 py-2 bg-white border border-blue-200 rounded-xl text-blue-600 text-xs font-bold hover:bg-blue-100 transition-all"
-                      >
-                        Switch
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Delivery Info */}
-                {deliveryInfo?.serviceable ? (
-                  <div className="pd-delivery-info">
-                    <div className="pd-delivery-title flex items-center gap-2">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2">
-                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>Delivery by {deliveryInfo.etaStart?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} - {deliveryInfo.etaEnd?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
-                    </div>
-                    <div className="pd-delivery-subtitle flex flex-col gap-1">
-                      <span className={`pd-delivery-charge ${deliveryInfo.isFreeDelivery ? 'free' : ''}`}>
-                        {deliveryInfo.isFreeDelivery 
-                          ? '🎉 FREE Delivery' 
-                          : '₹' + deliveryInfo.finalCharge + ' Delivery'
-                        }
-                      </span>
-                      {!deliveryInfo.isFreeDelivery && (
-                        <span className="text-xs text-gray-500">
-                          Add items worth ₹{deliveryInfo.freeDeliveryAbove - (currentPrice || minPrice)} more for FREE Delivery!
-                        </span>
-                      )}
-                      {deliveryInfo.codAvailable && (
-                        <span className="text-xs text-green-600">
-                          ✓ Cash on Delivery available
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="pd-delivery-info">
-                    <div className="pd-delivery-subtitle text-red-500">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" className="mr-1">
-                        <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                      <span>{deliveryInfo?.message || 'Enter pincode to check delivery'}</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* Pincode Input (only if no saved addresses or guest user) */}
-                {(!user?.savedAddresses || user.savedAddresses.length === 0) && (
-                  <form className="pd-delivery-form mt-3" onSubmit={checkDelivery}>
-                    <input
-                      type="text"
-                      value={pincode}
-                      onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                      placeholder="Enter pincode"
-                      className="pd-delivery-input"
-                    />
-                    <button type="submit" className="pd-delivery-btn" disabled={checkingDelivery || pincode.length !== 6}>
-                      {checkingDelivery ? 'Checking...' : 'Check'}
-                    </button>
-                  </form>
-                )}
+            {/* Delivery Pincode */}
+            <div className="pd-delivery-sec">
+              <div className="pd-delivery-row">
+                <span className="pd-delivery-label">Delivery</span>
+                <div className="pd-pincode-wrapper">
+                  <span className="pd-pincode-icon">ðŸ“</span>
+                  <input
+                    type="text"
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="Enter Delivery Pincode"
+                    className="pd-pincode-input"
+                  />
+                </div>
+                <button
+                  onClick={checkDelivery}
+                  className="pd-pincode-btn"
+                  disabled={checkingDelivery || pincode.length !== 6}
+                >
+                  {checkingDelivery ? 'Checking...' : 'Check'}
+                </button>
               </div>
+
+              {/* Delivery Address Switch (if user is logged in and has addresses) */}
+              {user?.savedAddresses && user.savedAddresses.length > 0 && selectedAddress && (
+                <div className="mt-3 pd-address-card">
+                  <div className="pd-address-header">
+                    <span className="pd-address-title">
+                      ðŸšš Deliver to: <strong>{selectedAddress.fullName}</strong>
+                    </span>
+                    <button
+                      onClick={() => {
+                        const nextIndex = (user.savedAddresses.findIndex(a => a._id === selectedAddress._id) + 1) % user.savedAddresses.length;
+                        const nextAddr = user.savedAddresses[nextIndex];
+                        setSelectedAddress(nextAddr);
+                        if (nextAddr?.pincode) {
+                          setPincode(nextAddr.pincode);
+                          checkDeliveryImpl(nextAddr.pincode);
+                        }
+                      }}
+                      className="pd-address-switch-btn"
+                    >
+                      Change Address
+                    </button>
+                  </div>
+                  <div className="pd-address-body">
+                    {selectedAddress.addressLine1}, {selectedAddress.city}, {selectedAddress.state} - <strong>{selectedAddress.pincode}</strong>
+                  </div>
+                </div>
+              )}
+
+              {/* Delivery check output */}
+              {deliveryInfo && (
+                <div className="pd-delivery-status">
+                  {deliveryInfo.serviceable ? (
+                    <>
+                      <div>
+                        Delivery by <span className="pd-delivery-date">
+                          {deliveryInfo.etaStart?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} - {deliveryInfo.etaEnd?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
+                        </span>
+                        <span className="mx-2">|</span>
+                        <span className="pd-delivery-charge-text">
+                          {deliveryInfo.isFreeDelivery ? 'FREE' : `â‚¹${deliveryInfo.finalCharge}`}
+                        </span>
+                      </div>
+                      {deliveryInfo.codAvailable ? (
+                        <div className="pd-delivery-cod">âœ“ Cash on Delivery available</div>
+                      ) : (
+                        <div className="pd-delivery-cod text-orange-600">âœ— Cash on Delivery not available</div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-red-500 font-bold">
+                      {deliveryInfo.message || 'Product not delivery available at this pincode'}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
+
+            {/* Seller */}
+            {p.store && (
+              <div className="pd-seller-sec">
+                <span className="pd-seller-label">Seller</span>
+                <div className="pd-seller-value">
+                  <span className="pd-seller-name">{p.store.name}</span>
+                  <span className="pd-seller-rating">4.1 â˜…</span>
+                  <span className="text-xs text-gray-500">(Verified Seller)</span>
+                </div>
+              </div>
+            )}
 
             {/* Highlights */}
             {hasHighlights && (
-              <div className="pd-highlights">
-                <h3 className="pd-section-title">Highlights</h3>
-                <div className="pd-highlights-grid">
+              <div className="pd-highlights-sec">
+                <div className="pd-highlights-title">Highlights</div>
+                <ul className="pd-highlights-list">
                   {p.highlights.map((highlight, i) => (
-                    <div key={i} className="pd-highlight-item">
-                      <div className="pd-highlight-check">
-                        <svg viewBox="0 0 24 24">
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      </div>
-                      <span>{highlight}</span>
-                    </div>
+                    <li key={i}>{highlight}</li>
                   ))}
-                </div>
+                </ul>
               </div>
             )}
 
             {/* Description */}
             {hasDescription && (
-              <div className="pd-description">
-                <h3 className="pd-section-title">Product Description</h3>
-                <div className="pd-description-text" style={{
-                  display: descriptionExpanded ? 'block' : '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+              <div className="pd-desc-sec">
+                <div className="pd-desc-title">Description</div>
+                <div className="pd-desc-content" style={{
+                  display: descriptionExpanded ? 'block' : '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                   {p.description}
                 </div>
-                {p.description.length > 200 && (
+                {p.description.length > 250 && (
                   <button
-                    className="pd-description-toggle"
+                    className="pd-desc-toggle-btn"
                     onClick={() => setDescriptionExpanded(!descriptionExpanded)}
                   >
                     {descriptionExpanded ? 'Read Less' : 'Read More'}
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: descriptionExpanded ? 'rotate(180deg)' : 'rotate(0)' }}>
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
+                    <span>{descriptionExpanded ? 'â–²' : 'â–¼'}</span>
                   </button>
                 )}
               </div>
@@ -2127,52 +1889,59 @@ export default function ProductDetail() {
 
             {/* Specifications */}
             {hasSpecifications && (
-              <div className="pd-specifications">
-                <h3 className="pd-section-title">Specifications</h3>
-                <div>
-                  {p.specifications.map((spec, i) => {
-                    // Check if spec is an object with key/value or a string
-                    if (typeof spec === 'object' && spec !== null) {
-                      return (
-                        <div key={i} className="pd-spec-item">
-                          <span className="pd-spec-label">{spec.key || spec.label || 'Key'}</span>
-                          <span className="pd-spec-value">{spec.value || spec.val}</span>
-                        </div>
-                      );
-                    } else if (typeof spec === 'string') {
-                      // If it's a string, try to split it into key-value pair
-                      const parts = spec.split(':').map(s => s.trim());
-                      if (parts.length === 2) {
+              <div className="pd-specs-sec">
+                <div className="pd-specs-title">Specifications</div>
+                <table className="pd-specs-table">
+                  <tbody>
+                    {p.specifications.map((spec, i) => {
+                      if (typeof spec === 'object' && spec !== null) {
                         return (
-                          <div key={i} className="pd-spec-item">
-                            <span className="pd-spec-label">{parts[0]}</span>
-                            <span className="pd-spec-value">{parts[1]}</span>
-                          </div>
+                          <tr key={i} className="pd-specs-row">
+                            <td className="pd-specs-label">{spec.key || spec.label || 'Key'}</td>
+                            <td className="pd-specs-val">{spec.value || spec.val}</td>
+                          </tr>
                         );
+                      } else if (typeof spec === 'string') {
+                        const parts = spec.split(':').map(s => s.trim());
+                        if (parts.length === 2) {
+                          return (
+                            <tr key={i} className="pd-specs-row">
+                              <td className="pd-specs-label">{parts[0]}</td>
+                              <td className="pd-specs-val">{parts[1]}</td>
+                            </tr>
+                          );
+                        }
                       }
                       return null;
-                    }
-                    return null;
-                  })}
-                </div>
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
 
-            {/* CTA Buttons */}
-            <div className="pd-cta">
-              <button className="pd-btn-primary" onClick={handleAddToCart} disabled={!canAddToCart}>
+            {/* Mobile Actions Container (visible only on mobile, under info) */}
+            <div className="pd-info-actions">
+              <button
+                className="pd-btn-cart"
+                onClick={handleAddToCart}
+                disabled={!canAddToCart}
+              >
                 Add to Cart
               </button>
-              <button className="pd-btn-buy-now" onClick={handleBuyNow} disabled={!canAddToCart}>
+              <button
+                className="pd-btn-buy"
+                onClick={handleBuyNow}
+                disabled={!canAddToCart}
+              >
                 Buy Now
               </button>
             </div>
           </div>
         </div>
 
-        {/* Similar Products */}
+        {/* Similar Products / Recommendations */}
         <div className="pd-similar">
-          <h3 className="pd-similar-title">Recommended for You</h3>
+          <h3 className="pd-similar-title">Similar Products</h3>
           <div className="pd-similar-grid">
             {(similarProducts || []).map((product, i) => (
               <ProductCard key={i} p={product} />
@@ -2181,27 +1950,23 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Sticky CTA for mobile */}
+      {/* Sticky Bottom Bar for mobile */}
       <div className="pd-sticky-cta">
         <div className="pd-sticky-inner">
-          <div className="pd-sticky-price">
-            <span className="pd-sticky-price-main">
-              ₹{Math.round(currentPrice || minPrice || 0).toLocaleString()}
-            </span>
-            {currentMrp && currentMrp > currentPrice && (
-              <span className="pd-sticky-price-mrp">
-                ₹{Math.round(currentMrp || displayMrp || 0).toLocaleString()}
-              </span>
-            )}
-          </div>
-          <div className="pd-sticky-actions">
-            <button className="pd-sticky-btn-secondary" onClick={handleAddToCart} disabled={!canAddToCart}>
-              Add to Cart
-            </button>
-            <button className="pd-sticky-btn-primary" onClick={handleBuyNow} disabled={!canAddToCart}>
-              Buy Now
-            </button>
-          </div>
+          <button
+            className="pd-sticky-btn-cart"
+            onClick={handleAddToCart}
+            disabled={!canAddToCart}
+          >
+            Add to Cart
+          </button>
+          <button
+            className="pd-sticky-btn-buy"
+            onClick={handleBuyNow}
+            disabled={!canAddToCart}
+          >
+            Buy Now
+          </button>
         </div>
       </div>
 

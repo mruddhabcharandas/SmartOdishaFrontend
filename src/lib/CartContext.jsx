@@ -45,17 +45,16 @@ export function CartProvider({ children }) {
       try {
         const saved = !mergedRef.current ? localStorage.getItem('cart') : null
         const localItems = saved ? JSON.parse(saved) : []
-
         if (localItems.length) {
           for (const item of localItems) {
             await api.post('/api/cart/add', {
-              productId: item._id,
+              productId: item._id || item.id,
               variantSku: item.variantSku,
               quantity: item.quantity || 1
-            })
+            });
           }
-          localStorage.removeItem('cart')
-          mergedRef.current = true
+          localStorage.removeItem('cart');
+          mergedRef.current = true;
         }
 
         const { data } = await api.get('/api/cart')
