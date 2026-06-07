@@ -440,7 +440,7 @@ export default function ProductDetail() {
     if (variantAttrs.length > 0 && !matchedVariant) { notify('Please select all options', 'error'); return; }
     if (matchedVariant && matchedVariant.stock <= 0) { notify('This variant is out of stock', 'error'); return; }
     const ok = await addToCart({ ...p, minOrderQty: 1 }, matchedVariant || undefined);
-    if (ok) { await refreshCart(); navigate('/enquiry'); }
+    if (ok) { await refreshCart(); navigate('/cart'); }
   };
 
   const handleShare = async () => {

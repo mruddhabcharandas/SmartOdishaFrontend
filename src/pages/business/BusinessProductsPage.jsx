@@ -15,7 +15,6 @@ const emptyForm = {
   subCategoryId: '',
   stock: '',
   weight: '',
-  hsnCode: '',
   gst: '',
   imageUrls: [],
   description: '',
@@ -268,7 +267,8 @@ export default function BusinessProductsPage() {
         </div>
       </div>
 
-      <div className="panel-card panel-table-wrap">
+      {/* Desktop Table View */}
+      <div className="panel-card panel-table-wrap hidden sm:block">
         <table className="panel-table">
           <thead>
             <tr>
@@ -296,7 +296,7 @@ export default function BusinessProductsPage() {
                   </td>
                   <td className="font-semibold">₹{Number(p.price).toLocaleString('en-IN')}</td>
                   <td>
-                    <span className={`panel-badge ${stock <= 0 ? 'panel-badge-red' : stock <= 10 ? 'panel-badge-amber' : 'panel-badge-green'}`}>{stock}</span>
+                    <span className={`panel-badge ${stock <= 0 ? 'panel-badge-red' : stock <= 10 ? 'panel-badge-amber' : 'panel-badge-green'}">{stock}</span>
                   </td>
                   <td className="text-gray-500">{p.weight ? `${p.weight}g` : '—'}</td>
                   <td className="text-right">
@@ -312,6 +312,36 @@ export default function BusinessProductsPage() {
             {filtered.length === 0 && <tr><td colSpan={5} className="px-4 py-12 text-center text-gray-400">No products found</td></tr>}
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="sm:hidden space-y-3">
+        {filtered.map(p => {
+          const stock = p.variants?.length ? p.variants.reduce((s, v) => s + (v.stock || 0), 0) : p.stock
+          const thumb = p.images?.[0]?.url || p.images?.[0]
+          return (
+            <div key={p._id} className="panel-card p-4">
+              <div className="flex gap-3 items-start">
+                {thumb && <img src={thumb} alt="" className="w-16 h-16 rounded-lg object-cover bg-gray-50" />}
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-gray-900">{p.name}</div>
+                  <div className="text-sm text-gray-500">{p.variants?.length ? `${p.variants.length} variants` : 'Simple product'}</div>
+                  <div className="flex items-center gap-3 mt-2">
+                    <div className="font-bold text-gray-900">₹{Number(p.price).toLocaleString('en-IN')}</div>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${stock <= 0 ? 'bg-red-100 text-red-700' : stock <= 10 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>Stock: {stock}</span>
+                  </div>
+                  <div className="mt-2 text-xs text-gray-500">Weight: {p.weight ? `${p.weight}g` : '—'}</div>
+                </div>
+              </div>
+              <div className="mt-3 flex gap-2 pt-3 border-t border-gray-100">
+                <button type="button" onClick={() => setManagingVariants(p)} className="panel-btn-outline text-xs py-1">Variants</button>
+                <button type="button" onClick={() => openEdit(p)} className="panel-btn-outline text-xs py-1">Edit</button>
+                <button type="button" onClick={() => setToDelete(p)} className="panel-btn-danger text-xs py-1">Delete</button>
+              </div>
+            </div>
+          )
+        })}
+        {filtered.length === 0 && <div className="panel-card p-12 text-center text-gray-400">No products found</div>}
       </div>
 
       {showAdd && (
