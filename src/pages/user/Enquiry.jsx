@@ -98,7 +98,7 @@ export default function Enquiry() {
     isFreeDelivery: false,
     deliveryAvailable: true
   })
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('prepaid') // 'prepaid' or 'cod'
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('CASHFREE') // 'CASHFREE' or 'COD'
 
   // Serviceability
   const [svc, setSvc] = useState({ loading: false, available: null, cod: null, etaStart: null, etaEnd: null, error: '' })
@@ -422,21 +422,11 @@ export default function Enquiry() {
         deliveryAddress: selectedAddress
       })
 
-      setPrepareData({ ...data, items: cleanItems, deliveryAddress: selectedAddress, couponCode: appliedCoupon?.code || '' })
+      setPrepareData({ ...data, items: cleanItems, deliveryAddress: selectedAddress, couponCode: appliedCoupon?.code || '', paymentMethod: selectedPaymentMethod, totalAmount: data.totalAmount, codDueAmount: data.codDueAmount })
 
       if (data.paymentSessionId) {
-        // Open Cashfree checkout
+        // Open Cashfree checkout for both CASHFREE and COD (advance payment)
         await handleCashfreeCheckout(data.paymentSessionId, data.cashfreeMode)
-      } else if (selectedPaymentMethod === 'cod') {
-        // Create order directly for COD
-        await api.post('/api/orders/create-cod', {
-          items: cleanItems,
-          deliveryAddress: selectedAddress,
-          couponCode: appliedCoupon?.code || ''
-        })
-        notify('Order placed successfully!', 'success')
-        clearCart()
-        navigate('/orders')
       }
     } catch (err) {
       const msg = err?.response?.data?.error || 'Failed to place order. Please try again.'
@@ -875,14 +865,14 @@ export default function Enquiry() {
               {/* Payment Method */}
               <div className="ct-section">
                 <div className="ct-section-title"><span>2</span> Payment Method</div>
-                <div className={`ct-payment-option ${selectedPaymentMethod === 'prepaid' ? 'selected' : ''}`} onClick={() => setSelectedPaymentMethod('prepaid')}>
+                <div className={`ct-payment-option ${selectedPaymentMethod === 'CASHFREE' ? 'selected' : ''}`} onClick={() => setSelectedPaymentMethod('CASHFREE')}>
                   <div className="ct-payment-icon">💳</div>
                   <div className="ct-payment-info">
                     <div className="ct-payment-title">Prepaid (Online)</div>
                     <div className="ct-payment-desc">Pay using UPI, Credit/Debit Card, Netbanking, or Wallets</div>
                   </div>
                 </div>
-                <div className={`ct-payment-option ${selectedPaymentMethod === 'cod' ? 'selected' : ''}`} onClick={() => setSelectedPaymentMethod('cod')} style={{opacity:svc.cod === false ? 0.5 : 1,pointerEvents:svc.cod === false ? 'none' : 'auto'}}>
+                <div className={`ct-payment-option ${selectedPaymentMethod === 'COD' ? 'selected' : ''}`} onClick={() => setSelectedPaymentMethod('COD')} style={{opacity:svc.cod === false ? 0.5 : 1,pointerEvents:svc.cod === false ? 'none' : 'auto'}}>
                   <div className="ct-payment-icon">💵</div>
                   <div className="ct-payment-info">
                     <div className="ct-payment-title">Cash on Delivery</div>
@@ -907,7 +897,7 @@ export default function Enquiry() {
                   <span className="ct-summary-total-val">₹{safeNum(totalPayable).toLocaleString()}</span>
                 </div>
 
-                {selectedPaymentMethod === 'cod' && (
+                {selectedPaymentMethod === 'COD' && (
                   <div style={{
                     marginTop: '16px',
                     padding: '14px',
@@ -972,7 +962,7 @@ export default function Enquiry() {
                       <div style={{width:'18px',height:'18px',border:'2px solid rgba(255,255,255,0.3)',borderTop:'2px solid white',borderRadius:'50%',animation:'ctPulse 1s linear infinite'}} />
                       Processing...
                     </>
-                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
+                  ) : selectedPaymentMethod === 'COD' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
                 </button>
                 <div className="ct-secure-note">
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -998,7 +988,7 @@ export default function Enquiry() {
                   <span className="ct-summary-total-val">₹{safeNum(totalPayable).toLocaleString()}</span>
                 </div>
 
-                {selectedPaymentMethod === 'cod' && (
+                {selectedPaymentMethod === 'COD' && (
                   <div style={{
                     marginTop: '16px',
                     padding: '14px',
@@ -1061,7 +1051,7 @@ export default function Enquiry() {
                       <div style={{width:'18px',height:'18px',border:'2px solid rgba(255,255,255,0.3)',borderTop:'2px solid white',borderRadius:'50%',animation:'ctPulse 1s linear infinite'}} />
                       Processing...
                     </>
-                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
+                  ) : selectedPaymentMethod === 'COD' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
                 </button>
                 <div className="ct-secure-note">
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
