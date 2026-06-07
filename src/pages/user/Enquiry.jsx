@@ -691,6 +691,16 @@ export default function Enquiry() {
         .ct-checkout-btn.ready:hover::after{transform:translateX(100%);}
         .ct-checkout-btn.disabled{background:#f3f4f6;color:#d1d5db;cursor:not-allowed;}
 
+        .ct-coupon-btn{
+          padding:10px 18px;border-radius:10px;border:none;
+          font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+          cursor:pointer;font-family:'DM Sans',sans-serif;
+          transition:all .2s;white-space:nowrap;
+        }
+        .ct-coupon-btn.ready{background:linear-gradient(135deg,#f97316,#1e3a8a);color:white;}
+        .ct-coupon-btn.ready:hover{opacity:.9;}
+        .ct-coupon-btn:disabled{background:#f3f4f6;color:#d1d5db;cursor:not-allowed;}
+
         .ct-secure-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#9ca3af;margin-top:12px;font-weight:500;}
 
         .ct-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;}
@@ -896,12 +906,38 @@ export default function Enquiry() {
                   <span className="ct-summary-total-label">Total Payable</span>
                   <span className="ct-summary-total-val">₹{safeNum(totalPayable).toLocaleString()}</span>
                 </div>
+
+                {selectedPaymentMethod === 'cod' && (
+                  <div style={{
+                    marginTop: '16px',
+                    padding: '14px',
+                    backgroundColor: 'rgba(249,115,22,0.05)',
+                    border: '1px solid rgba(249,115,22,0.15)',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '13px', color: '#0f172a', fontWeight: 700 }}>COD Advance (15%)</span>
+                      <span style={{ fontSize: '15px', fontWeight: 800, color: '#f97316' }}>
+                        ₹{safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>Remaining on Delivery</span>
+                      <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
+                        ₹{safeNum(Math.round(safeNum(totalPayable) - Math.round(safeNum(totalPayable) * 0.15))).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 
                 {!appliedCoupon && (
                   <div style={{marginTop:'16px'}}>
-                    <div style={{display:'flex',gap:'8px'}}>
-                      <input type="text" placeholder="COUPON CODE" value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} className="ct-form-input" style={{flex:1,textTransform:'uppercase',letterSpacing:'0.1em'}} />
-                      <button className="ct-checkout-btn ready" disabled={isApplying || !couponCode.trim()} style={{padding:'12px 20px',fontSize:'11px'}} onClick={handleApplyCoupon}>{isApplying ? '...' : 'Apply'}</button>
+                    <div style={{display:'flex',gap:'10px',alignItems:'stretch'}}>
+                      <input type="text" placeholder="COUPON CODE" value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} className="ct-form-input" style={{flex:1,textTransform:'uppercase',letterSpacing:'0.1em',height:'auto'}} />
+                      <button className="ct-coupon-btn ready" disabled={isApplying || !couponCode.trim()} onClick={handleApplyCoupon}>{isApplying ? '...' : 'Apply'}</button>
                     </div>
                     {couponError && <div style={{color:'#ef4444',fontSize:'12px',fontWeight:600,marginTop:'8px'}}>{couponError}</div>}
                   </div>
@@ -961,12 +997,38 @@ export default function Enquiry() {
                   <span className="ct-summary-total-label">Total Payable</span>
                   <span className="ct-summary-total-val">₹{safeNum(totalPayable).toLocaleString()}</span>
                 </div>
+
+                {selectedPaymentMethod === 'cod' && (
+                  <div style={{
+                    marginTop: '16px',
+                    padding: '14px',
+                    backgroundColor: 'rgba(249,115,22,0.05)',
+                    border: '1px solid rgba(249,115,22,0.15)',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '13px', color: '#0f172a', fontWeight: 700 }}>COD Advance (15%)</span>
+                      <span style={{ fontSize: '15px', fontWeight: 800, color: '#f97316' }}>
+                        ₹{safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()}
+                      </span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>Remaining on Delivery</span>
+                      <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
+                        ₹{safeNum(Math.round(safeNum(totalPayable) - Math.round(safeNum(totalPayable) * 0.15))).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                )}
                 
                 {!appliedCoupon && (
                   <div style={{marginTop:'16px'}}>
-                    <div style={{display:'flex',gap:'8px'}}>
-                      <input type="text" placeholder="COUPON CODE" value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} className="ct-form-input" style={{flex:1,textTransform:'uppercase',letterSpacing:'0.1em'}} />
-                      <button className="ct-checkout-btn ready" disabled={isApplying || !couponCode.trim()} style={{padding:'12px 20px',fontSize:'11px'}} onClick={handleApplyCoupon}>{isApplying ? '...' : 'Apply'}</button>
+                    <div style={{display:'flex',gap:'10px',alignItems:'stretch'}}>
+                      <input type="text" placeholder="COUPON CODE" value={couponCode} onChange={(e) => setCouponCode(e.target.value.toUpperCase())} className="ct-form-input" style={{flex:1,textTransform:'uppercase',letterSpacing:'0.1em',height:'auto'}} />
+                      <button className="ct-coupon-btn ready" disabled={isApplying || !couponCode.trim()} onClick={handleApplyCoupon}>{isApplying ? '...' : 'Apply'}</button>
                     </div>
                     {couponError && <div style={{color:'#ef4444',fontSize:'12px',fontWeight:600,marginTop:'8px'}}>{couponError}</div>}
                   </div>

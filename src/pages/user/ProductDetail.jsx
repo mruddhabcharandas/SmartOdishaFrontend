@@ -26,6 +26,593 @@ function sortVariantValues(lowKey, values) {
   return arr.sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' }));
 }
 
+const STYLES = `
+  @import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #f7f6f3;
+    --bg2: #eeecea;
+    --card: #ffffff;
+    --ink: #111118;
+    --ink2: #3a3a48;
+    --ink3: #888896;
+    --ink4: #b8b8c4;
+    --border: #e4e2de;
+    --border2: #d0cdc8;
+    --orange: #e85b1a;
+    --orange-dim: rgba(232,91,26,0.10);
+    --orange-glow: rgba(232,91,26,0.18);
+    --green: #1a9e6e;
+    --green-dim: rgba(26,158,110,0.10);
+    --red: #d63843;
+    --yellow: #d4920a;
+    --yellow-dim: rgba(212,146,10,0.10);
+    --navy: #1e2d5a;
+    --r-sm: 12px;
+    --r-md: 18px;
+    --r-lg: 24px;
+    --r-xl: 32px;
+    --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
+    --t: 0.2s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .pd { font-family: 'Satoshi', system-ui, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+
+  /* ── Topbar ── */
+  .pd-nav {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(247,246,243,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 16px;
+    height: 52px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .pd-nav-back {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--ink2);
+    transition: var(--t);
+    flex-shrink: 0;
+  }
+  .pd-nav-back:hover { background: var(--bg2); border-color: var(--border2); }
+  .pd-nav-title { font-size: 14px; font-weight: 600; color: var(--ink); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pd-nav-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .pd-nav-btn {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--card);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--ink2);
+    transition: var(--t);
+  }
+  .pd-nav-btn:hover { background: var(--bg2); }
+  .pd-nav-btn.active { color: var(--red); background: rgba(214,56,67,0.08); border-color: rgba(214,56,67,0.2); }
+
+  @media (min-width: 768px) {
+    .pd-nav { display: none; }
+  }
+
+  /* ── Breadcrumb ── */
+  .pd-bc {
+    display: none;
+    align-items: center; gap: 6px;
+    padding: 20px 24px 0;
+    max-width: 1280px; margin: 0 auto;
+    font-size: 12.5px; font-weight: 500; color: var(--ink3);
+    flex-wrap: wrap;
+  }
+  .pd-bc a { color: var(--ink3); text-decoration: none; transition: color var(--t); }
+  .pd-bc a:hover { color: var(--orange); }
+  .pd-bc-sep { color: var(--ink4); }
+  @media (min-width: 768px) { .pd-bc { display: flex; } }
+
+  /* ── Main Layout ── */
+  .pd-main {
+    max-width: 1280px; margin: 0 auto;
+    padding: 12px 12px 120px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  @media (min-width: 768px) {
+    .pd-main { padding: 24px 24px 80px; gap: 24px; }
+  }
+  @media (min-width: 1024px) {
+    .pd-main {
+      display: grid;
+      grid-template-columns: minmax(0, 480px) 1fr;
+      grid-template-rows: auto;
+      gap: 32px;
+      align-items: start;
+    }
+    .pd-left-col { grid-column: 1; grid-row: 1 / 99; }
+    .pd-right-col { grid-column: 2; display: flex; flex-direction: column; gap: 16px; }
+  }
+
+  /* ── Card base ── */
+  .pd-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .pd-card-body { padding: 16px; }
+  @media (min-width: 768px) { .pd-card-body { padding: 20px; } }
+
+  /* ── Image Gallery ── */
+  .pd-gallery { display: flex; flex-direction: column; gap: 10px; }
+
+  .pd-stage {
+    position: relative;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    aspect-ratio: 1;
+    cursor: zoom-in;
+  }
+  @media (min-width: 768px) { .pd-stage { border-radius: var(--r-xl); } }
+
+  .pd-stage-img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    padding: 28px;
+    transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+    display: block;
+  }
+  .pd-stage:hover .pd-stage-img { transform: scale(1.05); }
+
+  .pd-stage-no-img {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink4);
+  }
+
+  .pd-badge-off {
+    position: absolute; top: 14px; left: 14px;
+    background: var(--orange); color: #fff;
+    font-size: 12px; font-weight: 800;
+    padding: 5px 11px; border-radius: 8px;
+    letter-spacing: 0.04em;
+    box-shadow: 0 3px 10px rgba(232,91,26,0.35);
+  }
+
+  .pd-stage-actions {
+    position: absolute; top: 14px; right: 14px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .pd-stage-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--ink2);
+    transition: var(--t);
+  }
+  .pd-stage-btn:hover { transform: scale(1.1); background: #fff; }
+  .pd-stage-btn.wishlisted { color: var(--red); background: rgba(214,56,67,0.08); border-color: rgba(214,56,67,0.2); }
+
+  .pd-img-skeleton {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, #f0efec 25%, #e6e4e0 50%, #f0efec 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* Thumbs */
+  .pd-thumbs {
+    display: flex; gap: 8px;
+    overflow-x: auto; padding: 2px;
+    scrollbar-width: none;
+  }
+  .pd-thumbs::-webkit-scrollbar { display: none; }
+  .pd-thumb {
+    width: 68px; height: 68px; flex-shrink: 0;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-sm);
+    overflow: hidden; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--t); padding: 6px;
+  }
+  .pd-thumb:hover { border-color: var(--border2); }
+  .pd-thumb.on { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-dim); }
+  .pd-thumb img { width: 100%; height: 100%; object-fit: contain; }
+
+  /* Dots */
+  .pd-dots { display: flex; justify-content: center; gap: 6px; padding: 2px 0; }
+  .pd-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--border2); border: none; cursor: pointer; transition: var(--t); padding: 0; }
+  .pd-dot.on { background: var(--orange); width: 18px; }
+
+  /* ── Product Info Card ── */
+  .pd-info { display: flex; flex-direction: column; gap: 0; }
+
+  .pd-brand-strip {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10.5px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--orange); margin-bottom: 8px;
+  }
+  .pd-brand-strip::before { content:''; width:16px; height:2px; background:var(--orange); border-radius:2px; }
+
+  .pd-title {
+    font-family: 'Clash Display', 'Satoshi', sans-serif;
+    font-size: clamp(22px, 4.5vw, 34px);
+    font-weight: 700; color: var(--ink);
+    line-height: 1.15; letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+
+  .pd-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .pd-rating {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--green); color: #fff;
+    font-size: 12px; font-weight: 700;
+    padding: 4px 10px; border-radius: 7px;
+  }
+  .pd-rating-ct { font-size: 12.5px; font-weight: 500; color: var(--ink3); }
+  .pd-assured {
+    font-size: 10px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--navy);
+    background: rgba(30,45,90,0.07);
+    padding: 4px 10px; border-radius: 6px;
+    border: 1px solid rgba(30,45,90,0.12);
+  }
+
+  /* Price Section */
+  .pd-price-block {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .pd-price-lbl {
+    font-size: 10.5px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--green); margin-bottom: 6px;
+  }
+  .pd-price-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .pd-price {
+    font-family: 'Clash Display', sans-serif;
+    font-size: clamp(36px, 7vw, 52px);
+    font-weight: 700; color: var(--ink);
+    line-height: 1; letter-spacing: -0.02em;
+  }
+  .pd-price-mrp {
+    font-size: 17px; font-weight: 500;
+    color: var(--ink4); text-decoration: line-through;
+  }
+  .pd-save {
+    background: var(--green-dim); color: var(--green);
+    font-size: 12px; font-weight: 800;
+    padding: 4px 10px; border-radius: 20px;
+  }
+  .pd-tax { font-size: 11.5px; color: var(--ink3); font-weight: 500; margin-top: 5px; }
+
+  /* Stock */
+  .pd-stock {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border-radius: 9px;
+    font-size: 12.5px; font-weight: 700;
+    margin-top: 14px;
+  }
+  .pd-stock.in { background: var(--green-dim); color: var(--green); }
+  .pd-stock.low { background: var(--yellow-dim); color: var(--yellow); }
+  .pd-stock.out { background: rgba(214,56,67,0.08); color: var(--red); }
+  .pd-stock-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  /* ── Divider Label ── */
+  .pd-dlabel {
+    font-size: 10.5px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.15em;
+    color: var(--ink3);
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 14px;
+  }
+  .pd-dlabel::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* ── Seller Card ── */
+  .pd-seller-inner {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+  }
+  @media (min-width: 768px) { .pd-seller-inner { padding: 16px 20px; } }
+
+  .pd-seller-av {
+    width: 48px; height: 48px; border-radius: 13px;
+    border: 1px solid var(--border);
+    overflow: hidden; flex-shrink: 0;
+    background: var(--bg2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .pd-seller-av img { width: 100%; height: 100%; object-fit: cover; }
+  .pd-seller-info { flex: 1; min-width: 0; }
+  .pd-seller-lbl { font-size: 10.5px; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 2px; }
+  .pd-seller-name { font-size: 14px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pd-verified {
+    flex-shrink: 0;
+    font-size: 10.5px; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--green);
+    background: var(--green-dim);
+    border: 1px solid rgba(26,158,110,0.2);
+    padding: 6px 12px; border-radius: 8px;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  /* ── Variants ── */
+  .pd-var-section { padding: 14px 16px 16px; }
+  @media (min-width: 768px) { .pd-var-section { padding: 16px 20px 20px; } }
+  .pd-var-row { display: flex; flex-direction: column; gap: 14px; }
+  .pd-var-lbl { font-size: 13px; font-weight: 700; color: var(--ink2); margin-bottom: 10px; }
+  .pd-var-lbl span { color: var(--ink3); font-weight: 500; margin-left: 4px; }
+  .pd-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pd-chip {
+    padding: 8px 16px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    color: var(--ink2);
+    font-size: 13px; font-weight: 600;
+    border-radius: 9px; cursor: pointer;
+    transition: var(--t); font-family: inherit;
+    line-height: 1;
+  }
+  .pd-chip:hover:not(.disabled):not(.on) { border-color: var(--border2); background: var(--card); }
+  .pd-chip.on { border-color: var(--orange); background: var(--orange-dim); color: var(--orange); font-weight: 700; }
+  .pd-chip.disabled { opacity: 0.35; cursor: not-allowed; }
+  .pd-chip-col { display: flex; align-items: center; gap: 8px; }
+  .pd-col-dot { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.10); flex-shrink: 0; }
+
+  /* ── Delivery ── */
+  .pd-del-body { padding: 14px 16px 16px; }
+  @media (min-width: 768px) { .pd-del-body { padding: 16px 20px 20px; } }
+
+  .pd-addr-card {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r-sm);
+    padding: 12px 14px;
+  }
+  .pd-addr-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+  .pd-addr-lbl2 { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink3); }
+  .pd-addr-change { background: none; border: none; color: var(--orange); font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .pd-addr-change:hover { opacity: 0.8; }
+  .pd-addr-val { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+
+  .pd-pin-row { display: flex; gap: 8px; }
+  .pd-pin-input {
+    flex: 1; padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px; font-weight: 600; font-family: inherit;
+    outline: none; background: var(--bg); color: var(--ink);
+    transition: var(--t);
+  }
+  .pd-pin-input:focus { border-color: var(--orange); background: var(--card); box-shadow: 0 0 0 3px var(--orange-dim); }
+  .pd-pin-btn {
+    padding: 11px 18px;
+    background: var(--ink); color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: var(--t); white-space: nowrap;
+  }
+  .pd-pin-btn:hover:not(:disabled) { background: var(--orange); }
+  .pd-pin-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  .pd-del-result {
+    margin-top: 12px; padding: 12px 14px;
+    border-radius: 11px; font-size: 13px;
+  }
+  .pd-del-result.ok { background: var(--green-dim); color: var(--green); }
+  .pd-del-result.fail { background: rgba(214,56,67,0.08); color: var(--red); }
+  .pd-del-eta { font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 0; }
+
+  /* ── Tabs ── */
+  .pd-tabs-wrap { padding: 14px 16px 0; }
+  @media (min-width: 768px) { .pd-tabs-wrap { padding: 16px 20px 0; } }
+  .pd-tabs {
+    display: flex; gap: 2px;
+    background: var(--bg2); border-radius: 11px; padding: 4px;
+    margin-bottom: 16px;
+  }
+  .pd-tab {
+    flex: 1; padding: 8px 6px;
+    border: none; background: none;
+    font-size: 12px; font-weight: 700;
+    color: var(--ink3); border-radius: 8px;
+    cursor: pointer; font-family: inherit;
+    transition: var(--t); text-align: center;
+  }
+  .pd-tab.on { background: var(--card); color: var(--ink); box-shadow: var(--shadow-sm); }
+  .pd-tab:hover:not(.on) { color: var(--ink2); }
+
+  .pd-tab-body { padding: 0 16px 16px; }
+  @media (min-width: 768px) { .pd-tab-body { padding: 0 20px 20px; } }
+
+  .pd-highlights { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .pd-hi {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg); border-radius: 10px;
+    font-size: 13px; color: var(--ink2); font-weight: 500; line-height: 1.5;
+  }
+  .pd-hi-icon { color: var(--green); margin-top: 1px; flex-shrink: 0; }
+
+  .pd-desc {
+    font-size: 13.5px; color: var(--ink2); line-height: 1.75; font-weight: 400;
+    overflow: hidden;
+  }
+  .pd-readmore {
+    background: none; border: none; color: var(--orange);
+    font-size: 12.5px; font-weight: 700; cursor: pointer;
+    font-family: inherit; padding: 8px 0 0;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  .pd-specs { width: 100%; border-collapse: collapse; }
+  .pd-specs tr { border-bottom: 1px solid var(--border); }
+  .pd-specs tr:last-child { border-bottom: none; }
+  .pd-specs td { padding: 10px 0; vertical-align: top; font-size: 13px; }
+  .pd-specs .sk { width: 40%; color: var(--ink3); font-weight: 500; padding-right: 12px; }
+  .pd-specs .sv { color: var(--ink2); font-weight: 600; }
+
+  /* ── CTA Buttons (inline in right col, visible on desktop too) ── */
+  .pd-cta {
+    display: flex; gap: 10px;
+  }
+  .pd-btn-cart {
+    flex: 1; padding: 15px 14px;
+    background: var(--ink); color: #fff;
+    border: none; border-radius: var(--r-sm);
+    font-size: 14px; font-weight: 700; font-family: inherit;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 4px 16px rgba(17,17,24,0.18);
+    letter-spacing: 0.01em;
+  }
+  .pd-btn-cart:hover:not(:disabled) { background: #22222f; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(17,17,24,0.22); }
+
+  .pd-btn-buy {
+    flex: 1; padding: 15px 14px;
+    background: linear-gradient(135deg, var(--orange) 0%, #bf4210 100%);
+    color: #fff;
+    border: none; border-radius: var(--r-sm);
+    font-size: 14px; font-weight: 700; font-family: inherit;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 4px 16px var(--orange-glow);
+    letter-spacing: 0.01em;
+  }
+  .pd-btn-buy:hover:not(:disabled) { background: linear-gradient(135deg, #bf4210 0%, var(--orange) 100%); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,91,26,0.32); }
+  .pd-btn-cart:disabled, .pd-btn-buy:disabled { background: var(--bg2); color: var(--ink4); box-shadow: none; cursor: not-allowed; transform: none; }
+
+  /* ── Mobile Sticky CTA ── */
+  .pd-sticky-cta {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+    background: rgba(247,246,243,0.96);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    display: flex; gap: 10px;
+  }
+  @media (min-width: 768px) { .pd-sticky-cta { display: none; } }
+
+  .pd-mob-cart {
+    flex: 1; padding: 14px;
+    background: var(--ink); color: #fff;
+    border: none; border-radius: var(--r-sm);
+    font-size: 14px; font-weight: 700; font-family: inherit;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: var(--t);
+  }
+  .pd-mob-cart:hover:not(:disabled) { background: #22222f; }
+
+  .pd-mob-buy {
+    flex: 1; padding: 14px;
+    background: var(--orange); color: #fff;
+    border: none; border-radius: var(--r-sm);
+    font-size: 14px; font-weight: 700; font-family: inherit;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: var(--t);
+  }
+  .pd-mob-buy:hover:not(:disabled) { background: #bf4210; }
+  .pd-mob-cart:disabled, .pd-mob-buy:disabled { background: var(--bg2); color: var(--ink4); cursor: not-allowed; }
+
+  /* ── Hide desktop CTA on mobile ── */
+  .pd-desktop-cta { display: none; }
+  @media (min-width: 768px) { .pd-desktop-cta { display: flex; } }
+
+  /* ── Recommendations ── */
+  .pd-recs-wrap {
+    max-width: 1280px; margin: 0 auto;
+    padding: 0 12px 140px;
+  }
+  @media (min-width: 768px) { .pd-recs-wrap { padding: 0 24px 80px; } }
+
+  .pd-recs-hd {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 16px;
+  }
+  .pd-recs-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--ink); letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  @media (min-width: 768px) { .pd-recs-title { font-size: 24px; } }
+  .pd-recs-line { flex: 1; height: 1px; background: var(--border); }
+
+  .pd-recs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  @media (min-width: 540px) { .pd-recs-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; } }
+  @media (min-width: 900px) { .pd-recs-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+
+  /* ProductCard override — compact & square in recs grid */
+  .pd-recs-grid > * {
+    min-width: 0 !important;
+  }
+
+  /* ── Lightbox ── */
+  .pd-lb {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(10,10,15,0.97);
+    backdrop-filter: blur(24px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .pd-lb img { max-width: 90vw; max-height: 88vh; object-fit: contain; border-radius: var(--r-lg); }
+  .pd-lb-close {
+    position: absolute; top: 18px; right: 18px;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #fff; font-size: 20px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: var(--t); backdrop-filter: blur(8px);
+  }
+  .pd-lb-close:hover { background: rgba(255,255,255,0.18); }
+
+  /* ── Loading / Error ── */
+  .pd-loading {
+    min-height: 100vh; background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .pd-error {
+    min-height: 100vh; background: var(--bg);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .pd-error-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--r-xl); padding: 40px 32px;
+    text-align: center; max-width: 360px; width: 100%;
+    box-shadow: var(--shadow-lg);
+  }
+  .pd-error-emoji { font-size: 52px; margin-bottom: 20px; }
+  .pd-error-h { font-family: 'Clash Display', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+  .pd-error-p { font-size: 14px; color: var(--ink3); line-height: 1.6; margin-bottom: 28px; }
+  .pd-error-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 28px;
+    background: var(--ink); color: #fff;
+    border-radius: var(--r-sm);
+    font-size: 13px; font-weight: 700;
+    text-decoration: none; transition: var(--t);
+  }
+  .pd-error-btn:hover { background: var(--orange); }
+`;
+
 export default function ProductDetail() {
   const { idOrSlug } = useParams();
   const navigate = useNavigate();
@@ -43,9 +630,7 @@ export default function ProductDetail() {
   });
 
   useEffect(() => {
-    if (isAuthenticated) {
-      refreshProfile();
-    }
+    if (isAuthenticated) refreshProfile();
   }, [isAuthenticated, refreshProfile]);
 
   const { data: similarProducts = [] } = useQuery({
@@ -54,13 +639,11 @@ export default function ProductDetail() {
       try {
         const res = await api.get(`/api/products/${idOrSlug}/recommendations?limit=8`);
         if (res.data && res.data.length > 0) return res.data;
-        const fallbackRes = await api.get('/api/products?limit=8');
-        return fallbackRes.data?.items || [];
-      } catch (err) {
-        try {
-          const fallbackRes = await api.get('/api/products?limit=8');
-          return fallbackRes.data?.items || [];
-        } catch { return []; }
+        const fb = await api.get('/api/products?limit=8');
+        return fb.data?.items || [];
+      } catch {
+        try { const fb = await api.get('/api/products?limit=8'); return fb.data?.items || []; }
+        catch { return []; }
       }
     },
     enabled: !!idOrSlug,
@@ -211,9 +794,11 @@ export default function ProductDetail() {
 
   const stockStRaw = getStockStatus(currentStock ?? totalStock);
   const stockSt = { ...stockStRaw, text: String(stockStRaw.text || '').includes('Only') ? 'Limited Stock' : stockStRaw.text };
-  const canAddToCart = 
-    (variantAttrs.length === 0 || (variantAttrs.every(attr => !!selected[attr.toLowerCase().trim()]) && !!matchedVariant)) && 
+
+  const canAddToCart =
+    (variantAttrs.length === 0 || (variantAttrs.every(attr => !!selected[attr.toLowerCase().trim()]) && !!matchedVariant)) &&
     isAvailable;
+
   const hasHighlights = p && Array.isArray(p.highlights) && p.highlights.length > 0;
   const hasSpecifications = p && Array.isArray(p.specifications) && p.specifications.length > 0;
   const hasDescription = p?.description?.length > 0;
@@ -275,13 +860,17 @@ export default function ProductDetail() {
       const now = new Date();
       const addDays = (d, n) => { const x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; };
       setDeliveryInfo({
-        serviceable: serviceRes.data.delivery_available, codAvailable: serviceRes.data.cod_available,
+        serviceable: serviceRes.data.delivery_available,
+        codAvailable: serviceRes.data.cod_available,
         message: serviceRes.data.delivery_available ? 'Delivery available' : 'Not available',
-        etaStart: addDays(now, eta), etaEnd: addDays(now, eta + 2),
-        deliveryCharge: prepaidCalcRes.data.delivery_charge, codCharge: codCalcRes.data.cod_charge,
-        codFinalCharge: codCalcRes.data.final_charge, isFreeDelivery: prepaidCalcRes.data.final_charge === 0
+        etaStart: addDays(now, eta),
+        etaEnd: addDays(now, eta + 2),
+        deliveryCharge: prepaidCalcRes.data.delivery_charge,
+        codCharge: codCalcRes.data.cod_charge,
+        codFinalCharge: codCalcRes.data.final_charge,
+        isFreeDelivery: prepaidCalcRes.data.final_charge === 0
       });
-    } catch (err) {
+    } catch {
       const now = new Date();
       const addDays = (d, n) => { const x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; };
       const isFree = (currentPrice || minPrice) >= 999;
@@ -450,26 +1039,24 @@ export default function ProductDetail() {
   const handleShare = async () => {
     try {
       const shareUrl = window.location.origin + '/products/' + (p.slug || p._id);
-      if (navigator.share) await navigator.share({ title: p.name, text: 'Check out this product on SmartOdisha: ' + p.name, url: shareUrl });
-      else { await navigator.clipboard.writeText(shareUrl); notify('Product link copied!', 'success'); }
-    } catch (err) { console.error('Share failed:', err); }
+      if (navigator.share) await navigator.share({ title: p.name, text: 'Check out ' + p.name + ' on SmartOdisha', url: shareUrl });
+      else { await navigator.clipboard.writeText(shareUrl); notify('Link copied!', 'success'); }
+    } catch { }
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-[#fafaf8] flex items-center justify-center">
-      <LoadingSpinner text="Fetching product details..." />
+    <div className="pd-loading">
+      <LoadingSpinner text="Loading product..." />
     </div>
   );
 
   if (error) return (
-    <div className="min-h-screen bg-[#fafaf8] flex items-center justify-center px-4">
-      <div className="max-w-sm w-full bg-white rounded-3xl shadow-2xl p-10 text-center border border-gray-100">
-        <div className="text-6xl mb-6">😔</div>
-        <h2 className="text-2xl font-black text-gray-900 mb-3">Oops!</h2>
-        <p className="text-gray-500 mb-8 text-sm leading-relaxed">{error}</p>
-        <Link to="/products" className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-gray-800 transition-colors text-sm">
-          ← Back to Products
-        </Link>
+    <div className="pd-error">
+      <div className="pd-error-card">
+        <div className="pd-error-emoji">😔</div>
+        <h2 className="pd-error-h">Not Found</h2>
+        <p className="pd-error-p">{error}</p>
+        <Link to="/products" className="pd-error-btn">← Back to Products</Link>
       </div>
     </div>
   );
@@ -478,1052 +1065,359 @@ export default function ProductDetail() {
 
   const displayPrice = Math.round(currentPrice || minPrice || 0);
   const displayMrpRounded = Math.round(currentMrp || displayMrp || 0);
+  const stockClass = !isAvailable ? 'out' : (stockSt.text === 'Limited Stock' ? 'low' : 'in');
+  const stockLabel = !isAvailable ? 'Out of Stock' : (stockSt.text === 'Limited Stock' ? 'Limited Stock — Order Soon' : 'In Stock');
+
+  const defaultTab = hasHighlights ? 'highlights' : hasDescription ? 'description' : 'specs';
 
   return (
-    <div className="pd-root">
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+    <div className="pd">
+      <style>{STYLES}</style>
 
-        :root {
-          --ink: #1e1b2e;
-          --ink2: #3d3d4e;
-          --ink3: #6b7280;
-          --surface: #f0f9ff;
-          --card: #ffffff;
-          --border: rgba(30,58,138,0.14);
-          --accent: #f97316;
-          --accent2: #1e3a8a;
-          --accent-soft: rgba(249,115,22,0.08);
-          --green: #059669;
-          --green-soft: rgba(5,150,105,0.08);
-          --radius-lg: 20px;
-          --radius-xl: 28px;
-          --shadow-card: 0 2px 24px rgba(30,58,138,0.06);
-          --shadow-hover: 0 8px 40px rgba(30,58,138,0.12);
-        }
+      {/* ── Mobile Topbar ── */}
+      <div className="pd-nav">
+        <button className="pd-nav-back" onClick={() => navigate(-1)}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span className="pd-nav-title">{p.name}</span>
+        <div className="pd-nav-actions">
+          <button className="pd-nav-btn" onClick={handleShare} title="Share">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+          </button>
+          <button
+            className={`pd-nav-btn ${isInWishlist(p._id || p.id) ? 'active' : ''}`}
+            onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
+          >
+            {isInWishlist(p._id || p.id)
+              ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            }
+          </button>
+        </div>
+      </div>
 
-        .pd-root {
-          font-family: 'DM Sans', system-ui, sans-serif;
-          background: var(--surface);
-          min-height: 100vh;
-          color: var(--ink);
-          padding-bottom: 88px;
-          position: relative;
-          overflow-x: hidden;
-        }
-
-        .pd-root::before {
-          content: '';
-          position: fixed;
-          inset: 0;
-          pointer-events: none;
-          z-index: 0;
-          background-image:
-            linear-gradient(rgba(30,58,138,0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(30,58,138,0.04) 1px, transparent 1px);
-          background-size: 60px 60px;
-        }
-
-        /* ─── Breadcrumb ─── */
-        .pd-breadcrumb {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 20px 16px 0;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 13px;
-          font-weight: 500;
-          color: var(--ink3);
-          flex-wrap: wrap;
-        }
-        @media(min-width:600px){.pd-breadcrumb{padding:28px 24px 0;}}
-        .pd-breadcrumb a { color: var(--ink3); text-decoration: none; }
-        .pd-breadcrumb a:hover { color: var(--accent); }
-        .pd-breadcrumb-sep { color: var(--border); font-size: 11px; }
-
-        /* ─── Main Grid ─── */
-        .pd-wrap {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 20px 16px 32px;
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 20px;
-          position: relative;
-          z-index: 1;
-        }
-        @media(min-width:600px){.pd-wrap{padding:32px 24px 32px; gap:24px;}}
-        @media (min-width: 960px) {
-          .pd-wrap {
-            grid-template-columns: minmax(0, 420px) 1fr;
-            gap: 40px;
-            align-items: start;
-          }
-        }
-
-        /* ─── Left: Image Column ─── */
-        .pd-left { display: flex; flex-direction: column; gap: 16px; }
-
-        .pd-img-stage {
-          position: relative;
-          background: var(--card);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-xl);
-          overflow: hidden;
-          aspect-ratio: 1;
-          cursor: zoom-in;
-          box-shadow: var(--shadow-card);
-        }
-
-        .pd-img-stage img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          padding: 36px;
-          transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          display: block;
-        }
-
-        .pd-img-stage:hover img { transform: scale(1.06); }
-
-        .pd-img-overlays {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          z-index: 10;
-        }
-
-        .pd-icon-btn {
-          width: 44px;
-          height: 44px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.92);
-          backdrop-filter: blur(8px);
-          border: 1px solid var(--border);
-          box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          color: var(--ink2);
-          transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .pd-icon-btn:hover { transform: scale(1.12); box-shadow: 0 4px 20px rgba(0,0,0,0.12); color: var(--ink); }
-        .pd-icon-btn.pd-wishlisted { color: #e53e3e; background: rgba(229,62,62,0.08); }
-
-        .pd-discount-badge {
-          position: absolute;
-          top: 16px;
-          left: 16px;
-          background: var(--accent);
-          color: #fff;
-          font-family: 'Syne', sans-serif;
-          font-size: 13px;
-          font-weight: 800;
-          padding: 6px 12px;
-          border-radius: 10px;
-          letter-spacing: 0.03em;
-          box-shadow: 0 4px 12px rgba(232,82,26,0.35);
-        }
-
-        .pd-img-skeleton {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(90deg, #f3f3f0 25%, #e9e9e4 50%, #f3f3f0 75%);
-          background-size: 200% 100%;
-          animation: shimmer 1.4s infinite;
-        }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-        .pd-dots {
-          display: flex;
-          justify-content: center;
-          gap: 8px;
-          padding: 4px 0;
-        }
-        .pd-dot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-          background: var(--border);
-          cursor: pointer;
-          transition: all 0.2s;
-          border: none;
-          padding: 0;
-        }
-        .pd-dot.on { background: var(--accent); width: 20px; border-radius: 3px; }
-
-        .pd-thumbs {
-          display: flex;
-          gap: 10px;
-          overflow-x: auto;
-          padding: 4px 2px;
-          scrollbar-width: none;
-        }
-        .pd-thumbs::-webkit-scrollbar { display: none; }
-
-        .pd-thumb {
-          width: 76px;
-          height: 76px;
-          flex-shrink: 0;
-          background: var(--card);
-          border: 2px solid var(--border);
-          border-radius: 14px;
-          overflow: hidden;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s;
-          padding: 6px;
-        }
-        .pd-thumb:hover { border-color: rgba(0,0,0,0.15); }
-        .pd-thumb.on { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(232,82,26,0.15); }
-        .pd-thumb img { width: 100%; height: 100%; object-fit: contain; }
-
-        /* ─── Right: Info Column ─── */
-        .pd-right { display: flex; flex-direction: column; gap: 16px; }
-
-        .pd-card {
-          background: var(--card);
-          border: 1px solid var(--border);
-          border-radius: var(--radius-lg);
-          padding: 18px;
-          box-shadow: var(--shadow-card);
-        }
-        @media (min-width: 960px) {
-          .pd-card { padding: 24px; }
-        }
-
-        /* Product Title Card */
-        .pd-brand-tag {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 11px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.14em;
-          color: var(--accent);
-          margin-bottom: 10px;
-        }
-        .pd-brand-tag::before {
-          content: '';
-          display: block;
-          width: 20px;
-          height: 2px;
-          background: var(--accent);
-          border-radius: 2px;
-        }
-
-        .pd-title {
-          font-family: 'Bebas Neue', sans-serif;
-          font-size: clamp(28px, 5vw, 40px);
-          font-weight: 400;
-          color: var(--ink);
-          line-height: 1.1;
-          margin-bottom: 12px;
-          letter-spacing: 0.02em;
-        }
-
-        .pd-meta-row {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          flex-wrap: wrap;
-        }
-
-        .pd-rating-pill {
-          display: inline-flex;
-          align-items: center;
-          gap: 5px;
-          background: var(--green);
-          color: #fff;
-          font-size: 13px;
-          font-weight: 700;
-          padding: 5px 12px;
-          border-radius: 8px;
-        }
-
-        .pd-rating-count {
-          font-size: 13px;
-          font-weight: 500;
-          color: var(--ink3);
-        }
-
-        .pd-assured {
-          font-size: 10px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.12em;
-          color: var(--accent2);
-          background: rgba(26,53,87,0.07);
-          padding: 4px 10px;
-          border-radius: 6px;
-        }
-
-        /* Price */
-        .pd-price-section {
-          margin-top: 20px;
-          padding-top: 20px;
-          border-top: 1px dashed rgba(0,0,0,0.08);
-        }
-
-        .pd-price-label {
-          font-size: 11px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.12em;
-          color: var(--green);
-          margin-bottom: 6px;
-        }
-
-        .pd-price-row {
-          display: flex;
-          align-items: baseline;
-          gap: 14px;
-          flex-wrap: wrap;
-        }
-
-        .pd-price {
-          font-family: 'Bebas Neue', sans-serif;
-          font-size: 48px;
-          font-weight: 400;
-          color: var(--ink);
-          line-height: 1;
-          letter-spacing: 0.02em;
-        }
-
-        .pd-price-mrp {
-          font-size: 18px;
-          font-weight: 500;
-          color: var(--ink3);
-          text-decoration: line-through;
-        }
-
-        .pd-save-chip {
-          background: var(--green-soft);
-          color: var(--green);
-          font-size: 13px;
-          font-weight: 800;
-          padding: 4px 12px;
-          border-radius: 20px;
-        }
-
-        .pd-tax-note {
-          font-size: 12px;
-          color: var(--ink3);
-          font-weight: 500;
-          margin-top: 6px;
-        }
-
-        /* Stock Status */
-        .pd-stock-bar {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 10px 16px;
-          border-radius: 10px;
-          font-size: 13px;
-          font-weight: 700;
-          margin-top: 14px;
-        }
-        .pd-stock-bar.in { background: var(--green-soft); color: var(--green); }
-        .pd-stock-bar.low { background: rgba(234,179,8,0.08); color: #92691a; }
-        .pd-stock-bar.out { background: rgba(239,68,68,0.08); color: #b91c1c; }
-        .pd-stock-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-
-        /* Seller */
-        .pd-seller-row {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-          padding: 16px;
-        }
-        .pd-seller-avatar {
-          width: 52px;
-          height: 52px;
-          border-radius: 14px;
-          object-fit: cover;
-          border: 1px solid var(--border);
-        }
-        .pd-seller-name { font-size: 15px; font-weight: 700; color: var(--ink); }
-        .pd-seller-label { font-size: 11px; font-weight: 600; color: var(--ink3); margin-bottom: 2px; }
-        .pd-verified-chip {
-          margin-left: auto;
-          font-size: 11px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
-          color: #047857;
-          background: rgba(5,150,105,0.08);
-          padding: 6px 12px;
-          border-radius: 8px;
-          border:1px solid rgba(5,150,105,0.15);
-          display: inline-flex;
-          align-items: center;
-          gap: 4px;
-        }
-        }
-
-        /* Variants */
-        .pd-section-label {
-          font-size: 11px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.14em;
-          color: var(--ink3);
-          margin-bottom: 12px;
-        }
-        .pd-var-label {
-          font-size: 13px;
-          font-weight: 700;
-          color: var(--ink2);
-          margin-bottom: 10px;
-        }
-        .pd-var-label span { color: var(--ink3); font-weight: 500; }
-
-        .pd-var-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-
-        .pd-chip {
-          padding: 9px 18px;
-          border: 1.5px solid var(--border);
-          background: var(--surface);
-          color: var(--ink2);
-          font-size: 13px;
-          font-weight: 600;
-          border-radius: 10px;
-          cursor: pointer;
-          transition: all 0.18s;
-        }
-        .pd-chip:hover:not(.disabled):not(.on) {
-          border-color: rgba(0,0,0,0.2);
-          background: var(--card);
-        }
-        .pd-chip.on {
-          border-color: var(--accent);
-          background: var(--accent-soft);
-          color: var(--accent);
-          font-weight: 700;
-        }
-        .pd-chip.disabled {
-          opacity: 0.38;
-          cursor: not-allowed;
-          background: var(--surface);
-        }
-        .pd-chip-color { display: flex; align-items: center; gap: 8px; }
-        .pd-color-dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.12); flex-shrink: 0; }
-
-        /* Delivery */
-        .pd-delivery-form { display: flex; gap: 10px; }
-        .pd-pin-input {
-          flex: 1;
-          padding: 12px 16px;
-          border: 1.5px solid var(--border);
-          border-radius: 12px;
-          font-size: 14px;
-          font-weight: 600;
-          font-family: 'Outfit', sans-serif;
-          outline: none;
-          background: var(--surface);
-          color: var(--ink);
-          transition: all 0.2s;
-        }
-        .pd-pin-input:focus { border-color: var(--accent); background: var(--card); box-shadow: 0 0 0 4px rgba(232,82,26,0.08); }
-        .pd-pin-btn {
-          padding: 12px 20px;
-          background: var(--ink);
-          color: #fff;
-          border: none;
-          border-radius: 12px;
-          font-size: 13px;
-          font-weight: 700;
-          font-family: 'Outfit', sans-serif;
-          cursor: pointer;
-          transition: all 0.2s;
-          white-space: nowrap;
-        }
-        .pd-pin-btn:hover:not(:disabled) { background: var(--accent); }
-        .pd-pin-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-        .pd-delivery-result {
-          margin-top: 14px;
-          padding: 14px 16px;
-          border-radius: 14px;
-          font-size: 13px;
-        }
-        .pd-delivery-result.ok { background: var(--green-soft); color: var(--green); }
-        .pd-delivery-result.fail { background: rgba(239,68,68,0.07); color: #b91c1c; }
-        .pd-delivery-eta { font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-        .pd-delivery-charges { border-top: 1px solid rgba(0,0,0,0.06); padding-top: 8px; font-size: 12px; display: flex; flex-direction: column; gap: 3px; }
-        .pd-delivery-charges span { font-weight: 700; }
-
-        .pd-address-card {
-          background: var(--surface);
-          border: 1.5px solid var(--border);
-          border-radius: 14px;
-          padding: 14px 16px;
-        }
-        .pd-address-row { display: flex; align-items: center; justify-content: space-between; }
-        .pd-address-lbl { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink3); }
-        .pd-address-change { background: none; border: none; color: var(--accent); font-size: 12.5px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; }
-        .pd-address-change:hover { color: var(--accent2); }
-        .pd-address-text { font-size: 14px; font-weight: 600; color: var(--ink); margin-top: 6px; }
-
-        /* Tabs for Highlights / Desc / Specs */
-        .pd-tabs {
-          display: flex;
-          gap: 2px;
-          background: var(--surface);
-          border-radius: 12px;
-          padding: 4px;
-          margin-bottom: 20px;
-        }
-        .pd-tab {
-          flex: 1;
-          padding: 9px 8px;
-          border: none;
-          background: none;
-          font-size: 12.5px;
-          font-weight: 700;
-          color: var(--ink3);
-          border-radius: 9px;
-          cursor: pointer;
-          font-family: 'Outfit', sans-serif;
-          transition: all 0.2s;
-          text-align: center;
-        }
-        .pd-tab.on {
-          background: var(--card);
-          color: var(--ink);
-          box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-        }
-        .pd-tab:hover:not(.on) { color: var(--ink2); }
-
-        .pd-highlights { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
-        .pd-highlight-item {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          font-size: 13.5px;
-          color: var(--ink2);
-          font-weight: 500;
-          line-height: 1.5;
-          padding: 10px 14px;
-          background: var(--surface);
-          border-radius: 10px;
-        }
-        .pd-highlight-icon { color: var(--green); margin-top: 1px; flex-shrink: 0; }
-
-        .pd-description {
-          font-size: 13.5px;
-          color: var(--ink2);
-          line-height: 1.7;
-          font-weight: 400;
-        }
-
-        .pd-read-more {
-          background: none;
-          border: none;
-          color: var(--accent);
-          font-size: 12.5px;
-          font-weight: 700;
-          cursor: pointer;
-          padding: 8px 0 0;
-          font-family: 'Outfit', sans-serif;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-        }
-
-        .pd-specs { width: 100%; border-collapse: collapse; }
-        .pd-specs tr { border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .pd-specs tr:last-child { border-bottom: none; }
-        .pd-specs td { padding: 11px 0; vertical-align: top; }
-        .pd-specs .spec-key { width: 38%; font-size: 13px; font-weight: 500; color: var(--ink3); padding-right: 16px; }
-        .pd-specs .spec-val { font-size: 13px; font-weight: 600; color: var(--ink2); }
-
-        /* CTA Buttons */
-        .pd-cta-row { display: flex; gap: 12px; }
-
-        .pd-btn-cart {
-          flex: 1;
-          padding: 16px 20px;
-          background: var(--ink);
-          color: #fff;
-          border: none;
-          border-radius: 14px;
-          font-size: 14px;
-          font-weight: 700;
-          font-family: 'Outfit', sans-serif;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          letter-spacing: 0.03em;
-          transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 4px 20px rgba(15,14,23,0.18);
-        }
-        .pd-btn-cart:hover:not(:disabled) {
-          background: #1a1a2e;
-          transform: translateY(-2px);
-          box-shadow: 0 8px 32px rgba(15,14,23,0.24);
-        }
-
-        .pd-btn-buy {
-          flex: 1;
-          padding: 16px 20px;
-          background: linear-gradient(135deg, var(--accent) 0%, #c43e0d 100%);
-          color: #fff;
-          border: none;
-          border-radius: 14px;
-          font-size: 14px;
-          font-weight: 700;
-          font-family: 'Outfit', sans-serif;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          letter-spacing: 0.03em;
-          transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 4px 20px rgba(232,82,26,0.28);
-        }
-        .pd-btn-buy:hover:not(:disabled) {
-          background: linear-gradient(135deg, #c43e0d 0%, var(--accent) 100%);
-          transform: translateY(-2px);
-          box-shadow: 0 8px 32px rgba(232,82,26,0.35);
-        }
-
-        .pd-btn-cart:disabled, .pd-btn-buy:disabled {
-          background: #e2e2e0;
-          color: #aaa;
-          box-shadow: none;
-          cursor: not-allowed;
-          transform: none;
-        }
-
-        /* Sticky Mobile CTA - HIDDEN */
-        .pd-mobile-cta {
-          display: none !important;
-        }
-
-        .pd-mob-cart, .pd-mob-buy {
-          flex: 1;
-          padding: 16px 12px; /* Larger touch target
-          min-height: 48px;
-          border: none;
-          border-radius: 12px;
-          font-size: 14px;
-          font-weight: 700;
-          font-family: 'Outfit', sans-serif;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          transition: all 0.2s;
-        }
-        .pd-mob-cart { background: var(--ink); color: #fff; }
-        .pd-mob-cart:hover:not(:disabled) { background: #1a1a2e; }
-        .pd-mob-buy { background: var(--accent); color: #fff; }
-        .pd-mob-buy:hover:not(:disabled) { background: #c43e0d; }
-        .pd-mob-cart:disabled, .pd-mob-buy:disabled { background: #ddd; color: #999; cursor: not-allowed; }
-
-        /* Similar / Recommended */
-        .pd-recs { max-width: 1200px; margin: 0 auto; padding: 0 16px 32px; position: relative; z-index:1; }
-        @media(min-width:600px){.pd-recs{padding:0 24px 32px;}}
-        .pd-recs-header {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: 20px;
-        }
-        .pd-recs-title {
-          font-family: 'Bebas Neue', sans-serif;
-          font-size: 24px;
-          font-weight: 400;
-          color: var(--ink);
-          letter-spacing: 0.03em;
-        }
-        @media (min-width:960px){.pd-recs-title{font-size:28px;}}
-        .pd-recs-line { flex: 1; height: 1px; background: var(--border); }
-        .pd-recs-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 10px;
-        }
-        @media (min-width: 640px) { .pd-recs-grid { grid-template-columns: repeat(3, 1fr); gap:14px; } }
-        @media (min-width: 1024px) { .pd-recs-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
-        .pd-recs-grid .pc-premium-card .pc-img-container {
-          padding: 8px;
-        }
-        .pd-recs-grid .pc-premium-card .pc-content {
-          padding: 8px;
-        }
-        .pd-recs-grid .pc-premium-card .pc-title {
-          font-size: 12px;
-          height: 34px;
-        }
-
-        /* Lightbox */
-        .pd-lightbox {
-          position: fixed;
-          inset: 0;
-          background: rgba(10,10,14,0.96);
-          z-index: 100;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 24px;
-          backdrop-filter: blur(20px);
-        }
-        .pd-lightbox img { max-width: 90vw; max-height: 86vh; object-fit: contain; border-radius: 20px; }
-        .pd-lightbox-close {
-          position: absolute;
-          top: 20px; right: 20px;
-          width: 48px; height: 48px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.1);
-          border: 1px solid rgba(255,255,255,0.15);
-          color: #fff;
-          font-size: 22px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: all 0.2s;
-          backdrop-filter: blur(8px);
-        }
-        .pd-lightbox-close:hover { background: rgba(255,255,255,0.18); transform: scale(1.08); }
-
-        /* Divider label */
-        .pd-divider-label {
-          font-size: 10.5px;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.14em;
-          color: var(--ink3);
-          margin-bottom: 16px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-        }
-        .pd-divider-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-      `}</style>
-
-      {/* Breadcrumb */}
-      <div className="pd-breadcrumb">
+      {/* ── Desktop Breadcrumb ── */}
+      <nav className="pd-bc">
         <Link to="/">Home</Link>
-        <span className="pd-breadcrumb-sep">›</span>
+        <span className="pd-bc-sep">›</span>
         <Link to="/products">Products</Link>
         {p.category && (
           <>
-            <span className="pd-breadcrumb-sep">›</span>
+            <span className="pd-bc-sep">›</span>
             <Link to={`/products?category=${p.category._id || p.category}`}>{p.category.name || p.category}</Link>
           </>
         )}
-        <span className="pd-breadcrumb-sep">›</span>
-        <span style={{ color: 'var(--ink2)', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
-      </div>
+        <span className="pd-bc-sep">›</span>
+        <span style={{ color: 'var(--ink2)', maxWidth: 240, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</span>
+      </nav>
 
-      {/* Main Grid */}
-      <div className="pd-wrap">
+      {/* ── Main Grid ── */}
+      <div className="pd-main">
 
-        {/* ── LEFT: Image Column ── */}
-        <div className="pd-left">
-          <div
-            className="pd-img-stage"
-            onTouchStart={onMainImgTouchStart}
-            onTouchEnd={onMainImgTouchEnd}
-            onTouchCancel={onMainImgTouchCancel}
-            onClick={onMainImgClick}
-          >
-            {discount > 0 && <div className="pd-discount-badge">{discount}% OFF</div>}
+        {/* ── LEFT: Gallery ── */}
+        <div className="pd-left-col">
+          <div className="pd-gallery">
+            <div
+              className="pd-stage"
+              onTouchStart={onMainImgTouchStart}
+              onTouchEnd={onMainImgTouchEnd}
+              onTouchCancel={onMainImgTouchCancel}
+              onClick={onMainImgClick}
+            >
+              {discount > 0 && <div className="pd-badge-off">{discount}% OFF</div>}
 
-            <div className="pd-img-overlays" onClick={e => e.stopPropagation()}>
-              <button className="pd-icon-btn" onClick={handleShare} title="Share">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
-                </svg>
-              </button>
-              <button
-                className={`pd-icon-btn ${isInWishlist(p._id || p.id) ? 'pd-wishlisted' : ''}`}
-                onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
-                title={isInWishlist(p._id || p.id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
-              >
-                {isInWishlist(p._id || p.id)
-                  ? <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                  : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                }
-              </button>
-            </div>
-
-            {imgLoading && imgs[activeImg] && <div className="pd-img-skeleton" />}
-            {imgs[activeImg]
-              ? <img src={getImageUrl(imgs[activeImg], 800)} alt={p.name} onLoad={() => setImgLoading(false)} onError={() => setImgLoading(false)} style={{ display: imgLoading ? 'none' : 'block' }} />
-              : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--ink3)' }}>
-                  <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12l2 2 4-4"/></svg>
-                </div>
-            }
-          </div>
-
-          {/* Dots (mobile) */}
-          {imgs.length > 1 && (
-            <div className="pd-dots" style={{ display: 'flex' }}>
-              {imgs.map((_, i) => (
-                <button key={i} className={`pd-dot ${i === activeImg ? 'on' : ''}`} onClick={() => setActiveImg(i)} aria-label={`Image ${i+1}`} />
-              ))}
-            </div>
-          )}
-
-          {/* Thumbnails */}
-          {imgs.length > 1 && (
-            <div className="pd-thumbs">
-              {imgs.map((img, i) => (
-                <button key={i} className={`pd-thumb ${i === activeImg ? 'on' : ''}`} onClick={() => setActiveImg(i)}>
-                  <img src={getImageUrl(img, 200)} alt={`${p.name} view ${i+1}`} />
+              <div className="pd-stage-actions" onClick={e => e.stopPropagation()}>
+                <button className="pd-stage-btn" onClick={handleShare} title="Share">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
                 </button>
-              ))}
+                <button
+                  className={`pd-stage-btn ${isInWishlist(p._id || p.id) ? 'wishlisted' : ''}`}
+                  onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
+                >
+                  {isInWishlist(p._id || p.id)
+                    ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  }
+                </button>
+              </div>
+
+              {imgLoading && imgs[activeImg] && <div className="pd-img-skeleton" />}
+              {imgs[activeImg]
+                ? <img
+                    src={getImageUrl(imgs[activeImg], 800)}
+                    alt={p.name}
+                    className="pd-stage-img"
+                    onLoad={() => setImgLoading(false)}
+                    onError={() => setImgLoading(false)}
+                    style={{ display: imgLoading ? 'none' : 'block' }}
+                  />
+                : <div className="pd-stage-no-img">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+                  </div>
+              }
             </div>
-          )}
+
+            {imgs.length > 1 && (
+              <div className="pd-dots">
+                {imgs.map((_, i) => (
+                  <button key={i} className={`pd-dot ${i === activeImg ? 'on' : ''}`} onClick={() => setActiveImg(i)} />
+                ))}
+              </div>
+            )}
+
+            {imgs.length > 1 && (
+              <div className="pd-thumbs">
+                {imgs.map((img, i) => (
+                  <button key={i} className={`pd-thumb ${i === activeImg ? 'on' : ''}`} onClick={() => setActiveImg(i)}>
+                    <img src={getImageUrl(img, 200)} alt={`${p.name} ${i + 1}`} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* ── RIGHT: Info Column ── */}
-        <div className="pd-right">
+        {/* ── RIGHT: Info ── */}
+        <div className="pd-right-col">
 
-          {/* Title + Price Card */}
+          {/* ─ Product Info Card ─ */}
           <div className="pd-card">
-            {p.brand && <div className="pd-brand-tag">{p.brand.name || p.brand}</div>}
-            <h1 className="pd-title">{p.name}</h1>
+            <div className="pd-card-body">
+              {p.brand && <div className="pd-brand-strip">{p.brand.name || p.brand}</div>}
+              <h1 className="pd-title">{p.name}</h1>
 
-            <div className="pd-meta-row">
-              <div className="pd-rating-pill">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                {Number(p.ratingAvg || 4.3).toFixed(1)}
-              </div>
-              <span className="pd-rating-count">{p.ratingCount || 12} ratings</span>
-              <span className="pd-assured">✓ Assured</span>
-            </div>
-
-            <div className="pd-price-section">
-              <div className="pd-price-label">Special Price</div>
-              <div className="pd-price-row">
-                <span className="pd-price">₹{displayPrice.toLocaleString('en-IN')}</span>
-                {displayMrpRounded > displayPrice && (
-                  <>
-                    <span className="pd-price-mrp">₹{displayMrpRounded.toLocaleString('en-IN')}</span>
-                    <span className="pd-save-chip">{discount}% off</span>
-                  </>
-                )}
-              </div>
-              <div className="pd-tax-note">{p.gst > 0 ? `Inclusive of ${p.gst}% GST` : 'Inclusive of all taxes'}</div>
-            </div>
-
-            {/* Stock Status */}
-            {isAvailable ? (
-              <div className={`pd-stock-bar ${stockSt.text === 'Limited Stock' ? 'low' : 'in'}`}>
-                <span className="pd-stock-dot" />
-                {stockSt.text === 'Limited Stock' ? 'Hurry — Limited Stock Left' : 'In Stock'}
-              </div>
-            ) : (
-              <div className="pd-stock-bar out">
-                <span className="pd-stock-dot" />
-                Out of Stock
-              </div>
-            )}
-          </div>
-
-          {/* Seller Card */}
-          {p.store && (
-            <div className="pd-card pd-seller-row">
-              {p.store.sellerAvatar
-                ? <img src={getImageUrl(p.store.sellerAvatar, 100)} alt={p.store.name} className="pd-seller-avatar" />
-                : <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🏪</div>
-              }
-              <div>
-                <div className="pd-seller-label">Sold by</div>
-                <div className="pd-seller-name">{p.store.name}</div>
-              </div>
-              <span className="pd-verified-chip">✓ Verified</span>
-            </div>
-          )}
-
-          {/* Variants Card */}
-          {variantAttrs.length > 0 && (
-            <div className="pd-card" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-              <div className="pd-divider-label">Select Options</div>
-              {variantAttrs.map((attr, attrIdx) => {
-                const lowAttr = attr.toLowerCase().trim();
-                const opts = variantOpts(attr);
-                const isColor = ['color', 'colour', 'finish', 'shade'].includes(lowAttr);
-                const selectedVal = selected[lowAttr];
-
-                return (
-                  <div key={attrIdx}>
-                    <div className="pd-var-label">
-                      {attr}: {selectedVal && <span>{selectedVal}</span>}
-                    </div>
-                    <div className="pd-var-chips">
-                      {opts.map((optVal, optIdx) => {
-                        const enabled = isOptEnabled(attr, optVal);
-                        const isOn = selected[lowAttr]?.toLowerCase() === String(optVal).toLowerCase();
-                        return (
-                          <button
-                            key={optIdx}
-                            className={`pd-chip ${isOn ? 'on' : ''} ${!enabled ? 'disabled' : ''}`}
-                            onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
-                            disabled={!enabled}
-                          >
-                            {isColor ? (
-                              <span className="pd-chip-color">
-                                <span className="pd-color-dot" style={{ backgroundColor: optVal.toLowerCase() }} />
-                                {optVal}
-                              </span>
-                            ) : optVal}
-                          </button>
-                        );
-                      })}
-                    </div>
+              <div className="pd-meta">
+                {(p.ratingAvg || p.ratingCount) ? (
+                  <div className="pd-rating">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    {Number(p.ratingAvg || 4.3).toFixed(1)}
                   </div>
-                );
-              })}
+                ) : null}
+                {p.ratingCount ? <span className="pd-rating-ct">{p.ratingCount} ratings</span> : null}
+                <span className="pd-assured">✓ Assured</span>
+              </div>
+
+              <div className="pd-price-block">
+                <div className="pd-price-lbl">Special Price</div>
+                <div className="pd-price-row">
+                  <span className="pd-price">₹{displayPrice.toLocaleString('en-IN')}</span>
+                  {displayMrpRounded > displayPrice && (
+                    <>
+                      <span className="pd-price-mrp">₹{displayMrpRounded.toLocaleString('en-IN')}</span>
+                      <span className="pd-save">{discount}% off</span>
+                    </>
+                  )}
+                </div>
+                <div className="pd-tax">{p.gst > 0 ? `Inclusive of ${p.gst}% GST` : 'Inclusive of all taxes'}</div>
+              </div>
+
+              <div className={`pd-stock ${stockClass}`}>
+                <span className="pd-stock-dot" />
+                {stockLabel}
+              </div>
+            </div>
+          </div>
+
+          {/* ─ Seller Card ─ */}
+          {p.store && (
+            <div className="pd-card">
+              <div className="pd-seller-inner">
+                <div className="pd-seller-av">
+                  {p.store.sellerAvatar
+                    ? <img src={getImageUrl(p.store.sellerAvatar, 100)} alt={p.store.name} />
+                    : '🏪'
+                  }
+                </div>
+                <div className="pd-seller-info">
+                  <div className="pd-seller-lbl">Sold by</div>
+                  <div className="pd-seller-name">{p.store.name}</div>
+                </div>
+                <span className="pd-verified">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  Verified
+                </span>
+              </div>
             </div>
           )}
 
-          {/* Delivery Card */}
-          <div className="pd-card">
-            <div className="pd-divider-label">Delivery</div>
-
-            {user?.savedAddresses?.length > 0 ? (
-              <div className="pd-address-card">
-                <div className="pd-address-row">
-                  <span className="pd-address-lbl">Deliver to</span>
-                  <button
-                    className="pd-address-change"
-                    onClick={() => {
-                      if (!selectedAddress) return;
-                      const idx = user.savedAddresses.findIndex(a => a._id === selectedAddress._id);
-                      const next = user.savedAddresses[(idx + 1) % user.savedAddresses.length];
-                      setSelectedAddress(next);
-                      if (next?.pincode) { setPincode(next.pincode); checkDeliveryImpl(next.pincode); }
-                    }}
-                  >
-                    Change
-                  </button>
-                </div>
-                <div className="pd-address-text">
-                  {selectedAddress?.fullName} · {selectedAddress?.city} — {selectedAddress?.pincode}
-                </div>
-              </div>
-            ) : (
-              <form className="pd-delivery-form" onSubmit={checkDelivery}>
-                <input
-                  type="text"
-                  value={pincode}
-                  onChange={e => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="Enter 6-digit pincode"
-                  className="pd-pin-input"
-                />
-                <button type="submit" className="pd-pin-btn" disabled={checkingDelivery || pincode.length !== 6}>
-                  {checkingDelivery ? '...' : 'Check'}
-                </button>
-              </form>
-            )}
-
-            {deliveryInfo && (
-              <div className={`pd-delivery-result ${deliveryInfo.serviceable ? 'ok' : 'fail'}`}>
-                {deliveryInfo.serviceable ? (
-                  <>
-                    <div className="pd-delivery-eta">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                      Delivery by {deliveryInfo.etaStart?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} – {deliveryInfo.etaEnd?.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                    </div>
-                  </>
-                ) : (
-                  <div style={{ fontWeight: 700 }}>✗ {deliveryInfo.message || 'Not deliverable to this pincode'}</div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Highlights / Description / Specs Tabbed Card */}
-          {(hasHighlights || hasDescription || hasSpecifications) && (
+          {/* ─ Variants Card ─ */}
+          {variantAttrs.length > 0 && (
             <div className="pd-card">
-              <div className="pd-tabs">
-                {hasHighlights && <button className={`pd-tab ${activeTab === 'highlights' ? 'on' : ''}`} onClick={() => setActiveTab('highlights')}>Highlights</button>}
-                {hasDescription && <button className={`pd-tab ${activeTab === 'description' ? 'on' : ''}`} onClick={() => setActiveTab('description')}>Description</button>}
-                {hasSpecifications && <button className={`pd-tab ${activeTab === 'specs' ? 'on' : ''}`} onClick={() => setActiveTab('specs')}>Specs</button>}
+              <div className="pd-var-section">
+                <div className="pd-dlabel">Select Options</div>
+                <div className="pd-var-row">
+                  {variantAttrs.map((attr, attrIdx) => {
+                    const lowAttr = attr.toLowerCase().trim();
+                    const opts = variantOpts(attr);
+                    const isColor = ['color', 'colour', 'finish', 'shade'].includes(lowAttr);
+                    const selectedVal = selected[lowAttr];
+                    return (
+                      <div key={attrIdx}>
+                        <div className="pd-var-lbl">
+                          {attr}{selectedVal && <span>: {selectedVal}</span>}
+                        </div>
+                        <div className="pd-chips">
+                          {opts.map((optVal, optIdx) => {
+                            const enabled = isOptEnabled(attr, optVal);
+                            const isOn = selected[lowAttr]?.toLowerCase() === String(optVal).toLowerCase();
+                            return (
+                              <button
+                                key={optIdx}
+                                className={`pd-chip${isOn ? ' on' : ''}${!enabled ? ' disabled' : ''}`}
+                                onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
+                                disabled={!enabled}
+                              >
+                                {isColor ? (
+                                  <span className="pd-chip-col">
+                                    <span className="pd-col-dot" style={{ backgroundColor: optVal.toLowerCase() }} />
+                                    {optVal}
+                                  </span>
+                                ) : optVal}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
+            </div>
+          )}
 
-              {activeTab === 'highlights' && hasHighlights && (
-                <ul className="pd-highlights">
-                  {p.highlights.map((h, i) => (
-                    <li key={i} className="pd-highlight-item">
-                      <svg className="pd-highlight-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                      {h}
-                    </li>
-                  ))}
-                </ul>
+          {/* ─ Delivery Card ─ */}
+          <div className="pd-card">
+            <div className="pd-del-body">
+              <div className="pd-dlabel">Delivery</div>
+
+              {user?.savedAddresses?.length > 0 ? (
+                <div className="pd-addr-card">
+                  <div className="pd-addr-top">
+                    <span className="pd-addr-lbl2">Deliver to</span>
+                    <button
+                      className="pd-addr-change"
+                      onClick={() => {
+                        if (!selectedAddress) return;
+                        const idx = user.savedAddresses.findIndex(a => a._id === selectedAddress._id);
+                        const next = user.savedAddresses[(idx + 1) % user.savedAddresses.length];
+                        setSelectedAddress(next);
+                        if (next?.pincode) { setPincode(next.pincode); checkDeliveryImpl(next.pincode); }
+                      }}
+                    >
+                      Change
+                    </button>
+                  </div>
+                  <div className="pd-addr-val">
+                    {selectedAddress?.fullName} · {selectedAddress?.city} — {selectedAddress?.pincode}
+                  </div>
+                </div>
+              ) : (
+                <form className="pd-pin-row" onSubmit={checkDelivery}>
+                  <input
+                    type="text"
+                    value={pincode}
+                    onChange={e => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="Enter 6-digit pincode"
+                    className="pd-pin-input"
+                  />
+                  <button type="submit" className="pd-pin-btn" disabled={checkingDelivery || pincode.length !== 6}>
+                    {checkingDelivery ? '...' : 'Check'}
+                  </button>
+                </form>
               )}
 
-              {activeTab === 'description' && hasDescription && (
-                <div>
-                  <p className="pd-description" style={{ display: descriptionExpanded ? 'block' : '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                    {p.description}
-                  </p>
-                  {p.description.length > 280 && (
-                    <button className="pd-read-more" onClick={() => setDescriptionExpanded(!descriptionExpanded)}>
-                      {descriptionExpanded ? '▲ Read Less' : '▼ Read More'}
-                    </button>
+              {deliveryInfo && (
+                <div className={`pd-del-result ${deliveryInfo.serviceable ? 'ok' : 'fail'}`}>
+                  {deliveryInfo.serviceable ? (
+                    <div className="pd-del-eta">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                      Delivery by {deliveryInfo.etaStart?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} – {deliveryInfo.etaEnd?.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    </div>
+                  ) : (
+                    <div style={{ fontWeight: 700 }}>✗ {deliveryInfo.message || 'Not deliverable to this pincode'}</div>
                   )}
                 </div>
               )}
+            </div>
+          </div>
 
-              {activeTab === 'specs' && hasSpecifications && (
-                <table className="pd-specs">
-                  <tbody>
-                    {p.specifications.map((spec, i) => {
-                      if (typeof spec === 'object' && spec !== null) {
-                        return (
-                          <tr key={i}>
-                            <td className="spec-key">{spec.key || spec.label}</td>
-                            <td className="spec-val">{spec.value || spec.val}</td>
-                          </tr>
-                        );
-                      }
-                      if (typeof spec === 'string') {
-                        const parts = spec.split(':').map(s => s.trim());
-                        if (parts.length === 2) return (
-                          <tr key={i}>
-                            <td className="spec-key">{parts[0]}</td>
-                            <td className="spec-val">{parts[1]}</td>
-                          </tr>
-                        );
-                      }
-                      return null;
-                    })}
-                  </tbody>
-                </table>
-              )}
+          {/* ─ Highlights / Description / Specs ─ */}
+          {(hasHighlights || hasDescription || hasSpecifications) && (
+            <div className="pd-card">
+              <div className="pd-tabs-wrap">
+                <div className="pd-tabs">
+                  {hasHighlights && <button className={`pd-tab${activeTab === 'highlights' ? ' on' : ''}`} onClick={() => setActiveTab('highlights')}>Highlights</button>}
+                  {hasDescription && <button className={`pd-tab${activeTab === 'description' ? ' on' : ''}`} onClick={() => setActiveTab('description')}>Description</button>}
+                  {hasSpecifications && <button className={`pd-tab${activeTab === 'specs' ? ' on' : ''}`} onClick={() => setActiveTab('specs')}>Specs</button>}
+                </div>
+              </div>
+
+              <div className="pd-tab-body">
+                {activeTab === 'highlights' && hasHighlights && (
+                  <ul className="pd-highlights">
+                    {p.highlights.map((h, i) => (
+                      <li key={i} className="pd-hi">
+                        <svg className="pd-hi-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                        {h}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {activeTab === 'description' && hasDescription && (
+                  <div>
+                    <p
+                      className="pd-desc"
+                      style={descriptionExpanded ? {} : { display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                    >
+                      {p.description}
+                    </p>
+                    {p.description.length > 280 && (
+                      <button className="pd-readmore" onClick={() => setDescriptionExpanded(!descriptionExpanded)}>
+                        {descriptionExpanded ? '▲ Less' : '▼ Read More'}
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {activeTab === 'specs' && hasSpecifications && (
+                  <table className="pd-specs">
+                    <tbody>
+                      {p.specifications.map((spec, i) => {
+                        if (typeof spec === 'object' && spec !== null) {
+                          return (
+                            <tr key={i}>
+                              <td className="sk">{spec.key || spec.label}</td>
+                              <td className="sv">{spec.value || spec.val}</td>
+                            </tr>
+                          );
+                        }
+                        if (typeof spec === 'string') {
+                          const parts = spec.split(':').map(s => s.trim());
+                          if (parts.length === 2) return (
+                            <tr key={i}>
+                              <td className="sk">{parts[0]}</td>
+                              <td className="sv">{parts[1]}</td>
+                            </tr>
+                          );
+                        }
+                        return null;
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
             </div>
           )}
 
-          {/* Desktop CTA Buttons */}
-          <div className="pd-cta-row" style={{ display: 'none' }} id="pd-desktop-cta">
-          </div>
-          <div className="pd-cta-row" style={{ marginTop: 4 }}>
+          {/* ─ Desktop CTA ─ */}
+          <div className="pd-cta pd-desktop-cta">
             <button className="pd-btn-cart" onClick={handleAddToCart} disabled={!canAddToCart}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
               Add to Cart
             </button>
             <button className="pd-btn-buy" onClick={handleBuyNow} disabled={!canAddToCart}>
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>
               Buy Now
             </button>
           </div>
@@ -1531,11 +1425,11 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* Recommended Products */}
+      {/* ── Recommendations ── */}
       {similarProducts.length > 0 && (
-        <div className="pd-recs">
-          <div className="pd-recs-header">
-            <h3 className="pd-recs-title">Recommended for You</h3>
+        <div className="pd-recs-wrap">
+          <div className="pd-recs-hd">
+            <h3 className="pd-recs-title">You May Also Like</h3>
             <div className="pd-recs-line" />
           </div>
           <div className="pd-recs-grid">
@@ -1546,16 +1440,16 @@ export default function ProductDetail() {
         </div>
       )}
 
-      {/* Lightbox */}
+      {/* ── Lightbox ── */}
       {lightbox && imgs[activeImg] && (
-        <div className="pd-lightbox" onClick={() => setLightbox(false)}>
-          <button className="pd-lightbox-close" onClick={() => setLightbox(false)}>×</button>
+        <div className="pd-lb" onClick={() => setLightbox(false)}>
+          <button className="pd-lb-close" onClick={() => setLightbox(false)}>×</button>
           <img src={getImageUrl(imgs[activeImg], 1200)} alt={p.name} onClick={e => e.stopPropagation()} />
         </div>
       )}
 
-      {/* Mobile Sticky CTA */}
-      <div className="pd-mobile-cta">
+      {/* ── Mobile Sticky CTA ── */}
+      <div className="pd-sticky-cta">
         <button className="pd-mob-cart" onClick={handleAddToCart} disabled={!canAddToCart}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           Add to Cart
