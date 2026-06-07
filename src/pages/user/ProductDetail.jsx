@@ -841,27 +841,33 @@ export default function ProductDetail() {
         .pd-seller-row {
           display: flex;
           align-items: center;
-          gap: 14px;
+          gap: 16px;
+          padding: 16px;
         }
         .pd-seller-avatar {
-          width: 44px;
-          height: 44px;
-          border-radius: 12px;
+          width: 52px;
+          height: 52px;
+          border-radius: 14px;
           object-fit: cover;
           border: 1px solid var(--border);
         }
-        .pd-seller-name { font-size: 14px; font-weight: 700; color: var(--ink); }
-        .pd-seller-label { font-size: 11px; font-weight: 500; color: var(--ink3); }
+        .pd-seller-name { font-size: 15px; font-weight: 700; color: var(--ink); }
+        .pd-seller-label { font-size: 11px; font-weight: 600; color: var(--ink3); margin-bottom: 2px; }
         .pd-verified-chip {
           margin-left: auto;
-          font-size: 10px;
+          font-size: 11px;
           font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.1em;
-          color: var(--green);
-          background: var(--green-soft);
-          padding: 5px 10px;
-          border-radius: 6px;
+          color: #047857;
+          background: rgba(5,150,105,0.08);
+          padding: 6px 12px;
+          border-radius: 8px;
+          border:1px solid rgba(5,150,105,0.15);
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
         }
 
         /* Variants */
@@ -1150,10 +1156,20 @@ export default function ProductDetail() {
         .pd-recs-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
+          gap: 10px;
         }
-        @media (min-width: 640px) { .pd-recs-grid { grid-template-columns: repeat(3, 1fr); gap:16px; } }
-        @media (min-width: 1024px) { .pd-recs-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
+        @media (min-width: 640px) { .pd-recs-grid { grid-template-columns: repeat(3, 1fr); gap:14px; } }
+        @media (min-width: 1024px) { .pd-recs-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+        .pd-recs-grid .pc-premium-card .pc-img-container {
+          padding: 8px;
+        }
+        .pd-recs-grid .pc-premium-card .pc-content {
+          padding: 8px;
+        }
+        .pd-recs-grid .pc-premium-card .pc-title {
+          font-size: 12px;
+          height: 34px;
+        }
 
         /* Lightbox */
         .pd-lightbox {
@@ -1428,13 +1444,6 @@ export default function ProductDetail() {
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                       Delivery by {deliveryInfo.etaStart?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} – {deliveryInfo.etaEnd?.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
                     </div>
-                    <div className="pd-delivery-charges">
-                      <div>Prepaid: <span>{deliveryInfo.isFreeDelivery ? 'FREE' : `₹${deliveryInfo.deliveryCharge || 85}`}</span></div>
-                      {deliveryInfo.codAvailable
-                        ? <div>COD: <span>₹{deliveryInfo.codFinalCharge || (deliveryInfo.deliveryCharge || 85) + (deliveryInfo.codCharge || 0)}</span> <span style={{ fontWeight: 400, color: 'var(--green)' }}>(Delivery ₹{deliveryInfo.deliveryCharge || 85} + COD ₹{deliveryInfo.codCharge || 0})</span></div>
-                        : <div style={{ color: '#b45309' }}>COD not available</div>
-                      }
-                    </div>
                   </>
                 ) : (
                   <div style={{ fontWeight: 700 }}>✗ {deliveryInfo.message || 'Not deliverable to this pincode'}</div>
@@ -1526,7 +1535,7 @@ export default function ProductDetail() {
       {similarProducts.length > 0 && (
         <div className="pd-recs">
           <div className="pd-recs-header">
-            <h3 className="pd-recs-title">You May Also Like</h3>
+            <h3 className="pd-recs-title">Recommended for You</h3>
             <div className="pd-recs-line" />
           </div>
           <div className="pd-recs-grid">

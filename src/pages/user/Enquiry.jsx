@@ -620,55 +620,55 @@ export default function Enquiry() {
         .ct-line-unlock{font-size:10px;font-weight:700;color:#d97706;text-align:right;max-width:120px;line-height:1.4;}
         @media(max-width:500px){.ct-line-total{flex-direction:row;align-items:center;justify-content:space-between;}}
 
-        .ct-section{background:white;border:1px solid rgba(30,58,138,.1);border-radius:18px;padding:24px;margin-bottom:16px;animation:ctUp .5s ease both;box-shadow:0 2px 12px rgba(30,58,138,.04);}
-        .ct-section-title{font-size:18px;font-weight:800;color:#1e1b2e;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
-        .ct-section-title span{width:28px;height:28px;border-radius:10px;background:linear-gradient(135deg,#f97316,#1e3a8a);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:800;}
+        .ct-section{background:white;border:1px solid rgba(15,23,42,.1);border-radius:16px;padding:20px;margin-bottom:14px;animation:ctUp .5s ease both;box-shadow:0 1px 10px rgba(15,23,42,.05);}
+        .ct-section-title{font-size:16px;font-weight:800;color:#0f172a;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+        .ct-section-title span{width:26px;height:26px;border-radius:10px;background:linear-gradient(135deg,#f97316,#1e40af);display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:800;}
 
-        .ct-address-option{border:2px solid rgba(30,58,138,.15);border-radius:16px;padding:16px;cursor:pointer;transition:all .2s;margin-bottom:12px;}
-        .ct-address-option.selected{border-color:#f97316;background:rgba(249,115,22,.05);}
-        .ct-address-option:hover{border-color:rgba(30,58,138,.3);}
-        .ct-address-name{font-weight:800;color:#1e1b2e;margin-bottom:4px;}
-        .ct-address-text{font-size:13px;color:#6b7280;line-height:1.5;}
+        .ct-address-option{border:2px solid rgba(15,23,42,.12);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;margin-bottom:10px;}
+        .ct-address-option.selected{border-color:#f97316;background:rgba(249,115,22,.06);box-shadow:0 0 0 1px rgba(249,115,22,.1);}
+        .ct-address-option:hover{border-color:rgba(249,115,22,.4);}
+        .ct-address-name{font-weight:800;color:#0f172a;margin-bottom:4px;}
+        .ct-address-text{font-size:13px;color:#64748b;line-height:1.6;}
         .ct-address-actions{display:flex;gap:8px;margin-top:12px;}
         .ct-address-btn{font-size:11px;font-weight:700;letter-spacing:.08em;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;background:none;}
-        .ct-address-btn.edit{color:#1e3a8a;background:rgba(30,58,138,.05);}
-        .ct-address-btn.delete{color:#ef4444;background:rgba(239,68,68,.05);}
-        .ct-address-btn.default{color:#059669;background:rgba(5,150,105,.05);}
-        .ct-add-address-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:14px;border:2px dashed rgba(30,58,138,.2);background:white;color:#1e3a8a;font-size:12px;font-weight:800;letter-spacing:.08em;cursor:pointer;transition:all .2s;}
-        .ct-add-address-btn:hover{border-color:#f97316;color:#f97316;background:rgba(249,115,22,.03);}
+        .ct-address-btn.edit{color:#1e40af;background:rgba(30,64,175,.06);}
+        .ct-address-btn.delete{color:#dc2626;background:rgba(220,38,38,.06);}
+        .ct-address-btn.default{color:#16a34a;background:rgba(22,163,74,.06);}
+        .ct-add-address-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:12px;border:2px dashed rgba(15,23,42,.2);background:white;color:#1e40af;font-size:12px;font-weight:800;letter-spacing:.08em;cursor:pointer;transition:all .2s;}
+        .ct-add-address-btn:hover{border-color:#f97316;color:#f97316;background:rgba(249,115,22,.04);}
 
-        .ct-payment-option{border:2px solid rgba(30,58,138,.15);border-radius:16px;padding:18px;cursor:pointer;transition:all .2s;margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;}
-        .ct-payment-option.selected{border-color:#f97316;background:rgba(249,115,22,.05);}
-        .ct-payment-option:hover{border-color:rgba(30,58,138,.3);}
-        .ct-payment-icon{width:40px;height:40px;border-radius:12px;background:rgba(30,58,138,.08);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+        .ct-payment-option{border:2px solid rgba(15,23,42,.12);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;}
+        .ct-payment-option.selected{border-color:#f97316;background:rgba(249,115,22,.06);box-shadow:0 0 0 1px rgba(249,115,22,.1);}
+        .ct-payment-option:hover{border-color:rgba(249,115,22,.4);}
+        .ct-payment-icon{width:44px;height:44px;border-radius:12px;background:rgba(15,23,42,.05);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
         .ct-payment-info{flex:1;}
-        .ct-payment-title{font-weight:800;color:#1e1b2e;margin-bottom:4px;}
-        .ct-payment-desc{font-size:12px;color:#6b7280;}
+        .ct-payment-title{font-weight:800;color:#0f172a;margin-bottom:4px;}
+        .ct-payment-desc{font-size:12px;color:#64748b;}
 
         .ct-summary{
-          background:white; border:1px solid rgba(30,58,138,.14);
-          border-radius:20px; padding:24px; position:relative; overflow:hidden;
-          box-shadow:0 4px 32px rgba(30,58,138,.07);
+          background:white; border:1px solid rgba(15,23,42,.12);
+          border-radius:18px; padding:22px; position:relative; overflow:hidden;
+          box-shadow:0 4px 20px rgba(15,23,42,.08);
           animation:ctUp .5s ease both;
           @media(min-width:960px){position:sticky;top:24px;}
         }
-        .ct-summary::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#f97316,transparent);}
-        .ct-summary-title{font-family:'Bebas Neue',sans-serif;font-size:28px;color:#1e1b2e;letter-spacing:.03em;margin-bottom:20px;}
+        .ct-summary::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#f97316,#1e40af,transparent);}
+        .ct-summary-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#0f172a;letter-spacing:.03em;margin-bottom:18px;}
 
         .ct-summary-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
-        .ct-summary-row{display:flex;align-items:center;justify-content:space-between;font-size:13px;}
-        .ct-summary-label{color:#6b7280;font-weight:500;}
-        .ct-summary-val{font-weight:700;color:#1e1b2e;}
-        .ct-summary-val.green{color:#059669;}
-        .ct-summary-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(30,58,138,.15),transparent);margin:12px 0;}
+        .ct-summary-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;}
+        .ct-summary-label{color:#64748b;font-weight:500;}
+        .ct-summary-val{font-weight:700;color:#0f172a;}
+        .ct-summary-val.green{color:#16a34a;}
+        .ct-summary-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(15,23,42,.1),transparent);margin:12px 0;}
         .ct-summary-total-row{display:flex;align-items:baseline;justify-content:space-between;}
-        .ct-summary-total-label{font-size:13px;font-weight:700;color:#1e1b2e;text-transform:uppercase;letter-spacing:.08em;}
-        .ct-summary-total-val{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#f97316;letter-spacing:.03em;}
+        .ct-summary-total-label{font-size:13px;font-weight:800;color:#0f172a;text-transform:uppercase;letter-spacing:.08em;}
+        .ct-summary-total-val{font-family:'Bebas Neue',sans-serif;font-size:38px;color:#f97316;letter-spacing:.03em;}
 
-        .ct-savings-badge{display:flex;align-items:center;gap:8px;background:rgba(5,150,105,.07);border:1px solid rgba(5,150,105,.18);border-radius:12px;padding:12px 14px;margin-bottom:16px;}
-        .ct-savings-ico{width:32px;height:32px;border-radius:8px;background:rgba(5,150,105,.12);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
-        .ct-savings-text{font-size:13px;font-weight:700;color:#059669;}
-        .ct-savings-sub{font-size:11px;font-weight:500;color:#6b7280;}
+        .ct-savings-badge{display:flex;align-items:center;gap:10px;background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.15);border-radius:12px;padding:14px 16px;margin-bottom:16px;}
+        .ct-savings-ico{width:36px;height:36px;border-radius:10px;background:rgba(22,163,74,.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+        .ct-savings-text{font-size:14px;font-weight:700;color:#16a34a;}
+        .ct-savings-sub{font-size:11px;font-weight:500;color:#64748b;}
 
         .ct-min-progress{margin:16px 0;}
         .ct-min-track{height:5px;background:rgba(30,58,138,.12);border-radius:100px;overflow:hidden;margin-bottom:7px;}
@@ -886,10 +886,10 @@ export default function Enquiry() {
                 <div className="ct-summary-title">Order Summary</div>
                 <div className="ct-summary-rows">
                   <div className="ct-summary-row"><span className="ct-summary-label">Total MRP</span><span className="ct-summary-val">₹{safeNum(mrpTotal).toLocaleString()}</span></div>
-                  {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Bulk Discount</span><span className="ct-summary-val green">-₹{safeNum(bulkDiscount).toLocaleString()}</span></div>}
+                  {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Discount</span><span className="ct-summary-val green">-₹{safeNum(bulkDiscount).toLocaleString()}</span></div>}
                   <div className="ct-summary-row"><span className="ct-summary-label">Subtotal</span><span className="ct-summary-val">₹{safeNum(subTotal).toLocaleString()}</span></div>
                   {appliedCoupon && <div className="ct-summary-row"><span className="ct-summary-label">Coupon Discount</span><span className="ct-summary-val green">-₹{safeNum(couponDiscount).toLocaleString()}</span></div>}
-                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹{safeNum(shippingInfo.finalCharge).toLocaleString()}`}</span></div>
+                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹${safeNum(shippingInfo.finalCharge).toLocaleString()}`}</span></div>
                 </div>
                 <div className="ct-summary-divider" />
                 <div className="ct-summary-total-row">
@@ -936,7 +936,7 @@ export default function Enquiry() {
                       <div style={{width:'18px',height:'18px',border:'2px solid rgba(255,255,255,0.3)',borderTop:'2px solid white',borderRadius:'50%',animation:'ctPulse 1s linear infinite'}} />
                       Processing...
                     </>
-                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹{safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹{safeNum(totalPayable).toLocaleString()}`}
+                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
                 </button>
                 <div className="ct-secure-note">
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -951,10 +951,10 @@ export default function Enquiry() {
                 <div className="ct-summary-title">Order Summary</div>
                 <div className="ct-summary-rows">
                   <div className="ct-summary-row"><span className="ct-summary-label">Total MRP</span><span className="ct-summary-val">₹{safeNum(mrpTotal).toLocaleString()}</span></div>
-                  {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Bulk Discount</span><span className="ct-summary-val green">-₹{safeNum(bulkDiscount).toLocaleString()}</span></div>}
+                  {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Discount</span><span className="ct-summary-val green">-₹{safeNum(bulkDiscount).toLocaleString()}</span></div>}
                   <div className="ct-summary-row"><span className="ct-summary-label">Subtotal</span><span className="ct-summary-val">₹{safeNum(subTotal).toLocaleString()}</span></div>
                   {appliedCoupon && <div className="ct-summary-row"><span className="ct-summary-label">Coupon Discount</span><span className="ct-summary-val green">-₹{safeNum(couponDiscount).toLocaleString()}</span></div>}
-                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹{safeNum(shippingInfo.finalCharge).toLocaleString()}`}</span></div>
+                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹${safeNum(shippingInfo.finalCharge).toLocaleString()}`}</span></div>
                 </div>
                 <div className="ct-summary-divider" />
                 <div className="ct-summary-total-row">
@@ -993,20 +993,13 @@ export default function Enquiry() {
                   </div>
                 )}
                 
-                <div className="ct-min-progress">
-                  <div className="ct-min-track"><div className="ct-min-fill" style={{width:`${Math.min(100, (subTotal / minAmount) * 100)}%`}} /></div>
-                  <div className={`ct-min-text ${subTotal >= minAmount ? 'met' : ''}`}>
-                    {subTotal >= minAmount ? '✓ Min order amount met!' : `Add ₹{safeNum(minLeft).toLocaleString()} more to place order`}
-                  </div>
-                </div>
-
                 <button className={`ct-checkout-btn ${subTotal >= minAmount && selectedAddress && svc.available !== false && !cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; }) ? 'ready' : 'disabled'}`} disabled={subTotal < minAmount || !selectedAddress || svc.available === false || cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; })} onClick={submit}>
                   {loading ? (
                     <>
                       <div style={{width:'18px',height:'18px',border:'2px solid rgba(255,255,255,0.3)',borderTop:'2px solid white',borderRadius:'50%',animation:'ctPulse 1s linear infinite'}} />
                       Processing...
                     </>
-                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹{safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹{safeNum(totalPayable).toLocaleString()}`}
+                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
                 </button>
                 <div className="ct-secure-note">
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
