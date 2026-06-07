@@ -142,26 +142,35 @@ export default function Cart() {
         loading: false,
         deliveryCharge: data.delivery_charge || 0,
         codCharge: data.cod_charge || 0,
+        finalCharge: data.final_charge || 0,
         codAvailable: data.cod_available !== false,
         isFreeDelivery: data.final_charge === 0 || false,
         deliveryAvailable: true
       })
     } catch (err) {
       console.error('Failed to calculate shipping:', err)
+      // Calculate default shipping in case API fails
+      const totalWeight = cart.reduce((sum, item) => sum + (Number(item.weight) || 0.5) * item.quantity, 0)
+      const baseAmt = 85
+      const freeDeliveryAbove = 999
+      const isPrepaidFree = totalPayable >= freeDeliveryAbove
+      const deliveryCharge = paymentMethod === "prepaid" && isPrepaidFree ? 0 : baseAmt
+      const codCharge = paymentMethod === "cod" ? Math.min(Math.max(Math.round(totalPayable * 0.05), 40), 100) : 0
+      const finalCharge = deliveryCharge + codCharge
+      
       setShippingInfo({
         loading: false,
-        deliveryCharge: 0,
-        codCharge: 0,
+        deliveryCharge,
+        codCharge,
+        finalCharge,
         codAvailable: true,
-        isFreeDelivery: false,
+        isFreeDelivery: finalCharge === 0,
         deliveryAvailable: true
       })
     }
   }
 
-  const finalTotalPayable = (appliedCoupon ? appliedCoupon.payable : totalPayable) + 
-    (paymentMethod === 'prepaid' ? 0 : (shippingInfo.isFreeDelivery ? 0 : shippingInfo.deliveryCharge)) + 
-    (paymentMethod === 'cod' ? shippingInfo.codCharge : 0)
+  const finalTotalPayable = (appliedCoupon ? appliedCoupon.payable : totalPayable) + shippingInfo.finalCharge
   const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0
 
   // Load addresses on mount
@@ -717,27 +726,33 @@ export default function Cart() {
 
               {/* Address Selection */}
               {savedAddresses.length > 0 && (
-                <div className="mb-4">
-                  <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Delivery Address</div>
-                  <select
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500"
-                    value={selectedAddress?._id}
-                    onChange={(e) => {
-                      const addr = savedAddresses.find(a => a._id === e.target.value)
-                      setSelectedAddress(addr)
-                    }}
-                  >
+                <div className="mb-6">
+                  <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Delivery Address</div>
+                  <div className="space-y-3">
                     {savedAddresses.map(addr => (
-                      <option key={addr._id} value={addr._id}>
-                        {addr.fullName} - {addr.pincode}
-                      </option>
+                      <div
+                        key={addr._id}
+                        onClick={() => setSelectedAddress(addr)}
+                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                          selectedAddress?._id === addr._id
+                            ? 'border-orange-500 bg-orange-50'
+                            : 'border-gray-100 bg-white hover:border-orange-200 hover:bg-orange-50/30'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-gray-800 text-sm">{addr.fullName}</span>
+                          {addr.isDefault && (
+                            <span className="text-[10px] font-extrabold text-orange-500 uppercase tracking-widest bg-orange-100 px-3 py-1 rounded-full">Default</span>
+                          )}
+                        </div>
+                        <div className="text-xs text-gray-600 leading-relaxed">
+                          {addr.addressLine1}, {addr.addressLine2 ? `${addr.addressLine2}, ` : ''}
+                          {addr.city}, {addr.state} - {addr.pincode}
+                        </div>
+                        <div className="text-[11px] font-semibold text-gray-500 mt-2">📞 {addr.phone}</div>
+                      </div>
                     ))}
-                  </select>
-                  {selectedAddress && (
-                    <div className="mt-2 text-xs text-gray-600">
-                      {selectedAddress.addressLine1}, {selectedAddress.city}, {selectedAddress.state} - {selectedAddress.pincode}
-                    </div>
-                  )}
+                  </div>
                 </div>
               )}
 
