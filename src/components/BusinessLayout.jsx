@@ -36,6 +36,13 @@ const Icon = ({ name }) => (
         <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     )}
+    {name === 'orders' && (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+        <line x1="3" y1="6" x2="21" y2="6" />
+        <path d="M16 10a4 4 0 0 1-8 0" />
+      </svg>
+    )}
   </span>
 )
 
@@ -116,6 +123,12 @@ export default function BusinessLayout() {
                   Dashboard
                 </>
               ), true)}
+              {link('/business/orders', (
+                <>
+                  <Icon name="orders" />
+                  Orders
+                </>
+              ))}
               {link('/business/products', (
                 <>
                   <Icon name="prod" />

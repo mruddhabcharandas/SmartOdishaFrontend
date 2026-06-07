@@ -46,6 +46,7 @@ import BusinessRequest from './pages/business/Request.jsx'
 import BusinessProducts from './pages/business/BusinessProductsPage.jsx'
 import BusinessInventory from './pages/business/BusinessInventory.jsx'
 import BusinessProfile from './pages/business/BusinessProfile.jsx'
+import BusinessOrders from './pages/business/Orders.jsx'
 import BusinessProtectedRoute from './components/BusinessProtectedRoute.jsx'
 import BusinessLayout from './components/BusinessLayout.jsx'
 
@@ -92,6 +93,7 @@ export default function App() {
       >
         <Route index element={<Navigate to="/business/dashboard" />} />
         <Route path="dashboard" element={<BusinessDashboard />} />
+        <Route path="orders" element={<BusinessOrders />} />
         <Route path="products" element={<BusinessProducts />} />
         <Route path="inventory" element={<BusinessInventory />} />
         <Route path="profile" element={<BusinessProfile />} />
