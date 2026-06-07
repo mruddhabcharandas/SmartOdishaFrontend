@@ -438,7 +438,7 @@ export default function ProductDetail() {
     if (variantAttrs.length > 0 && !matchedVariant) { notify('Please select all options', 'error'); return; }
     if (matchedVariant && matchedVariant.stock <= 0) { notify('This variant is out of stock', 'error'); return; }
     const ok = await addToCart({ ...p, minOrderQty: 1 }, matchedVariant || undefined);
-    if (ok) { await refreshCart(); navigate('/cart'); }
+    if (ok) { await refreshCart(); navigate('/order'); }
   };
 
   const handleShare = async () => {
@@ -1104,15 +1104,16 @@ export default function ProductDetail() {
           border-top: 1px solid var(--border);
           z-index: 50;
           display: flex;
-          padding: 10px 16px 10px;
-          gap: 10px;
+          padding: 12px 16px 12px; /* More padding for mobile
+          gap: 12px;
           box-shadow: 0 -4px 24px rgba(0,0,0,0.07);
         }
         @media (min-width: 1024px) { .pd-mobile-cta { display: none; } }
 
         .pd-mob-cart, .pd-mob-buy {
           flex: 1;
-          padding: 14px;
+          padding: 16px 12px; /* Larger touch target
+          min-height: 48px;
           border: none;
           border-radius: 12px;
           font-size: 14px;
@@ -1122,7 +1123,7 @@ export default function ProductDetail() {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+          gap: 8px;
           transition: all 0.2s;
         }
         .pd-mob-cart { background: var(--ink); color: #fff; }
@@ -1532,7 +1533,7 @@ export default function ProductDetail() {
           </div>
           <div className="pd-recs-grid">
             {similarProducts.map((product, i) => (
-              <ProductCard key={i} p={product} />
+              <ProductCard key={i} p={product} authed={isAuthenticated} />
             ))}
           </div>
         </div>

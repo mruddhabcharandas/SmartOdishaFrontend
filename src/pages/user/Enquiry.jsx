@@ -27,33 +27,39 @@ export default function Enquiry() {
   const { user, refreshProfile } = useAuth()
   const minAmount = Number(import.meta.env.VITE_MIN_ORDER_AMOUNT || 5000)
 
+  // Safe number function
+  const safeNum = (val) => {
+    const n = Number(val)
+    return isNaN(n) || !isFinite(n) ? 0 : n
+  }
+
   // Price Helpers (same as Cart.jsx)
   const getBulkTiers = (item) => {
     const it = (item.bulkTiers || item.bulkDiscountQuantity) ? item : (item.productId && typeof item.productId === 'object' ? item.productId : item)
     if (Array.isArray(it.bulkTiers) && it.bulkTiers.length)
-      return it.bulkTiers.slice().sort((a,b) => a.quantity - b.quantity)
-    if (it.bulkDiscountQuantity > 0)
-      return [{ quantity: it.bulkDiscountQuantity, priceReduction: it.bulkDiscountPriceReduction || 0 }]
+      return it.bulkTiers.slice().sort((a,b) => safeNum(a.quantity) - safeNum(b.quantity))
+    if (safeNum(it.bulkDiscountQuantity) > 0)
+      return [{ quantity: safeNum(it.bulkDiscountQuantity), priceReduction: safeNum(it.bulkDiscountPriceReduction || 0) }]
     return []
   }
-  const getNextTier = (qty, tiers) => tiers.find(t => qty < t.quantity) || null
+  const getNextTier = (qty, tiers) => tiers.find(t => safeNum(qty) < safeNum(t.quantity)) || null
   const unitPrice = (it) => {
-    let p = Number(it.price || 0)
-    const qty = Math.max(1, Number(it.quantity || 1))
+    let p = safeNum(it.price || 0)
+    const qty = Math.max(1, safeNum(it.quantity || 1))
     const tiers = getBulkTiers(it)
     if (tiers.length) {
-      const applicable = tiers.filter(t => qty >= Number(t.quantity || 0)).pop()
-      if (applicable) p = Math.max(0, p - Number(applicable.priceReduction || 0))
+      const applicable = tiers.filter(t => qty >= safeNum(t.quantity || 0)).pop()
+      if (applicable) p = Math.max(0, p - safeNum(applicable.priceReduction || 0))
     }
     return p
   }
-  const lineTotal = (it) => unitPrice(it) * Math.max(1, Number(it.quantity || 1))
-  const mrpTotal = cart.reduce((s,it) => s + Number(it.mrp||it.price||0) * Math.max(1,Number(it.quantity||1)), 0)
+  const lineTotal = (it) => unitPrice(it) * Math.max(1, safeNum(it.quantity || 1))
+  const mrpTotal = cart.reduce((s,it) => s + safeNum(it.mrp||it.price||0) * Math.max(1,safeNum(it.quantity||1)), 0)
   const effTotal = cart.reduce((s,it) => {
     const itemStock = it.variantSku 
       ? (it.productId?.variants?.find(v => v.sku === it.variantSku)?.stock ?? it.stock)
       : (it.productId?.stock ?? it.stock);
-    if (itemStock <= 0) return s;
+    if (safeNum(itemStock) <= 0) return s;
     return s + lineTotal(it);
   }, 0)
   const bulkDiscount = Math.max(0, mrpTotal - effTotal)
@@ -781,7 +787,7 @@ export default function Enquiry() {
                         <div className="ct-item-body">
                           <div className="ct-item-name">{item.name}{hasAttributes && <span style={{marginLeft:8,color:'#6b7280',fontSize:'0.9em',fontWeight:500}}>({Object.values(displayAttributes).filter(v => v).map(v => String(v).toUpperCase()).join(', ')})</span>}</div>
                           <div className="ct-item-meta">
-                            <span className="ct-unit-price">₹{unitPrice(item).toLocaleString()} / unit</span>
+                            <span className="ct-unit-price">₹{safeNum(unitPrice(item)).toLocaleString()} / unit</span>
                             <span style={{fontSize:9,fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase',padding:'2px 8px',borderRadius:100,background:isOutOfStock?'rgba(239,68,68,.1)':itemStock<=5?'rgba(245,158,11,.1)':'rgba(5,150,105,.1)',color:isOutOfStock?'#ef4444':itemStock<=5?'#d97706':'#059669',border:`1px solid ${isOutOfStock?'rgba(239,68,68,.2)':itemStock<=5?'rgba(245,158,11,.2)':'rgba(5,150,105,.2)'}`}}>
                               {stockSt.text}
                             </span>
@@ -794,14 +800,14 @@ export default function Enquiry() {
                               </div>
                               <div className="ct-tier-nudge-row">
                                 {next ? (() => {
-                                  const delta = next.quantity - item.quantity
-                                  const perOff = Number(next.priceReduction||0)
-                                  const effUnit = Math.max(0, Number(item.price||0) - perOff)
-                                  const estSave = perOff * (item.quantity + delta)
+                                  const delta = safeNum(next.quantity) - safeNum(item.quantity)
+                                  const perOff = safeNum(next.priceReduction||0)
+                                  const effUnit = Math.max(0, safeNum(item.price||0) - perOff)
+                                  const estSave = perOff * (safeNum(item.quantity) + delta)
                                   return (
                                     <>
-                                      <div className="ct-tier-text" style={{color:'#f97316'}}>Add {delta} more to save ₹{estSave.toLocaleString()} (₹{effUnit.toLocaleString()}/unit)</div>
-                                      <button className="ct-tier-add-btn" style={{background:'#f97316'}} onClick={() => updateQuantity(itemId, itemSku, next.quantity)}>Add {delta} units</button>
+                                      <div className="ct-tier-text" style={{color:'#f97316'}}>Add {delta} more to save ₹{safeNum(estSave).toLocaleString()} (₹{safeNum(effUnit).toLocaleString()}/unit)</div>
+                                      <button className="ct-tier-add-btn" style={{background:'#f97316'}} onClick={() => updateQuantity(itemId, itemSku, safeNum(next.quantity))}>Add {delta} units</button>
                                     </>
                                   )
                                 })() : <div className="ct-tier-max" style={{color:'#059669'}}>✓ Max bulk savings applied</div>}
@@ -820,7 +826,7 @@ export default function Enquiry() {
                         </div>
                         
                         <div className="ct-line-total">
-                          <div className="ct-line-price">₹{lineTotal(item).toLocaleString()}</div>
+                          <div className="ct-line-price">₹{safeNum(lineTotal(item)).toLocaleString()}</div>
                           {(() => {
                             const it = (item.bulkTiers || item.bulkDiscountQuantity) ? item : (item.productId && typeof item.productId === 'object' ? item.productId : item)
                             const bulkQty = it.bulkDiscountQuantity || (it.bulkTiers && it.bulkTiers[0]?.quantity)
@@ -906,7 +912,7 @@ export default function Enquiry() {
                     <div className="ct-savings-ico" style={{background:'rgba(249,115,22,.12)'}}>🎟️</div>
                     <div>
                       <div className="ct-savings-text" style={{color:'#f97316'}}>{appliedCoupon.code} Applied</div>
-                      <div className="ct-savings-sub">₹{couponDiscount.toLocaleString()} saved</div>
+                      <div className="ct-savings-sub">₹{safeNum(couponDiscount).toLocaleString()} saved</div>
                     </div>
                     <button style={{marginLeft:'auto',background:'none',border:'none',color:'#ef4444',fontWeight:800,fontSize:'11px',letterSpacing:'0.08em',cursor:'pointer'}} onClick={handleRemoveCoupon}>REMOVE</button>
                   </div>
@@ -917,7 +923,7 @@ export default function Enquiry() {
                     <div className="ct-savings-ico">🎉</div>
                     <div>
                       <div className="ct-savings-text">You're Saving!</div>
-                      <div className="ct-savings-sub">₹{Math.max(bulkDiscount, mrpTotal - subTotal).toLocaleString()} on this order</div>
+                      <div className="ct-savings-sub">₹{safeNum(Math.max(bulkDiscount, mrpTotal - subTotal)).toLocaleString()} on this order</div>
                     </div>
                   </div>
                 )}
@@ -925,7 +931,7 @@ export default function Enquiry() {
                 <div className="ct-min-progress">
                   <div className="ct-min-track"><div className="ct-min-fill" style={{width:`${Math.min(100, (subTotal / minAmount) * 100)}%`}} /></div>
                   <div className={`ct-min-text ${subTotal >= minAmount ? 'met' : ''}`}>
-                    {subTotal >= minAmount ? '✓ Min order amount met!' : `Add ₹${minLeft.toLocaleString()} more to place order`}
+                    {subTotal >= minAmount ? '✓ Min order amount met!' : `Add ₹${safeNum(minLeft).toLocaleString()} more to place order`}
                   </div>
                 </div>
 
@@ -935,7 +941,7 @@ export default function Enquiry() {
                       <div style={{width:'18px',height:'18px',border:'2px solid rgba(255,255,255,0.3)',borderTop:'2px solid white',borderRadius:'50%',animation:'ctPulse 1s linear infinite'}} />
                       Processing...
                     </>
-                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(totalPayable * 0.15) > 0 ? `₹${Math.round(totalPayable * 0.15).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹{totalPayable.toLocaleString()}`}
+                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹{safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹{safeNum(totalPayable).toLocaleString()}`}
                 </button>
                 <div className="ct-secure-note">
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -949,16 +955,16 @@ export default function Enquiry() {
               <div className="ct-summary">
                 <div className="ct-summary-title">Order Summary</div>
                 <div className="ct-summary-rows">
-                  <div className="ct-summary-row"><span className="ct-summary-label">Total MRP</span><span className="ct-summary-val">₹{mrpTotal.toLocaleString()}</span></div>
-                  {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Bulk Discount</span><span className="ct-summary-val green">-₹{bulkDiscount.toLocaleString()}</span></div>}
-                  <div className="ct-summary-row"><span className="ct-summary-label">Subtotal</span><span className="ct-summary-val">₹{subTotal.toLocaleString()}</span></div>
-                  {appliedCoupon && <div className="ct-summary-row"><span className="ct-summary-label">Coupon Discount</span><span className="ct-summary-val green">-₹{couponDiscount.toLocaleString()}</span></div>}
-                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹{shippingInfo.finalCharge.toLocaleString()}`}</span></div>
+                  <div className="ct-summary-row"><span className="ct-summary-label">Total MRP</span><span className="ct-summary-val">₹{safeNum(mrpTotal).toLocaleString()}</span></div>
+                  {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Bulk Discount</span><span className="ct-summary-val green">-₹{safeNum(bulkDiscount).toLocaleString()}</span></div>}
+                  <div className="ct-summary-row"><span className="ct-summary-label">Subtotal</span><span className="ct-summary-val">₹{safeNum(subTotal).toLocaleString()}</span></div>
+                  {appliedCoupon && <div className="ct-summary-row"><span className="ct-summary-label">Coupon Discount</span><span className="ct-summary-val green">-₹{safeNum(couponDiscount).toLocaleString()}</span></div>}
+                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹{safeNum(shippingInfo.finalCharge).toLocaleString()}`}</span></div>
                 </div>
                 <div className="ct-summary-divider" />
                 <div className="ct-summary-total-row">
                   <span className="ct-summary-total-label">Total Payable</span>
-                  <span className="ct-summary-total-val">₹{totalPayable.toLocaleString()}</span>
+                  <span className="ct-summary-total-val">₹{safeNum(totalPayable).toLocaleString()}</span>
                 </div>
                 
                 {!appliedCoupon && (
@@ -976,7 +982,7 @@ export default function Enquiry() {
                     <div className="ct-savings-ico" style={{background:'rgba(249,115,22,.12)'}}>🎟️</div>
                     <div>
                       <div className="ct-savings-text" style={{color:'#f97316'}}>{appliedCoupon.code} Applied</div>
-                      <div className="ct-savings-sub">₹{couponDiscount.toLocaleString()} saved</div>
+                      <div className="ct-savings-sub">₹{safeNum(couponDiscount).toLocaleString()} saved</div>
                     </div>
                     <button style={{marginLeft:'auto',background:'none',border:'none',color:'#ef4444',fontWeight:800,fontSize:'11px',letterSpacing:'0.08em',cursor:'pointer'}} onClick={handleRemoveCoupon}>REMOVE</button>
                   </div>
@@ -987,7 +993,7 @@ export default function Enquiry() {
                     <div className="ct-savings-ico">🎉</div>
                     <div>
                       <div className="ct-savings-text">You're Saving!</div>
-                      <div className="ct-savings-sub">₹{Math.max(bulkDiscount, mrpTotal - subTotal).toLocaleString()} on this order</div>
+                      <div className="ct-savings-sub">₹{safeNum(Math.max(bulkDiscount, mrpTotal - subTotal)).toLocaleString()} on this order</div>
                     </div>
                   </div>
                 )}
@@ -995,7 +1001,7 @@ export default function Enquiry() {
                 <div className="ct-min-progress">
                   <div className="ct-min-track"><div className="ct-min-fill" style={{width:`${Math.min(100, (subTotal / minAmount) * 100)}%`}} /></div>
                   <div className={`ct-min-text ${subTotal >= minAmount ? 'met' : ''}`}>
-                    {subTotal >= minAmount ? '✓ Min order amount met!' : `Add ₹${minLeft.toLocaleString()} more to place order`}
+                    {subTotal >= minAmount ? '✓ Min order amount met!' : `Add ₹{safeNum(minLeft).toLocaleString()} more to place order`}
                   </div>
                 </div>
 
@@ -1005,7 +1011,7 @@ export default function Enquiry() {
                       <div style={{width:'18px',height:'18px',border:'2px solid rgba(255,255,255,0.3)',borderTop:'2px solid white',borderRadius:'50%',animation:'ctPulse 1s linear infinite'}} />
                       Processing...
                     </>
-                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(totalPayable * 0.15) > 0 ? `₹${Math.round(totalPayable * 0.15).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹{totalPayable.toLocaleString()}`}
+                  ) : selectedPaymentMethod === 'cod' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹{safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹{safeNum(totalPayable).toLocaleString()}`}
                 </button>
                 <div className="ct-secure-note">
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
