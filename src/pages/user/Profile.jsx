@@ -379,245 +379,344 @@ export default function Profile() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 px-4 shadow-md">
-        <div className="max-w-6xl mx-auto">
+    return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/30 to-slate-100 pb-12 profile-premium">
+      <style>{`
+        .profile-premium {
+          font-family: 'Inter', system-ui, sans-serif;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .profile-header-pattern {
+          background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 20%, rgba(99,102,241,0.3) 0%, transparent 40%);
+        }
+        .profile-nav-active {
+          background: linear-gradient(90deg, rgba(79,70,229,0.08) 0%, rgba(99,102,241,0.04) 100%);
+          color: #4f46e5;
+          border-left: 3px solid #4f46e5;
+        }
+        .profile-stat-card {
+          background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+          border: 1px solid rgba(226,232,240,0.8);
+          transition: all 0.25s ease;
+        }
+        .profile-stat-card:hover {
+          border-color: #c7d2fe;
+          box-shadow: 0 8px 24px rgba(79,70,229,0.08);
+          transform: translateY(-2px);
+        }
+        .profile-premium-badge {
+          background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+          color: #78350f;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          padding: 3px 10px;
+          border-radius: 999px;
+          text-transform: uppercase;
+        }
+      `}</style>
+
+      {/* Premium Header */}
+      <div className="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white py-8 px-4 shadow-xl profile-header-pattern overflow-hidden">
+        <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.15\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}} />
+        <div className="max-w-6xl mx-auto relative">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button onClick={() => navigate('/')} className="text-white hover:text-gray-200">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center gap-4">
+              <button onClick={() => navigate('/')} className="text-white/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               </button>
-              <h1 className="text-xl font-bold">My Account</h1>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <h1 className="text-2xl font-black tracking-tight">My Account</h1>
+                  <span className="profile-premium-badge">Premium</span>
+                </div>
+                <p className="text-indigo-200/80 text-sm font-medium">Manage orders, addresses & preferences</p>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               {user?.avatar ? (
-                <img src={getImageUrl(user.avatar)} alt={user.name} className="w-10 h-10 rounded-full object-cover border-2 border-white/30" />
+                <img src={getImageUrl(user.avatar)} alt={user.name} className="w-12 h-12 rounded-2xl object-cover border-2 border-white/20 shadow-lg" />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-white text-blue-600 flex items-center justify-center font-bold border-2 border-white/30">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-400 to-violet-500 text-white flex items-center justify-center font-black text-lg border-2 border-white/20 shadow-lg">
                   {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                 </div>
               )}
-              <div className="hidden sm:block">
-                <div className="font-semibold">{user?.name || 'User'}</div>
-                <div className="text-xs text-blue-200">{user?.email}</div>
+              <div className="hidden sm:block text-right">
+                <div className="font-bold text-base">{user?.name || 'User'}</div>
+                <div className="text-xs text-indigo-300/90">{user?.email}</div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="space-y-4">
-          {/* Dashboard Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <button
-              onClick={() => toggleSection('dashboard')}
-              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <Icon name="dashboard" />
-                <span className="font-bold text-gray-900">My Account</span>
+      <div className="max-w-6xl mx-auto px-4 py-8 dashboard-container">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          
+          {/* Left Sidebar Menu */}
+          <div className="lg:col-span-1 space-y-5">
+            {/* User Avatar Summary Card */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-indigo-100/50 border border-white p-5 flex items-center gap-4">
+              {user?.avatar ? (
+                <img src={getImageUrl(user.avatar)} alt={user.name} className="w-16 h-16 rounded-2xl object-cover border-2 border-indigo-100 shadow-md" />
+              ) : (
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white flex items-center justify-center font-black text-2xl shadow-md shadow-indigo-200">
+                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                </div>
+              )}
+              <div className="min-w-0">
+                <div className="text-[10px] text-indigo-400 font-extrabold uppercase tracking-widest">Welcome back</div>
+                <div className="font-black text-slate-800 truncate text-lg leading-tight mt-0.5">{user?.name || 'User'}</div>
+                <div className="text-xs text-slate-400 truncate mt-0.5">{user?.email}</div>
               </div>
-              <svg 
-                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.dashboard ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
+            </div>
+
+            {/* Menu options list */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg shadow-indigo-100/50 border border-white overflow-hidden divide-y divide-slate-100/80">
+              <button
+                onClick={() => toggleSection('dashboard')}
+                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.dashboard ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+                <Icon name="dashboard" />
+                <span>Account Overview</span>
+              </button>
+              <button
+                onClick={() => toggleSection('personal')}
+                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.personal ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
+              >
+                <Icon name="personal" />
+                <span>Personal Information</span>
+              </button>
+              <button
+                onClick={() => toggleSection('addresses')}
+                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.addresses ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
+              >
+                <Icon name="addresses" />
+                <span>Manage Addresses</span>
+              </button>
+              <button
+                onClick={() => navigate('/orders')}
+                className="w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm text-slate-600 hover:bg-slate-50/50 transition-colors"
+              >
+                <Icon name="orders" />
+                <span>My Orders</span>
+              </button>
+              <button
+                onClick={() => navigate('/wishlist')}
+                className="w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm text-slate-600 hover:bg-slate-50/50 transition-colors"
+              >
+                <Icon name="wishlist" />
+                <span>My Wishlist</span>
+              </button>
+              <button
+                onClick={() => toggleSection('support')}
+                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.support ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
+              >
+                <Icon name="support" />
+                <span>Help &amp; Support</span>
+              </button>
+              <button
+                onClick={() => toggleSection('settings')}
+                className={`w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm transition-all ${openSections.settings ? 'profile-nav-active' : 'text-slate-600 hover:bg-slate-50/80'}`}
+              >
+                <Icon name="settings" />
+                <span>Settings</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-full px-5 py-4 flex items-center gap-3.5 text-left font-bold text-sm text-red-600 hover:bg-red-50/55 transition-colors"
+              >
+                <Icon name="logout" />
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Right Active Content Panel */}
+          <div className="lg:col-span-3 space-y-6">
             
+            {/* Dashboard active */}
             {openSections.dashboard && (
-              <div className="px-6 pb-6 pt-0">
-                <div className="space-y-6">
-                  <div>
-                    <h2 className="text-xl font-bold text-gray-900 mb-4">Hello, {user?.name?.split(' ')[0] || 'User'}!</h2>
-                    <p className="text-gray-600">Manage your orders, profile and preferences here.</p>
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
+                <h2 className="text-2xl font-black text-slate-800 mb-1">Welcome Back, {user?.name?.split(' ')[0] || 'User'}!</h2>
+                <p className="text-slate-500 mb-8 font-medium">Your premium SmartOdisha account — manage everything in one place.</p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                  <div className="profile-stat-card p-5 rounded-2xl cursor-pointer" onClick={() => navigate('/orders')}>
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
+                        <Icon name="orders" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Orders</div>
+                        <div className="font-black text-slate-800 text-lg">Track Orders</div>
+                      </div>
+                    </div>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Link to="/orders" className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all">
-                      <div className="flex items-center gap-4 mb-3">
-                        <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
-                          <Icon name="orders" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-900">My Orders</div>
-                          <div className="text-sm text-gray-500">Track, cancel or return orders</div>
-                        </div>
+                  <div className="profile-stat-card p-5 rounded-2xl cursor-pointer" onClick={() => navigate('/wishlist')}>
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-rose-100 text-rose-600 rounded-xl">
+                        <Icon name="wishlist" />
                       </div>
-                    </Link>
-                    <button onClick={() => toggleSection('addresses')} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left w-full">
-                      <div className="flex items-center gap-4 mb-3">
-                        <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
-                          <Icon name="addresses" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-900">Addresses</div>
-                          <div className="text-sm text-gray-500">Save and manage delivery addresses</div>
-                        </div>
+                      <div>
+                        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Wishlist</div>
+                        <div className="font-black text-slate-800 text-lg">Saved Items</div>
                       </div>
-                    </button>
-                    <button onClick={() => toggleSection('personal')} className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left w-full">
-                      <div className="flex items-center gap-4 mb-3">
-                        <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
-                          <Icon name="personal" />
-                        </div>
-                        <div>
-                          <div className="font-semibold text-gray-900">Profile</div>
-                          <div className="text-sm text-gray-500">Edit your profile details</div>
-                        </div>
+                    </div>
+                  </div>
+                  <div className="profile-stat-card p-5 rounded-2xl cursor-pointer" onClick={() => toggleSection('addresses')}>
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-emerald-100 text-emerald-600 rounded-xl">
+                        <Icon name="addresses" />
                       </div>
-                    </button>
+                      <div>
+                        <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Addresses</div>
+                        <div className="font-black text-slate-800 text-lg">{savedAddresses.length} Saved</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <div className="p-5 border border-indigo-100/80 rounded-2xl bg-gradient-to-br from-indigo-50/50 to-white hover:border-indigo-200 transition-all">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
+                        <Icon name="personal" />
+                      </div>
+                      <div>
+                        <div className="font-extrabold text-slate-800 text-base">Profile</div>
+                        <div className="text-xs text-slate-500 font-semibold mt-0.5">{user?.name}</div>
+                        <button onClick={() => toggleSection('personal')} className="text-indigo-600 font-bold text-xs mt-2 hover:underline block">Edit details →</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-5 border border-indigo-100/80 rounded-2xl bg-gradient-to-br from-violet-50/50 to-white hover:border-violet-200 transition-all">
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-violet-100 text-violet-600 rounded-xl">
+                        <Icon name="addresses" />
+                      </div>
+                      <div>
+                        <div className="font-extrabold text-slate-800 text-base">Addresses</div>
+                        <div className="text-xs text-slate-500 font-semibold mt-0.5">{savedAddresses.length} saved address(es)</div>
+                        <button onClick={() => toggleSection('addresses')} className="text-indigo-600 font-bold text-xs mt-2 hover:underline block">Manage addresses →</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Personal Info Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <button
-              onClick={() => toggleSection('personal')}
-              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <Icon name="personal" />
-                <span className="font-bold text-gray-900">Personal Information</span>
-              </div>
-              <svg 
-                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.personal ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
+            {/* Personal info active */}
             {openSections.personal && (
-              <div className="px-6 pb-6 pt-0">
-                <form onSubmit={handleSaveProfile} className="space-y-6 max-w-lg">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
+                <h2 className="text-xl font-extrabold text-slate-800 mb-6">Personal Information</h2>
+                <form onSubmit={handleSaveProfile} className="space-y-5 max-w-lg">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Full Name</label>
                     <input
                       type="text"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                      placeholder="Enter your full name"
+                      className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 text-slate-800 font-semibold outline-none transition-all"
+                      placeholder="Full Name"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Email Address</label>
                     <input
                       type="email"
                       value={user?.email || ''}
                       disabled
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-100 text-gray-500"
+                      className="w-full px-4 py-3.5 border border-slate-200 rounded-xl bg-slate-100 text-slate-400 font-semibold cursor-not-allowed"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Phone Number</label>
                     <input
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                      placeholder="Enter your phone number"
+                      className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 text-slate-800 font-semibold outline-none transition-all"
+                      placeholder="Phone Number"
                     />
                   </div>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
+                    className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50"
                   >
-                    {saving ? 'Saving...' : 'Save Changes'}
+                    {saving ? 'Saving...' : 'Save Profile Changes'}
                   </button>
                 </form>
               </div>
             )}
-          </div>
 
-          {/* Addresses Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <button
-              onClick={() => toggleSection('addresses')}
-              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <Icon name="addresses" />
-                <span className="font-bold text-gray-900">Addresses</span>
-              </div>
-              <svg 
-                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.addresses ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
+            {/* Addresses active */}
             {openSections.addresses && (
-              <div className="px-6 pb-6 pt-0">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-gray-900">Saved Addresses</h2>
+                  <h2 className="text-xl font-extrabold text-slate-800">Saved Addresses</h2>
                   <button
                     onClick={handleAddAddress}
-                    className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center gap-2"
+                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs shadow-md shadow-blue-500/10"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                     </svg>
-                    Add Address
+                    New Address
                   </button>
                 </div>
-                
+
                 {savedAddresses.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
                       <Icon name="addresses" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No saved addresses yet</h3>
-                    <p className="text-gray-500 mb-6">Add your first address to get started with faster checkout</p>
+                    <h3 className="text-lg font-bold text-slate-800 mb-1">No Saved Addresses</h3>
+                    <p className="text-slate-400 text-sm mb-6">Save delivery addresses to speed up checkout</p>
                     <button
                       onClick={handleAddAddress}
-                      className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md shadow-blue-500/10"
                     >
-                      Add Your First Address
+                      Add Address
                     </button>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     {savedAddresses.map((address) => (
-                      <div key={address._id} className="p-4 sm:p-5 border border-gray-100 rounded-xl hover:border-blue-200">
+                      <div key={address._id} className="p-5 border border-slate-100 rounded-2xl hover:border-slate-200 transition-all bg-slate-50/20 hover:bg-slate-50/50">
                         <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex flex-wrap items-center gap-2 mb-2">
-                              <div className="font-bold text-gray-900 truncate">{address.fullName}</div>
-                              <span className="text-gray-400 hidden sm:inline">•</span>
-                              <div className="text-gray-700">{address.phone}</div>
+                              <div className="font-extrabold text-slate-800 truncate text-base">{address.fullName}</div>
+                              <span className="text-slate-300 hidden sm:inline">•</span>
+                              <div className="text-slate-700 font-bold text-sm">{address.phone}</div>
                               {address.isDefault && (
-                                <span className="px-2.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full flex-shrink-0">Default</span>
+                                <span className="px-2.5 py-0.5 bg-blue-50 border border-blue-100 text-blue-600 text-xs font-bold rounded-full">Default</span>
                               )}
                             </div>
-                            <div className="text-gray-600 space-y-1 text-sm">
+                            <div className="text-slate-500 font-medium text-sm space-y-0.5">
                               <div>{address.addressLine1}</div>
                               {address.addressLine2 && <div>{address.addressLine2}</div>}
-                              <div>{address.city}, {address.district}, {address.state} - {address.pincode}</div>
+                              <div className="font-semibold text-slate-700">{address.city}, {address.district}, {address.state} - {address.pincode}</div>
                             </div>
                           </div>
                           <div className="flex gap-2 flex-shrink-0">
                             <button
                               onClick={() => handleEditAddress(address)}
-                              className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                              className="p-2 text-blue-600 hover:bg-blue-100/50 rounded-lg transition-colors"
                               title="Edit"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -626,7 +725,7 @@ export default function Profile() {
                             </button>
                             <button
                               onClick={() => handleDeleteAddress(address._id)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-2 text-red-600 hover:bg-red-100/50 rounded-lg transition-colors"
                               title="Delete"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -638,7 +737,7 @@ export default function Profile() {
                         {!address.isDefault && (
                           <button
                             onClick={() => handleSetDefault(address._id)}
-                            className="mt-3 text-blue-600 text-sm font-medium hover:underline"
+                            className="mt-3 text-blue-600 text-xs font-bold hover:underline"
                           >
                             Set as Default
                           </button>
@@ -649,121 +748,37 @@ export default function Profile() {
                 )}
               </div>
             )}
-          </div>
 
-          {/* Orders Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <button
-              onClick={() => toggleSection('orders')}
-              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <Icon name="orders" />
-                <span className="font-bold text-gray-900">My Orders</span>
-              </div>
-              <svg 
-                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.orders ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
-            {openSections.orders && (
-              <div className="px-6 pb-6 pt-0">
-                <Link to="/orders" className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
-                  View All Orders
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Wishlist Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <button
-              onClick={() => toggleSection('wishlist')}
-              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <Icon name="wishlist" />
-                <span className="font-bold text-gray-900">My Wishlist</span>
-              </div>
-              <svg 
-                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.wishlist ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
-            {openSections.wishlist && (
-              <div className="px-6 pb-6 pt-0">
-                <Link to="/wishlist" className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
-                  View My Wishlist
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Support Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <button
-              onClick={() => toggleSection('support')}
-              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <Icon name="support" />
-                <span className="font-bold text-gray-900">Help & Support</span>
-              </div>
-              <svg 
-                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.support ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
+            {/* Support active */}
             {openSections.support && (
-              <div className="px-6 pb-6 pt-0">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-gray-900">Help & Support</h2>
+                  <h2 className="text-xl font-extrabold text-slate-800">Support Requests</h2>
                   <button
                     onClick={() => setShowNewTicketModal(true)}
-                    className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all flex items-center gap-2"
+                    className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all flex items-center gap-1.5 text-xs shadow-md shadow-blue-500/10"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                     </svg>
-                    Raise a Ticket
+                    New Ticket
                   </button>
                 </div>
-                
+
                 {ticketsLoading ? (
                   <div className="text-center py-8">
                     <LoadingSpinner text="Loading tickets..." />
                   </div>
                 ) : tickets.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center text-gray-400">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-slate-50 rounded-full flex items-center justify-center text-slate-400">
                       <Icon name="support" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No support tickets yet</h3>
-                    <p className="text-gray-500 mb-6">Create a ticket if you need help with anything</p>
+                    <h3 className="text-lg font-bold text-slate-800 mb-1">No Active Tickets</h3>
+                    <p className="text-slate-400 text-sm mb-6">Create a support ticket for items, payments, returns, etc.</p>
                     <button
                       onClick={() => setShowNewTicketModal(true)}
-                      className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all"
+                      className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all shadow-md shadow-blue-500/10"
                     >
                       Create Ticket
                     </button>
@@ -772,58 +787,58 @@ export default function Profile() {
                   <div className="space-y-4">
                     <button
                       onClick={() => setSelectedTicket(null)}
-                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-sm"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
                       </svg>
                       Back to all tickets
                     </button>
-                    <div className="border border-gray-100 rounded-xl overflow-hidden">
-                      <div className="p-5 border-b border-gray-100 bg-gray-50">
-                        <div className="flex items-start justify-between">
+                    <div className="border border-slate-100 rounded-2xl overflow-hidden shadow-sm">
+                      <div className="p-5 border-b border-slate-100 bg-slate-50/50">
+                        <div className="flex items-start justify-between gap-4">
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-900">{selectedTicket.subject}</h3>
-                            <div className="text-sm text-gray-500 mt-1">
+                            <h3 className="text-lg font-extrabold text-slate-800 leading-tight">{selectedTicket.subject}</h3>
+                            <div className="text-xs text-slate-400 font-semibold mt-1">
                               Category: {selectedTicket.category} • Status: {selectedTicket.status}
                             </div>
                           </div>
                           {selectedTicket.status !== 'Resolved' && (
                             <button
                               onClick={() => handleResolveTicket(selectedTicket._id)}
-                              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-all"
+                              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-green-500/10"
                             >
-                              Mark as Resolved
+                              Resolve
                             </button>
                           )}
                         </div>
                       </div>
-                      <div className="p-5 max-h-96 overflow-y-auto space-y-4">
+                      <div className="p-5 max-h-96 overflow-y-auto space-y-4 bg-slate-50/20">
                         {selectedTicket.messages && selectedTicket.messages.map((msg, idx) => (
                           <div key={idx} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[75%] p-4 rounded-xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white' : 'bg-gray-100 text-gray-900'}`}>
-                              <p>{msg.message}</p>
-                              <p className={`text-xs mt-2 ${msg.sender === 'user' ? 'text-blue-200' : 'text-gray-500'}`}>
+                            <div className={`max-w-[75%] p-4 rounded-2xl ${msg.sender === 'user' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm' : 'bg-white border border-slate-100 text-slate-800'}`}>
+                              <p className="text-sm font-semibold leading-relaxed">{msg.message}</p>
+                              <p className={`text-[10px] mt-2 font-bold ${msg.sender === 'user' ? 'text-blue-200' : 'text-slate-400'}`}>
                                 {new Date(msg.createdAt).toLocaleString()}
                               </p>
                             </div>
                           </div>
                         ))}
                       </div>
-                      <div className="p-5 border-t border-gray-100">
-                        <div className="flex gap-3">
+                      <div className="p-4 border-t border-slate-100 bg-white">
+                        <div className="flex gap-2">
                           <input
                             type="text"
                             value={messageInput}
                             onChange={(e) => setMessageInput(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleAddMessage(selectedTicket._id)}
-                            placeholder="Type your message..."
-                            className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+                            placeholder="Type your reply here..."
+                            className="flex-1 px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 font-semibold text-sm outline-none"
                           />
                           <button
                             onClick={() => handleAddMessage(selectedTicket._id)}
                             disabled={!messageInput.trim()}
-                            className="px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
+                            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-blue-500/10 disabled:opacity-50"
                           >
                             Send
                           </button>
@@ -837,121 +852,102 @@ export default function Profile() {
                       <div
                         key={ticket._id}
                         onClick={() => setSelectedTicket(ticket)}
-                        className="p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 cursor-pointer"
+                        className="p-5 border border-slate-100 rounded-2xl hover:border-blue-200 hover:bg-blue-50/30 cursor-pointer transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                       >
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="font-semibold text-gray-900">{ticket.subject}</div>
-                          <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                            ticket.status === 'Open' ? 'bg-yellow-100 text-yellow-700' : 
-                            ticket.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 
-                            'bg-green-100 text-green-700'
-                          }`}>
-                            {ticket.status}
-                          </span>
+                        <div>
+                          <div className="font-extrabold text-slate-800 text-base mb-1">{ticket.subject}</div>
+                          <p className="text-slate-500 text-sm mb-2 font-medium line-clamp-1">{ticket.description}</p>
+                          <p className="text-[10px] text-slate-400 font-bold">Updated: {new Date(ticket.updatedAt).toLocaleString()}</p>
                         </div>
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{ticket.description}</p>
-                        <p className="text-xs text-gray-400">Updated: {new Date(ticket.updatedAt).toLocaleString()}</p>
+                        <span className={`px-3 py-1 rounded-full text-xs font-extrabold flex-shrink-0 self-start sm:self-center border ${
+                          ticket.status === 'Open' ? 'bg-yellow-50 text-yellow-600 border-yellow-100' : 
+                          ticket.status === 'In Progress' ? 'bg-blue-50 text-blue-600 border-blue-100' : 
+                          'bg-green-50 text-green-600 border-green-100'
+                        }`}>
+                          {ticket.status}
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
             )}
-          </div>
 
-          {/* Settings Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <button
-              onClick={() => toggleSection('settings')}
-              className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-4">
-                <Icon name="settings" />
-                <span className="font-bold text-gray-900">Settings</span>
-              </div>
-              <svg 
-                className={`w-5 h-5 text-gray-400 transition-transform ${openSections.settings ? 'rotate-180' : ''}`}
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
+            {/* Settings active */}
             {openSections.settings && (
-              <div className="px-6 pb-6 pt-0">
+              <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 sm:p-8 shadow-lg shadow-indigo-100/40 border border-white animate-fade-in">
+                <h2 className="text-xl font-extrabold text-slate-800 mb-6">Security Settings</h2>
                 <div className="space-y-4 max-w-lg">
                   {!showPasswordChange ? (
                     <button
                       onClick={() => setShowPasswordChange(true)}
-                      className="w-full p-5 border border-gray-100 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all text-left flex items-center gap-4"
+                      className="w-full p-5 border border-slate-100 rounded-2xl hover:border-slate-200 hover:bg-slate-50/40 transition-all text-left flex items-center gap-4"
                     >
-                      <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
+                      <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
                         <Icon name="lock" />
                       </div>
                       <div className="flex-1">
-                        <div className="font-semibold text-gray-900">Change Password</div>
-                        <div className="text-sm text-gray-500 mt-1">Update your account password</div>
+                        <div className="font-extrabold text-slate-800">Change Password</div>
+                        <div className="text-xs text-slate-400 font-semibold mt-0.5">Update and secure your account credentials</div>
                       </div>
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
                       </svg>
                     </button>
                   ) : (
-                    <div className="border border-gray-100 rounded-xl p-6">
+                    <div className="border border-slate-100 rounded-2xl p-6 bg-slate-50/10">
                       <button
                         onClick={() => {
                           setShowPasswordChange(false);
                           setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
                         }}
-                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium mb-6"
+                        className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-sm mb-6"
                       >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
                         </svg>
                         Back
                       </button>
-                      <form onSubmit={handlePasswordUpdate} className="space-y-6">
+                      <form onSubmit={handlePasswordUpdate} className="space-y-5">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Current Password</label>
                           <input
                             type="password"
                             name="currentPassword"
                             value={passwordForm.currentPassword}
                             onChange={handlePasswordChange}
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                            placeholder="Enter current password"
+                            className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 font-semibold text-slate-800 outline-none"
+                            placeholder="Current Password"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">New Password</label>
                           <input
                             type="password"
                             name="newPassword"
                             value={passwordForm.newPassword}
                             onChange={handlePasswordChange}
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                            placeholder="Enter new password (min 6 chars)"
+                            className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 font-semibold text-slate-800 outline-none"
+                            placeholder="New Password (min 6 characters)"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Confirm New Password</label>
                           <input
                             type="password"
                             name="confirmPassword"
                             value={passwordForm.confirmPassword}
                             onChange={handlePasswordChange}
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
-                            placeholder="Confirm new password"
+                            className="w-full px-4 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50/50 font-semibold text-slate-800 outline-none"
+                            placeholder="Confirm New Password"
                           />
                         </div>
                         <button
                           type="submit"
                           disabled={changingPassword || passwordForm.newPassword !== passwordForm.confirmPassword}
-                          className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
+                          className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-extrabold rounded-xl transition-all shadow-md shadow-indigo-500/20 disabled:opacity-50"
                         >
-                          {changingPassword ? 'Updating...' : 'Change Password'}
+                          {changingPassword ? 'Updating Password...' : 'Update Password'}
                         </button>
                       </form>
                     </div>
@@ -959,69 +955,61 @@ export default function Profile() {
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Logout Button */}
-          <button
-            onClick={handleLogout}
-            className="w-full bg-white rounded-xl shadow-sm border border-red-100 px-6 py-5 flex items-center gap-4 text-left hover:bg-red-50 transition-colors"
-          >
-            <Icon name="logout" />
-            <span className="font-bold text-red-600">Logout</span>
-          </button>
+          </div>
         </div>
       </div>
 
       {/* Address Modal */}
       {showAddressModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="text-xl font-extrabold text-slate-800">
                 {editingAddress ? 'Edit Address' : 'Add New Address'}
               </h2>
               <button
                 onClick={() => setShowAddressModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"
               >
-                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             <form onSubmit={handleSaveAddress} className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Full Name</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Full Name</label>
                   <input
                     type="text"
                     name="fullName"
                     value={addressForm.fullName}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                     required
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Phone Number</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Phone Number</label>
                   <input
                     type="tel"
                     name="phone"
                     value={addressForm.phone}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                     required
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Pincode</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Pincode</label>
                   <div className="relative">
                     <input
                       type="text"
                       name="pincode"
                       value={addressForm.pincode}
                       onChange={handleAddressInputChange}
-                      className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                       required
                     />
                     {pincodeLoading && (
@@ -1032,34 +1020,34 @@ export default function Profile() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">City</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">City</label>
                   <input
                     type="text"
                     name="city"
                     value={addressForm.city}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">District</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">District</label>
                   <input
                     type="text"
                     name="district"
                     value={addressForm.district}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-1">State</label>
+                <div className="col-span-2">
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">State</label>
                   <select
                     name="state"
                     value={addressForm.state}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                     required
                   >
                     <option value="">Select State</option>
@@ -1069,53 +1057,53 @@ export default function Profile() {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Address Line 1</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Address Line 1</label>
                   <input
                     type="text"
                     name="addressLine1"
                     value={addressForm.addressLine1}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                     required
                   />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-sm font-bold text-gray-700 mb-1">Address Line 2 (Optional)</label>
+                  <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Address Line 2 (Optional)</label>
                   <input
                     type="text"
                     name="addressLine2"
                     value={addressForm.addressLine2}
                     onChange={handleAddressInputChange}
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                   />
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 mt-2">
                 <input
-                type="checkbox"
-                id="isDefault"
-                name="isDefault"
-                checked={addressForm.isDefault}
-                onChange={handleAddressInputChange}
-                className="w-5 h-5 text-blue-600 rounded"
-              />
-              <label htmlFor="isDefault" className="text-sm font-medium text-gray-700 cursor-pointer">
-                Set as default address
-              </label>
+                  type="checkbox"
+                  id="isDefault"
+                  name="isDefault"
+                  checked={addressForm.isDefault}
+                  onChange={handleAddressInputChange}
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="isDefault" className="text-xs font-bold text-slate-500 cursor-pointer uppercase tracking-wider">
+                  Set as default address
+                </label>
               </div>
               <div className="flex gap-3 pt-4">
                 <button
                   type="button"
                   onClick={() => setShowAddressModal(false)}
-                  className="flex-1 py-3 border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3.5 border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-colors text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold"
+                  className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/10"
                 >
-                  {editingAddress ? 'Update Address' : 'Save Address'}
+                  {editingAddress ? 'Update' : 'Save'}
                 </button>
               </div>
             </form>
@@ -1125,36 +1113,36 @@ export default function Profile() {
 
       {/* New Ticket Modal */}
       {showNewTicketModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-900">Create New Ticket</h2>
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100">
+            <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="text-xl font-extrabold text-slate-800">Create New Support Ticket</h2>
               <button
                 onClick={() => setShowNewTicketModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-400 hover:text-slate-600"
               >
-                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             <form onSubmit={handleCreateTicket} className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Subject</label>
+                <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Subject</label>
                 <input
                   type="text"
                   value={newTicketForm.subject}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, subject: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Category</label>
+                <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Category</label>
                 <select
                   value={newTicketForm.category}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, category: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm outline-none"
                 >
                   <option value="Order">Order</option>
                   <option value="Product">Product</option>
@@ -1164,11 +1152,11 @@ export default function Profile() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
+                <label className="block text-xs font-bold text-slate-400 uppercase mb-1.5">Description</label>
                 <textarea
                   value={newTicketForm.description}
                   onChange={(e) => setNewTicketForm({ ...newTicketForm, description: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent h-32"
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:ring-2 focus:ring-blue-500 focus:border-transparent font-semibold text-sm h-32 outline-none resize-none"
                   required
                 />
               </div>
@@ -1176,15 +1164,15 @@ export default function Profile() {
                 <button
                   type="button"
                   onClick={() => setShowNewTicketModal(false)}
-                  className="flex-1 py-3 border border-gray-200 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                  className="flex-1 py-3.5 border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-50 transition-colors text-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold"
+                  className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/10"
                 >
-                  Create Ticket
+                  Submit Ticket
                 </button>
               </div>
             </form>

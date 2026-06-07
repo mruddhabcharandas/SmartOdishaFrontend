@@ -134,6 +134,22 @@ export default function Catalogue() {
   }, [])
 
   useEffect(() => {
+    const params = new URLSearchParams()
+    if (q) params.set('q', q)
+    if (category) params.set('category', category)
+    if (subCategory) params.set('subCategory', subCategory)
+    if (brand) params.set('brand', brand)
+    if (store) params.set('store', store)
+    if (minPrice) params.set('minPrice', minPrice)
+    if (maxPrice) params.set('maxPrice', maxPrice)
+    const next = params.toString()
+    const current = location.search.replace(/^\?/, '')
+    if (next !== current) {
+      navigate({ pathname: '/products', search: next ? `?${next}` : '' }, { replace: true })
+    }
+  }, [q, category, subCategory, brand, store, minPrice, maxPrice, navigate, location.search])
+
+  useEffect(() => {
     let t
     if (q.trim().length >= 2) {
       t = setTimeout(async () => {
@@ -163,10 +179,14 @@ export default function Catalogue() {
       return isNaN(num) || !isFinite(num) ? 0 : num
     }
     const getMinPrice = (p) => {
-      if (!Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p.price || 0)
-      const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.price || 0) > 0)
-      if (activeVariants.length === 0) return safeNumber(p.price || 0)
-      return Math.min(...activeVariants.map(v => safeNumber(v.price || 0)))
+      const storePct = safeNumber(p?.store?.storePercentage ?? 0)
+      const applyStore = (base) => base * (1 + storePct / 100)
+      if (!Array.isArray(p.variants) || p.variants.length === 0) {
+        return applyStore(safeNumber(p.originalStorePrice ?? p.price ?? 0))
+      }
+      const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.originalStorePrice ?? v.price ?? 0) > 0)
+      if (activeVariants.length === 0) return applyStore(safeNumber(p.originalStorePrice ?? p.price ?? 0))
+      return applyStore(Math.min(...activeVariants.map(v => safeNumber(v.originalStorePrice ?? v.price ?? 0))))
     }
 
     let list = [...items]
@@ -205,15 +225,32 @@ export default function Catalogue() {
     setQ('')
   }
 
+  const activeFilters = useMemo(() => {
+    const chips = []
+    if (category) chips.push({ key: 'category', label: categories.find(c => c._id === category)?.name || 'Category', clear: () => { setCategory(''); setSubCategory('') } })
+    if (subCategory) chips.push({ key: 'subCategory', label: subCategories.find(s => s._id === subCategory)?.name || 'Subcategory', clear: () => setSubCategory('') })
+    if (brand) chips.push({ key: 'brand', label: brands.find(b => b._id === brand)?.name || 'Brand', clear: () => setBrand('') })
+    if (store) chips.push({ key: 'store', label: stores.find(s => s._id === store)?.name || 'Store', clear: () => setStore('') })
+    if (minPrice) chips.push({ key: 'minPrice', label: `Min ₹${minPrice}`, clear: () => setMinPrice('') })
+    if (maxPrice) chips.push({ key: 'maxPrice', label: `Max ₹${maxPrice}`, clear: () => setMaxPrice('') })
+    if (q) chips.push({ key: 'q', label: `"${q}"`, clear: () => setQ('') })
+    return chips
+  }, [category, subCategory, brand, store, minPrice, maxPrice, q, categories, subCategories, brands, stores])
+
+  const applyPricePreset = (min, max) => {
+    setMinPrice(min !== null ? String(min) : '')
+    setMaxPrice(max !== null ? String(max) : '')
+  }
+
   return (
     <div className="ct-premium-wrapper">
       <style>{`
         .ct-premium-wrapper {
           font-family: 'Inter', system-ui, -apple-system, sans-serif;
-          background: #f1f3f6;
-          color: #212121;
+          background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+          color: #0f172a;
           min-height: 100vh;
-          padding: 8px 0 40px;
+          padding: 12px 0 40px;
         }
         .ct-main-container {
           max-width: 1440px;
@@ -223,13 +260,14 @@ export default function Catalogue() {
           padding: 0 8px;
         }
         
-        /* Sidebar Styles (Flipkart Look) */
+        /* Sidebar - Premium SmartOdisha */
         .ct-sidebar {
           width: 280px;
           flex-shrink: 0;
           background: #ffffff;
-          border-radius: 4px;
-          box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+          border-radius: 16px;
+          box-shadow: 0 4px 24px rgba(79, 70, 229, 0.06);
+          border: 1px solid rgba(226, 232, 240, 0.8);
           height: fit-content;
           position: sticky;
           top: 12px;
@@ -254,7 +292,7 @@ export default function Catalogue() {
         }
         .ct-clear-link {
           font-size: 12px;
-          color: #2874f0;
+          color: #4f46e5;
           font-weight: 700;
           cursor: pointer;
           border: none;
@@ -291,6 +329,7 @@ export default function Catalogue() {
           width: 15px;
           height: 15px;
           cursor: pointer;
+          accent-color: #4f46e5;
         }
         .ct-price-inputs {
           display: flex;
@@ -299,11 +338,59 @@ export default function Catalogue() {
         }
         .ct-price-input {
           width: 100%;
-          padding: 6px 10px;
-          border: 1px solid #e0e0e0;
-          border-radius: 2px;
+          padding: 8px 10px;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
           font-size: 13px;
           outline: none;
+          transition: border-color 0.15s;
+        }
+        .ct-price-input:focus {
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+        }
+        .ct-price-preset {
+          padding: 6px 10px;
+          border-radius: 8px;
+          border: 1px solid #e2e8f0;
+          background: #f8fafc;
+          font-size: 11px;
+          font-weight: 600;
+          color: #475569;
+          cursor: pointer;
+          transition: all 0.15s;
+        }
+        .ct-price-preset:hover, .ct-price-preset.active {
+          border-color: #4f46e5;
+          background: #eef2ff;
+          color: #4f46e5;
+        }
+        .ct-active-filters {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          padding: 0 16px 12px;
+        }
+        .ct-filter-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 5px 12px;
+          background: #eef2ff;
+          border: 1px solid #c7d2fe;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 600;
+          color: #4338ca;
+        }
+        .ct-filter-chip button {
+          background: none;
+          border: none;
+          color: #6366f1;
+          cursor: pointer;
+          font-size: 14px;
+          line-height: 1;
+          padding: 0;
         }
         .ct-price-to {
           font-size: 12px;
@@ -321,9 +408,10 @@ export default function Catalogue() {
         /* Top Search & Category Panel */
         .ct-top-panel {
           background: #ffffff;
-          border-radius: 4px;
-          padding: 12px 16px;
-          box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+          border-radius: 16px;
+          padding: 14px 16px;
+          box-shadow: 0 4px 24px rgba(79, 70, 229, 0.06);
+          border: 1px solid rgba(226, 232, 240, 0.8);
           display: flex;
           flex-direction: column;
           gap: 12px;
@@ -348,7 +436,8 @@ export default function Catalogue() {
           transition: border-color 0.2s;
         }
         .ct-search-input:focus {
-          border-color: #2874f0;
+          border-color: #4f46e5;
+          box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
         .ct-mobile-filter-trigger {
           display: flex;
@@ -391,21 +480,23 @@ export default function Catalogue() {
           transition: all 0.15s;
         }
         .ct-chip:hover {
-          border-color: #2874f0;
-          color: #2874f0;
+          border-color: #4f46e5;
+          color: #4f46e5;
         }
         .ct-chip.active {
-          background: #2874f0;
-          border-color: #2874f0;
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+          border-color: transparent;
           color: #ffffff;
+          box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
         }
 
         /* Results List Section */
         .ct-results-card {
           background: #ffffff;
-          border-radius: 4px;
+          border-radius: 16px;
           padding: 16px;
-          box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+          box-shadow: 0 4px 24px rgba(79, 70, 229, 0.06);
+          border: 1px solid rgba(226, 232, 240, 0.8);
           min-height: 400px;
           display: flex;
           flex-direction: column;
@@ -567,18 +658,19 @@ export default function Catalogue() {
           width: 100%;
           max-width: 240px;
           padding: 12px 24px;
-          background: #2874f0;
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
           color: white;
           border: none;
-          border-radius: 4px;
+          border-radius: 10px;
           font-size: 13px;
           font-weight: 700;
           cursor: pointer;
-          transition: background 0.15s;
-          box-shadow: 0 2px 4px rgba(40,116,240,0.1);
+          transition: all 0.15s;
+          box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
         }
         .ct-load-btn:hover:not(:disabled) {
-          background: #145cdb;
+          background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+          transform: translateY(-1px);
         }
       `}</style>
 
@@ -706,8 +798,15 @@ export default function Catalogue() {
           )}
 
           {/* Price Filters */}
-          <div className="ct-filter-section" style={{ borderBottom: 'none' }}>
+          <div className="ct-filter-section">
             <div className="ct-filter-lbl">Price Range</div>
+            <div className="flex flex-wrap gap-2 mb-3">
+              <button type="button" className={`ct-price-preset${!minPrice && !maxPrice ? ' active' : ''}`} onClick={() => applyPricePreset(null, null)}>All</button>
+              <button type="button" className="ct-price-preset" onClick={() => applyPricePreset(0, 500)}>Under ₹500</button>
+              <button type="button" className="ct-price-preset" onClick={() => applyPricePreset(500, 1000)}>₹500–₹1000</button>
+              <button type="button" className="ct-price-preset" onClick={() => applyPricePreset(1000, 2500)}>₹1000–₹2500</button>
+              <button type="button" className="ct-price-preset" onClick={() => applyPricePreset(2500, null)}>Above ₹2500</button>
+            </div>
             <div className="ct-price-inputs">
               <input
                 type="number"
@@ -749,9 +848,23 @@ export default function Catalogue() {
                 className="ct-mobile-filter-trigger"
                 onClick={() => setMobileFiltersOpen(true)}
               >
-                <span>⚙️ Filters</span>
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4h18M3 12h18M3 20h18"/></svg>
+                Filters{activeFilters.length > 0 ? ` (${activeFilters.length})` : ''}
               </button>
             </div>
+
+            {/* Active filter chips */}
+            {activeFilters.length > 0 && (
+              <div className="ct-active-filters">
+                {activeFilters.map(chip => (
+                  <span key={chip.key} className="ct-filter-chip">
+                    {capitalizeText(chip.label)}
+                    <button type="button" onClick={chip.clear} aria-label="Remove filter">×</button>
+                  </span>
+                ))}
+                <button type="button" className="ct-clear-link" onClick={clearAllFilters}>Clear all</button>
+              </div>
+            )}
 
             {/* Category horizontal scrolling bar */}
             <div className="ct-category-chips">
@@ -921,6 +1034,12 @@ export default function Catalogue() {
 
           <div className="ct-filter-section">
             <div className="ct-filter-lbl">Price Range</div>
+            <div className="flex flex-wrap gap-2 mb-3">
+              <button type="button" className="ct-price-preset" onClick={() => applyPricePreset(0, 500)}>Under ₹500</button>
+              <button type="button" className="ct-price-preset" onClick={() => applyPricePreset(500, 1000)}>₹500–₹1000</button>
+              <button type="button" className="ct-price-preset" onClick={() => applyPricePreset(1000, 2500)}>₹1000–₹2500</button>
+              <button type="button" className="ct-price-preset" onClick={() => applyPricePreset(2500, null)}>Above ₹2500</button>
+            </div>
             <div className="ct-price-inputs" style={{ marginBottom: 12 }}>
               <input
                 type="number"

@@ -228,12 +228,12 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           justify-content: center;
           gap: 6px;
           transition: all 0.2s;
-          background: #2874f0;
+          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
           color: white;
-          box-shadow: 0 2px 4px rgba(40,116,240,0.12);
+          box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
         }
         .pc-action-btn:hover:not(:disabled) {
-          background: #145cdb;
+          background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
         }
         .pc-action-btn:disabled {
           background: #e2e8f0;

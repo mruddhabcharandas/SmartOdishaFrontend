@@ -160,7 +160,7 @@ export default function Cart() {
   }
 
   const finalTotalPayable = (appliedCoupon ? appliedCoupon.payable : totalPayable) + 
-    (shippingInfo.isFreeDelivery ? 0 : shippingInfo.deliveryCharge) + 
+    (paymentMethod === 'prepaid' ? 0 : (shippingInfo.isFreeDelivery ? 0 : shippingInfo.deliveryCharge)) + 
     (paymentMethod === 'cod' ? shippingInfo.codCharge : 0)
   const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0
 
@@ -794,13 +794,13 @@ export default function Cart() {
                     {/* For COD, never show free delivery */}
                     {paymentMethod === 'cod' ? (
                       `₹${shippingInfo.deliveryCharge}`
-                    ) : shippingInfo.isFreeDelivery ? (
-                      <>
-                        <span style={{ textDecoration: 'line-through', color: '#9ca3af', marginRight: 8 }}>₹{shippingInfo.deliveryCharge}</span>
-                        <span className="free">FREE</span>
-                      </>
                     ) : (
-                      `₹${shippingInfo.deliveryCharge}`
+                      <>
+                        {shippingInfo.deliveryCharge > 0 && (
+                          <span style={{ textDecoration: 'line-through', color: '#9ca3af', marginRight: 8 }}>₹{shippingInfo.deliveryCharge}</span>
+                        )}
+                        <span className="free font-bold text-green-600">FREE</span>
+                      </>
                     )}
                   </span>
                 </div>
