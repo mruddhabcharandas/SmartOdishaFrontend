@@ -33,7 +33,7 @@ export default function ProductDetail() {
   const { addToCart, refreshCart } = useCart();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { notify } = useToast();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, refreshProfile } = useAuth();
 
   const { data: p, isLoading: loading, error: queryError } = useQuery({
     queryKey: ['product', idOrSlug, user?._id],
@@ -41,6 +41,12 @@ export default function ProductDetail() {
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 60 * 24,
   });
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshProfile();
+    }
+  }, [isAuthenticated, refreshProfile]);
 
   const { data: similarProducts = [] } = useQuery({
     queryKey: ['recommendations', idOrSlug],
@@ -540,18 +546,18 @@ export default function ProductDetail() {
         .pd-wrap {
           max-width: 1200px;
           margin: 0 auto;
-          padding: 24px 16px 40px;
+          padding: 20px 16px 32px;
           display: grid;
           grid-template-columns: 1fr;
-          gap: 24px;
+          gap: 20px;
           position: relative;
           z-index: 1;
         }
-        @media(min-width:600px){.pd-wrap{padding:36px 24px 40px;}}
+        @media(min-width:600px){.pd-wrap{padding:32px 24px 32px; gap:24px;}}
         @media (min-width: 960px) {
           .pd-wrap {
-            grid-template-columns: minmax(0, 440px) 1fr;
-            gap: 32px;
+            grid-template-columns: minmax(0, 420px) 1fr;
+            gap: 40px;
             align-items: start;
           }
         }
@@ -686,8 +692,11 @@ export default function ProductDetail() {
           background: var(--card);
           border: 1px solid var(--border);
           border-radius: var(--radius-lg);
-          padding: 24px;
+          padding: 18px;
           box-shadow: var(--shadow-card);
+        }
+        @media (min-width: 960px) {
+          .pd-card { padding: 24px; }
         }
 
         /* Product Title Card */
@@ -1093,22 +1102,10 @@ export default function ProductDetail() {
           transform: none;
         }
 
-        /* Sticky Mobile CTA */
+        /* Sticky Mobile CTA - HIDDEN */
         .pd-mobile-cta {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background: rgba(255,255,255,0.97);
-          backdrop-filter: blur(16px);
-          border-top: 1px solid var(--border);
-          z-index: 50;
-          display: flex;
-          padding: 12px 16px 12px; /* More padding for mobile
-          gap: 12px;
-          box-shadow: 0 -4px 24px rgba(0,0,0,0.07);
+          display: none !important;
         }
-        @media (min-width: 1024px) { .pd-mobile-cta { display: none; } }
 
         .pd-mob-cart, .pd-mob-buy {
           flex: 1;
@@ -1133,28 +1130,29 @@ export default function ProductDetail() {
         .pd-mob-cart:disabled, .pd-mob-buy:disabled { background: #ddd; color: #999; cursor: not-allowed; }
 
         /* Similar / Recommended */
-        .pd-recs { max-width: 1200px; margin: 0 auto; padding: 0 16px 40px; position: relative; z-index:1; }
-        @media(min-width:600px){.pd-recs{padding:0 24px 40px;}}
+        .pd-recs { max-width: 1200px; margin: 0 auto; padding: 0 16px 32px; position: relative; z-index:1; }
+        @media(min-width:600px){.pd-recs{padding:0 24px 32px;}}
         .pd-recs-header {
           display: flex;
           align-items: center;
-          gap: 16px;
-          margin-bottom: 24px;
+          gap: 12px;
+          margin-bottom: 20px;
         }
         .pd-recs-title {
           font-family: 'Bebas Neue', sans-serif;
-          font-size: 28px;
+          font-size: 24px;
           font-weight: 400;
           color: var(--ink);
           letter-spacing: 0.03em;
         }
+        @media (min-width:960px){.pd-recs-title{font-size:28px;}}
         .pd-recs-line { flex: 1; height: 1px; background: var(--border); }
         .pd-recs-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 14px;
+          gap: 12px;
         }
-        @media (min-width: 640px) { .pd-recs-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 640px) { .pd-recs-grid { grid-template-columns: repeat(3, 1fr); gap:16px; } }
         @media (min-width: 1024px) { .pd-recs-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
 
         /* Lightbox */

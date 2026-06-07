@@ -544,12 +544,6 @@ export default function Cart() {
             <div className="ct-checkout-total">
               <span className="ct-checkout-label">Total Amount</span>
               <span className="ct-checkout-price">₹{safeNum(totalPayable).toLocaleString()}</span>
-              <div className="ct-min-text">
-                {totalPayable < minAmount
-                  ? <>Add <b>₹{safeNum(minLeft).toLocaleString()}</b> more to place order</>
-                  : <span className="met">✓ Min order requirement met</span>
-                }
-              </div>
             </div>
             <button
               className={`ct-checkout-btn ${totalPayable >= minAmount && !cart.every(item => {

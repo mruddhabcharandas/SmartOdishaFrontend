@@ -885,16 +885,16 @@ export default function Enquiry() {
               <div className="lg:hidden ct-summary" style={{marginTop:'16px'}}>
                 <div className="ct-summary-title">Order Summary</div>
                 <div className="ct-summary-rows">
-                  <div className="ct-summary-row"><span className="ct-summary-label">Total MRP</span><span className="ct-summary-val">₹{mrpTotal.toLocaleString()}</span></div>
-                  {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Bulk Discount</span><span className="ct-summary-val green">-₹{bulkDiscount.toLocaleString()}</span></div>}
-                  <div className="ct-summary-row"><span className="ct-summary-label">Subtotal</span><span className="ct-summary-val">₹{subTotal.toLocaleString()}</span></div>
-                  {appliedCoupon && <div className="ct-summary-row"><span className="ct-summary-label">Coupon Discount</span><span className="ct-summary-val green">-₹{couponDiscount.toLocaleString()}</span></div>}
-                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹${shippingInfo.finalCharge.toLocaleString()}`}</span></div>
+                  <div className="ct-summary-row"><span className="ct-summary-label">Total MRP</span><span className="ct-summary-val">₹{safeNum(mrpTotal).toLocaleString()}</span></div>
+                  {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Bulk Discount</span><span className="ct-summary-val green">-₹{safeNum(bulkDiscount).toLocaleString()}</span></div>}
+                  <div className="ct-summary-row"><span className="ct-summary-label">Subtotal</span><span className="ct-summary-val">₹{safeNum(subTotal).toLocaleString()}</span></div>
+                  {appliedCoupon && <div className="ct-summary-row"><span className="ct-summary-label">Coupon Discount</span><span className="ct-summary-val green">-₹{safeNum(couponDiscount).toLocaleString()}</span></div>}
+                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹{safeNum(shippingInfo.finalCharge).toLocaleString()}`}</span></div>
                 </div>
                 <div className="ct-summary-divider" />
                 <div className="ct-summary-total-row">
                   <span className="ct-summary-total-label">Total Payable</span>
-                  <span className="ct-summary-total-val">₹{totalPayable.toLocaleString()}</span>
+                  <span className="ct-summary-total-val">₹{safeNum(totalPayable).toLocaleString()}</span>
                 </div>
                 
                 {!appliedCoupon && (
@@ -928,12 +928,7 @@ export default function Enquiry() {
                   </div>
                 )}
                 
-                <div className="ct-min-progress">
-                  <div className="ct-min-track"><div className="ct-min-fill" style={{width:`${Math.min(100, (subTotal / minAmount) * 100)}%`}} /></div>
-                  <div className={`ct-min-text ${subTotal >= minAmount ? 'met' : ''}`}>
-                    {subTotal >= minAmount ? '✓ Min order amount met!' : `Add ₹${safeNum(minLeft).toLocaleString()} more to place order`}
-                  </div>
-                </div>
+
 
                 <button className={`ct-checkout-btn ${subTotal >= minAmount && selectedAddress && svc.available !== false && !cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; }) ? 'ready' : 'disabled'}`} disabled={subTotal < minAmount || !selectedAddress || svc.available === false || cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; })} onClick={submit}>
                   {loading ? (

@@ -31,20 +31,28 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
       const num = Number(val)
       return isNaN(num) || !isFinite(num) ? 0 : num
     }
-    let basePrice
-    if (!p || !Array.isArray(p.variants) || p.variants.length === 0) {
-      basePrice = safeNumber(p?.originalStorePrice ?? p?.price ?? 0)
-    } else {
-      const activeVariants = p.variants.filter(v => v.isActive !== false && safeNumber(v.originalStorePrice ?? v.price ?? 0) > 0)
-      if (activeVariants.length === 0) {
-        basePrice = safeNumber(p?.originalStorePrice ?? p?.price ?? 0)
-      } else {
-        basePrice = Math.min(...activeVariants.map(v => safeNumber(v.originalStorePrice ?? v.price ?? 0)))
-      }
-    }
-    // Apply store percentage markup
     const storePercentage = safeNumber(p?.store?.storePercentage ?? 0)
-    return basePrice * (1 + storePercentage / 100)
+    const getFinalPrice = (base) => safeNumber(base) * (1 + storePercentage / 100)
+
+    if (!p || !Array.isArray(p.variants) || p.variants.length === 0) {
+      return getFinalPrice(p?.originalStorePrice ?? p?.price ?? 0)
+    }
+
+    const activeVariants = p.variants.filter(v => v.isActive !== false)
+    if (activeVariants.length === 0) {
+      return getFinalPrice(p?.originalStorePrice ?? p?.price ?? 0)
+    }
+
+    const variantFinalPrices = activeVariants.map(v => ({
+      variant: v,
+      finalPrice: getFinalPrice(v.originalStorePrice ?? v.price ?? 0)
+    })).filter(vp => vp.finalPrice > 0)
+
+    if (variantFinalPrices.length === 0) {
+      return getFinalPrice(p?.originalStorePrice ?? p?.price ?? 0)
+    }
+
+    return Math.min(...variantFinalPrices.map(vp => vp.finalPrice))
   }, [p])
 
   const displayMrp = useMemo(() => {
@@ -52,10 +60,23 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
       const num = Number(val)
       return isNaN(num) || !isFinite(num) ? 0 : num
     }
-    if (!p || !Array.isArray(p.variants) || p.variants.length === 0) return safeNumber(p?.mrp || p?.price || 0)
-    const variantWithMinPrice = p.variants.find(v => v.isActive !== false && safeNumber(v.price || 0) === minPrice)
-    const baseMrp = safeNumber(variantWithMinPrice?.mrp || p?.mrp || minPrice || 0)
-    return baseMrp
+    if (!p) return safeNumber(0)
+
+    if (!Array.isArray(p.variants) || p.variants.length === 0) {
+      return safeNumber(p?.mrp ?? p?.price ?? minPrice ?? 0)
+    }
+
+    const activeVariants = p.variants.filter(v => v.isActive !== false)
+    if (activeVariants.length === 0) {
+      return safeNumber(p?.mrp ?? p?.price ?? minPrice ?? 0)
+    }
+
+    // Try to find the first variant that has an mrp
+    const variantWithMrp = activeVariants.find(v => v.mrp != null && safeNumber(v.mrp) > 0)
+    if (variantWithMrp) return safeNumber(variantWithMrp.mrp)
+
+    // Fall back to product's mrp, then minPrice
+    return safeNumber(p?.mrp ?? minPrice ?? 0)
   }, [p, minPrice])
 
   const discount = displayMrp > minPrice
