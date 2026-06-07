@@ -207,7 +207,9 @@ export default function ProductDetail() {
 
   const stockStRaw = getStockStatus(currentStock ?? totalStock);
   const stockSt = { ...stockStRaw, text: String(stockStRaw.text || '').includes('Only') ? 'Limited Stock' : stockStRaw.text };
-  const canAddToCart = variantAttrs.every(attr => !!selected[attr.toLowerCase().trim()]) && !!matchedVariant && isAvailable;
+  const canAddToCart = 
+    (variantAttrs.length === 0 || (variantAttrs.every(attr => !!selected[attr.toLowerCase().trim()]) && !!matchedVariant)) && 
+    isAvailable;
   const hasHighlights = p && Array.isArray(p.highlights) && p.highlights.length > 0;
   const hasSpecifications = p && Array.isArray(p.specifications) && p.specifications.length > 0;
   const hasDescription = p?.description?.length > 0;

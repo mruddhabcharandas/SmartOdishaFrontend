@@ -150,12 +150,10 @@ export default function Cart() {
     } catch (err) {
       console.error('Failed to calculate shipping:', err)
       // Calculate default shipping in case API fails
-      const totalWeight = cart.reduce((sum, item) => sum + (Number(item.weight) || 0.5) * item.quantity, 0)
-      const baseAmt = 85
       const freeDeliveryAbove = 999
-      const isPrepaidFree = totalPayable >= freeDeliveryAbove
-      const deliveryCharge = paymentMethod === "prepaid" && isPrepaidFree ? 0 : baseAmt
-      const codCharge = paymentMethod === "cod" ? Math.min(Math.max(Math.round(totalPayable * 0.05), 40), 100) : 0
+      const isPrepaidFree = orderAmt >= freeDeliveryAbove && paymentMethod === 'prepaid'
+      const deliveryCharge = isPrepaidFree ? 0 : 85
+      const codCharge = paymentMethod === "cod" ? Math.min(Math.max(Math.round(orderAmt * 0.05), 40), 100) : 0
       const finalCharge = deliveryCharge + codCharge
       
       setShippingInfo({
@@ -727,29 +725,55 @@ export default function Cart() {
               {/* Address Selection */}
               {savedAddresses.length > 0 && (
                 <div className="mb-6">
-                  <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Delivery Address</div>
+                  <div className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Delivery Address
+                  </div>
                   <div className="space-y-3">
                     {savedAddresses.map(addr => (
                       <div
                         key={addr._id}
                         onClick={() => setSelectedAddress(addr)}
-                        className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
+                        className={`p-5 rounded-2xl border-2 cursor-pointer transition-all ${
                           selectedAddress?._id === addr._id
-                            ? 'border-orange-500 bg-orange-50'
-                            : 'border-gray-100 bg-white hover:border-orange-200 hover:bg-orange-50/30'
+                            ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50 shadow-lg'
+                            : 'border-gray-100 bg-white hover:border-blue-200 hover:bg-blue-50/30'
                         }`}
                       >
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-gray-800 text-sm">{addr.fullName}</span>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-3">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                              selectedAddress?._id === addr._id 
+                                ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white' 
+                                : 'bg-gray-100 text-gray-500'
+                            }`}>
+                              <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                              </svg>
+                            </div>
+                            <div>
+                              <div className={`font-bold text-sm ${selectedAddress?._id === addr._id ? 'text-blue-900' : 'text-gray-800'}`}>{addr.fullName}</div>
+                              <div className={`text-xs ${selectedAddress?._id === addr._id ? 'text-blue-700' : 'text-gray-500'}`}>📞 {addr.phone}</div>
+                            </div>
+                          </div>
                           {addr.isDefault && (
-                            <span className="text-[10px] font-extrabold text-orange-500 uppercase tracking-widest bg-orange-100 px-3 py-1 rounded-full">Default</span>
+                            <span className="text-[10px] font-extrabold text-blue-600 uppercase tracking-[0.2em] bg-blue-100 px-4 py-1.5 rounded-full">Default</span>
+                          )}
+                          {selectedAddress?._id === addr._id && (
+                            <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0 ml-2">
+                              <svg width="14" height="14" fill="white" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                              </svg>
+                            </div>
                           )}
                         </div>
-                        <div className="text-xs text-gray-600 leading-relaxed">
+                        <div className={`text-xs leading-relaxed ${selectedAddress?._id === addr._id ? 'text-blue-800' : 'text-gray-600'}`}>
                           {addr.addressLine1}, {addr.addressLine2 ? `${addr.addressLine2}, ` : ''}
                           {addr.city}, {addr.state} - {addr.pincode}
                         </div>
-                        <div className="text-[11px] font-semibold text-gray-500 mt-2">📞 {addr.phone}</div>
                       </div>
                     ))}
                   </div>
@@ -757,20 +781,45 @@ export default function Cart() {
               )}
 
               {/* Payment Method Selection */}
-              <div className="mb-4">
-                <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Payment Method</div>
-                <div className="flex gap-3">
+              <div className="mb-6">
+                <div className="text-xs font-bold text-gray-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                  </svg>
+                  Payment Method
+                </div>
+                <div className="space-y-3">
                   <button
                     type="button"
                     onClick={() => setPaymentMethod('prepaid')}
-                    className={`flex-1 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                    className={`w-full p-4 rounded-2xl text-left transition-all flex items-center gap-4 ${
                       paymentMethod === 'prepaid'
-                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white'
-                        : 'bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100'
+                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-500 shadow-lg'
+                        : 'bg-white border-2 border-gray-100 hover:border-blue-200 hover:bg-blue-50/30'
                     }`}
                   >
-                    Prepaid (Free Delivery)
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      paymentMethod === 'prepaid' 
+                        ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white' 
+                        : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className={`font-bold text-sm ${paymentMethod === 'prepaid' ? 'text-blue-900' : 'text-gray-800'}`}>Prepaid</div>
+                      <div className={`text-xs mt-1 ${paymentMethod === 'prepaid' ? 'text-blue-700 font-semibold' : 'text-gray-500'}`}>Free delivery on orders above ₹999</div>
+                    </div>
+                    {paymentMethod === 'prepaid' && (
+                      <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
+                        <svg width="14" height="14" fill="white" viewBox="0 0 24 24">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      </div>
+                    )}
                   </button>
+
                   <button
                     type="button"
                     onClick={() => {
@@ -778,15 +827,44 @@ export default function Cart() {
                       else notify('COD not available for this order', 'error')
                     }}
                     disabled={!shippingInfo.codAvailable}
-                    className={`flex-1 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                    className={`w-full p-4 rounded-2xl text-left transition-all flex items-center gap-4 ${
                       !shippingInfo.codAvailable
-                        ? 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed'
+                        ? 'bg-gray-50 border-2 border-gray-100 opacity-50 cursor-not-allowed'
                         : paymentMethod === 'cod'
-                        ? 'bg-gradient-to-r from-orange-500 to-amber-600 text-white'
-                        : 'bg-gray-50 border border-gray-200 text-gray-700 hover:bg-gray-100'
+                        ? 'bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-500 shadow-lg'
+                        : 'bg-white border-2 border-gray-100 hover:border-orange-200 hover:bg-orange-50/30'
                     }`}
                   >
-                    {!shippingInfo.codAvailable ? 'COD Unavailable' : 'Cash on Delivery'}
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                      !shippingInfo.codAvailable 
+                        ? 'bg-gray-100 text-gray-400' 
+                        : paymentMethod === 'cod' 
+                        ? 'bg-gradient-to-br from-orange-500 to-amber-600 text-white' 
+                        : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                      </svg>
+                    </div>
+                    <div className="flex-1">
+                      <div className={`font-bold text-sm ${
+                        !shippingInfo.codAvailable ? 'text-gray-400' : paymentMethod === 'cod' ? 'text-orange-900' : 'text-gray-800'
+                      }`}>
+                        {!shippingInfo.codAvailable ? 'COD Unavailable' : 'Cash on Delivery'}
+                      </div>
+                      <div className={`text-xs mt-1 ${
+                        !shippingInfo.codAvailable ? 'text-gray-400' : paymentMethod === 'cod' ? 'text-orange-700 font-semibold' : 'text-gray-500'
+                      }`}>
+                        {!shippingInfo.codAvailable ? 'Not available for this order' : 'Pay when you receive your order'}
+                      </div>
+                    </div>
+                    {paymentMethod === 'cod' && (
+                      <div className="w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center flex-shrink-0">
+                        <svg width="14" height="14" fill="white" viewBox="0 0 24 24">
+                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                      </div>
+                    )}
                   </button>
                 </div>
               </div>
