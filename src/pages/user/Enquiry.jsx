@@ -159,7 +159,7 @@ export default function Enquiry() {
     setIsRecalculating(true)
     try {
       setShippingInfo(prev => ({ ...prev, loading: true }))
-      const totalWeight = cart.reduce((sum, item) => sum + (Number(item.weight) || 0.5) * item.quantity, 0)
+      const totalWeight = cart.reduce((sum, item) => sum + Number(item.productId?.weight || item.weight || 500) * item.quantity, 0)
       const firstItem = cart[0]
       const storeId = firstItem?.store?._id || firstItem?.store
       
@@ -473,17 +473,21 @@ export default function Enquiry() {
         }
       }
       
-      if (orderId && !isPlaceholder(orderId) && cashfreePaymentId && !isPlaceholder(cashfreePaymentId) && cashfreeSignature && !isPlaceholder(cashfreeSignature) && dataToUse) {
+      const hasOrderId = orderId && !isPlaceholder(orderId);
+      if (hasOrderId && dataToUse) {
         console.log('All required params present, creating order...')
         try {
           setIsVerifyingPayment(true)
           notify('Payment verified. Creating order...', 'success')
           
+          const cleanPaymentId = cashfreePaymentId && !isPlaceholder(cashfreePaymentId) ? cashfreePaymentId : '';
+          const cleanSignature = cashfreeSignature && !isPlaceholder(cashfreeSignature) ? cashfreeSignature : '';
+
           const response = await api.post('/api/orders/create-after-verify', {
             ...dataToUse,
             cashfreeOrderId: orderId,
-            cashfreePaymentId,
-            cashfreeSignature
+            cashfreePaymentId: cleanPaymentId,
+            cashfreeSignature: cleanSignature
           })
           console.log('Order created response:', response.data)
           // Clear prepareData
@@ -508,7 +512,11 @@ export default function Enquiry() {
           setIsVerifyingPayment(false)
         }
       } else {
-        console.log('Missing required params for callback!')
+        if (!dataToUse && hasOrderId) {
+          console.log('Missing prepareData for callback order verification!')
+        } else {
+          console.log('No active callback or missing order_id in query parameters.')
+        }
       }
     }
     handleCashfreeCallback()
@@ -1059,7 +1067,18 @@ export default function Enquiry() {
                   {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Discount</span><span className="ct-summary-val green">-₹{safeNum(bulkDiscount).toLocaleString()}</span></div>}
                   <div className="ct-summary-row"><span className="ct-summary-label">Subtotal</span><span className="ct-summary-val">₹{safeNum(subTotal).toLocaleString()}</span></div>
                   {appliedCoupon && <div className="ct-summary-row"><span className="ct-summary-label">Coupon Discount</span><span className="ct-summary-val green">-₹{safeNum(couponDiscount).toLocaleString()}</span></div>}
-                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹${safeNum(shippingInfo.finalCharge).toLocaleString()}`}</span></div>
+                  <div className="ct-summary-row">
+                    <span className="ct-summary-label">Delivery Charge</span>
+                    <span className="ct-summary-val">
+                      {shippingInfo.isFreeDelivery || shippingInfo.deliveryCharge === 0 ? <span className="green">FREE</span> : `₹${safeNum(shippingInfo.deliveryCharge).toLocaleString()}`}
+                    </span>
+                  </div>
+                  {selectedPaymentMethod === 'COD' && shippingInfo.codCharge > 0 && (
+                    <div className="ct-summary-row">
+                      <span className="ct-summary-label">COD Service Charge</span>
+                      <span className="ct-summary-val">₹{safeNum(shippingInfo.codCharge).toLocaleString()}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="ct-summary-divider" />
                 <div className="ct-summary-total-row">
@@ -1152,7 +1171,18 @@ export default function Enquiry() {
                   {bulkDiscount > 0 && <div className="ct-summary-row"><span className="ct-summary-label">Discount</span><span className="ct-summary-val green">-₹{safeNum(bulkDiscount).toLocaleString()}</span></div>}
                   <div className="ct-summary-row"><span className="ct-summary-label">Subtotal</span><span className="ct-summary-val">₹{safeNum(subTotal).toLocaleString()}</span></div>
                   {appliedCoupon && <div className="ct-summary-row"><span className="ct-summary-label">Coupon Discount</span><span className="ct-summary-val green">-₹{safeNum(couponDiscount).toLocaleString()}</span></div>}
-                  <div className="ct-summary-row"><span className="ct-summary-label">Delivery Charge</span><span className="ct-summary-val">{shippingInfo.isFreeDelivery ? <span className="green">FREE</span> : `₹${safeNum(shippingInfo.finalCharge).toLocaleString()}`}</span></div>
+                  <div className="ct-summary-row">
+                    <span className="ct-summary-label">Delivery Charge</span>
+                    <span className="ct-summary-val">
+                      {shippingInfo.isFreeDelivery || shippingInfo.deliveryCharge === 0 ? <span className="green">FREE</span> : `₹${safeNum(shippingInfo.deliveryCharge).toLocaleString()}`}
+                    </span>
+                  </div>
+                  {selectedPaymentMethod === 'COD' && shippingInfo.codCharge > 0 && (
+                    <div className="ct-summary-row">
+                      <span className="ct-summary-label">COD Service Charge</span>
+                      <span className="ct-summary-val">₹{safeNum(shippingInfo.codCharge).toLocaleString()}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="ct-summary-divider" />
                 <div className="ct-summary-total-row">

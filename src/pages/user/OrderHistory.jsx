@@ -173,8 +173,8 @@ export default function OrderHistory() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
-        .oh-load-root { font-family:'DM Sans',sans-serif; background:#f1f3f6; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; position:relative; overflow:hidden; }
-        .oh-load-root::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle at 2px 2px, rgba(40,116,240,.05) 1px, transparent 0); background-size:32px 32px; }
+        .oh-load-root { font-family:'DM Sans',sans-serif; background:#020617; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; position:relative; overflow:hidden; color:#cbd5e1; }
+        .oh-load-root::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle at 2px 2px, rgba(255,255,255,.05) 1px, transparent 0); background-size:32px 32px; }
       `}</style>
       <div className="oh-load-root">
         <LoadingSpinner text="Retrieving your orders..." />
@@ -189,7 +189,7 @@ export default function OrderHistory() {
 
         .oh-root{
           font-family:'DM Sans',system-ui,sans-serif;
-          background: linear-gradient(180deg, #0f172a 0%, #020617 240px, #f8fafc 240px, #f8fafc 100%);
+          background: linear-gradient(180deg, #0f172a 0%, #020617 35%, #f8fafc 35%, #f8fafc 100%);
           min-height:100vh; color:#1e293b;
           position:relative; overflow-x:hidden;
           padding-bottom:32px;

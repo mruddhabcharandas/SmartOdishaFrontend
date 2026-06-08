@@ -138,7 +138,7 @@ export default function Cart() {
         <div className="ct-empty-box">
           <div className="ct-empty-ico">🛒</div>
           <div className="ct-empty-h">Cart is Empty</div>
-          <p className="ct-empty-p">You haven't added any products yet. Browse our wholesale catalogue to get started.</p>
+          <p className="ct-empty-p">You haven't added any products yet. Browse our catalogue to get started.</p>
           <Link to="/products" className="ct-empty-btn">
             Browse Catalogue
             <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
