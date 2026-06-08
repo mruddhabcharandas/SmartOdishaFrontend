@@ -1295,23 +1295,26 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
             </div>
             
             <div className="grid grid-cols-2 gap-3">
-              {(product.attributes || []).map(attr => (
-                <div key={attr} className="space-y-1">
-                  <label className="text-[9px] font-bold text-gray-400 uppercase">{attr}</label>
-                  <input 
-                    className="w-full bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold" 
-                    value={editingVariant.attributes?.[attr] || ''} 
-                    onChange={e => setEditingVariant({
-                      ...editingVariant,
-                      attributes: {
-                        ...(editingVariant.attributes || {}),
-                        [attr]: e.target.value
-                      }
-                    })} 
-                    required 
-                  />
-                </div>
-              ))}
+              {(product.attributes || []).map(attr => {
+                const [attrName] = attr.split(':');
+                return (
+                  <div key={attrName} className="space-y-1">
+                    <label className="text-[9px] font-bold text-gray-400 uppercase">{attrName}</label>
+                    <input 
+                      className="w-full bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold" 
+                      value={editingVariant.attributes?.[attrName] || ''} 
+                      onChange={e => setEditingVariant({
+                        ...editingVariant,
+                        attributes: {
+                          ...(editingVariant.attributes || {}),
+                          [attrName]: e.target.value
+                        }
+                      })} 
+                      required 
+                    />
+                  </div>
+                );
+              })}
               <div className="space-y-1">
                 <label className="text-[9px] font-bold text-gray-400 uppercase">Price</label>
                 <input className="w-full bg-gray-50 rounded-xl px-3 py-2 text-xs font-bold" value={editingVariant.price} onChange={e=>setEditingVariant({...editingVariant, price: e.target.value})} required />
