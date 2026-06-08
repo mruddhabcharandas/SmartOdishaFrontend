@@ -106,6 +106,8 @@ export default function Enquiry() {
   // Loading
   const [loading, setLoading] = useState(false)
   const [prepareData, setPrepareData] = useState(null)
+  const [isRecalculating, setIsRecalculating] = useState(false)
+  const [isVerifyingPayment, setIsVerifyingPayment] = useState(false)
 
   // SDK
   const cashfreeSdkLoaded = useRef(false)
@@ -154,6 +156,7 @@ export default function Enquiry() {
 
   const calculateShipping = async (pin, orderAmt, paymentMethod) => {
     if (!pin) return
+    setIsRecalculating(true)
     try {
       setShippingInfo(prev => ({ ...prev, loading: true }))
       const totalWeight = cart.reduce((sum, item) => sum + (Number(item.weight) || 0.5) * item.quantity, 0)
@@ -196,6 +199,8 @@ export default function Enquiry() {
         isFreeDelivery: finalCharge === 0 && paymentMethod === 'CASHFREE',
         deliveryAvailable: true
       })
+    } finally {
+      setIsRecalculating(false)
     }
   }
 
@@ -378,7 +383,7 @@ export default function Enquiry() {
       const cashfree = window.Cashfree({ mode })
       cashfree.checkout({
         paymentSessionId: paymentSessionId,
-        returnUrl: `${window.location.origin}/checkout?order_id={order_id}&payment_id={payment_id}&signature={signature}`
+        returnUrl: `${window.location.origin}/checkout?order_id={order_id}`
       })
     } catch (err) {
       notify(err?.message || 'Payment gateway error', 'error')
@@ -447,9 +452,11 @@ export default function Enquiry() {
       console.log('=== Checking Cashfree callback ===')
       const queryParams = new URLSearchParams(location.search)
       const orderId = queryParams.get('order_id')
-      const cashfreePaymentId = queryParams.get('payment_id')
-      const cashfreeSignature = queryParams.get('signature')
+      const cashfreePaymentId = queryParams.get('cf_payment_id') || queryParams.get('payment_id')
+      const cashfreeSignature = queryParams.get('signature') || queryParams.get('payment_signature')
       console.log('Query params:', { orderId, cashfreePaymentId, cashfreeSignature })
+      
+      const isPlaceholder = (val) => !val || val.startsWith('{') || val.startsWith('%7B');
       
       // Try to get prepareData from state first, then from localStorage
       let dataToUse = prepareData
@@ -466,10 +473,12 @@ export default function Enquiry() {
         }
       }
       
-      if (orderId && cashfreePaymentId && cashfreeSignature && dataToUse) {
+      if (orderId && !isPlaceholder(orderId) && cashfreePaymentId && !isPlaceholder(cashfreePaymentId) && cashfreeSignature && !isPlaceholder(cashfreeSignature) && dataToUse) {
         console.log('All required params present, creating order...')
         try {
-          setLoading(true)
+          setIsVerifyingPayment(true)
+          notify('Payment verified. Creating order...', 'success')
+          
           const response = await api.post('/api/orders/create-after-verify', {
             ...dataToUse,
             cashfreeOrderId: orderId,
@@ -480,8 +489,10 @@ export default function Enquiry() {
           // Clear prepareData
           localStorage.removeItem('prepareData')
           setPrepareData(null)
+          clearCart()
+          
           // Navigate to order success page
-          navigate('/order-success', { 
+          navigate(`/order-success/${response.data.orderId}`, { 
             state: { 
               orderId: response.data.orderId,
               orderNumber: response.data.orderNumber,
@@ -494,8 +505,7 @@ export default function Enquiry() {
           notify(err?.response?.data?.error || 'Order failed', 'error')
           localStorage.removeItem('prepareData')
           setPrepareData(null)
-        } finally {
-          setLoading(false)
+          setIsVerifyingPayment(false)
         }
       } else {
         console.log('Missing required params for callback!')
@@ -556,6 +566,129 @@ export default function Enquiry() {
       </div>
     </>
   )
+
+  if (isVerifyingPayment) {
+    return (
+      <>
+        <style>{`
+          .verifying-root {
+            font-family: 'DM Sans', sans-serif;
+            background: #020617;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+          }
+          .verifying-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+          }
+          .verifying-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(24px);
+            border-radius: 28px;
+            padding: 48px 32px;
+            text-align: center;
+            max-width: 420px;
+            width: 100%;
+            z-index: 1;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            animation: verifyIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+          }
+          .success-badge {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, 0.1);
+            border: 2px solid #10b981;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+            animation: bounceIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+          }
+          .success-badge svg {
+            width: 40px;
+            height: 40px;
+          }
+          .verifying-h {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #f8fafc;
+            letter-spacing: -0.02em;
+          }
+          .verifying-p {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 32px;
+            line-height: 1.6;
+          }
+          .verify-spinner-w {
+            position: relative;
+            width: 44px;
+            height: 44px;
+            margin: 0 auto;
+          }
+          .verify-spinner {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            margin: 2px;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-top-color: #f97316;
+          }
+          @keyframes verifyIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          @keyframes bounceIn {
+            from { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 0.9; transform: scale(1.1); }
+            70% { transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <div className="verifying-root">
+          <div className="verifying-glow"></div>
+          <div className="verifying-card">
+            <div className="success-badge">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="verifying-h">Payment Received</h2>
+            <p className="verifying-p">We've verified your payment. Creating your order, please do not refresh or close this page...</p>
+            <div className="verify-spinner-w">
+              <div className="verify-spinner"></div>
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
 
   return (
     <>
@@ -948,13 +1081,13 @@ export default function Enquiry() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '13px', color: '#0f172a', fontWeight: 700 }}>COD Advance (15%)</span>
                       <span style={{ fontSize: '15px', fontWeight: 800, color: '#f97316' }}>
-                        ₹{safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()}
+                        ₹{safeNum(Math.ceil(safeNum(totalPayable) * 0.15)).toLocaleString()}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>Remaining on Delivery</span>
                       <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
-                        ₹{safeNum(Math.round(safeNum(totalPayable) - Math.round(safeNum(totalPayable) * 0.15))).toLocaleString()}
+                        ₹{safeNum(safeNum(totalPayable) - Math.ceil(safeNum(totalPayable) * 0.15)).toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -993,13 +1126,15 @@ export default function Enquiry() {
                 
 
 
-                <button className={`ct-checkout-btn ${subTotal >= minAmount && selectedAddress && svc.available !== false && !cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; }) ? 'ready' : 'disabled'}`} disabled={subTotal < minAmount || !selectedAddress || svc.available === false || cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; })} onClick={submit}>
+                <button className={`ct-checkout-btn ${subTotal >= minAmount && selectedAddress && svc.available !== false && !isRecalculating && !cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; }) ? 'ready' : 'disabled'}`} disabled={subTotal < minAmount || !selectedAddress || svc.available === false || isRecalculating || loading || cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; })} onClick={submit}>
                   {loading ? (
                     <>
                       <div style={{width:'18px',height:'18px',border:'2px solid rgba(255,255,255,0.3)',borderTop:'2px solid white',borderRadius:'50%',animation:'ctPulse 1s linear infinite'}} />
                       Processing...
                     </>
-                  ) : selectedPaymentMethod === 'COD' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
+                  ) : isRecalculating ? (
+                    "Updating Charges..."
+                  ) : selectedPaymentMethod === 'COD' ? `Pay ${Math.ceil(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.ceil(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
                 </button>
                 <div className="ct-secure-note">
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
@@ -1039,13 +1174,13 @@ export default function Enquiry() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '13px', color: '#0f172a', fontWeight: 700 }}>COD Advance (15%)</span>
                       <span style={{ fontSize: '15px', fontWeight: 800, color: '#f97316' }}>
-                        ₹{safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()}
+                        ₹{safeNum(Math.ceil(safeNum(totalPayable) * 0.15)).toLocaleString()}
                       </span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>Remaining on Delivery</span>
                       <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
-                        ₹{safeNum(Math.round(safeNum(totalPayable) - Math.round(safeNum(totalPayable) * 0.15))).toLocaleString()}
+                        ₹{safeNum(safeNum(totalPayable) - Math.ceil(safeNum(totalPayable) * 0.15)).toLocaleString()}
                       </span>
                     </div>
                   </div>
@@ -1082,13 +1217,15 @@ export default function Enquiry() {
                   </div>
                 )}
                 
-                <button className={`ct-checkout-btn ${subTotal >= minAmount && selectedAddress && svc.available !== false && !cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; }) ? 'ready' : 'disabled'}`} disabled={subTotal < minAmount || !selectedAddress || svc.available === false || cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; })} onClick={submit}>
+                <button className={`ct-checkout-btn ${subTotal >= minAmount && selectedAddress && svc.available !== false && !isRecalculating && !cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; }) ? 'ready' : 'disabled'}`} disabled={subTotal < minAmount || !selectedAddress || svc.available === false || isRecalculating || loading || cart.every(item => { const itemStock = item.variantSku ? (item.productId?.variants?.find(v => v.sku === item.variantSku)?.stock ?? item.stock) : (item.productId?.stock ?? item.stock); return itemStock <=0; })} onClick={submit}>
                   {loading ? (
                     <>
                       <div style={{width:'18px',height:'18px',border:'2px solid rgba(255,255,255,0.3)',borderTop:'2px solid white',borderRadius:'50%',animation:'ctPulse 1s linear infinite'}} />
                       Processing...
                     </>
-                  ) : selectedPaymentMethod === 'COD' ? `Pay ${Math.round(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.round(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
+                  ) : isRecalculating ? (
+                    "Updating Charges..."
+                  ) : selectedPaymentMethod === 'COD' ? `Pay ${Math.ceil(safeNum(totalPayable) * 0.15) > 0 ? `₹${safeNum(Math.ceil(safeNum(totalPayable) * 0.15)).toLocaleString()} Advance & ` : ''}Place Order` : `Pay ₹${safeNum(totalPayable).toLocaleString()}`}
                 </button>
                 <div className="ct-secure-note">
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>

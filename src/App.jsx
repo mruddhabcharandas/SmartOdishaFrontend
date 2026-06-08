@@ -123,6 +123,7 @@ export default function App() {
         <Route path="cart" element={<Cart />} />
         <Route path="manual-payment" element={<ManualPayment />} />
         <Route path="order-success" element={<OrderSuccess />} />
+        <Route path="order-success/:orderId" element={<OrderSuccess />} />
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
         <Route path="terms-of-service" element={<TermsOfService />} />
       </Route>
