@@ -58,11 +58,12 @@ const safeNumber = (num) => {
 const STATUS_STEPS = ['Placed', 'Processing', 'Packed', 'Shipped', 'Delivered']
 
 function getStatusIndex(order) {
-  if (order.status === 'FULFILLED' || order.status === 'DELIVERED') return 4
-  if (order.shipping?.waybill) return 3
-  if (order.status === 'CONFIRMED') return 2
-  if (order.status === 'NEW' || order.status === 'PENDING_CASH_APPROVAL') return 1
-  return 0
+  const s = order.status;
+  if (s === 'DELIVERED' || s === 'FULFILLED') return 4;
+  if (s === 'SHIPPED' || order.shipping?.waybill) return 3;
+  if (s === 'PACKED') return 2;
+  if (s === 'CONFIRMED' || s === 'PROCESSING') return 1;
+  return 0; // PENDING, NEW, PENDING_CASH_APPROVAL, PENDING_PAYMENT
 }
 
 function getStatusColor(status) {
@@ -188,7 +189,8 @@ export default function OrderHistory() {
 
         .oh-root{
           font-family:'DM Sans',system-ui,sans-serif;
-          background:#f1f3f6; min-height:100vh; color:#212121;
+          background: linear-gradient(180deg, #0f172a 0%, #020617 240px, #f8fafc 240px, #f8fafc 100%);
+          min-height:100vh; color:#1e293b;
           position:relative; overflow-x:hidden;
           padding-bottom:32px;
         }
@@ -206,63 +208,68 @@ export default function OrderHistory() {
         .oh-eyebrow{
           display:inline-flex; align-items:center; gap:7px;
           padding:4px 12px; border-radius:100px;
-          background:rgba(40,116,240,0.08); border:1px solid rgba(40,116,240,0.15);
-          color:#2874f0; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+          background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
+          color:#cbd5e1; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
           margin-bottom:8px;
         }
         .oh-h1{
-          font-size:24px;
-          font-weight:700;
-          color:#212121; line-height:1.2; margin-bottom:4px;
+          font-size:28px;
+          font-weight:900;
+          color:white; line-height:1.2; margin-bottom:4px;
         }
-        .oh-h1 span{color:#2874f0;}
-        .oh-sub{font-size:13px;color:#878787;font-weight:400;}
+        .oh-h1 span{
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%);
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .oh-sub{font-size:14px;color:#cbd5e1;font-weight:500;}
         .oh-count-pill{
           display:inline-flex; align-items:center; gap:7px;
           padding:8px 16px; border-radius:100px;
-          background:white; border:1px solid #e0e0e0;
-          color:#2874f0; font-size:12px; font-weight:700; white-space:nowrap;
-          box-shadow:0 1px 2px rgba(0,0,0,0.05);
+          background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
+          color:white; font-size:12px; font-weight:700; white-space:nowrap;
+          box-shadow:0 4px 20px rgba(0,0,0,0.15);
         }
 
         /* ── empty state ── */
         .oh-empty{
-          background:white; border:1px solid #e0e0e0;
-          border-radius:4px; padding:56px 24px; text-align:center;
-          box-shadow:0 1px 2px rgba(0,0,0,0.05);
+          background:white; border:1px solid #e2e8f0;
+          border-radius:12px; padding:56px 24px; text-align:center;
+          box-shadow:0 4px 20px rgba(0,0,0,0.05);
         }
         .oh-empty-ico{
           width:64px; height:64px; border-radius:50%; margin:0 auto 16px;
-          background:#f0f5ff; border:1px solid rgba(40,116,240,0.15);
+          background:#eff6ff; border:1px solid rgba(59,130,246,0.15);
           display:flex; align-items:center; justify-content:center; font-size:28px;
         }
         .oh-empty-h{
           font-size:20px; font-weight:700;
-          color:#212121; margin-bottom:8px;
+          color:#0f172a; margin-bottom:8px;
         }
-        .oh-empty-p{font-size:14px;color:#878787;margin-bottom:24px;}
+        .oh-empty-p{font-size:14px;color:#64748b;margin-bottom:24px;}
         .oh-shop-btn{
           display:inline-flex; align-items:center; gap:8px;
-          background:#fb641b; color:white;
-          padding:12px 24px; border-radius:2px; border:none;
+          background: linear-gradient(135deg, #f97316, #ea580c); color:white;
+          padding:12px 24px; border-radius:8px; border:none;
           font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
           cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s;
-          box-shadow:0 1px 2px rgba(0,0,0,0.1);
+          box-shadow:0 4px 20px rgba(249,115,22,0.2);
         }
-        .oh-shop-btn:hover{background:#e85a17;}
+        .oh-shop-btn:hover{background: linear-gradient(135deg, #ea580c, #dc2626); transform: translateY(-1px);}
 
         /* ── order list ── */
         .oh-list{display:flex;flex-direction:column;gap:16px;}
 
         /* ── order card ── */
         .oh-card{
-          background:white; border:1px solid #e0e0e0;
-          border-radius:4px; overflow:hidden;
-          box-shadow:0 1px 3px rgba(0,0,0,0.08);
+          background:white; border:1px solid #e2e8f0;
+          border-radius:12px; overflow:hidden;
+          box-shadow:0 4px 16px rgba(15,23,42,0.05);
           transition:all .2s;
         }
         .oh-card:hover{box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-        .oh-card.expanded{box-shadow:0 4px 12px rgba(0,0,0,0.12); border-color:#2874f0;}
+        .oh-card.expanded{box-shadow:0 4px 12px rgba(15,23,42,0.1); border-color:#3b82f6;}
 
         /* card header row */
         .oh-card-hd{
@@ -303,7 +310,7 @@ export default function OrderHistory() {
 
         /* order id */
         .oh-oid{
-          font-size:12px; color:#2874f0; font-weight:700;
+          font-size:12px; color:#3b82f6; font-weight:700;
           font-family:inherit;
         }
 
@@ -333,7 +340,7 @@ export default function OrderHistory() {
           z-index:0;
         }
         .oh-step.done:not(:last-child)::after{
-          background:#2874f0;
+          background:#3b82f6;
         }
 
         .oh-step-circle{
@@ -342,16 +349,16 @@ export default function OrderHistory() {
           font-size:10px; font-weight:700; position:relative; z-index:1;
           transition:all .3s;
         }
-        .oh-step-circle.done{background:#2874f0;color:white;}
+        .oh-step-circle.done{background:#3b82f6;color:white;}
         .oh-step-circle.done.last{background:#059669;}
-        .oh-step-circle.idle{background:#f0f5ff;color:#2874f0;border:2px solid #2874f0;}
+        .oh-step-circle.idle{background:#eff6ff;color:#3b82f6;border:2px solid #3b82f6;}
 
         .oh-step-label{
           margin-top:8px; font-size:11px; font-weight:700;
           text-transform:uppercase; text-align:center;
           transition:color .3s;
         }
-        .oh-step-label.done{color:#2874f0;}
+        .oh-step-label.done{color:#3b82f6;}
         .oh-step-label.done.last{color:#059669;}
         .oh-step-label.idle{color:#878787;}
 
@@ -359,10 +366,10 @@ export default function OrderHistory() {
         .oh-eta{
           display:inline-flex; align-items:center; gap:6px;
           font-size:12px; font-weight:600; color:#212121;
-          background:#f0f5ff; border:1px solid rgba(40,116,240,0.1);
+          background:#eff6ff; border:1px solid rgba(59,130,246,0.1);
           padding:6px 12px; border-radius:2px; margin-top:12px;
         }
-        .oh-eta b{color:#2874f0;}
+        .oh-eta b{color:#3b82f6;}
 
         /* ── info grid ── */
         .oh-info-grid {
@@ -383,7 +390,7 @@ export default function OrderHistory() {
         }
         .oh-info-row{font-size:13px;color:#212121;line-height:1.5;}
         .oh-info-row b{color:#212121;font-weight:700;}
-        .oh-mono{font-family:monospace;font-size:11px;color:#2874f0;}
+        .oh-mono{font-family:monospace;font-size:11px;color:#3b82f6;}
 
         /* ── items ── */
         .oh-items-label{
@@ -425,7 +432,7 @@ export default function OrderHistory() {
           display:flex;align-items:center;justify-content:center;
           cursor:pointer;transition:all .15s;padding:0;
         }
-        .oh-rate-star:hover{background:#f0f5ff;border-color:#2874f0;}
+        .oh-rate-star:hover{background:#eff6ff;border-color:#3b82f6;}
         .oh-rate-star svg{width:14px;height:14px;color:#f59e0b;}
         .oh-rate-done{font-size:12px;font-weight:700;color:#059669;}
 
@@ -440,8 +447,8 @@ export default function OrderHistory() {
         /* tracking pill */
         .oh-track-pill{
           display:inline-flex; align-items:center; gap:8px;
-          background:#f0f5ff; border:1px solid rgba(40,116,240,0.15);
-          color:#2874f0; padding:6px 12px; border-radius:2px;
+          background:#eff6ff; border:1px solid rgba(59,130,246,0.15);
+          color:#3b82f6; padding:6px 12px; border-radius:2px;
           font-size:11px; font-weight:700; text-transform:uppercase;
         }
 
@@ -452,14 +459,14 @@ export default function OrderHistory() {
           font-size:11px; font-weight:700; text-transform:uppercase;
           cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.15s;
         }
-        .oh-btn.violet{background:#2874f0;color:white;}
-        .oh-btn.violet:hover{background:#1c5fd0;}
+        .oh-btn.violet{background:#4f46e5;color:white;}
+        .oh-btn.violet:hover{background:#4338ca;}
         .oh-btn.green{background:#059669;color:white;}
         .oh-btn.green:hover{background:#047857;}
-        .oh-btn.blue{background:#2874f0;color:white;}
-        .oh-btn.blue:hover{background:#1c5fd0;}
-        .oh-btn.outline{background:white;color:#2874f0;border:1px solid #2874f0;}
-        .oh-btn.outline:hover{background:#f0f5ff;}
+        .oh-btn.blue{background:#3b82f6;color:white;}
+        .oh-btn.blue:hover{background:#2563eb;}
+        .oh-btn.outline{background:white;color:#3b82f6;border:1px solid #3b82f6;}
+        .oh-btn.outline:hover{background:#eff6ff;}
 
         /* ── star rating ── */
         .oh-stars{display:flex;gap:6px;flex-wrap:wrap;}
@@ -469,7 +476,7 @@ export default function OrderHistory() {
           display:flex; align-items:center; justify-content:center;
           cursor:pointer; transition:all .15s;
         }
-        .oh-star:hover{background:#f0f5ff;border-color:#2874f0;transform:scale(1.05);}
+        .oh-star:hover{background:#eff6ff;border-color:#3b82f6;transform:scale(1.05);}
         .oh-star svg{width:16px;height:16px;}
         .oh-star.low svg{color:#d1d5db;}
         .oh-star.high svg{color:#f59e0b;}
@@ -604,7 +611,7 @@ export default function OrderHistory() {
             <div>
               <div className="oh-eyebrow">My Account</div>
               <h1 className="oh-h1">Order <span>History</span></h1>
-              <p className="oh-sub font-medium">Track, manage and request support for your wholesale B2B orders.</p>
+              <p className="oh-sub font-medium">Track, manage and request support for your orders.</p>
             </div>
             {orders.length > 0 && (
               <div className="oh-count-pill">
@@ -621,7 +628,7 @@ export default function OrderHistory() {
             <div className="oh-empty">
               <div className="oh-empty-ico">📦</div>
               <div className="oh-empty-h">No Orders Yet</div>
-              <p className="oh-empty-p">You haven't placed any orders. Browse our wholesale catalogue to get started.</p>
+              <p className="oh-empty-p">You haven't placed any orders. Browse our catalogue to get started.</p>
               <button className="oh-shop-btn" onClick={() => navigate('/products')}>
                 Browse Catalogue
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -727,7 +734,7 @@ export default function OrderHistory() {
                         <div className="oh-section-label">Order Payment & Billing Summary</div>
                         <div className="oh-summary-grid">
                           <div>
-                            <div className="oh-info-title">Wholesale Price Breakdown</div>
+                            <div className="oh-info-title">Order Price Breakdown</div>
                             <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13}}>
                               <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                 <span style={{color: '#878787'}}>Product Total:</span>

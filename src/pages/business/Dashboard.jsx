@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import api from '../../lib/api'
 
 export default function BusinessDashboard() {
+  const navigate = useNavigate()
   const [stats, setStats] = useState(null)
   const [products, setProducts] = useState([])
   const [orders, setOrders] = useState([])
@@ -85,7 +87,7 @@ export default function BusinessDashboard() {
           <div className="divide-y divide-blue-50 max-h-80 overflow-y-auto">
             {orders?.length > 0 ? (
               orders.slice(0, 10).map((order) => (
-                <div key={order._id} className="px-6 py-4 flex items-center justify-between hover:bg-blue-50/30 transition-colors">
+                <div key={order._id} onClick={() => navigate('/business/orders', { state: { orderId: order._id } })} className="px-6 py-4 flex items-center justify-between hover:bg-blue-50/30 transition-colors cursor-pointer">
                   <div className="truncate">
                     <div className="font-semibold text-gray-900">{order.customer?.name}</div>
                     <div className="text-xs text-gray-500">

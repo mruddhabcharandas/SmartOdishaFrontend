@@ -86,7 +86,7 @@ export default function Customers() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 font-black text-[10px] tracking-widest border border-blue-100">
-                        {c.purchaseHistory?.length || 0} ORDERS
+                        {c.orderCount ?? 0} ORDERS
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-500 text-xs max-w-xs font-medium">

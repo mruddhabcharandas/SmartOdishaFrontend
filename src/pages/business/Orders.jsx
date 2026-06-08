@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
 
@@ -8,6 +9,7 @@ const safeNumber = (num) => {
 }
 
 export default function BusinessOrders() {
+  const location = useLocation()
   const { notify } = useToast()
   const [orders, setOrders] = useState([])
   const [filteredOrders, setFilteredOrders] = useState([])
@@ -29,6 +31,9 @@ export default function BusinessOrders() {
     try {
       const { data } = await api.get('/api/stores/orders')
       setOrders(data || [])
+      if (location.state?.orderId) {
+        setExpandedId(location.state.orderId)
+      }
     } catch (err) {
       notify('Failed to load orders', 'error')
     } finally {
@@ -161,7 +166,7 @@ export default function BusinessOrders() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Order Management</h2>
-          <p className="text-sm text-gray-500">Track and fulfill wholesale orders placed by your B2B customers.</p>
+          <p className="text-sm text-gray-500">Track and fulfill orders placed by your customers.</p>
         </div>
       </div>
 
@@ -207,7 +212,7 @@ export default function BusinessOrders() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="6" className="text-center py-12 text-gray-500">Retrieving wholesale orders...</td>
+                  <td colSpan="6" className="text-center py-12 text-gray-500">Retrieving orders...</td>
                 </tr>
               ) : filteredOrders.length === 0 ? (
                 <tr>
@@ -270,7 +275,7 @@ export default function BusinessOrders() {
                               {/* Order Details & Summary */}
                               <div className="space-y-4">
                                 <div>
-                                  <h4 className="panel-step-title" style={{ margin: 0 }}>Wholesale Purchase Summary</h4>
+                                  <h4 className="panel-step-title" style={{ margin: 0 }}>Order Price Summary</h4>
                                   <div className="bg-white border rounded p-4 mt-2 space-y-2 text-sm shadow-sm">
                                     <div className="flex justify-between">
                                       <span className="text-gray-500">Products Subtotal:</span>
@@ -449,7 +454,7 @@ export default function BusinessOrders() {
         <div className="panel-modal-overlay">
           <div className="panel-modal" style={{ maxWidth: 450 }}>
             <div className="panel-modal-header">
-              <h3 className="panel-title" style={{ color: '#e53935' }}>Cancel B2B Order</h3>
+              <h3 className="panel-title" style={{ color: '#e53935' }}>Cancel Order</h3>
               <button 
                 onClick={() => setShowCancelModal(false)} 
                 className="text-gray-400 hover:text-gray-700 text-2xl font-bold"
