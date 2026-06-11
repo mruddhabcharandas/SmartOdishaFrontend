@@ -7,7 +7,7 @@ export default function Coupons(){
   const [editingId, setEditingId] = useState(null)
   const [form, setForm] = useState({
     code:'', type:'PERCENT', value:'', minAmount:'', minOrderValue:'', maxDiscount:'', expiryDate:'', usageLimit:'',
-    partnerId:'', partnerCommissionPercent:'', maxTotalSales:'', isActive:true, password:''
+    partnerId:'', partnerCommissionPercent:'', maxTotalSales:'', isActive:true, isPublic:true, password:''
   })
   const [partners, setPartners] = useState([])
   const [newPartner, setNewPartner] = useState({ name:'', email:'', phone:'' })
@@ -18,7 +18,7 @@ export default function Coupons(){
   const resetForm = () => {
     setForm({
       code:'', type:'PERCENT', value:'', minAmount:'', minOrderValue:'', maxDiscount:'', expiryDate:'', usageLimit:'',
-      partnerId:'', partnerCommissionPercent:'', maxTotalSales:'', isActive:true, password:''
+      partnerId:'', partnerCommissionPercent:'', maxTotalSales:'', isActive:true, isPublic:true, password:''
     });
     setEditingId(null);
   }
@@ -38,6 +38,7 @@ export default function Coupons(){
       partnerCommissionPercent: c.partnerCommissionPercent || '',
       maxTotalSales: c.maxTotalSales || '',
       isActive: c.isActive,
+      isPublic: c.isPublic !== false,
       password: c.password || ''
     });
     setExpandedId(null);
@@ -151,6 +152,19 @@ export default function Coupons(){
                 <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Expiry Date</label>
                 <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none" type="date" value={form.expiryDate} onChange={e=>setForm({...form, expiryDate:e.target.value})} />
               </div>
+
+              <div className="flex items-center gap-2 px-1 pt-2">
+                <input 
+                  type="checkbox" 
+                  id="isPublic" 
+                  checked={form.isPublic} 
+                  onChange={e => setForm({...form, isPublic: e.target.checked})}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="isPublic" className="text-xs font-bold text-gray-700 cursor-pointer">
+                  Public (Show in checkout summary)
+                </label>
+              </div>
               
               <div className="pt-4 border-t border-gray-50 space-y-4">
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-blue-400">Partner Settings</h4>
@@ -235,6 +249,12 @@ export default function Coupons(){
                           <div>
                             <div className="text-[10px] text-gray-400 font-bold">LIMIT</div>
                             <div className="text-sm font-black text-gray-900">{c.usageLimit || '∞'}</div>
+                          </div>
+                          <div>
+                            <div className="text-[10px] text-gray-400 font-bold">VISIBILITY</div>
+                            <div className={`text-sm font-black ${c.isPublic !== false ? 'text-blue-600' : 'text-gray-500'}`}>
+                              {c.isPublic !== false ? 'PUBLIC' : 'PRIVATE'}
+                            </div>
                           </div>
                         </div>
                       </div>
