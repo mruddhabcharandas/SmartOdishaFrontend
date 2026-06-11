@@ -1223,7 +1223,9 @@ export default function ProductDetail() {
             <div className="pd-card">
               <div className="pd-seller-inner">
                 <div className="pd-seller-av">
-                  {p.store.sellerAvatar
+                  {p.store.image
+                    ? <img src={getImageUrl(p.store.image, 100)} alt={p.store.name} />
+                    : p.store.sellerAvatar
                     ? <img src={getImageUrl(p.store.sellerAvatar, 100)} alt={p.store.name} />
                     : '🏪'
                   }

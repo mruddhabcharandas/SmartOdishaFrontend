@@ -71,6 +71,8 @@ export default function Enquiry() {
   const [couponError, setCouponError] = useState('')
   const [isApplying, setIsApplying] = useState(false)
   const couponDiscount = appliedCoupon ? appliedCoupon.discount : 0
+  const [availableCoupons, setAvailableCoupons] = useState([])
+  const [showAvailableCoupons, setShowAvailableCoupons] = useState(false)
 
   // Address State
   const [savedAddresses, setSavedAddresses] = useState([])
@@ -113,7 +115,7 @@ export default function Enquiry() {
   const cashfreeSdkLoaded = useRef(false)
 
   // Total Payable
-  const totalPayable = (appliedCoupon ? appliedCoupon.payable : subTotal) + shippingInfo.finalCharge
+  const totalPayable = prepareData ? prepareData.totalAmount : (appliedCoupon ? appliedCoupon.payable : subTotal) + shippingInfo.finalCharge
   const minLeft = Math.max(0, minAmount - subTotal)
 
   // Address Functions
@@ -234,6 +236,30 @@ export default function Enquiry() {
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null)
     setCouponError('')
+  }
+
+  const handleApplyAvailableCoupon = async (coupon) => {
+    setIsApplying(true)
+    setCouponError('')
+    try {
+      const { data } = await api.post('/api/coupons/validate', {
+        code: coupon.code,
+        amount: subTotal
+      })
+      if (data.valid) {
+        setAppliedCoupon(data)
+        setShowAvailableCoupons(false)
+      }
+    } catch (err) {
+      const msg = err?.response?.data?.error || ''
+      setCouponError(msg.startsWith('min_order_value_not_met:') 
+        ? `Min order value ₹${msg.split(':')[1]} required` 
+        : msg === 'coupon_expired' ? 'Coupon has expired' 
+        : msg === 'usage_limit_reached' ? 'Coupon usage limit reached' 
+        : 'Invalid or inactive coupon')
+    } finally {
+      setIsApplying(false)
+    }
   }
 
   // Address Modal Functions
@@ -527,6 +553,16 @@ export default function Enquiry() {
     if (!localStorage.getItem('token')) { navigate('/login', { state: { from: '/checkout' } }); return }
     refreshCart()
     loadAddresses()
+    // Fetch available coupons
+    const fetchCoupons = async () => {
+      try {
+        const res = await api.get('/api/coupons/available')
+        setAvailableCoupons(res.data)
+      } catch (err) {
+        console.error('Failed to fetch available coupons', err)
+      }
+    }
+    fetchCoupons()
   }, [])
 
   // Recalculate shipping when payment method changes
@@ -1119,6 +1155,63 @@ export default function Enquiry() {
                       <button className="ct-coupon-btn ready" disabled={isApplying || !couponCode.trim()} onClick={handleApplyCoupon}>{isApplying ? '...' : 'Apply'}</button>
                     </div>
                     {couponError && <div style={{color:'#ef4444',fontSize:'12px',fontWeight:600,marginTop:'8px'}}>{couponError}</div>}
+                    {availableCoupons.length > 0 && (
+                      <button 
+                        onClick={() => setShowAvailableCoupons(!showAvailableCoupons)}
+                        style={{width:'100%',marginTop:'12px',padding:'10px',background:'rgba(30,58,138,.05)',border:'1px dashed rgba(30,58,138,.25)',borderRadius:'10px',fontSize:'12px',fontWeight:700,color:'#1e3a8a',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px'}}
+                      >
+                        🎟️ {showAvailableCoupons ? 'Hide' : 'View'} Available Coupons ({availableCoupons.length})
+                      </button>
+                    )}
+                    {showAvailableCoupons && availableCoupons.length > 0 && (
+                      <div style={{marginTop:'12px',display:'flex',flexDirection:'column',gap:'10px'}}>
+                        {availableCoupons.map((coupon) => {
+                          const isEligible = subTotal >= (coupon.minAmount || 0)
+                          return (
+                            <div 
+                              key={coupon._id}
+                              style={{
+                                border:`1px solid ${isEligible ? 'rgba(249,115,22,.3)' : 'rgba(156,163,175,.3)'}`,
+                                borderRadius:'12px',
+                                padding:'12px',
+                                background:isEligible ? 'rgba(249,115,22,.05)' : 'rgba(243,244,246,.5)',
+                                display:'flex',
+                                flexDirection:'column',
+                                gap:'8px'
+                              }}
+                            >
+                              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px'}}>
+                                <div style={{fontWeight:800,fontSize:'14px',color:isEligible ? '#f97316' : '#9ca3af'}}>{coupon.code}</div>
+                                <button 
+                                  onClick={() => isEligible && handleApplyAvailableCoupon(coupon)}
+                                  disabled={!isEligible || isApplying}
+                                  style={{
+                                    padding:'6px 12px',
+                                    borderRadius:'8px',
+                                    fontSize:'11px',
+                                    fontWeight:800,
+                                    border:'none',
+                                    cursor:isEligible ? 'pointer' : 'not-allowed',
+                                    background:isEligible ? 'linear-gradient(135deg,#f97316,#1e3a8a)' : '#e5e7eb',
+                                    color:isEligible ? 'white' : '#9ca3af'
+                                  }}
+                                >
+                                  {isEligible ? 'Apply' : 'Not Eligible'}
+                                </button>
+                              </div>
+                              <div style={{fontSize:'12px',color:'#64748b',fontWeight:600}}>
+                                {coupon.type === 'PERCENT' ? `${coupon.value}% OFF` : `FLAT ₹${coupon.value} OFF`}
+                                {coupon.maxDiscount > 0 && ` (Max ₹${coupon.maxDiscount})`}
+                              </div>
+                              <div style={{fontSize:'11px',color:'#9ca3af'}}>
+                                Min order: ₹{coupon.minAmount || 0}
+                                {coupon.usageLimit > 0 && ` • ${coupon.usageLimit - (coupon.usedCount || 0)} uses left`}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
                 
@@ -1223,6 +1316,63 @@ export default function Enquiry() {
                       <button className="ct-coupon-btn ready" disabled={isApplying || !couponCode.trim()} onClick={handleApplyCoupon}>{isApplying ? '...' : 'Apply'}</button>
                     </div>
                     {couponError && <div style={{color:'#ef4444',fontSize:'12px',fontWeight:600,marginTop:'8px'}}>{couponError}</div>}
+                    {availableCoupons.length > 0 && (
+                      <button 
+                        onClick={() => setShowAvailableCoupons(!showAvailableCoupons)}
+                        style={{width:'100%',marginTop:'12px',padding:'10px',background:'rgba(30,58,138,.05)',border:'1px dashed rgba(30,58,138,.25)',borderRadius:'10px',fontSize:'12px',fontWeight:700,color:'#1e3a8a',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px'}}
+                      >
+                        🎟️ {showAvailableCoupons ? 'Hide' : 'View'} Available Coupons ({availableCoupons.length})
+                      </button>
+                    )}
+                    {showAvailableCoupons && availableCoupons.length > 0 && (
+                      <div style={{marginTop:'12px',display:'flex',flexDirection:'column',gap:'10px'}}>
+                        {availableCoupons.map((coupon) => {
+                          const isEligible = subTotal >= (coupon.minAmount || 0)
+                          return (
+                            <div 
+                              key={coupon._id}
+                              style={{
+                                border:`1px solid ${isEligible ? 'rgba(249,115,22,.3)' : 'rgba(156,163,175,.3)'}`,
+                                borderRadius:'12px',
+                                padding:'12px',
+                                background:isEligible ? 'rgba(249,115,22,.05)' : 'rgba(243,244,246,.5)',
+                                display:'flex',
+                                flexDirection:'column',
+                                gap:'8px'
+                              }}
+                            >
+                              <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px'}}>
+                                <div style={{fontWeight:800,fontSize:'14px',color:isEligible ? '#f97316' : '#9ca3af'}}>{coupon.code}</div>
+                                <button 
+                                  onClick={() => isEligible && handleApplyAvailableCoupon(coupon)}
+                                  disabled={!isEligible || isApplying}
+                                  style={{
+                                    padding:'6px 12px',
+                                    borderRadius:'8px',
+                                    fontSize:'11px',
+                                    fontWeight:800,
+                                    border:'none',
+                                    cursor:isEligible ? 'pointer' : 'not-allowed',
+                                    background:isEligible ? 'linear-gradient(135deg,#f97316,#1e3a8a)' : '#e5e7eb',
+                                    color:isEligible ? 'white' : '#9ca3af'
+                                  }}
+                                >
+                                  {isEligible ? 'Apply' : 'Not Eligible'}
+                                </button>
+                              </div>
+                              <div style={{fontSize:'12px',color:'#64748b',fontWeight:600}}>
+                                {coupon.type === 'PERCENT' ? `${coupon.value}% OFF` : `FLAT ₹${coupon.value} OFF`}
+                                {coupon.maxDiscount > 0 && ` (Max ₹${coupon.maxDiscount})`}
+                              </div>
+                              <div style={{fontSize:'11px',color:'#9ca3af'}}>
+                                Min order: ₹{coupon.minAmount || 0}
+                                {coupon.usageLimit > 0 && ` • ${coupon.usageLimit - (coupon.usedCount || 0)} uses left`}
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
                 
