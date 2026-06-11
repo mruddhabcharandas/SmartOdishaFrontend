@@ -24,7 +24,8 @@ export default function Stores() {
     image: null,
     storePercentage: 0,
     adminCutPercentage: 5,
-    isActive: true
+    isActive: true,
+    isPopular: false
   })
 
   // Load stores on initial render
@@ -110,7 +111,8 @@ export default function Stores() {
       image: null,
       storePercentage: 0,
       adminCutPercentage: 5,
-      isActive: true
+      isActive: true,
+      isPopular: false
     })
   }
 
@@ -158,7 +160,7 @@ export default function Stores() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {stores.map(store => (
             <div key={store._id} className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-start gap-4 mb-4">
                 <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden">
                   {store.image?.url ? (
                     <img src={store.image.url} alt={store.name} className="w-full h-full object-cover" />
@@ -167,7 +169,14 @@ export default function Stores() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 truncate">{store.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-gray-900 truncate">{store.name}</h3>
+                    {store.isPopular && (
+                      <span className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full">
+                        Popular
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-gray-500 truncate">{store.email}</p>
                 </div>
               </div>
@@ -398,6 +407,19 @@ export default function Stores() {
                 />
                 <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
                   Store is active
+                </label>
+              </div>
+              <div className="flex items-center gap-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="isPopular"
+                  name="isPopular"
+                  checked={formData.isPopular}
+                  onChange={handleFormChange}
+                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+                <label htmlFor="isPopular" className="text-sm font-medium text-gray-700">
+                  Mark as popular store
                 </label>
               </div>
 
