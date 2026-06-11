@@ -565,12 +565,13 @@ export default function Enquiry() {
     fetchCoupons()
   }, [])
 
-  // Recalculate shipping when payment method changes
+  // Recalculate shipping when payment method or coupon changes
   useEffect(() => {
     if (selectedAddress) {
-      calculateShipping(selectedAddress.pincode, subTotal, selectedPaymentMethod)
+      const payableAmount = Math.max(0, subTotal - couponDiscount)
+      calculateShipping(selectedAddress.pincode, payableAmount, selectedPaymentMethod)
     }
-  }, [selectedAddress, subTotal, selectedPaymentMethod])
+  }, [selectedAddress, subTotal, couponDiscount, selectedPaymentMethod])
 
   // Empty Cart
   if (cart.length === 0) return (
