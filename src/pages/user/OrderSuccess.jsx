@@ -21,32 +21,37 @@ export default function OrderSuccess() {
   }, [clearCart])
 
   useEffect(() => {
+    let active = true
     const fetchOrder = async () => {
       const targetId = orderId || state?.orderId
       if (!targetId) {
-        navigate('/')
+        if (active) navigate('/')
         return
       }
       
       try {
-        setLoading(true)
+        if (active) setLoading(true)
         const { data } = await api.get(`/api/orders/my/${targetId}`)
-        setOrder(data)
+        if (active) setOrder(data)
       } catch (err) {
         console.error('Failed to load order details via customer endpoint:', err)
         // If customer route fails, try standard route if they have permission
         try {
           const { data } = await api.get(`/api/orders/${targetId}`)
-          setOrder(data)
+          if (active) setOrder(data)
         } catch (adminErr) {
-          notify('Failed to load order details', 'error')
+          if (active) notify('Failed to load order details', 'error')
         }
       } finally {
-        setLoading(false)
+        if (active) setLoading(false)
       }
     }
     fetchOrder()
-  }, [orderId, state?.orderId, navigate, notify])
+    return () => {
+      active = false
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orderId, state?.orderId, navigate])
 
   const formatDate = (dateStr) => {
     if (!dateStr) return '—'

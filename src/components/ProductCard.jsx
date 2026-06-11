@@ -60,23 +60,26 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
       const num = Number(val)
       return isNaN(num) || !isFinite(num) ? 0 : num
     }
-    if (!p) return safeNumber(0)
+    const storePercentage = safeNumber(p?.store?.storePercentage ?? 0)
+    const getFinalPrice = (base) => safeNumber(base) * (1 + storePercentage / 100)
+
+    if (!p) return 0
 
     if (!Array.isArray(p.variants) || p.variants.length === 0) {
-      return safeNumber(p?.mrp ?? p?.price ?? minPrice ?? 0)
+      return safeNumber(p.mrp) > 0 ? getFinalPrice(p.mrp) : (safeNumber(p.price) > 0 ? getFinalPrice(p.price) : minPrice)
     }
 
     const activeVariants = p.variants.filter(v => v.isActive !== false)
     if (activeVariants.length === 0) {
-      return safeNumber(p?.mrp ?? p?.price ?? minPrice ?? 0)
+      return safeNumber(p.mrp) > 0 ? getFinalPrice(p.mrp) : (safeNumber(p.price) > 0 ? getFinalPrice(p.price) : minPrice)
     }
 
     // Try to find the first variant that has an mrp
     const variantWithMrp = activeVariants.find(v => v.mrp != null && safeNumber(v.mrp) > 0)
-    if (variantWithMrp) return safeNumber(variantWithMrp.mrp)
+    if (variantWithMrp) return getFinalPrice(variantWithMrp.mrp)
 
-    // Fall back to product's mrp, then minPrice
-    return safeNumber(p?.mrp ?? minPrice ?? 0)
+    // Fall back to product's mrp, then price, then minPrice
+    return safeNumber(p.mrp) > 0 ? getFinalPrice(p.mrp) : (safeNumber(p.price) > 0 ? getFinalPrice(p.price) : minPrice)
   }, [p, minPrice])
 
   const discount = displayMrp > minPrice
@@ -328,7 +331,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           ) : totalStock <= 5 ? (
             <span style={{ color: '#f97316', fontWeight: 600 }}>Only {totalStock} left</span>
           ) : (
-            <span>Free Delivery</span>
+            <b style={{ color: '#059669', fontWeight: 600 }}>In Stock</b>
           )}
         </div>
 
