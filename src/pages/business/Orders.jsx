@@ -412,7 +412,7 @@ export default function BusinessOrders() {
                                       </div>
                                     )}
 
-                                    {o.status === 'SHIPPED' && (
+                                    {['PACKED', 'SHIPPED', 'OUT_FOR_DELIVERY'].includes(o.status) && (
                                       <button
                                         disabled={actionLoading === `${o._id}-deliver`}
                                         onClick={() => handleMarkDelivered(o._id)}
