@@ -182,22 +182,7 @@ const STYLES = `
     box-shadow: 0 3px 10px rgba(232,91,26,0.35);
   }
 
-  .pd-stage-actions {
-    position: absolute; top: 14px; right: 14px;
-    display: flex; flex-direction: column; gap: 8px;
-  }
-  .pd-stage-btn {
-    width: 40px; height: 40px; border-radius: 50%;
-    background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: var(--ink2);
-    transition: var(--t);
-  }
-  .pd-stage-btn:hover { transform: scale(1.1); background: #fff; }
-  .pd-stage-btn.wishlisted { color: var(--red); background: rgba(214,56,67,0.08); border-color: rgba(214,56,67,0.2); }
+
 
   .pd-img-skeleton {
     position: absolute; inset: 0;
@@ -1126,20 +1111,7 @@ export default function ProductDetail() {
             >
               {discount > 0 && <div className="pd-badge-off">{discount}% OFF</div>}
 
-              <div className="pd-stage-actions" onClick={e => e.stopPropagation()}>
-                <button className="pd-stage-btn" onClick={handleShare} title="Share">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                </button>
-                <button
-                  className={`pd-stage-btn ${isInWishlist(p._id || p.id) ? 'wishlisted' : ''}`}
-                  onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
-                >
-                  {isInWishlist(p._id || p.id)
-                    ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                  }
-                </button>
-              </div>
+
 
               {imgLoading && imgs[activeImg] && <div className="pd-img-skeleton" />}
               {imgs[activeImg]

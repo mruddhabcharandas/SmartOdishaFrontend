@@ -296,12 +296,16 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
 
         {/* Rating & Assured Check */}
         <div className="pc-rating-row">
-          <div className="pc-rating-badge">
-            {Number(p.ratingAvg || 4.2).toFixed(1)} ★
-          </div>
-          <span className="pc-rating-count">
-            ({Number(p.ratingCount || 12).toLocaleString()})
-          </span>
+          {Number(p.ratingCount || 0) > 0 && (
+            <>
+              <div className="pc-rating-badge">
+                {Number(p.ratingAvg || 0).toFixed(1)} ★
+              </div>
+              <span className="pc-rating-count">
+                ({Number(p.ratingCount || 0).toLocaleString()})
+              </span>
+            </>
+          )}
           <span className="pc-assured-badge">
             ✓ Assured
           </span>
