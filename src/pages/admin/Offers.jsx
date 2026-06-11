@@ -8,6 +8,7 @@ export default function Offers(){
     title: '', bannerImage: '', discountPercent: '', products: '', startDate: '', endDate: '', isActive: true
   })
   const [loading, setLoading] = useState(false)
+  const [uploading, setUploading] = useState(false)
 
   const load = async () => {
     setLoading(true)
@@ -41,12 +42,31 @@ export default function Offers(){
     })
   }
 
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const { data } = await api.post('/api/upload/image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      setForm({ ...form, bannerImage: data.url })
+    } catch (err) {
+      alert(err?.response?.data?.error || 'Failed to upload image')
+    } finally {
+      setUploading(false)
+    }
+  }
+
   const save = async (e) => {
     e.preventDefault()
     const payload = {
       ...form,
       discountPercent: Number(form.discountPercent),
-      products: form.products.split(',').map(s => s.trim()).filter(s => s.length === 24),
+      products: form.products.split(',').map(s => s.trim()).filter(s => s),
       startDate: form.startDate || undefined,
       endDate: form.endDate || undefined
     }
@@ -91,8 +111,19 @@ export default function Offers(){
                 <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. Summer Sale" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Banner Image URL</label>
-                <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://..." value={form.bannerImage} onChange={e => setForm({ ...form, bannerImage: e.target.value })} required />
+                <label className="text-[10px] font-bold text-gray-500 uppercase ml-1">Banner Image</label>
+                <div className="space-y-2">
+                  {form.bannerImage && (
+                    <img src={form.bannerImage} alt="Banner preview" className="w-full h-32 object-cover rounded-xl border border-gray-200" />
+                  )}
+                  <div className="flex gap-2">
+                    <label className="flex-1 bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold text-center cursor-pointer hover:bg-gray-100 transition-all">
+                      {uploading ? 'Uploading...' : 'Choose Image'}
+                      <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} disabled={uploading} />
+                    </label>
+                  </div>
+                  <input className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500" placeholder="Or paste image URL..." value={form.bannerImage} onChange={e => setForm({ ...form, bannerImage: e.target.value })} required />
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
@@ -122,7 +153,7 @@ export default function Offers(){
                 <textarea className="w-full bg-gray-50 border-none rounded-2xl px-4 py-3 text-sm font-bold outline-none focus:ring-2 focus:ring-blue-500 h-20" placeholder="65af..." value={form.products} onChange={e => setForm({ ...form, products: e.target.value })} />
               </div>
               <div className="flex gap-2 pt-2">
-                <button className="flex-1 bg-gray-900 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg hover:-translate-y-0.5 transition-all">
+                <button type="submit" className="flex-1 bg-gray-900 text-white py-4 rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg hover:-translate-y-0.5 transition-all">
                   {editingId ? 'Update Offer' : 'Create Offer'}
                 </button>
                 {editingId && (
