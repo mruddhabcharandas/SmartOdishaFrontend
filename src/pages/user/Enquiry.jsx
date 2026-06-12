@@ -115,7 +115,8 @@ export default function Enquiry() {
   const cashfreeSdkLoaded = useRef(false)
 
   // Total Payable
-  const totalPayable = prepareData ? prepareData.totalAmount : (appliedCoupon ? appliedCoupon.payable : subTotal) + shippingInfo.finalCharge
+  const productTotalAfterCoupon = appliedCoupon ? appliedCoupon.payable : subTotal
+  const totalPayable = prepareData ? prepareData.totalAmount : productTotalAfterCoupon + (shippingInfo.deliveryCharge || 0) + (shippingInfo.codCharge || 0)
   const minLeft = Math.max(0, minAmount - subTotal)
 
   // Address Functions
