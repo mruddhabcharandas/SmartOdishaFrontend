@@ -92,18 +92,7 @@ export default function BusinessOrders() {
     }
   }
 
-  const handleMarkDelivered = async (id) => {
-    setActionLoading(`${id}-deliver`)
-    try {
-      await api.patch(`/api/stores/orders/${id}/deliver`)
-      notify('Order marked as Delivered. Bill invoice generated.', 'success')
-      loadOrders()
-    } catch (err) {
-      notify(err.response?.data?.error || 'Failed to mark as Delivered', 'error')
-    } finally {
-      setActionLoading(null)
-    }
-  }
+
 
   const handleCreateShipment = async (id) => {
     setActionLoading(`${id}-shipment`)
@@ -412,15 +401,7 @@ export default function BusinessOrders() {
                                       </div>
                                     )}
 
-                                    {['PACKED', 'SHIPPED', 'OUT_FOR_DELIVERY'].includes(o.status) && (
-                                      <button
-                                        disabled={actionLoading === `${o._id}-deliver`}
-                                        onClick={() => handleMarkDelivered(o._id)}
-                                        className="panel-btn-primary bg-green-600 hover:bg-green-700"
-                                      >
-                                        Mark Delivered & Generate Invoice
-                                      </button>
-                                    )}
+
 
                                     {!['DELIVERED', 'FULFILLED', 'CANCELLED', 'SHIPPED', 'RETURNED'].includes(o.status) && (
                                       <button

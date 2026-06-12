@@ -21,6 +21,7 @@ export default function Stores() {
       pincode: ''
     },
     gstNumber: '',
+    gstPercentage: 18,
     image: null,
     storePercentage: 0,
     adminCutPercentage: 5,
@@ -108,6 +109,7 @@ export default function Stores() {
         pincode: ''
       },
       gstNumber: '',
+      gstPercentage: 18,
       image: null,
       storePercentage: 0,
       adminCutPercentage: 5,
@@ -293,6 +295,34 @@ export default function Stores() {
                     name="gstNumber"
                     value={formData.gstNumber}
                     onChange={handleFormChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">GST Percentage</label>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {[5, 12, 18, 28].map(percent => (
+                      <button
+                        key={percent}
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, gstPercentage: percent }))}
+                        className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all ${
+                          formData.gstPercentage === percent
+                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      >
+                        {percent}%
+                      </button>
+                    ))}
+                  </div>
+                  <input
+                    type="number"
+                    name="gstPercentage"
+                    value={formData.gstPercentage}
+                    onChange={handleFormChange}
+                    min="0"
+                    max="100"
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   />
                 </div>

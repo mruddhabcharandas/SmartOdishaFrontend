@@ -8,6 +8,7 @@ export default function BusinessProfile() {
   const { notify } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [savingPassword, setSavingPassword] = useState(false)
   const [profile, setProfile] = useState(null)
   const [formData, setFormData] = useState({
     name: '',
@@ -83,6 +84,33 @@ export default function BusinessProfile() {
       notify(err.response?.data?.error || 'Failed to update profile', 'error')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const [passwordData, setPasswordData] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault()
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      notify('New passwords do not match', 'error')
+      return
+    }
+    try {
+      setSavingPassword(true)
+      await api.post('/api/stores/change-password', {
+        oldPassword: passwordData.oldPassword,
+        newPassword: passwordData.newPassword
+      })
+      notify('Password changed successfully', 'success')
+      setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' })
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to change password', 'error')
+    } finally {
+      setSavingPassword(false)
     }
   }
 
@@ -340,7 +368,51 @@ export default function BusinessProfile() {
             </div>
           </div>
 
-
+          {/* Password Change */}
+          <div className="border-t border-gray-100 pt-6">
+            <h3 className="text-sm font-bold text-gray-800 mb-4 uppercase tracking-wider">Change Password</h3>
+            <form onSubmit={handlePasswordChange} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="md:col-span-2 space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Old Password</label>
+                <input
+                  type="password"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={passwordData.oldPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, oldPassword: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">New Password</label>
+                <input
+                  type="password"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest ml-1">Confirm New Password</label>
+                <input
+                  type="password"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  required
+                />
+              </div>
+              <div className="md:col-span-2">
+                <button
+                  type="submit"
+                  disabled={savingPassword}
+                  className="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
+                >
+                  {savingPassword ? 'Changing Password...' : 'Change Password'}
+                </button>
+              </div>
+            </form>
+          </div>
 
           <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
