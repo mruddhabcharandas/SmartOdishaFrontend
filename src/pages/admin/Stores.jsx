@@ -127,6 +127,17 @@ export default function Stores() {
     setShowModal(true)
   }
 
+  const togglePopular = async (store) => {
+    try {
+      const updatedStore = { ...store, isPopular: !store.isPopular }
+      await api.put(`/admin/stores/${store._id}`, updatedStore)
+      setStores(prev => prev.map(s => s._id === store._id ? updatedStore : s))
+      notify(`Store ${updatedStore.isPopular ? 'marked as popular' : 'removed from popular'}`, 'success')
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to update store', 'error')
+    }
+  }
+
   const deleteStore = async (storeId) => {
     if (!window.confirm('Are you sure you want to delete this store?')) return
     try {
@@ -174,7 +185,10 @@ export default function Stores() {
                   <div className="flex items-center gap-2">
                     <h3 className="font-bold text-gray-900 truncate">{store.name}</h3>
                     {store.isPopular && (
-                      <span className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full">
+                      <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-400 to-yellow-600 text-yellow-900 text-xs font-bold rounded-full flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
                         Popular
                       </span>
                     )}
@@ -200,10 +214,20 @@ export default function Stores() {
                   </span>
                 </div>
               </div>
-              <div className="mt-6 flex gap-3">
+              <div className="mt-6 flex gap-2">
+                <button
+                  onClick={() => togglePopular(store)}
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition ${
+                    store.isPopular
+                      ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {store.isPopular ? 'Unmark Popular' : 'Mark Popular'}
+                </button>
                 <button
                   onClick={() => openEditModal(store)}
-                  className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition"
+                  className="px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium hover:bg-blue-100 transition"
                 >
                   Edit
                 </button>
