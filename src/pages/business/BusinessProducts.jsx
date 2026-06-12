@@ -10,7 +10,7 @@ export default function BusinessProducts() {
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [q, setQ] = useState('')
-  const [form, setForm] = useState({ name:'', price:'', mrp:'', brandId: '', categoryId:'', subCategoryId:'', stock:'', images: '', description:'', highlights: [], highlightInput:'', specifications: [], specKey:'', specValue:'', store:'', section:'' })
+  const [form, setForm] = useState({ name:'', price:'', mrp:'', brandId: '', categoryId:'', subCategoryId:'', stock:'', weight:'', length:'', width:'', height:'', images: '', description:'', highlights: [], highlightInput:'', specifications: [], specKey:'', specValue:'', store:'', section:'' })
   const [editing, setEditing] = useState(null)
   const [viewing, setViewing] = useState(null)
   const [toDelete, setToDelete] = useState(null)
@@ -83,6 +83,10 @@ export default function BusinessProducts() {
       name: form.name,
       price: Number(form.price), 
       stock: Number.isFinite(stockNum) ? stockNum : 0, 
+      weight: Number(form.weight || 0),
+      length: Number(form.length || 0),
+      width: Number(form.width || 0),
+      height: Number(form.height || 0),
       mrp: form.mrp ? Number(form.mrp) : undefined,
       description: form.description || '',
       highlights: (form.highlights || []).map(h => String(h).trim()).filter(Boolean),
@@ -111,6 +115,9 @@ export default function BusinessProducts() {
       categoryId: p.category?._id || p.category || '',
       subCategoryId: p.subCategory?._id || p.subCategory || '',
       weight: p.weight || '',
+      length: p.length || '',
+      width: p.width || '',
+      height: p.height || '',
       hsnCode: p.hsnCode || '',
       images: (p.images||[]).map(i=>i.url||i).join(', '),
       attributes: Array.isArray(p.attributes) ? p.attributes : [],
@@ -121,6 +128,9 @@ export default function BusinessProducts() {
         mrp: v.mrp || '',
         stock: v.stock || '',
         weight: v.weight || '',
+        length: v.length || '',
+        width: v.width || '',
+        height: v.height || '',
         images: (v.images || []).map(i => i.url || i).join(', ')
       })),
       bulkDiscountQuantity: p.bulkDiscountQuantity || '',
@@ -148,6 +158,9 @@ export default function BusinessProducts() {
       categoryId: editing.categoryId,
       subCategoryId: editing.subCategoryId || undefined,
       weight: Number(editing.weight || 0),
+      length: Number(editing.length || 0),
+      width: Number(editing.width || 0),
+      height: Number(editing.height || 0),
       hsnCode: editing.hsnCode || '',
       gst: Number(editing.gst || 0),
       mrp: editing.mrp ? Number(editing.mrp) : undefined,
@@ -169,6 +182,9 @@ export default function BusinessProducts() {
         price: Number(v.price),
         mrp: v.mrp ? Number(v.mrp) : undefined,
         weight: Number(v.weight || 0),
+        length: Number(v.length || 0),
+        width: Number(v.width || 0),
+        height: Number(v.height || 0),
         images: (v.images || '').toString().split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url }))
       }))
     }
@@ -420,10 +436,28 @@ export default function BusinessProducts() {
 
 
 
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Inventory Stock</label>
                       <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="50" value={form.stock} onChange={e => setForm({ ...form, stock: e.target.value })} required />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Weight (g)</label>
+                      <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="500" value={form.weight} onChange={e => setForm({ ...form, weight: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Length (cm)</label>
+                      <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="10" value={form.length} onChange={e => setForm({ ...form, length: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Width (cm)</label>
+                      <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="10" value={form.width} onChange={e => setForm({ ...form, width: e.target.value })} />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Height (cm)</label>
+                      <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="10" value={form.height} onChange={e => setForm({ ...form, height: e.target.value })} />
                     </div>
                   </div>
                 </div>
@@ -551,6 +585,18 @@ export default function BusinessProducts() {
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Weight (grams)</label>
                 <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="e.g. 500" value={editing.weight} onChange={e => setEditing({ ...editing, weight: e.target.value })} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Length (cm)</label>
+                <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="e.g. 10" value={editing.length} onChange={e => setEditing({ ...editing, length: e.target.value })} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Width (cm)</label>
+                <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="e.g. 10" value={editing.width} onChange={e => setEditing({ ...editing, width: e.target.value })} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Height (cm)</label>
+                <input className="w-full bg-gray-50 border-2 border-transparent focus:border-blue-500 rounded-2xl px-4 py-3 text-sm font-bold transition-all outline-none" placeholder="e.g. 10" value={editing.height} onChange={e => setEditing({ ...editing, height: e.target.value })} />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">HSN Code</label>
