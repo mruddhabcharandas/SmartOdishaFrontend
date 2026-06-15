@@ -96,11 +96,11 @@ export default function BusinessOrders() {
 
   const handleCreateShipment = async (id) => {
     setActionLoading(`${id}-shipment`)
-    notify('Initiating Shiprocket shipment...', 'info')
+    notify('Initiating Delhivery shipment...', 'info')
     try {
-      const { data } = await api.post(`/api/stores/orders/${id}/shiprocket/create`)
+      const { data } = await api.post(`/api/stores/orders/${id}/delhivery/create`)
       if (data.success) {
-        notify(`Shipment created! AWB: ${data.waybill}`, 'success')
+        notify(`Shipment created! Waybill: ${data.waybill}`, 'success')
         loadOrders()
       }
     } catch (err) {
@@ -131,9 +131,9 @@ export default function BusinessOrders() {
     }
   }
 
-  const handleDownloadLabel = (orderId, awb) => {
+  const handleDownloadLabel = (orderId, waybill) => {
     const token = localStorage.getItem('storeToken')
-    window.open(`${api.defaults.baseURL}/api/stores/orders/${orderId}/shiprocket/label/${awb}?token=${token}`, '_blank')
+    window.open(`${api.defaults.baseURL}/api/stores/orders/${orderId}/delhivery/label/${waybill}?token=${token}`, '_blank')
   }
 
   const toggleExpand = (id) => {
@@ -378,14 +378,14 @@ export default function BusinessOrders() {
                                         onClick={() => handleCreateShipment(o._id)}
                                         className="panel-btn-accent"
                                       >
-                                        {actionLoading === `${o._id}-shipment` ? 'Creating Shipment...' : 'Create Shiprocket Shipment'}
+                                        {actionLoading === `${o._id}-shipment` ? 'Creating Shipment...' : 'Create Delhivery Shipment'}
                                       </button>
                                     )}
 
                                     {o.shipping?.waybill && (
                                       <div className="w-full bg-blue-50 border border-blue-100 rounded p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm">
                                         <div>
-                                          <div className="text-[10px] text-blue-500 font-bold uppercase tracking-wider">Shiprocket Waybill / AWB</div>
+                                          <div className="text-[10px] text-blue-500 font-bold uppercase tracking-wider">Delhivery Waybill</div>
                                           <div className="font-bold text-blue-800">{o.shipping.waybill}</div>
                                         </div>
                                         <div className="flex gap-2">

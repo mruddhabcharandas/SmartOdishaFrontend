@@ -168,12 +168,21 @@ export default function Enquiry() {
       
       const shippingPaymentMethod = paymentMethod === 'CASHFREE' ? 'prepaid' : paymentMethod.toLowerCase()
       
+      const products = cart.map(item => ({
+        length: Number(item.productId?.length || item.length || 10),
+        width: Number(item.productId?.width || item.width || 10),
+        height: Number(item.productId?.height || item.height || 10),
+        quantity: Math.max(1, Number(item.quantity || 1)),
+        weight: Number(item.productId?.weight || item.weight || 500)
+      }))
+      
       const { data } = await api.post('/api/shipping/calculate', {
         destination_pin: pin,
         weight: totalWeight,
         order_amount: orderAmt,
         payment_method: shippingPaymentMethod,
-        store_id: storeId
+        store_id: storeId,
+        products
       })
       
       setShippingInfo({
