@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../lib/api';
 import { getImageUrl } from '../../lib/cloudinary';
 import { useCart, getStockStatus } from '../../lib/CartContext';
@@ -27,53 +28,54 @@ function sortVariantValues(lowKey, values) {
 }
 
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
 
   :root {
-    --bg: #f7f6f3;
-    --bg2: #eeecea;
+    --bg: #f1f2f6;
+    --bg2: #e2e8f0;
     --card: #ffffff;
-    --ink: #111118;
-    --ink2: #3a3a48;
-    --ink3: #888896;
-    --ink4: #b8b8c4;
-    --border: #e4e2de;
-    --border2: #d0cdc8;
-    --orange: #e85b1a;
-    --orange-dim: rgba(232,91,26,0.10);
-    --orange-glow: rgba(232,91,26,0.18);
-    --green: #1a9e6e;
-    --green-dim: rgba(26,158,110,0.10);
-    --red: #d63843;
-    --yellow: #d4920a;
-    --yellow-dim: rgba(212,146,10,0.10);
-    --navy: #1e2d5a;
-    --r-sm: 12px;
-    --r-md: 18px;
-    --r-lg: 24px;
-    --r-xl: 32px;
-    --shadow-sm: 0 1px 4px rgba(0,0,0,0.06), 0 2px 12px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
-    --shadow-lg: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.05);
-    --t: 0.2s cubic-bezier(0.4,0,0.2,1);
+    --ink: #0f172a;
+    --ink2: #334155;
+    --ink3: #64748b;
+    --ink4: #94a3b8;
+    --border: #e2e8f0;
+    --border2: #cbd5e1;
+    --primary: #2874f0;
+    --primary-dark: #1e40af;
+    --primary-dim: rgba(40, 116, 240, 0.08);
+    --primary-glow: rgba(40, 116, 240, 0.25);
+    --green: #10b981;
+    --green-dim: rgba(16,185,129,0.08);
+    --red: #ef4444;
+    --yellow: #f59e0b;
+    --yellow-dim: rgba(245,158,11,0.08);
+    --r-sm: 8px;
+    --r-md: 12px;
+    --r-lg: 20px;
+    --r-xl: 28px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 1px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    --t: 0.25s ease;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .pd { font-family: 'Satoshi', system-ui, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+  .pd { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
   /* ── Topbar ── */
   .pd-nav {
     position: sticky; top: 0; z-index: 50;
-    background: rgba(247,246,243,0.92);
-    backdrop-filter: blur(16px);
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border);
     padding: 0 16px;
-    height: 52px;
+    height: 56px;
     display: flex; align-items: center; gap: 12px;
   }
   .pd-nav-back {
-    width: 36px; height: 36px; border-radius: 10px;
+    width: 38px; height: 38px; border-radius: 50%;
     border: 1px solid var(--border); background: var(--card);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; color: var(--ink2);
@@ -84,14 +86,14 @@ const STYLES = `
   .pd-nav-title { font-size: 14px; font-weight: 600; color: var(--ink); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .pd-nav-actions { display: flex; gap: 8px; flex-shrink: 0; }
   .pd-nav-btn {
-    width: 36px; height: 36px; border-radius: 10px;
+    width: 38px; height: 38px; border-radius: 50%;
     border: 1px solid var(--border); background: var(--card);
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; color: var(--ink2);
     transition: var(--t);
   }
   .pd-nav-btn:hover { background: var(--bg2); }
-  .pd-nav-btn.active { color: var(--red); background: rgba(214,56,67,0.08); border-color: rgba(214,56,67,0.2); }
+  .pd-nav-btn.active { color: var(--red); background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.15); }
 
   @media (min-width: 768px) {
     .pd-nav { display: none; }
@@ -100,22 +102,22 @@ const STYLES = `
   /* ── Breadcrumb ── */
   .pd-bc {
     display: none;
-    align-items: center; gap: 6px;
-    padding: 20px 24px 0;
+    align-items: center; gap: 8px;
+    padding: 24px 24px 0;
     max-width: 1280px; margin: 0 auto;
-    font-size: 12.5px; font-weight: 500; color: var(--ink3);
+    font-size: 13px; font-weight: 500; color: var(--ink3);
     flex-wrap: wrap;
   }
   .pd-bc a { color: var(--ink3); text-decoration: none; transition: color var(--t); }
-  .pd-bc a:hover { color: var(--orange); }
+  .pd-bc a:hover { color: var(--primary); }
   .pd-bc-sep { color: var(--ink4); }
   @media (min-width: 768px) { .pd-bc { display: flex; } }
 
   /* ── Main Layout ── */
   .pd-main {
     max-width: 1280px; margin: 0 auto;
-    padding: 12px 12px 120px;
-    display: flex; flex-direction: column; gap: 12px;
+    padding: 16px 16px 140px;
+    display: flex; flex-direction: column; gap: 16px;
   }
   @media (min-width: 768px) {
     .pd-main { padding: 24px 24px 80px; gap: 24px; }
@@ -123,12 +125,12 @@ const STYLES = `
   @media (min-width: 1024px) {
     .pd-main {
       display: grid;
-      grid-template-columns: minmax(0, 480px) 1fr;
+      grid-template-columns: 1.1fr 1fr;
       grid-template-rows: auto;
-      gap: 32px;
+      gap: 40px;
       align-items: start;
     }
-    .pd-left-col { grid-column: 1; grid-row: 1 / 99; }
+    .pd-left-col { grid-column: 1; grid-row: 1 / 99; position: sticky; top: 24px; }
     .pd-right-col { grid-column: 2; display: flex; flex-direction: column; gap: 16px; }
   }
 
@@ -136,15 +138,17 @@ const STYLES = `
   .pd-card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: var(--r-lg);
+    border-radius: var(--r-md);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
+    transition: box-shadow var(--t);
   }
-  .pd-card-body { padding: 16px; }
-  @media (min-width: 768px) { .pd-card-body { padding: 20px; } }
+  .pd-card:hover { box-shadow: var(--shadow-md); }
+  .pd-card-body { padding: 20px; }
+  @media (min-width: 768px) { .pd-card-body { padding: 24px; } }
 
   /* ── Image Gallery ── */
-  .pd-gallery { display: flex; flex-direction: column; gap: 10px; }
+  .pd-gallery { display: flex; flex-direction: column; gap: 12px; }
 
   .pd-stage {
     position: relative;
@@ -155,17 +159,20 @@ const STYLES = `
     overflow: hidden;
     aspect-ratio: 1;
     cursor: zoom-in;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    order: 1;
   }
-  @media (min-width: 768px) { .pd-stage { border-radius: var(--r-xl); } }
 
   .pd-stage-img {
     width: 100%; height: 100%;
     object-fit: contain;
-    padding: 28px;
-    transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94);
+    padding: 32px;
+    transition: transform 0.4s ease;
     display: block;
   }
-  .pd-stage:hover .pd-stage-img { transform: scale(1.05); }
+  .pd-stage:hover .pd-stage-img { transform: scale(1.02); }
 
   .pd-stage-no-img {
     width: 100%; height: 100%;
@@ -174,19 +181,17 @@ const STYLES = `
   }
 
   .pd-badge-off {
-    position: absolute; top: 14px; left: 14px;
-    background: var(--orange); color: #fff;
-    font-size: 12px; font-weight: 800;
-    padding: 5px 11px; border-radius: 8px;
-    letter-spacing: 0.04em;
-    box-shadow: 0 3px 10px rgba(232,91,26,0.35);
+    position: absolute; top: 16px; left: 16px; z-index: 10;
+    background: var(--primary);
+    color: #fff;
+    font-size: 12px; font-weight: 700;
+    padding: 6px 14px; border-radius: 4px;
+    box-shadow: 0 2px 8px var(--primary-glow);
   }
-
-
 
   .pd-img-skeleton {
     position: absolute; inset: 0;
-    background: linear-gradient(90deg, #f0efec 25%, #e6e4e0 50%, #f0efec 75%);
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
   }
@@ -194,322 +199,418 @@ const STYLES = `
 
   /* Thumbs */
   .pd-thumbs {
-    display: flex; gap: 8px;
-    overflow-x: auto; padding: 2px;
+    order: 2;
+    display: flex; gap: 10px;
+    overflow-x: auto; padding: 4px 2px;
     scrollbar-width: none;
   }
   .pd-thumbs::-webkit-scrollbar { display: none; }
+  
   .pd-thumb {
-    width: 68px; height: 68px; flex-shrink: 0;
+    width: 72px; height: 72px; flex-shrink: 0;
     background: var(--card);
-    border: 1.5px solid var(--border);
+    border: 2px solid var(--border);
     border-radius: var(--r-sm);
     overflow: hidden; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: var(--t); padding: 6px;
+    transition: var(--t); padding: 8px;
   }
-  .pd-thumb:hover { border-color: var(--border2); }
-  .pd-thumb.on { border-color: var(--orange); box-shadow: 0 0 0 3px var(--orange-dim); }
-  .pd-thumb img { width: 100%; height: 100%; object-fit: contain; }
+  .pd-thumb:hover { border-color: var(--primary); }
+  .pd-thumb.on { border-color: var(--primary); background: var(--primary-dim); }
+  .pd-thumb img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+
+  @media (min-width: 768px) {
+    .pd-gallery {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .pd-thumbs {
+      order: 1;
+      flex-direction: column;
+      max-height: 520px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 2px;
+    }
+    .pd-stage {
+      order: 2;
+    }
+  }
 
   /* Dots */
-  .pd-dots { display: flex; justify-content: center; gap: 6px; padding: 2px 0; }
-  .pd-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--border2); border: none; cursor: pointer; transition: var(--t); padding: 0; }
-  .pd-dot.on { background: var(--orange); width: 18px; }
+  .pd-dots { display: flex; justify-content: center; gap: 6px; padding: 2px 0; order: 3; }
+  .pd-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); border: none; cursor: pointer; transition: var(--t); padding: 0; }
+  .pd-dot.on { background: var(--primary); width: 24px; border-radius: 100px; }
+
+  @media (min-width: 768px) {
+    .pd-dots { display: none; }
+  }
 
   /* ── Product Info Card ── */
   .pd-info { display: flex; flex-direction: column; gap: 0; }
 
   .pd-brand-strip {
     display: inline-flex; align-items: center; gap: 6px;
-    font-size: 10.5px; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.16em;
-    color: var(--orange); margin-bottom: 8px;
+    font-size: 12px; font-weight: 600;
+    color: var(--primary); margin-bottom: 12px;
   }
-  .pd-brand-strip::before { content:''; width:16px; height:2px; background:var(--orange); border-radius:2px; }
+  .pd-brand-strip::before { content:''; width:16px; height:2px; background:var(--primary); border-radius:2px; }
 
   .pd-title {
-    font-family: 'Clash Display', 'Satoshi', sans-serif;
-    font-size: clamp(22px, 4.5vw, 34px);
-    font-weight: 700; color: var(--ink);
-    line-height: 1.15; letter-spacing: -0.01em;
-    margin-bottom: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(20px, 3.5vw, 28px);
+    font-weight: 600; color: var(--ink);
+    line-height: 1.3; letter-spacing: -0.01em;
+    margin-bottom: 12px;
   }
 
-  .pd-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .pd-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
   .pd-rating {
     display: inline-flex; align-items: center; gap: 5px;
     background: var(--green); color: #fff;
-    font-size: 12px; font-weight: 700;
-    padding: 4px 10px; border-radius: 7px;
-  }
-  .pd-rating-ct { font-size: 12.5px; font-weight: 500; color: var(--ink3); }
-  .pd-assured {
-    font-size: 10px; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.12em;
-    color: var(--navy);
-    background: rgba(30,45,90,0.07);
+    font-size: 12px; font-weight: 600;
     padding: 4px 10px; border-radius: 6px;
-    border: 1px solid rgba(30,45,90,0.12);
+  }
+  .pd-rating-ct { font-size: 13px; font-weight: 500; color: var(--ink3); }
+  .pd-assured {
+    font-size: 11px; font-weight: 700;
+    color: var(--primary);
+    background: var(--primary-dim);
+    padding: 4px 10px; border-radius: 6px;
   }
 
   /* Price Section */
   .pd-price-block {
-    margin-top: 18px;
-    padding-top: 18px;
+    margin-top: 16px;
+    padding-top: 16px;
     border-top: 1px solid var(--border);
   }
   .pd-price-lbl {
-    font-size: 10.5px; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.14em;
-    color: var(--green); margin-bottom: 6px;
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--green); margin-bottom: 8px;
   }
-  .pd-price-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .pd-price-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .pd-price {
-    font-family: 'Clash Display', sans-serif;
-    font-size: clamp(36px, 7vw, 52px);
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(28px, 5vw, 36px);
     font-weight: 700; color: var(--ink);
-    line-height: 1; letter-spacing: -0.02em;
+    line-height: 1; letter-spacing: -0.01em;
   }
   .pd-price-mrp {
-    font-size: 17px; font-weight: 500;
+    font-size: 16px; font-weight: 400;
     color: var(--ink4); text-decoration: line-through;
   }
   .pd-save {
     background: var(--green-dim); color: var(--green);
-    font-size: 12px; font-weight: 800;
-    padding: 4px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+    padding: 4px 10px; border-radius: 6px;
   }
-  .pd-tax { font-size: 11.5px; color: var(--ink3); font-weight: 500; margin-top: 5px; }
+  .pd-tax { font-size: 12px; color: var(--ink3); font-weight: 500; margin-top: 8px; }
 
   /* Stock */
   .pd-stock {
-    display: inline-flex; align-items: center; gap: 7px;
-    padding: 8px 14px; border-radius: 9px;
-    font-size: 12.5px; font-weight: 700;
-    margin-top: 14px;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 6px;
+    font-size: 12px; font-weight: 600;
+    margin-top: 12px;
   }
   .pd-stock.in { background: var(--green-dim); color: var(--green); }
   .pd-stock.low { background: var(--yellow-dim); color: var(--yellow); }
-  .pd-stock.out { background: rgba(214,56,67,0.08); color: var(--red); }
-  .pd-stock-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .pd-stock.out { background: rgba(239,68,68,0.08); color: var(--red); }
+  .pd-stock-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* Wishlist Button in Info Card (Desktop) */
+  .pd-btn-wishlist {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .pd-btn-wishlist {
+      display: flex;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--card); border: 1px solid var(--border);
+      align-items: center; justify-content: center;
+      cursor: pointer; color: var(--ink2);
+      transition: var(--t); flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .pd-btn-wishlist:hover { background: var(--bg2); border-color: var(--border2); }
+    .pd-btn-wishlist.active { color: var(--red); background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.12); }
+  }
+
+  /* Trust Badges */
+  .pd-trust-badges {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);
+  }
+  .pd-trust-item {
+    display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px;
+  }
+  .pd-trust-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--primary-dim); display: flex; align-items: center;
+    justify-content: center; color: var(--primary);
+  }
+  .pd-trust-text { font-size: 11px; font-weight: 600; color: var(--ink2); }
 
   /* ── Divider Label ── */
   .pd-dlabel {
-    font-size: 10.5px; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.15em;
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
     color: var(--ink3);
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
   }
   .pd-dlabel::after { content:''; flex:1; height:1px; background:var(--border); }
 
   /* ── Seller Card ── */
   .pd-seller-inner {
-    display: flex; align-items: center; gap: 14px;
-    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px; gap: 16px;
   }
-  @media (min-width: 768px) { .pd-seller-inner { padding: 16px 20px; } }
-
+  .pd-seller-left { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
   .pd-seller-av {
-    width: 48px; height: 48px; border-radius: 13px;
+    width: 48px; height: 48px; border-radius: 12px;
     border: 1px solid var(--border);
     overflow: hidden; flex-shrink: 0;
     background: var(--bg2);
     display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
+    font-size: 24px;
   }
   .pd-seller-av img { width: 100%; height: 100%; object-fit: cover; }
   .pd-seller-info { flex: 1; min-width: 0; }
-  .pd-seller-lbl { font-size: 10.5px; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 2px; }
-  .pd-seller-name { font-size: 14px; font-weight: 700; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .pd-verified {
-    flex-shrink: 0;
-    font-size: 10.5px; font-weight: 800;
-    text-transform: uppercase; letter-spacing: 0.1em;
-    color: var(--green);
-    background: var(--green-dim);
-    border: 1px solid rgba(26,158,110,0.2);
-    padding: 6px 12px; border-radius: 8px;
-    display: flex; align-items: center; gap: 4px;
+  .pd-seller-lbl { font-size: 11px; font-weight: 600; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 2px; }
+  .pd-seller-name { font-size: 14px; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pd-seller-rating { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: #fff; background: var(--green); padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
+  
+  .pd-seller-btn {
+    background: var(--card); border: 1px solid var(--primary);
+    color: var(--primary); font-size: 12px; font-weight: 600;
+    padding: 8px 16px; border-radius: 6px; cursor: pointer;
+    transition: all 0.2s; white-space: nowrap; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 6px;
   }
+  .pd-seller-btn:hover { background: var(--primary); color: #fff; }
 
   /* ── Variants ── */
-  .pd-var-section { padding: 14px 16px 16px; }
-  @media (min-width: 768px) { .pd-var-section { padding: 16px 20px 20px; } }
-  .pd-var-row { display: flex; flex-direction: column; gap: 14px; }
-  .pd-var-lbl { font-size: 13px; font-weight: 700; color: var(--ink2); margin-bottom: 10px; }
-  .pd-var-lbl span { color: var(--ink3); font-weight: 500; margin-left: 4px; }
-  .pd-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-  .pd-chip {
-    padding: 8px 16px;
-    border: 1.5px solid var(--border);
-    background: var(--bg);
-    color: var(--ink2);
-    font-size: 13px; font-weight: 600;
-    border-radius: 9px; cursor: pointer;
-    transition: var(--t); font-family: inherit;
-    line-height: 1;
+  .pd-var-section { padding: 20px; }
+  .pd-var-row { display: flex; flex-direction: column; gap: 20px; }
+  .pd-var-lbl {
+    font-size: 12px; font-weight: 600; color: var(--ink2);
+    margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
   }
-  .pd-chip:hover:not(.disabled):not(.on) { border-color: var(--border2); background: var(--card); }
-  .pd-chip.on { border-color: var(--orange); background: var(--orange-dim); color: var(--orange); font-weight: 700; }
-  .pd-chip.disabled { opacity: 0.35; cursor: not-allowed; }
-  .pd-chip-col { display: flex; align-items: center; gap: 8px; }
-  .pd-col-dot { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.10); flex-shrink: 0; }
+  .pd-var-lbl span { color: var(--ink); font-weight: 600; text-transform: none; letter-spacing: normal; }
+  
+  .pd-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  
+  /* Circular Color Swatch */
+  .pd-color-swatch {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 2px solid var(--border); background: var(--card);
+    cursor: pointer; transition: all 0.2s ease;
+    position: relative; display: flex; align-items: center; justify-content: center;
+    padding: 0;
+  }
+  .pd-color-swatch:hover:not(.disabled) { border-color: var(--primary); }
+  .pd-color-swatch.on {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-dim);
+  }
+  .pd-color-swatch-inner {
+    width: calc(100% - 8px); height: calc(100% - 8px); border-radius: 50%;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  }
+  .pd-color-swatch.disabled {
+    opacity: 0.4; cursor: not-allowed;
+  }
+  .pd-color-swatch.disabled::after {
+    content: ''; position: absolute; width: 100%; height: 2px;
+    background: var(--ink3); transform: rotate(-45deg); opacity: 0.7;
+  }
+
+  /* Option Box Card */
+  .pd-chip-card {
+    padding: 10px 16px; border: 2px solid var(--border);
+    background: var(--card); color: var(--ink);
+    font-size: 14px; font-weight: 600; border-radius: 8px;
+    cursor: pointer; transition: all 0.2s ease; font-family: inherit;
+    line-height: 1.2; text-align: center;
+    min-width: 80px;
+  }
+  .pd-chip-card:hover:not(.disabled):not(.on) { border-color: var(--primary); background: var(--bg2); }
+  .pd-chip-card.on {
+    border-color: var(--primary); background: var(--primary-dim);
+    color: var(--primary);
+  }
+  .pd-chip-card.disabled { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
 
   /* ── Delivery ── */
-  .pd-del-body { padding: 14px 16px 16px; }
-  @media (min-width: 768px) { .pd-del-body { padding: 16px 20px 20px; } }
+  .pd-del-body { padding: 20px; }
 
   .pd-addr-card {
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: var(--r-sm);
-    padding: 12px 14px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    padding: 16px;
+    display: flex; justify-content: space-between; align-items: center;
   }
-  .pd-addr-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
-  .pd-addr-lbl2 { font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink3); }
-  .pd-addr-change { background: none; border: none; color: var(--orange); font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
-  .pd-addr-change:hover { opacity: 0.8; }
-  .pd-addr-val { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+  .pd-addr-top { display: flex; flex-direction: column; gap: 4px; }
+  .pd-addr-lbl2 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink3); }
+  .pd-addr-change {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--primary); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit; padding: 6px 14px;
+    border-radius: 6px; transition: all 0.2s;
+  }
+  .pd-addr-change:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .pd-addr-val { font-size: 14px; font-weight: 600; color: var(--ink); }
 
-  .pd-pin-row { display: flex; gap: 8px; }
+  .pd-pin-row { display: flex; gap: 10px; }
   .pd-pin-input {
-    flex: 1; padding: 11px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-size: 14px; font-weight: 600; font-family: inherit;
+    flex: 1; padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px; font-weight: 500; font-family: inherit;
     outline: none; background: var(--bg); color: var(--ink);
     transition: var(--t);
   }
-  .pd-pin-input:focus { border-color: var(--orange); background: var(--card); box-shadow: 0 0 0 3px var(--orange-dim); }
+  .pd-pin-input:focus { border-color: var(--primary); background: var(--card); }
   .pd-pin-btn {
-    padding: 11px 18px;
-    background: var(--ink); color: #fff;
-    border: none; border-radius: 10px;
-    font-size: 13px; font-weight: 700; font-family: inherit;
+    padding: 12px 20px;
+    background: var(--primary); color: #fff;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; font-family: inherit;
     cursor: pointer; transition: var(--t); white-space: nowrap;
   }
-  .pd-pin-btn:hover:not(:disabled) { background: var(--orange); }
-  .pd-pin-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .pd-pin-btn:hover:not(:disabled) { background: var(--primary-dark); }
+  .pd-pin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .pd-del-result {
-    margin-top: 12px; padding: 12px 14px;
-    border-radius: 11px; font-size: 13px;
+    margin-top: 16px; padding: 12px 16px;
+    border-radius: 8px; font-size: 13px;
+    line-height: 1.5;
   }
   .pd-del-result.ok { background: var(--green-dim); color: var(--green); }
-  .pd-del-result.fail { background: rgba(214,56,67,0.08); color: var(--red); }
-  .pd-del-eta { font-weight: 700; display: flex; align-items: center; gap: 6px; margin-bottom: 0; }
+  .pd-del-result.fail { background: rgba(239,68,68,0.08); color: var(--red); }
+  .pd-del-eta { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .pd-del-details { font-size: 12px; color: var(--ink2); margin-top: 6px; padding-left: 20px; }
 
   /* ── Tabs ── */
-  .pd-tabs-wrap { padding: 14px 16px 0; }
-  @media (min-width: 768px) { .pd-tabs-wrap { padding: 16px 20px 0; } }
+  .pd-tabs-wrap { padding: 20px 20px 0; }
   .pd-tabs {
-    display: flex; gap: 2px;
-    background: var(--bg2); border-radius: 11px; padding: 4px;
-    margin-bottom: 16px;
+    display: inline-flex;
+    gap: 4px;
+    background: var(--bg2);
+    padding: 4px;
+    border-radius: 8px;
+    margin-bottom: 20px;
   }
   .pd-tab {
-    flex: 1; padding: 8px 6px;
-    border: none; background: none;
-    font-size: 12px; font-weight: 700;
-    color: var(--ink3); border-radius: 8px;
+    padding: 10px 16px;
+    border: none; background: transparent;
+    font-size: 13px; font-weight: 600;
+    color: var(--ink3); border-radius: 6px;
     cursor: pointer; font-family: inherit;
-    transition: var(--t); text-align: center;
+    transition: var(--t);
   }
   .pd-tab.on { background: var(--card); color: var(--ink); box-shadow: var(--shadow-sm); }
   .pd-tab:hover:not(.on) { color: var(--ink2); }
 
-  .pd-tab-body { padding: 0 16px 16px; }
-  @media (min-width: 768px) { .pd-tab-body { padding: 0 20px 20px; } }
+  .pd-tab-body { padding: 0 20px 20px; }
 
-  .pd-highlights { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+  .pd-highlights { list-style: none; display: flex; flex-direction: column; gap: 8px; }
   .pd-hi {
     display: flex; align-items: flex-start; gap: 10px;
-    padding: 10px 12px;
-    background: var(--bg); border-radius: 10px;
+    padding: 10px 14px;
+    background: var(--bg); border-radius: 6px;
     font-size: 13px; color: var(--ink2); font-weight: 500; line-height: 1.5;
   }
-  .pd-hi-icon { color: var(--green); margin-top: 1px; flex-shrink: 0; }
+  .pd-hi-icon { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
 
   .pd-desc {
-    font-size: 13.5px; color: var(--ink2); line-height: 1.75; font-weight: 400;
+    font-size: 14px; color: var(--ink2); line-height: 1.8; font-weight: 400;
     overflow: hidden;
   }
   .pd-readmore {
-    background: none; border: none; color: var(--orange);
-    font-size: 12.5px; font-weight: 700; cursor: pointer;
-    font-family: inherit; padding: 8px 0 0;
+    background: none; border: none; color: var(--primary);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: inherit; padding: 10px 0 0;
     display: inline-flex; align-items: center; gap: 4px;
   }
 
   .pd-specs { width: 100%; border-collapse: collapse; }
   .pd-specs tr { border-bottom: 1px solid var(--border); }
   .pd-specs tr:last-child { border-bottom: none; }
-  .pd-specs td { padding: 10px 0; vertical-align: top; font-size: 13px; }
+  .pd-specs td { padding: 12px 0; vertical-align: top; font-size: 13px; }
   .pd-specs .sk { width: 40%; color: var(--ink3); font-weight: 500; padding-right: 12px; }
-  .pd-specs .sv { color: var(--ink2); font-weight: 600; }
+  .pd-specs .sv { color: var(--ink); font-weight: 600; }
 
-  /* ── CTA Buttons (inline in right col, visible on desktop too) ── */
+  /* ── CTA Buttons ── */
   .pd-cta {
-    display: flex; gap: 10px;
+    display: flex; gap: 12px;
   }
   .pd-btn-cart {
-    flex: 1; padding: 15px 14px;
-    background: var(--ink); color: #fff;
-    border: none; border-radius: var(--r-sm);
+    flex: 1; padding: 14px 20px;
+    background: #ff9f00; color: #fff;
+    border: none; border-radius: 8px;
     font-size: 14px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
-    box-shadow: 0 4px 16px rgba(17,17,24,0.18);
-    letter-spacing: 0.01em;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
-  .pd-btn-cart:hover:not(:disabled) { background: #22222f; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(17,17,24,0.22); }
+  .pd-btn-cart:hover:not(:disabled) { background: #fb8c00; }
 
   .pd-btn-buy {
-    flex: 1; padding: 15px 14px;
-    background: linear-gradient(135deg, var(--orange) 0%, #bf4210 100%);
-    color: #fff;
-    border: none; border-radius: var(--r-sm);
+    flex: 1; padding: 14px 20px;
+    background: #fb641b; color: #fff;
+    border: none; border-radius: 8px;
     font-size: 14px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1);
-    box-shadow: 0 4px 16px var(--orange-glow);
-    letter-spacing: 0.01em;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
-  .pd-btn-buy:hover:not(:disabled) { background: linear-gradient(135deg, #bf4210 0%, var(--orange) 100%); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(232,91,26,0.32); }
-  .pd-btn-cart:disabled, .pd-btn-buy:disabled { background: var(--bg2); color: var(--ink4); box-shadow: none; cursor: not-allowed; transform: none; }
+  .pd-btn-buy:hover:not(:disabled) { background: #f55607; }
+  .pd-btn-cart:disabled, .pd-btn-buy:disabled { background: var(--bg2); color: var(--ink4); cursor: not-allowed; }
 
   /* ── Mobile Sticky CTA ── */
   .pd-sticky-cta {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
-    background: rgba(247,246,243,0.96);
-    backdrop-filter: blur(16px);
+    background: rgba(255,255,255,0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-top: 1px solid var(--border);
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
     display: flex; gap: 10px;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
   }
   @media (min-width: 768px) { .pd-sticky-cta { display: none; } }
 
   .pd-mob-cart {
     flex: 1; padding: 14px;
-    background: var(--ink); color: #fff;
-    border: none; border-radius: var(--r-sm);
-    font-size: 14px; font-weight: 700; font-family: inherit;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: #ff9f00; color: #fff;
+    border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
     transition: var(--t);
+    text-transform: uppercase;
   }
-  .pd-mob-cart:hover:not(:disabled) { background: #22222f; }
+  .pd-mob-cart:hover:not(:disabled) { background: #fb8c00; }
 
   .pd-mob-buy {
     flex: 1; padding: 14px;
-    background: var(--orange); color: #fff;
-    border: none; border-radius: var(--r-sm);
-    font-size: 14px; font-weight: 700; font-family: inherit;
-    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+    background: #fb641b; color: #fff;
+    border: none; border-radius: 8px;
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
     transition: var(--t);
+    text-transform: uppercase;
   }
-  .pd-mob-buy:hover:not(:disabled) { background: #bf4210; }
+  .pd-mob-buy:hover:not(:disabled) { background: #f55607; }
   .pd-mob-cart:disabled, .pd-mob-buy:disabled { background: var(--bg2); color: var(--ink4); cursor: not-allowed; }
 
   /* ── Hide desktop CTA on mobile ── */
@@ -519,55 +620,47 @@ const STYLES = `
   /* ── Recommendations ── */
   .pd-recs-wrap {
     max-width: 1280px; margin: 0 auto;
-    padding: 0 12px 140px;
+    padding: 0 16px 140px;
   }
   @media (min-width: 768px) { .pd-recs-wrap { padding: 0 24px 80px; } }
 
   .pd-recs-hd {
-    display: flex; align-items: center; gap: 14px;
-    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 20px;
   }
   .pd-recs-title {
-    font-family: 'Clash Display', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 20px; font-weight: 700;
-    color: var(--ink); letter-spacing: -0.01em;
-    white-space: nowrap;
+    color: var(--ink);
   }
-  @media (min-width: 768px) { .pd-recs-title { font-size: 24px; } }
   .pd-recs-line { flex: 1; height: 1px; background: var(--border); }
 
   .pd-recs-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 12px;
   }
-  @media (min-width: 540px) { .pd-recs-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; } }
-  @media (min-width: 900px) { .pd-recs-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
-
-  /* ProductCard override — compact & square in recs grid */
-  .pd-recs-grid > * {
-    min-width: 0 !important;
-  }
+  @media (min-width: 540px) { .pd-recs-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+  @media (min-width: 900px) { .pd-recs-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
 
   /* ── Lightbox ── */
   .pd-lb {
     position: fixed; inset: 0; z-index: 200;
-    background: rgba(10,10,15,0.97);
-    backdrop-filter: blur(24px);
+    background: rgba(0,0,0,0.95);
     display: flex; align-items: center; justify-content: center;
     padding: 20px;
   }
-  .pd-lb img { max-width: 90vw; max-height: 88vh; object-fit: contain; border-radius: var(--r-lg); }
+  .pd-lb img { max-width: 90vw; max-height: 85vh; object-fit: contain; }
   .pd-lb-close {
-    position: absolute; top: 18px; right: 18px;
+    position: absolute; top: 20px; right: 20px;
     width: 44px; height: 44px; border-radius: 50%;
-    background: rgba(255,255,255,0.10);
-    border: 1px solid rgba(255,255,255,0.15);
-    color: #fff; font-size: 20px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-size: 22px;
     cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: var(--t); backdrop-filter: blur(8px);
+    transition: var(--t);
   }
-  .pd-lb-close:hover { background: rgba(255,255,255,0.18); }
+  .pd-lb-close:hover { background: rgba(255,255,255,0.2); }
 
   /* ── Loading / Error ── */
   .pd-loading {
@@ -580,22 +673,22 @@ const STYLES = `
   }
   .pd-error-card {
     background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--r-xl); padding: 40px 32px;
-    text-align: center; max-width: 360px; width: 100%;
+    border-radius: var(--r-lg); padding: 48px 36px;
+    text-align: center; max-width: 400px; width: 100%;
     box-shadow: var(--shadow-lg);
   }
-  .pd-error-emoji { font-size: 52px; margin-bottom: 20px; }
-  .pd-error-h { font-family: 'Clash Display', sans-serif; font-size: 26px; font-weight: 700; margin-bottom: 10px; }
-  .pd-error-p { font-size: 14px; color: var(--ink3); line-height: 1.6; margin-bottom: 28px; }
+  .pd-error-emoji { font-size: 56px; margin-bottom: 24px; }
+  .pd-error-h { font-family: 'Inter', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+  .pd-error-p { font-size: 14px; color: var(--ink3); line-height: 1.6; margin-bottom: 32px; }
   .pd-error-btn {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 12px 28px;
-    background: var(--ink); color: #fff;
-    border-radius: var(--r-sm);
-    font-size: 13px; font-weight: 700;
+    padding: 12px 24px;
+    background: var(--primary); color: #fff;
+    border-radius: 8px;
+    font-size: 14px; font-weight: 600;
     text-decoration: none; transition: var(--t);
   }
-  .pd-error-btn:hover { background: var(--orange); }
+  .pd-error-btn:hover { background: var(--primary-dark); }
 `;
 
 export default function ProductDetail() {
@@ -1062,23 +1155,24 @@ export default function ProductDetail() {
 
       {/* ── Mobile Topbar ── */}
       <div className="pd-nav">
-        <button className="pd-nav-back" onClick={() => navigate(-1)}>
+        <motion.button className="pd-nav-back" onClick={() => navigate(-1)} whileTap={{ scale: 0.9 }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-        </button>
+        </motion.button>
         <span className="pd-nav-title">{p.name}</span>
         <div className="pd-nav-actions">
-          <button className="pd-nav-btn" onClick={handleShare} title="Share">
+          <motion.button className="pd-nav-btn" onClick={handleShare} title="Share" whileTap={{ scale: 0.9 }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             className={`pd-nav-btn ${isInWishlist(p._id || p.id) ? 'active' : ''}`}
             onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
+            whileTap={{ scale: 0.9 }}
           >
             {isInWishlist(p._id || p.id)
               ? <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
               : <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             }
-          </button>
+          </motion.button>
         </div>
       </div>
 
@@ -1156,8 +1250,22 @@ export default function ProductDetail() {
           {/* ─ Product Info Card ─ */}
           <div className="pd-card">
             <div className="pd-card-body">
-              {p.brand && <div className="pd-brand-strip">{p.brand.name || p.brand}</div>}
-              <h1 className="pd-title">{p.name}</h1>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+                <div style={{ flex: 1 }}>
+                  {p.brand && <div className="pd-brand-strip">{p.brand.name || p.brand}</div>}
+                  <h1 className="pd-title">{p.name}</h1>
+                </div>
+                <button
+                  className={`pd-btn-wishlist ${isInWishlist(p._id || p.id) ? 'active' : ''}`}
+                  onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
+                  title="Wishlist"
+                >
+                  {isInWishlist(p._id || p.id)
+                    ? <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  }
+                </button>
+              </div>
 
               <div className="pd-meta">
                 {(p.ratingAvg || p.ratingCount) ? (
@@ -1184,9 +1292,32 @@ export default function ProductDetail() {
                 <div className="pd-tax">{p.gst > 0 ? `Inclusive of ${p.gst}% GST` : 'Inclusive of all taxes'}</div>
               </div>
 
-              <div className={`pd-stock ${stockClass}`}>
-                <span className="pd-stock-dot" />
-                {stockLabel}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                <div className={`pd-stock ${stockClass}`}>
+                  <span className="pd-stock-dot" />
+                  {stockLabel}
+                </div>
+              </div>
+
+              <div className="pd-trust-badges">
+                <div className="pd-trust-item">
+                  <div className="pd-trust-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  </div>
+                  <div className="pd-trust-text">Secure Checkout</div>
+                </div>
+                <div className="pd-trust-item">
+                  <div className="pd-trust-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+                  </div>
+                  <div className="pd-trust-text">7 Days Return</div>
+                </div>
+                <div className="pd-trust-item">
+                  <div className="pd-trust-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  </div>
+                  <div className="pd-trust-text">100% Assured</div>
+                </div>
               </div>
             </div>
           </div>
@@ -1195,22 +1326,30 @@ export default function ProductDetail() {
           {p.store && (
             <div className="pd-card">
               <div className="pd-seller-inner">
-                <div className="pd-seller-av">
-                  {p.store.image
-                    ? <img src={getImageUrl(p.store.image, 100)} alt={p.store.name} />
-                    : p.store.sellerAvatar
-                    ? <img src={getImageUrl(p.store.sellerAvatar, 100)} alt={p.store.name} />
-                    : '🏪'
-                  }
+                <div className="pd-seller-left">
+                  <div className="pd-seller-av">
+                    {p.store.image
+                      ? <img src={getImageUrl(p.store.image, 100)} alt={p.store.name} />
+                      : p.store.sellerAvatar
+                      ? <img src={getImageUrl(p.store.sellerAvatar, 100)} alt={p.store.name} />
+                      : '🏪'
+                    }
+                  </div>
+                  <div className="pd-seller-info">
+                    <div className="pd-seller-lbl">Sold by</div>
+                    <div className="pd-seller-name">{p.store.name}</div>
+                    {p.store.ratingAvg && (
+                      <div className="pd-seller-rating">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        {Number(p.store.ratingAvg).toFixed(1)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="pd-seller-info">
-                  <div className="pd-seller-lbl">Sold by</div>
-                  <div className="pd-seller-name">{p.store.name}</div>
-                </div>
-                <span className="pd-verified">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                  Verified
-                </span>
+                <Link to={`/products?store=${p.store._id || p.store.id}`} className="pd-seller-btn">
+                  Visit Store
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+                </Link>
               </div>
             </div>
           )}
@@ -1235,21 +1374,31 @@ export default function ProductDetail() {
                           {opts.map((optVal, optIdx) => {
                             const enabled = isOptEnabled(attr, optVal);
                             const isOn = selected[lowAttr]?.toLowerCase() === String(optVal).toLowerCase();
-                            return (
-                              <button
-                                key={optIdx}
-                                className={`pd-chip${isOn ? ' on' : ''}${!enabled ? ' disabled' : ''}`}
-                                onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
-                                disabled={!enabled}
-                              >
-                                {isColor ? (
-                                  <span className="pd-chip-col">
-                                    <span className="pd-col-dot" style={{ backgroundColor: optVal.toLowerCase() }} />
-                                    {optVal}
-                                  </span>
-                                ) : optVal}
-                              </button>
-                            );
+                            
+                            if (isColor) {
+                              return (
+                                <button
+                                  key={optIdx}
+                                  className={`pd-color-swatch${isOn ? ' on' : ''}${!enabled ? ' disabled' : ''}`}
+                                  onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
+                                  disabled={!enabled}
+                                  title={optVal}
+                                >
+                                  <span className="pd-color-swatch-inner" style={{ backgroundColor: optVal.toLowerCase() }} />
+                                </button>
+                              );
+                            } else {
+                              return (
+                                <button
+                                  key={optIdx}
+                                  className={`pd-chip-card${isOn ? ' on' : ''}${!enabled ? ' disabled' : ''}`}
+                                  onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
+                                  disabled={!enabled}
+                                >
+                                  {optVal}
+                                </button>
+                              );
+                            }
                           })}
                         </div>
                       </div>
@@ -1263,28 +1412,31 @@ export default function ProductDetail() {
           {/* ─ Delivery Card ─ */}
           <div className="pd-card">
             <div className="pd-del-body">
-              <div className="pd-dlabel">Delivery</div>
+              <div className="pd-dlabel">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '8px' }}><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                Delivery Check
+              </div>
 
               {user?.savedAddresses?.length > 0 ? (
                 <div className="pd-addr-card">
                   <div className="pd-addr-top">
                     <span className="pd-addr-lbl2">Deliver to</span>
-                    <button
-                      className="pd-addr-change"
-                      onClick={() => {
-                        if (!selectedAddress) return;
-                        const idx = user.savedAddresses.findIndex(a => a._id === selectedAddress._id);
-                        const next = user.savedAddresses[(idx + 1) % user.savedAddresses.length];
-                        setSelectedAddress(next);
-                        if (next?.pincode) { setPincode(next.pincode); checkDeliveryImpl(next.pincode); }
-                      }}
-                    >
-                      Change
-                    </button>
+                    <div className="pd-addr-val" style={{ marginTop: '4px' }}>
+                      {selectedAddress?.fullName} · {selectedAddress?.city} — {selectedAddress?.pincode}
+                    </div>
                   </div>
-                  <div className="pd-addr-val">
-                    {selectedAddress?.fullName} · {selectedAddress?.city} — {selectedAddress?.pincode}
-                  </div>
+                  <button
+                    className="pd-addr-change"
+                    onClick={() => {
+                      if (!selectedAddress) return;
+                      const idx = user.savedAddresses.findIndex(a => a._id === selectedAddress._id);
+                      const next = user.savedAddresses[(idx + 1) % user.savedAddresses.length];
+                      setSelectedAddress(next);
+                      if (next?.pincode) { setPincode(next.pincode); checkDeliveryImpl(next.pincode); }
+                    }}
+                  >
+                    Change
+                  </button>
                 </div>
               ) : (
                 <form className="pd-pin-row" onSubmit={checkDelivery}>
@@ -1304,12 +1456,21 @@ export default function ProductDetail() {
               {deliveryInfo && (
                 <div className={`pd-del-result ${deliveryInfo.serviceable ? 'ok' : 'fail'}`}>
                   {deliveryInfo.serviceable ? (
-                    <div className="pd-del-eta">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                      Delivery by {deliveryInfo.etaStart?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} – {deliveryInfo.etaEnd?.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                    <div>
+                      <div className="pd-del-eta">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        Delivery by {deliveryInfo.etaStart?.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })} – {deliveryInfo.etaEnd?.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                      </div>
+                      <div className="pd-del-details">
+                        {deliveryInfo.codAvailable ? '✓ Cash on Delivery available' : '✗ Cash on Delivery not available'}
+                        {deliveryInfo.charge > 0 ? ` · Delivery Charge: ₹${deliveryInfo.charge}` : ' · Free Delivery'}
+                      </div>
                     </div>
                   ) : (
-                    <div style={{ fontWeight: 700 }}>✗ {deliveryInfo.message || 'Not deliverable to this pincode'}</div>
+                    <div className="pd-del-eta" style={{ color: 'var(--red)' }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                      {deliveryInfo.message || 'Not deliverable to this pincode'}
+                    </div>
                   )}
                 </div>
               )}
@@ -1327,60 +1488,70 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              <div className="pd-tab-body">
-                {activeTab === 'highlights' && hasHighlights && (
-                  <ul className="pd-highlights">
-                    {p.highlights.map((h, i) => (
-                      <li key={i} className="pd-hi">
-                        <svg className="pd-hi-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                        {h}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-
-                {activeTab === 'description' && hasDescription && (
-                  <div>
-                    <p
-                      className="pd-desc"
-                      style={descriptionExpanded ? {} : { display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
-                    >
-                      {p.description}
-                    </p>
-                    {p.description.length > 280 && (
-                      <button className="pd-readmore" onClick={() => setDescriptionExpanded(!descriptionExpanded)}>
-                        {descriptionExpanded ? '▲ Less' : '▼ Read More'}
-                      </button>
+              <div className="pd-tab-body" style={{ position: 'relative', overflow: 'hidden' }}>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -12 }}
+                    transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    {activeTab === 'highlights' && hasHighlights && (
+                      <ul className="pd-highlights">
+                        {p.highlights.map((h, i) => (
+                          <li key={i} className="pd-hi">
+                            <svg className="pd-hi-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                            {h}
+                          </li>
+                        ))}
+                      </ul>
                     )}
-                  </div>
-                )}
 
-                {activeTab === 'specs' && hasSpecifications && (
-                  <table className="pd-specs">
-                    <tbody>
-                      {p.specifications.map((spec, i) => {
-                        if (typeof spec === 'object' && spec !== null) {
-                          return (
-                            <tr key={i}>
-                              <td className="sk">{spec.key || spec.label}</td>
-                              <td className="sv">{spec.value || spec.val}</td>
-                            </tr>
-                          );
-                        }
-                        if (typeof spec === 'string') {
-                          const parts = spec.split(':').map(s => s.trim());
-                          if (parts.length === 2) return (
-                            <tr key={i}>
-                              <td className="sk">{parts[0]}</td>
-                              <td className="sv">{parts[1]}</td>
-                            </tr>
-                          );
-                        }
-                        return null;
-                      })}
-                    </tbody>
-                  </table>
-                )}
+                    {activeTab === 'description' && hasDescription && (
+                      <div>
+                        <p
+                          className="pd-desc"
+                          style={descriptionExpanded ? {} : { display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                        >
+                          {p.description}
+                        </p>
+                        {p.description.length > 280 && (
+                          <button className="pd-readmore" onClick={() => setDescriptionExpanded(!descriptionExpanded)}>
+                            {descriptionExpanded ? '▲ Less' : '▼ Read More'}
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    {activeTab === 'specs' && hasSpecifications && (
+                      <table className="pd-specs">
+                        <tbody>
+                          {p.specifications.map((spec, i) => {
+                            if (typeof spec === 'object' && spec !== null) {
+                              return (
+                                <tr key={i}>
+                                  <td className="sk">{spec.key || spec.label}</td>
+                                  <td className="sv">{spec.value || spec.val}</td>
+                                </tr>
+                              );
+                            }
+                            if (typeof spec === 'string') {
+                              const parts = spec.split(':').map(s => s.trim());
+                              if (parts.length === 2) return (
+                                <tr key={i}>
+                                  <td className="sk">{parts[0]}</td>
+                                  <td className="sv">{parts[1]}</td>
+                                </tr>
+                              );
+                            }
+                            return null;
+                          })}
+                        </tbody>
+                      </table>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
           )}
@@ -1424,7 +1595,12 @@ export default function ProductDetail() {
       )}
 
       {/* ── Mobile Sticky CTA ── */}
-      <div className="pd-sticky-cta">
+      <motion.div
+        className="pd-sticky-cta"
+        initial={{ y: 80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
+      >
         <button className="pd-mob-cart" onClick={handleAddToCart} disabled={!canAddToCart}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
           Add to Cart
@@ -1433,7 +1609,7 @@ export default function ProductDetail() {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>
           Buy Now
         </button>
-      </div>
+      </motion.div>
 
       <RecommendationModal isOpen={recOpen} onClose={() => setRecOpen(false)} products={recItems} onAddToCart={handleAddToCart} />
     </div>
