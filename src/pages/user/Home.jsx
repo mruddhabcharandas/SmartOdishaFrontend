@@ -1073,8 +1073,8 @@ export default function Home() {
               >
                 <span className="text-sm font-bold text-zinc-900">{faq.question}</span>
                 <svg 
-                  width="20" height="20" fill="none" stroke="currentColor", 
-                  viewBox="0 0 24 24", 
+                  width="20" height="20" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24"
                   className={`text-zinc-400 transition-transform ${openFaq === i ? 'rotate-180' : ''}`}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
