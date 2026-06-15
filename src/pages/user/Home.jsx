@@ -11,7 +11,6 @@ export default function Home() {
   const navigate = useNavigate()
   const [offers, setOffers] = useState([])
   const [stores, setStores] = useState([])
-  const [openFaq, setOpenFaq] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [products, setProducts] = useState([])
 
@@ -29,29 +28,6 @@ export default function Home() {
     api.get('/api/public/stores').then(({ data }) => setStores(data?.filter(store => store.isPopular) || [])).catch(() => setStores([]))
     api.get('/api/products?limit=12').then(({ data }) => setProducts(data?.items || [])).catch(() => setProducts([]))
   }, [])
-
-  const faqs = [
-    {
-      question: "What is SmartOdisha?",
-      answer: "SmartOdisha is Odisha's premier e-commerce platform connecting you with trusted local stores. We bring the best of Odisha right to your doorstep with premium quality products and fast delivery."
-    },
-    {
-      question: "Is Cash on Delivery available?",
-      answer: "Absolutely! Cash on Delivery (COD) is available across most locations in Odisha for a hassle-free shopping experience."
-    },
-    {
-      question: "How fast is the delivery?",
-      answer: "Most orders are delivered within 24-48 hours within Odisha. We partner with Delhivery for fast and reliable delivery services."
-    },
-    {
-      question: "What about returns and refunds?",
-      answer: "We offer easy 7-day returns for most products. If you're not satisfied, simply initiate a return from your order history."
-    },
-    {
-      question: "How can I become a seller?",
-      answer: "Click on 'Become a Seller' in the footer or navigate to /business/request to register your store. Our team will get back to you within 24-48 hours!"
-    }
-  ]
 
   const tickerLoop = useMemo(() => {
     const neutral = [
@@ -1055,40 +1031,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="section-wrapper bg-white">
-        <div className="section-header">
-          <div className="section-title-group">
-            <span className="section-eyebrow">Got Questions?</span>
-            <h2 className="section-title">Frequently Asked</h2>
-            <p className="section-subtitle">Everything you need to know about shopping with SmartOdisha</p>
-          </div>
-        </div>
-        <div className="max-w-3xl mx-auto space-y-4">
-          {faqs.map((faq, i) => (
-            <div key={i} className="bg-zinc-50 border border-zinc-100 rounded-2xl overflow-hidden transition-all hover:border-zinc-200">
-              <button 
-                onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                className="w-full flex items-center justify-between px-6 py-5 text-left focus:outline-none"
-              >
-                <span className="text-sm font-bold text-zinc-900">{faq.question}</span>
-                <svg 
-                  width="20" height="20" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  className={`text-zinc-400 transition-transform ${openFaq === i ? 'rotate-180' : ''}`}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              {openFaq === i && (
-                <div className="px-6 pb-5 text-sm text-zinc-600 font-medium leading-relaxed">
-                  {faq.answer}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* Footer */}
       <footer className="bg-zinc-950 text-white py-16">
@@ -1174,6 +1117,36 @@ export default function Home() {
             <div>
               <h4 className="text-[11px] font-black text-white uppercase tracking-widest mb-5">Our Promise</h4>
               <p className="text-zinc-400 text-sm font-medium leading-relaxed">Premium quality products from verified local sellers, delivered by Delhivery across Odisha.</p>
+            </div>
+
+            <div>
+              <h4 className="text-[11px] font-black text-white uppercase tracking-widest mb-5">Follow Us</h4>
+              <div className="flex gap-4">
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                  </svg>
+                </a>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                  </svg>
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                    <rect x="2" y="9" width="4" height="12"/>
+                    <circle cx="4" cy="4" r="2"/>
+                  </svg>
+                </a>
+                <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                  </svg>
+                </a>
+              </div>
             </div>
           </div>
 

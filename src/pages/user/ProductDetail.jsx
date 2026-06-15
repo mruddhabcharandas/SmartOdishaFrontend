@@ -782,7 +782,8 @@ export default function ProductDetail() {
 
   const canAddToCart =
     (variantAttrs.length === 0 || (variantAttrs.every(attr => !!selected[attr.toLowerCase().trim()]) && !!matchedVariant)) &&
-    isAvailable;
+    isAvailable &&
+    (!deliveryInfo || deliveryInfo.serviceable);
 
   const hasHighlights = p && Array.isArray(p.highlights) && p.highlights.length > 0;
   const hasSpecifications = p && Array.isArray(p.specifications) && p.specifications.length > 0;

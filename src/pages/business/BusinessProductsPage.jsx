@@ -15,10 +15,14 @@ const emptyForm = {
   subCategoryId: '',
   stock: '',
   weight: '',
+  length: '',
+  width: '',
+  height: '',
   gst: '',
   imageUrls: [],
   description: '',
   highlights: [],
+  specifications: {},
   section: '',
   variantDisplayType: 'selector'
 }
@@ -91,10 +95,15 @@ export default function BusinessProductsPage() {
         subCategoryId: form.subCategoryId || undefined,
         stock: Number(form.stock),
         weight: Number(form.weight || 0),
+        length: Number(form.length || 0),
+        width: Number(form.width || 0),
+        height: Number(form.height || 0),
         gst: Number(form.gst || 0),
         hsnCode: form.hsnCode || '',
         images: form.imageUrls,
         description: form.description,
+        highlights: form.highlights || [],
+        specifications: form.specifications || {},
         section: form.section || '',
         variantDisplayType: form.variantDisplayType,
         variants: []
@@ -116,7 +125,12 @@ export default function BusinessProductsPage() {
       subCategoryId: p.subCategory?._id || p.subCategory || '',
       imageUrls: (p.images || []).map(i => i.url || i),
       weight: p.weight || '',
-      hsnCode: p.hsnCode || ''
+      length: p.length || '',
+      width: p.width || '',
+      height: p.height || '',
+      hsnCode: p.hsnCode || '',
+      highlights: p.highlights || [],
+      specifications: p.specifications || {}
     })
   }
 
@@ -132,9 +146,14 @@ export default function BusinessProductsPage() {
         categoryId: editing.categoryId,
         subCategoryId: editing.subCategoryId || undefined,
         weight: Number(editing.weight || 0),
+        length: Number(editing.length || 0),
+        width: Number(editing.width || 0),
+        height: Number(editing.height || 0),
         hsnCode: editing.hsnCode || '',
         gst: Number(editing.gst || 0),
         images: editing.imageUrls,
+        highlights: editing.highlights || [],
+        specifications: editing.specifications || {},
         section: editing.section || '',
         variantDisplayType: editing.variantDisplayType || 'selector'
       })
@@ -172,81 +191,151 @@ export default function BusinessProductsPage() {
     </div>
   )
 
-  const ProductFormFields = ({ data, setData, isEdit }) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="md:col-span-2">
-        <label className="panel-label">Product Name</label>
-        <input className="panel-input" value={data.name} onChange={e => setData({ ...data, name: e.target.value })} required />
-      </div>
-      <div>
-        <label className="text-xs font-bold text-gray-500 uppercase">Selling Price (₹)</label>
-        <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.price} onChange={e => setData({ ...data, price: e.target.value })} required />
-      </div>
-      <div>
-        <label className="text-xs font-bold text-gray-500 uppercase">MRP (₹)</label>
-        <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.mrp || ''} onChange={e => setData({ ...data, mrp: e.target.value })} />
-      </div>
-      {!isEdit && (
-        <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Stock</label>
-          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.stock} onChange={e => setData({ ...data, stock: e.target.value })} required />
+  const ProductFormFields = ({ data, setData, isEdit }) => {
+    const addHighlight = () => {
+      setData({ ...data, highlights: [...(data.highlights || []), ''] })
+    }
+    const removeHighlight = (index) => {
+      setData({ ...data, highlights: (data.highlights || []).filter((_, i) => i !== index) })
+    }
+    const updateHighlight = (index, value) => {
+      const newHighlights = [...(data.highlights || [])]
+      newHighlights[index] = value
+      setData({ ...data, highlights: newHighlights })
+    }
+    const addSpec = () => {
+      const newSpecs = { ...(data.specifications || {}) }
+      newSpecs[`newKey${Object.keys(newSpecs).length}`] = ''
+      setData({ ...data, specifications: newSpecs })
+    }
+    const removeSpec = (key) => {
+      const newSpecs = { ...(data.specifications || {}) }
+      delete newSpecs[key]
+      setData({ ...data, specifications: newSpecs })
+    }
+    const updateSpec = (oldKey, newKey, value) => {
+      const newSpecs = { ...(data.specifications || {}) }
+      delete newSpecs[oldKey]
+      newSpecs[newKey] = value
+      setData({ ...data, specifications: newSpecs })
+    }
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="md:col-span-2">
+          <label className="panel-label">Product Name</label>
+          <input className="panel-input" value={data.name} onChange={e => setData({ ...data, name: e.target.value })} required />
         </div>
-      )}
-      <div>
-        <label className="text-xs font-bold text-gray-500 uppercase">Weight (grams)</label>
-        <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" placeholder="e.g. 500" value={data.weight} onChange={e => setData({ ...data, weight: e.target.value })} />
-        <p className="text-[10px] text-gray-400 mt-1">Used for delivery charge calculation</p>
-      </div>
-      <div>
-        <label className="text-xs font-bold text-gray-500 uppercase">GST %</label>
-        <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.gst} onChange={e => setData({ ...data, gst: e.target.value })} />
-      </div>
-      <div>
-        <label className="text-xs font-bold text-gray-500 uppercase">HSN Code</label>
-        <input className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.hsnCode || ''} onChange={e => setData({ ...data, hsnCode: e.target.value })} />
-      </div>
-      <div>
-        <label className="text-xs font-bold text-gray-500 uppercase">Brand</label>
-        <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.brandId || ''} onChange={e => setData({ ...data, brandId: e.target.value })}>
-          <option value="">No Brand</option>
-          {brands.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
-        </select>
-      </div>
-      <div>
-        <label className="text-xs font-bold text-gray-500 uppercase">Category</label>
-        <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.categoryId || ''} onChange={e => setData({ ...data, categoryId: e.target.value, subCategoryId: '' })} required>
-          <option value="">Select category</option>
-          {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-        </select>
-      </div>
-      <div>
-        <label className="text-xs font-bold text-gray-500 uppercase">Subcategory</label>
-        <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.subCategoryId || ''} onChange={e => setData({ ...data, subCategoryId: e.target.value })}>
-          <option value="">Optional</option>
-          {subcategories.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
-        </select>
-      </div>
-      {sections.length > 0 && (
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Section</label>
-          <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.section || ''} onChange={e => setData({ ...data, section: e.target.value })}>
-            <option value="">None</option>
-            {sections.map(sec => <option key={sec} value={sec}>{sec}</option>)}
+          <label className="text-xs font-bold text-gray-500 uppercase">Selling Price (₹)</label>
+          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.price} onChange={e => setData({ ...data, price: e.target.value })} required />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">MRP (₹)</label>
+          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.mrp || ''} onChange={e => setData({ ...data, mrp: e.target.value })} />
+        </div>
+        {!isEdit && (
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase">Stock</label>
+            <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.stock} onChange={e => setData({ ...data, stock: e.target.value })} required />
+          </div>
+        )}
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">Weight (grams)</label>
+          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" placeholder="e.g. 500" value={data.weight} onChange={e => setData({ ...data, weight: e.target.value })} />
+          <p className="text-[10px] text-gray-400 mt-1">Used for delivery charge calculation</p>
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">Length (cm)</label>
+          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" placeholder="e.g. 20" value={data.length} onChange={e => setData({ ...data, length: e.target.value })} />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">Width (cm)</label>
+          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" placeholder="e.g. 15" value={data.width} onChange={e => setData({ ...data, width: e.target.value })} />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">Height (cm)</label>
+          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" placeholder="e.g. 10" value={data.height} onChange={e => setData({ ...data, height: e.target.value })} />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">GST %</label>
+          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.gst} onChange={e => setData({ ...data, gst: e.target.value })} />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">HSN Code</label>
+          <input className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.hsnCode || ''} onChange={e => setData({ ...data, hsnCode: e.target.value })} />
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">Brand</label>
+          <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.brandId || ''} onChange={e => setData({ ...data, brandId: e.target.value })}>
+            <option value="">No Brand</option>
+            {brands.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
           </select>
         </div>
-      )}
-      <div className="md:col-span-2">
-        <label className="text-xs font-bold text-gray-500 uppercase">Product Images</label>
-        <div className="mt-2">
-          <ImageGallery urls={data.imageUrls || []} onChange={urls => setData({ ...data, imageUrls: urls })} />
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">Category</label>
+          <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.categoryId || ''} onChange={e => setData({ ...data, categoryId: e.target.value, subCategoryId: '' })} required>
+            <option value="">Select category</option>
+            {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="text-xs font-bold text-gray-500 uppercase">Subcategory</label>
+          <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.subCategoryId || ''} onChange={e => setData({ ...data, subCategoryId: e.target.value })}>
+            <option value="">Optional</option>
+            {subcategories.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+          </select>
+        </div>
+        {sections.length > 0 && (
+          <div>
+            <label className="text-xs font-bold text-gray-500 uppercase">Section</label>
+            <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.section || ''} onChange={e => setData({ ...data, section: e.target.value })}>
+              <option value="">None</option>
+              {sections.map(sec => <option key={sec} value={sec}>{sec}</option>)}
+            </select>
+          </div>
+        )}
+        <div className="md:col-span-2">
+          <label className="text-xs font-bold text-gray-500 uppercase">Product Images</label>
+          <div className="mt-2">
+            <ImageGallery urls={data.imageUrls || []} onChange={urls => setData({ ...data, imageUrls: urls })} />
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-xs font-bold text-gray-500 uppercase">Highlights</label>
+            <button type="button" onClick={addHighlight} className="text-xs font-semibold text-blue-600 hover:text-blue-800">+ Add Highlight</button>
+          </div>
+          <div className="space-y-2">
+            {(data.highlights || []).map((h, i) => (
+              <div key={i} className="flex gap-2">
+                <input className="flex-1 bg-gray-50 rounded-xl px-4 py-2 text-sm" value={h} onChange={(e) => updateHighlight(i, e.target.value)} placeholder="e.g. Premium quality material" />
+                <button type="button" onClick={() => removeHighlight(i)} className="px-3 text-red-500 hover:text-red-700 font-semibold">✕</button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <div className="flex justify-between items-center mb-2">
+            <label className="text-xs font-bold text-gray-500 uppercase">Specifications</label>
+            <button type="button" onClick={addSpec} className="text-xs font-semibold text-blue-600 hover:text-blue-800">+ Add Spec</button>
+          </div>
+          <div className="space-y-2">
+            {Object.entries(data.specifications || {}).map(([key, value]) => (
+              <div key={key} className="flex gap-2">
+                <input className="w-1/3 bg-gray-50 rounded-xl px-4 py-2 text-sm" value={key} onChange={(e) => updateSpec(key, e.target.value, value)} placeholder="e.g. Color" />
+                <input className="flex-1 bg-gray-50 rounded-xl px-4 py-2 text-sm" value={value} onChange={(e) => updateSpec(key, key, e.target.value)} placeholder="e.g. Blue" />
+                <button type="button" onClick={() => removeSpec(key)} className="px-3 text-red-500 hover:text-red-700 font-semibold">✕</button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="md:col-span-2">
+          <label className="text-xs font-bold text-gray-500 uppercase">Description</label>
+          <textarea className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm min-h-[100px]" value={data.description || ''} onChange={e => setData({ ...data, description: e.target.value })} />
         </div>
       </div>
-      <div className="md:col-span-2">
-        <label className="text-xs font-bold text-gray-500 uppercase">Description</label>
-        <textarea className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm min-h-[100px]" value={data.description || ''} onChange={e => setData({ ...data, description: e.target.value })} />
-      </div>
-    </div>
-  )
+    )
+  }
 
   if (loading) {
     return (

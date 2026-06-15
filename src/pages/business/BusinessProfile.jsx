@@ -79,8 +79,13 @@ export default function BusinessProfile() {
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    otp: '',
+    useOtp: false
   })
+  const [pickupPassword, setPickupPassword] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
+  const [sendingOtp, setSendingOtp] = useState(false)
 
   useEffect(() => {
     loadProfile()
@@ -135,6 +140,19 @@ export default function BusinessProfile() {
     }
   }
 
+  const sendOtp = async () => {
+    try {
+      setSendingOtp(true)
+      await api.post('/api/stores/send-otp')
+      setOtpSent(true)
+      notify('OTP sent to your email/phone', 'success')
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to send OTP', 'error')
+    } finally {
+      setSendingOtp(false)
+    }
+  }
+
   const handlePasswordChange = async (e) => {
     e.preventDefault()
     if (passwordData.newPassword !== passwordData.confirmPassword) {
@@ -147,17 +165,45 @@ export default function BusinessProfile() {
     }
     try {
       setSavingPassword(true)
-      await api.post('/api/stores/change-password', {
-        oldPassword: passwordData.oldPassword,
+      const payload = {
         newPassword: passwordData.newPassword
-      })
+      }
+      if (passwordData.useOtp) {
+        payload.otp = passwordData.otp
+      } else {
+        payload.oldPassword = passwordData.oldPassword
+      }
+      await api.post('/api/stores/change-password', payload)
       notify('Password changed successfully', 'success')
-      setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' })
+      setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '', otp: '', useOtp: false })
       setShowPasswordChange(false)
+      setOtpSent(false)
     } catch (err) {
       notify(err.response?.data?.error || 'Failed to change password', 'error')
     } finally {
       setSavingPassword(false)
+    }
+  }
+
+  const handlePickupSave = async (e) => {
+    e.preventDefault()
+    if (!pickupPassword) {
+      notify('Please enter your password to save pickup address', 'error')
+      return
+    }
+    try {
+      setSaving(true)
+      await api.put('/api/stores/profile', {
+        ...formData,
+        currentPassword: pickupPassword
+      })
+      notify('Pickup address updated successfully', 'success')
+      setPickupPassword('')
+      loadProfile()
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to update pickup address', 'error')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -413,7 +459,7 @@ export default function BusinessProfile() {
                 <h2 className="pf-display font-black text-slate-800">Pickup Address</h2>
                 <p className="text-slate-400 text-xs mt-0.5">Manage your Delhivery pickup details</p>
               </div>
-              <form onSubmit={handleSave} className="p-5 space-y-4">
+              <form onSubmit={handlePickupSave} className="p-5 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Pickup Name</label>
@@ -479,12 +525,23 @@ export default function BusinessProfile() {
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
                     />
                   </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Confirm Your Password</label>
+                    <input
+                      type="password"
+                      value={pickupPassword}
+                      onChange={(e) => setPickupPassword(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                      placeholder="Enter your password to save changes"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div className="pt-4 border-t border-slate-100">
                   <button
                     type="submit"
-                    disabled={saving}
+                    disabled={saving || !pickupPassword}
                     className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 active:scale-[0.98] transition-all shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {saving ? 'Saving…' : 'Save Changes'}
@@ -524,16 +581,60 @@ export default function BusinessProfile() {
                     <h3 className="pf-display font-black text-slate-800 text-sm">Change Password</h3>
                   </div>
                   <form onSubmit={handlePasswordChange} className="p-5 space-y-4">
-                    <div className="space-y-1">
-                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Current Password</label>
-                      <input
-                        type="password"
-                        value={passwordData.oldPassword}
-                        onChange={(e) => setPasswordData(prev => ({ ...prev, oldPassword: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
-                        required
-                      />
+                    <div className="flex gap-2 bg-slate-50 p-2 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => setPasswordData(prev => ({ ...prev, useOtp: false }))}
+                        className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all ${!passwordData.useOtp ? 'bg-white text-violet-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                        Use Old Password
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPasswordData(prev => ({ ...prev, useOtp: true }))}
+                        className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all ${passwordData.useOtp ? 'bg-white text-violet-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                      >
+                        Use OTP
+                      </button>
                     </div>
+
+                    {!passwordData.useOtp ? (
+                      <div className="space-y-1">
+                        <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Current Password</label>
+                        <input
+                          type="password"
+                          value={passwordData.oldPassword}
+                          onChange={(e) => setPasswordData(prev => ({ ...prev, oldPassword: e.target.value }))}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                          required
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="space-y-1">
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">OTP</label>
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={passwordData.otp}
+                              onChange={(e) => setPasswordData(prev => ({ ...prev, otp: e.target.value }))}
+                              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                              placeholder="Enter OTP"
+                              required
+                            />
+                            <button
+                              type="button"
+                              onClick={sendOtp}
+                              disabled={sendingOtp || otpSent}
+                              className="px-4 py-3 rounded-xl text-xs font-black text-white bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            >
+                              {sendingOtp ? 'Sending…' : otpSent ? 'Resend' : 'Send OTP'}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="space-y-1">
                       <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">New Password</label>
                       <input
@@ -560,7 +661,7 @@ export default function BusinessProfile() {
                     <div className="pt-4 border-t border-slate-100">
                       <button
                         type="submit"
-                        disabled={savingPassword || passwordData.newPassword !== passwordData.confirmPassword || !passwordData.newPassword}
+                        disabled={savingPassword || passwordData.newPassword !== passwordData.confirmPassword || !passwordData.newPassword || (passwordData.useOtp && !passwordData.otp) || (!passwordData.useOtp && !passwordData.oldPassword)}
                         className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 active:scale-[0.98] transition-all shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {savingPassword ? 'Changing…' : 'Change Password'}
