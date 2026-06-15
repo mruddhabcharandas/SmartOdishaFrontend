@@ -323,11 +323,11 @@ export default function BusinessProfile() {
                       </div>
                     )}
                     <div className="flex items-center gap-2">
-                      <ImageUpload onUploaded={(url) => setFormData(prev => ({ ...prev, image: url })} />
+                      <ImageUpload onUploaded={(url) => setFormData(prev => ({ ...prev, image: url }))} />
                       {formData.image && (
                         <button
                           type="button"
-                          onClick={() => setFormData(prev => ({ ...prev, image: '' })}
+                          onClick={() => setFormData(prev => ({ ...prev, image: '' }))}
                           className="text-xs text-red-500 hover:text-red-700 font-bold"
                         >
                           Remove
@@ -348,11 +348,11 @@ export default function BusinessProfile() {
                       </div>
                     )}
                     <div className="flex items-center gap-2">
-                      <ImageUpload onUploaded={(url) => setFormData(prev => ({ ...prev, sellerAvatar: url })} />
+                      <ImageUpload onUploaded={(url) => setFormData(prev => ({ ...prev, sellerAvatar: url }))} />
                       {formData.sellerAvatar && (
                         <button
                           type="button"
-                          onClick={() => setFormData(prev => ({ ...prev, sellerAvatar: '' })}
+                          onClick={() => setFormData(prev => ({ ...prev, sellerAvatar: '' }))}
                           className="text-xs text-red-500 hover:text-red-700 font-bold"
                         >
                           Remove
