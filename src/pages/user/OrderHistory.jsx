@@ -173,8 +173,8 @@ export default function OrderHistory() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap');
-        .oh-load-root { font-family:'DM Sans',sans-serif; background:#020617; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; position:relative; overflow:hidden; color:#cbd5e1; }
-        .oh-load-root::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle at 2px 2px, rgba(255,255,255,.05) 1px, transparent 0); background-size:32px 32px; }
+        .oh-load-root { font-family:'DM Sans',sans-serif; background:#f0f9ff; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; position:relative; overflow:hidden; color:#6b7280; }
+        .oh-load-root::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle at 2px 2px, rgba(30,58,138,.05) 1px, transparent 0); background-size:32px 32px; }
       `}</style>
       <div className="oh-load-root">
         <LoadingSpinner text="Retrieving your orders..." />
@@ -189,7 +189,7 @@ export default function OrderHistory() {
 
         .oh-root{
           font-family:'DM Sans',system-ui,sans-serif;
-          background: linear-gradient(180deg, #0f172a 0%, #020617 35%, #f8fafc 35%, #f8fafc 100%);
+          background: #f0f9ff;
           min-height:100vh; color:#1e293b;
           position:relative; overflow-x:hidden;
           padding-bottom:32px;
@@ -208,28 +208,28 @@ export default function OrderHistory() {
         .oh-eyebrow{
           display:inline-flex; align-items:center; gap:7px;
           padding:4px 12px; border-radius:100px;
-          background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2);
-          color:#cbd5e1; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+          background:rgba(30,58,138,0.08); border:1px solid rgba(30,58,138,0.15);
+          color:#1e3a8a; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
           margin-bottom:8px;
         }
         .oh-h1{
           font-size:28px;
           font-weight:900;
-          color:white; line-height:1.2; margin-bottom:4px;
+          color:#1e1b2e; line-height:1.2; margin-bottom:4px;
         }
         .oh-h1 span{
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #dc2626 100%);
+          background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #1e3a8a 100%);
           background-clip: text;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
-        .oh-sub{font-size:14px;color:#cbd5e1;font-weight:500;}
+        .oh-sub{font-size:14px;color:#6b7280;font-weight:500;}
         .oh-count-pill{
           display:inline-flex; align-items:center; gap:7px;
           padding:8px 16px; border-radius:100px;
-          background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15);
-          color:white; font-size:12px; font-weight:700; white-space:nowrap;
-          box-shadow:0 4px 20px rgba(0,0,0,0.15);
+          background:rgba(249,115,22,0.1); border:1px solid rgba(249,115,22,0.15);
+          color:#f97316; font-size:12px; font-weight:700; white-space:nowrap;
+          box-shadow:0 4px 20px rgba(249,115,22,0.1);
         }
 
         /* ── empty state ── */

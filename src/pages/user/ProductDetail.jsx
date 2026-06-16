@@ -1370,7 +1370,7 @@ export default function ProductDetail() {
                     return (
                       <div key={attrIdx}>
                         <div className="pd-var-lbl">
-                          {attr}{selectedVal && <span>: {selectedVal}</span>}
+                          {attr.toUpperCase()}{selectedVal && <span>: {String(selectedVal).toUpperCase()}</span>}
                         </div>
                         <div className="pd-chips">
                           {opts.map((optVal, optIdx) => {
@@ -1384,7 +1384,7 @@ export default function ProductDetail() {
                                   className={`pd-color-swatch${isOn ? ' on' : ''}${!enabled ? ' disabled' : ''}`}
                                   onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
                                   disabled={!enabled}
-                                  title={optVal}
+                                  title={String(optVal).toUpperCase()}
                                 >
                                   <span className="pd-color-swatch-inner" style={{ backgroundColor: optVal.toLowerCase() }} />
                                 </button>
@@ -1397,7 +1397,7 @@ export default function ProductDetail() {
                                   onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
                                   disabled={!enabled}
                                 >
-                                  {optVal}
+                                  {String(optVal).toUpperCase()}
                                 </button>
                               );
                             }

@@ -53,7 +53,7 @@ const Avatar = ({ user, size = 'md' }) => {
   if (user?.avatar)
     return <img src={getImageUrl(user.avatar)} alt={user.name} className={`${sz} rounded-2xl object-cover ring-2 ring-white shadow-md`} />;
   return (
-    <div className={`${sz} rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center font-black text-white ring-2 ring-white shadow-md`}>
+    <div className={`${sz} rounded-2xl bg-gradient-to-br from-orange-500 to-blue-900 flex items-center justify-center font-black text-white ring-2 ring-white shadow-md`}>
       {user?.name?.charAt(0)?.toUpperCase() || 'U'}
     </div>
   );
@@ -67,9 +67,9 @@ const Field = ({ label, children }) => (
   </div>
 );
 
-const inputCls = 'w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all placeholder:text-slate-300';
+const inputCls = 'w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all placeholder:text-slate-300';
 const disabledCls = 'w-full px-4 py-3 rounded-xl border border-slate-100 bg-slate-50 text-slate-400 font-semibold text-sm cursor-not-allowed';
-const btnPrimary = 'w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 active:scale-[0.98] transition-all shadow-lg shadow-violet-200 disabled:opacity-50 disabled:cursor-not-allowed';
+const btnPrimary = 'w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-orange-500 to-blue-900 hover:from-orange-600 hover:to-blue-950 active:scale-[0.98] transition-all shadow-lg shadow-orange-200 disabled:opacity-50 disabled:cursor-not-allowed';
 const btnOutline = 'flex-1 py-3.5 rounded-xl font-bold text-sm border border-slate-200 text-slate-600 hover:bg-slate-50 active:scale-[0.98] transition-all';
 
 /* ════════════════════════════════════════ MAIN COMPONENT ════════════════════════════════════════ */
@@ -278,7 +278,7 @@ export default function Profile() {
       <div className="pf-root min-h-screen bg-slate-50 pb-24 lg:pb-8">
 
         {/* ── TOP HEADER ── */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white">
+        <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-orange-500 text-white">
           <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
             <button onClick={() => navigate('/')} className="p-2 rounded-xl hover:bg-white/10 transition-colors flex-shrink-0">
               <Ico n="back" cls="w-4 h-4" />
@@ -296,7 +296,7 @@ export default function Profile() {
               <button key={id} onClick={() => setActiveSection(id)}
                 className={`flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-bold rounded-t-xl transition-all
                   ${activeSection === id
-                    ? 'bg-slate-50 text-violet-700'
+                    ? 'bg-slate-50 text-orange-600'
                     : 'text-slate-400 hover:text-slate-200'}`}>
                 <Ico n={icon} cls="w-4 h-4" />
                 {label}
@@ -324,7 +324,7 @@ export default function Profile() {
                 <button key={id} onClick={() => setActiveSection(id)}
                   className={`w-full flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-left transition-all border-l-2
                     ${activeSection === id
-                      ? 'border-violet-500 bg-violet-50 text-violet-700'
+                      ? 'border-orange-500 bg-orange-50 text-orange-700'
                       : 'border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-800'}`}>
                   <Ico n={icon} cls="w-4 h-4 flex-shrink-0" />
                   {label}
@@ -351,12 +351,12 @@ export default function Profile() {
             {activeSection === 'overview' && (
               <div className="pf-panel space-y-4">
                 {/* Welcome card */}
-                <div className="bg-gradient-to-br from-violet-600 to-indigo-700 rounded-2xl p-5 text-white relative overflow-hidden">
+                <div className="bg-gradient-to-br from-orange-500 to-blue-900 rounded-2xl p-5 text-white relative overflow-hidden">
                   <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
                   <div className="absolute right-8 bottom-0 w-20 h-20 bg-white/5 rounded-full translate-y-1/2" />
-                  <p className="text-violet-200 text-xs font-bold uppercase tracking-widest mb-1">Welcome back</p>
+                  <p className="text-orange-200 text-xs font-bold uppercase tracking-widest mb-1">Welcome back</p>
                   <h2 className="pf-display font-black text-2xl leading-tight mb-3">{user?.name?.split(' ')[0]} 👋</h2>
-                  <p className="text-violet-200 text-sm">{user?.email}</p>
+                  <p className="text-orange-200 text-sm">{user?.email}</p>
                 </div>
 
                 {/* Quick action grid */}
@@ -382,7 +382,7 @@ export default function Profile() {
                 <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="pf-display font-black text-slate-800 text-sm">Profile Info</h3>
-                    <button onClick={() => setActiveSection('personal')} className="text-violet-600 text-xs font-bold hover:underline">Edit →</button>
+                    <button onClick={() => setActiveSection('personal')} className="text-orange-600 text-xs font-bold hover:underline">Edit →</button>
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-3 text-sm">
@@ -449,7 +449,7 @@ export default function Profile() {
                     <p className="text-slate-400 text-xs mt-0.5">{savedAddresses.length} saved</p>
                   </div>
                   <button onClick={handleAddAddress}
-                    className="flex items-center gap-1.5 px-4 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-bold text-xs shadow-md shadow-violet-200 active:scale-[0.97] transition-all">
+                    className="flex items-center gap-1.5 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-xs shadow-md shadow-orange-200 active:scale-[0.97] transition-all">
                     <Ico n="plus" cls="w-4 h-4" /> Add New
                   </button>
                 </div>
