@@ -28,22 +28,24 @@ function sortVariantValues(lowKey, values) {
 }
 
 const STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
 
   :root {
-    --bg: #f1f2f6;
-    --bg2: #e2e8f0;
+    --bg: #f0f9ff;
+    --bg2: #e0f2fe;
     --card: #ffffff;
-    --ink: #0f172a;
+    --ink: #1e1b2e;
     --ink2: #334155;
-    --ink3: #64748b;
-    --ink4: #94a3b8;
-    --border: #e2e8f0;
-    --border2: #cbd5e1;
-    --primary: #2874f0;
-    --primary-dark: #1e40af;
-    --primary-dim: rgba(40, 116, 240, 0.08);
-    --primary-glow: rgba(40, 116, 240, 0.25);
+    --ink3: #6b7280;
+    --ink4: #9ca3af;
+    --border: rgba(30,58,138,0.1);
+    --border2: rgba(30,58,138,0.2);
+    --primary: #f97316;
+    --primary-dark: #ea580c;
+    --primary-dim: rgba(249,115,22,0.08);
+    --primary-glow: rgba(249,115,22,0.25);
+    --secondary: #1e3a8a;
+    --secondary-dim: rgba(30,58,138,0.08);
     --green: #10b981;
     --green-dim: rgba(16,185,129,0.08);
     --red: #ef4444;
@@ -51,17 +53,17 @@ const STYLES = `
     --yellow-dim: rgba(245,158,11,0.08);
     --r-sm: 8px;
     --r-md: 12px;
-    --r-lg: 20px;
+    --r-lg: 18px;
     --r-xl: 28px;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 1px rgba(0,0,0,0.06);
-    --shadow-md: 0 4px 12px -2px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    --shadow-lg: 0 10px 25px -5px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    --shadow-sm: 0 1px 2px rgba(30,58,138,0.04), 0 1px 1px rgba(30,58,138,0.06);
+    --shadow-md: 0 4px 12px -2px rgba(249,115,22,0.1), 0 2px 4px -1px rgba(249,115,22,0.06);
+    --shadow-lg: 0 10px 25px -5px rgba(249,115,22,0.15), 0 4px 6px -2px rgba(249,115,22,0.05);
     --t: 0.25s ease;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .pd { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
+  .pd { font-family: 'DM Sans', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; }
 
   /* ── Topbar ── */
   .pd-nav {
@@ -554,27 +556,27 @@ const STYLES = `
   }
   .pd-btn-cart {
     flex: 1; padding: 14px 20px;
-    background: #ff9f00; color: #fff;
-    border: none; border-radius: 8px;
+    background: linear-gradient(135deg, #f97316, #1e3a8a); color: #fff;
+    border: none; border-radius: 12px;
     font-size: 14px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: all 0.2s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .pd-btn-cart:hover:not(:disabled) { background: #fb8c00; }
+  .pd-btn-cart:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.25); }
 
   .pd-btn-buy {
     flex: 1; padding: 14px 20px;
-    background: #fb641b; color: #fff;
-    border: none; border-radius: 8px;
+    background: linear-gradient(135deg, #1e3a8a, #f97316); color: #fff;
+    border: none; border-radius: 12px;
     font-size: 14px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
     transition: all 0.2s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .pd-btn-buy:hover:not(:disabled) { background: #f55607; }
+  .pd-btn-buy:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,58,138,0.25); }
   .pd-btn-cart:disabled, .pd-btn-buy:disabled { background: var(--bg2); color: var(--ink4); cursor: not-allowed; }
 
   /* ── Mobile Sticky CTA ── */
@@ -592,25 +594,25 @@ const STYLES = `
 
   .pd-mob-cart {
     flex: 1; padding: 14px;
-    background: #ff9f00; color: #fff;
-    border: none; border-radius: 8px;
+    background: linear-gradient(135deg, #f97316, #1e3a8a); color: #fff;
+    border: none; border-radius: 12px;
     font-size: 13px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
     transition: var(--t);
     text-transform: uppercase;
   }
-  .pd-mob-cart:hover:not(:disabled) { background: #fb8c00; }
+  .pd-mob-cart:hover:not(:disabled) { transform: translateY(-2px); }
 
   .pd-mob-buy {
     flex: 1; padding: 14px;
-    background: #fb641b; color: #fff;
-    border: none; border-radius: 8px;
+    background: linear-gradient(135deg, #1e3a8a, #f97316); color: #fff;
+    border: none; border-radius: 12px;
     font-size: 13px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
     transition: var(--t);
     text-transform: uppercase;
   }
-  .pd-mob-buy:hover:not(:disabled) { background: #f55607; }
+  .pd-mob-buy:hover:not(:disabled) { transform: translateY(-2px); }
   .pd-mob-cart:disabled, .pd-mob-buy:disabled { background: var(--bg2); color: var(--ink4); cursor: not-allowed; }
 
   /* ── Hide desktop CTA on mobile ── */

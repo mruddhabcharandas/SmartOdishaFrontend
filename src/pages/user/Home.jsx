@@ -34,8 +34,7 @@ export default function Home() {
       { key: 'n1', label: 'Free Delivery on Orders Above ₹999', pill: 'FREE SHIPPING' },
       { key: 'n2', label: 'COD Available Across Odisha', pill: 'CASH ON DELIVERY' },
       { key: 'n3', label: '7-Day Easy Returns', pill: 'HASSLE-FREE' },
-      { key: 'n4', label: '100% Secure Payments', pill: 'TRUSTED' },
-      { key: 'n5', label: 'Delivered by Delhivery', pill: 'FAST DELIVERY' }
+      { key: 'n4', label: '100% Secure Payments', pill: 'TRUSTED' }
     ]
     return [...neutral, ...neutral]
   }, [])
@@ -48,11 +47,11 @@ export default function Home() {
   }
 
   return (
-    <div className="home-root bg-zinc-50 min-h-screen">
+    <div className="home-root min-h-screen">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
         * { box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; }
         
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
@@ -60,17 +59,17 @@ export default function Home() {
         }
         
         .home-root {
-          font-family: 'Inter', sans-serif;
-          background: linear-gradient(180deg, #2874f0 0%, #1e5fcc 35%, #f1f3f6 35%, #f1f3f6 100%);
-          color: #212121;
+          font-family: 'DM Sans', sans-serif;
+          background: #f0f9ff;
+          color: #1e1b2e;
         }
 
         .top-ticker {
-          background: #1a237e;
+          background: linear-gradient(90deg, #1e3a8a, #f97316);
           color: white;
           padding: 8px 20px;
           font-size: 12px;
-          font-weight: 600;
+          font-weight: 700;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -81,14 +80,26 @@ export default function Home() {
           .top-ticker { justify-content: center; text-align: center; gap: 8px; }
         }
         .ticker-right { display: flex; gap: 12px; }
-        .ticker-link { color: white; text-decoration: none; font-weight: 600; transition: all 0.2s; padding: 6px 16px; border-radius: 4px; background: rgba(255,255,255,0.15); font-size:11px; }
-        .ticker-link:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); }
+        .ticker-link { color: white; text-decoration: none; font-weight: 700; transition: all 0.2s; padding: 6px 16px; border-radius: 100px; background: rgba(255,255,255,0.2); font-size:11px; letter-spacing: 0.1em; text-transform: uppercase; }
+        .ticker-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
 
         .hero {
-          color: white;
-          padding: 40px 20px 80px;
+          color: #1e1b2e;
+          padding: 40px 20px 60px;
           position: relative;
           overflow: hidden;
+        }
+        .hero::before {
+          content: '';
+          position: absolute;
+          top: -180px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 800px;
+          height: 500px;
+          border-radius: 50%;
+          background: radial-gradient(ellipse, rgba(30,58,138,0.07), transparent 65%);
+          pointer-events: none;
         }
         .hero-inner {
           max-width: 1280px;
@@ -116,27 +127,32 @@ export default function Home() {
           align-items: center;
           gap: 8px;
           padding: 6px 16px;
-          background: rgba(255,255,255,0.2);
-          border-radius: 4px;
+          background: rgba(30,58,138,0.1);
+          border: 1px solid rgba(30,58,138,0.2);
+          border-radius: 100px;
           font-size: 11px;
           font-weight: 700;
           width: fit-content;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.15em;
           text-transform: uppercase;
+          color: #f97316;
         }
+        .hero-eyebrow span.dot { width: 5px; height: 5px; border-radius: 50%; background: #f97316; box-shadow: 0 0 5px rgba(249,115,22,0.5); animation: pulse 2s ease infinite; }
+        @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.7); } }
         .hero-title {
-          font-family: 'Inter', sans-serif;
-          font-size: clamp(28px, 5vw, 48px);
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: clamp(36px, 6vw, 64px);
           line-height: 1.1;
-          font-weight: 800;
+          letter-spacing: 0.03em;
+          color: #1e1b2e;
         }
         .hero-title .accent {
-          color: #ff9f00;
+          color: #f97316;
         }
         .hero-desc {
           font-size: 16px;
           line-height: 1.6;
-          color: rgba(255,255,255,0.9);
+          color: #6b7280;
           max-width: 520px;
           font-weight: 500;
         }
@@ -146,36 +162,42 @@ export default function Home() {
         .hero-search {
           display: flex;
           width: 100%;
-          max-width: 600px;
+          max-width: 560px;
           gap: 0px;
           margin-top: 8px;
         }
         .hero-search-input {
           flex: 1;
           padding: 16px 20px;
-          border-radius: 4px 0 0 4px;
-          border: none;
+          border-radius: 14px 0 0 14px;
+          border: 1px solid rgba(30,58,138,0.15);
+          border-right: none;
           outline: none;
           font-size: 14px;
           font-weight: 500;
           background: white;
-          color: #212121;
+          color: #1e1b2e;
         }
         .hero-search-input::placeholder {
-          color: #878787;
+          color: #9ca3af;
         }
         .hero-search-btn {
-          padding: 16px 32px;
-          border-radius: 0 4px 4px 0;
+          padding: 16px 28px;
+          border-radius: 0 14px 14px 0;
           border: none;
-          background: #ff9f00;
+          background: linear-gradient(135deg, #f97316, #1e3a8a);
           color: white;
-          font-weight: 700;
+          font-weight: 800;
+          font-size: 11px;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
           cursor: pointer;
           transition: all 0.3s;
+          box-shadow: 0 8px 24px rgba(249,115,22,0.25);
         }
         .hero-search-btn:hover {
-          background: #fb8c00;
+          transform: translateY(-2px);
+          box-shadow: 0 14px 32px rgba(249,115,22,0.35);
         }
         .hero-cta {
           display: flex;
@@ -183,43 +205,48 @@ export default function Home() {
           gap: 12px;
         }
         .btn-primary {
-          background: #ff9f00;
+          background: linear-gradient(135deg, #f97316, #1e3a8a);
           color: white;
           border: none;
-          padding: 14px 32px;
-          border-radius: 4px;
-          font-weight: 700;
-          font-size: 14px;
+          padding: 15px 32px;
+          border-radius: 14px;
+          font-weight: 800;
+          font-size: 11px;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
           cursor: pointer;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          transition: all 0.3s ease;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          box-shadow: 0 8px 24px rgba(249,115,22,0.25);
         }
         .btn-primary:hover {
-          background: #fb8c00;
-          transform: translateY(-2px);
+          transform: translateY(-3px) scale(1.02);
+          box-shadow: 0 14px 32px rgba(249,115,22,0.35);
         }
         .btn-secondary {
           background: white;
-          color: #2874f0;
-          border: 1px solid white;
-          padding: 13px 30px;
-          border-radius: 4px;
-          font-weight: 700;
-          font-size: 14px;
+          color: #f97316;
+          border: 1px solid rgba(30,58,138,0.15);
+          padding: 14px 30px;
+          border-radius: 14px;
+          font-weight: 800;
+          font-size: 11px;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
           cursor: pointer;
           text-decoration: none;
           display: inline-flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          transition: all 0.3s ease;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .btn-secondary:hover {
-          background: rgba(255,255,255,0.95);
+          border-color: #f97316;
           transform: translateY(-2px);
         }
         .hero-right {
@@ -230,21 +257,21 @@ export default function Home() {
         }
         .hero-image {
           width: 100%;
-          max-width: 450px;
+          max-width: 400px;
           height: auto;
-          border-radius: 12px;
-          box-shadow: 0 20px 60px -20px rgba(0,0,0,0.4);
+          border-radius: 28px;
+          box-shadow: 0 20px 60px -20px rgba(30,58,138,0.3);
           transition: all 0.5s ease;
           animation: float 6s ease-in-out infinite;
         }
         .hero-image:hover {
           transform: scale(1.03);
-          box-shadow: 0 30px 80px -30px rgba(0,0,0,0.5);
+          box-shadow: 0 30px 80px -30px rgba(30,58,138,0.4);
         }
 
         .features {
           max-width: 1280px;
-          margin: -30px auto 0;
+          margin: 0 auto 0;
           padding: 0 20px;
           display: grid;
           grid-template-columns: repeat(2, 1fr);
@@ -257,41 +284,54 @@ export default function Home() {
         }
         .feature-card {
           background: white;
-          border-radius: 8px;
+          border: 1px solid rgba(30,58,138,0.1);
+          border-radius: 18px;
           padding: 24px 20px;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 12px;
-          box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+          box-shadow: 0 2px 12px rgba(30,58,138,0.04);
           text-align: center;
           transition: all 0.3s ease;
           cursor: pointer;
+          animation: fadeInUp 0.5s ease both;
+          position: relative;
+          overflow: hidden;
         }
+        .feature-card:nth-child(1) { animation-delay: 0s; }
+        .feature-card:nth-child(2) { animation-delay: 0.1s; }
+        .feature-card:nth-child(3) { animation-delay: 0.2s; }
+        .feature-card:nth-child(4) { animation-delay: 0.3s; }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
+        .feature-card::before { content: ''; position: absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.2), transparent); opacity:0; transition: opacity 0.2s; }
         .feature-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+          box-shadow: 0 6px 24px rgba(249,115,22,0.12);
+          border-color: rgba(249,115,22,0.2);
         }
+        .feature-card:hover::before { opacity:1; }
         .feature-icon {
           width: 56px;
           height: 56px;
-          background: #f0f0f0;
-          border-radius: 50%;
+          background: #f0f9ff;
+          border: 1px solid rgba(30,58,138,0.1);
+          border-radius: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
         }
-        .feature-icon svg { width: 24px; height: 24px; color: #2874f0; }
+        .feature-icon svg { width: 24px; height: 24px; color: #f97316; }
         .feature-text h4 {
           font-size: 14px;
           font-weight: 700;
-          color: #212121;
+          color: #1e1b2e;
           margin: 0;
         }
         .feature-text p {
           font-size: 12px;
-          color: #878787;
+          color: #9ca3af;
           margin: 4px 0 0 0;
           font-weight: 500;
         }
@@ -299,7 +339,7 @@ export default function Home() {
         .section-wrapper {
           max-width: 1280px;
           margin: 0 auto;
-          padding: 40px 20px;
+          padding: 48px 20px;
         }
         @media (max-width: 640px) {
           .section-wrapper { padding: 32px 16px; }
@@ -317,22 +357,27 @@ export default function Home() {
           gap: 4px;
         }
         .section-eyebrow {
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 700;
           text-transform: uppercase;
-          letter-spacing: 0.15em;
-          color: #2874f0;
+          letter-spacing: 0.18em;
+          color: #f97316;
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
+        .section-eyebrow::before { content: ''; width: 20px; height: 2px; background: rgba(30,58,138,0.35); border-radius: 2px; }
         .section-title {
-          font-family: 'Inter', sans-serif;
-          font-size: clamp(20px, 3vw, 28px);
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: clamp(24px, 4vw, 36px);
           font-weight: 700;
-          color: #212121;
+          color: #1e1b2e;
           margin: 0;
+          letter-spacing: 0.03em;
         }
         .section-subtitle {
           font-size: 13px;
-          color: #878787;
+          color: #6b7280;
           margin: 0;
           font-weight: 500;
           max-width: 500px;
@@ -340,11 +385,13 @@ export default function Home() {
         .section-btn {
           padding: 10px 20px;
           background: white;
-          border: 1px solid #e0e0e0;
-          border-radius: 4px;
-          color: #2874f0;
-          font-weight: 600;
-          font-size: 13px;
+          border: 1px solid rgba(30,58,138,0.15);
+          border-radius: 12px;
+          color: #f97316;
+          font-weight: 800;
+          font-size: 11px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
           cursor: pointer;
           text-decoration: none;
           transition: all 0.3s;
@@ -353,9 +400,10 @@ export default function Home() {
           gap: 6px;
         }
         .section-btn:hover {
-          background: #2874f0;
+          background: #f97316;
           color: white;
-          border-color: #2874f0;
+          border-color: #f97316;
+          transform: translateY(-2px);
         }
 
         .stores-grid {
@@ -371,25 +419,29 @@ export default function Home() {
         }
         .store-card {
           background: white;
-          border-radius: 8px;
+          border: 1px solid rgba(30,58,138,0.1);
+          border-radius: 18px;
           overflow: hidden;
           cursor: pointer;
           text-decoration: none;
-          color: #212121;
+          color: #1e1b2e;
           transition: all 0.3s ease;
-          box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+          box-shadow: 0 2px 12px rgba(30,58,138,0.04);
           display: flex;
           flex-direction: column;
           position: relative;
         }
         .store-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+          box-shadow: 0 6px 24px rgba(249,115,22,0.12);
+          border-color: rgba(249,115,22,0.2);
         }
+        .store-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.2), transparent); opacity:0; transition: opacity 0.2s; }
+        .store-card:hover::before { opacity:1; }
         .store-image-container {
           width: 100%;
           aspect-ratio: 4/3;
-          background: #f5f5f5;
+          background: #f0f9ff;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -414,7 +466,7 @@ export default function Home() {
         .store-name {
           font-size: 14px;
           font-weight: 700;
-          color: #212121;
+          color: #1e1b2e;
         }
         .store-badge {
           display: inline-flex;
@@ -422,12 +474,13 @@ export default function Home() {
           gap: 6px;
           font-size: 10px;
           font-weight: 700;
-          color: #388e3c;
+          color: #059669;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          background: #e8f5e9;
+          background: rgba(5,150,105,0.06);
+          border: 1px solid rgba(5,150,105,0.12);
           padding: 4px 10px;
-          border-radius: 4px;
+          border-radius: 8px;
           width: fit-content;
         }
 
@@ -444,24 +497,29 @@ export default function Home() {
         }
         .product-card {
           background: white;
-          border-radius: 8px;
+          border: 1px solid rgba(30,58,138,0.1);
+          border-radius: 18px;
           overflow: hidden;
           cursor: pointer;
           text-decoration: none;
-          color: #212121;
+          color: #1e1b2e;
           transition: all 0.3s ease;
-          box-shadow: 0 1px 8px rgba(0,0,0,0.08);
+          box-shadow: 0 2px 12px rgba(30,58,138,0.04);
           display: flex;
           flex-direction: column;
+          position: relative;
         }
         .product-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+          box-shadow: 0 6px 24px rgba(249,115,22,0.12);
+          border-color: rgba(249,115,22,0.2);
         }
+        .product-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.2), transparent); opacity:0; transition: opacity 0.2s; }
+        .product-card:hover::before { opacity:1; }
         .product-image-container {
           width: 100%;
           aspect-ratio: 1;
-          background: #fafafa;
+          background: #f0f9ff;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -483,7 +541,7 @@ export default function Home() {
         .product-name {
           font-size: 13px;
           font-weight: 600;
-          color: #212121;
+          color: #1e1b2e;
           line-height: 1.4;
         }
         .product-price-row {
@@ -492,13 +550,15 @@ export default function Home() {
           gap: 8px;
         }
         .product-price {
-          font-size: 16px;
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 20px;
           font-weight: 700;
-          color: #212121;
+          color: #f97316;
+          letter-spacing: 0.03em;
         }
         .product-mrp {
           font-size: 12px;
-          color: #878787;
+          color: #9ca3af;
           text-decoration: line-through;
         }
 
@@ -513,16 +573,16 @@ export default function Home() {
         @media (min-width: 768px) { .offers-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
         .offer-card {
           position: relative;
-          border-radius: 8px;
+          border-radius: 18px;
           overflow: hidden;
           aspect-ratio: 16/9;
-          background: linear-gradient(135deg, #2874f0, #1e5fcc);
-          box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+          background: linear-gradient(135deg, #1e3a8a, #f97316);
+          box-shadow: 0 4px 16px rgba(30,58,138,0.15);
           transition: all 0.3s ease;
         }
         .offer-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 8px 24px rgba(0,0,0,0.16);
+          box-shadow: 0 8px 32px rgba(249,115,22,0.25);
         }
         .offer-card::before {
           content: '';
@@ -536,33 +596,35 @@ export default function Home() {
         .offer-content {
           position: absolute;
           inset: 0;
-          padding: 28px;
+          padding: 32px;
           display: flex;
           flex-direction: column;
           justify-content: center;
           color: white;
         }
         @media (max-width: 640px) {
-          .offer-content { padding: 20px; }
+          .offer-content { padding: 24px; }
         }
         .offer-tag {
           display: inline-flex;
-          background: #ff9f00;
-          padding: 6px 14px;
-          border-radius: 4px;
+          background: white;
+          color: #f97316;
+          padding: 6px 16px;
+          border-radius: 100px;
           font-size: 11px;
           font-weight: 800;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.12em;
           width: fit-content;
           margin-bottom: 12px;
         }
         .offer-title {
-          font-family: 'Inter', sans-serif;
-          font-size: clamp(20px, 3vw, 28px);
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: clamp(24px, 4vw, 36px);
           font-weight: 700;
           margin: 0 0 8px 0;
           line-height: 1.2;
+          letter-spacing: 0.03em;
         }
         .offer-desc {
           font-size: 13px;
@@ -574,12 +636,14 @@ export default function Home() {
           width: fit-content;
           margin-top: 20px;
           background: white;
-          color: #2874f0;
+          color: #f97316;
           border: none;
-          padding: 10px 24px;
-          border-radius: 4px;
-          font-weight: 700;
-          font-size: 13px;
+          padding: 12px 24px;
+          border-radius: 12px;
+          font-weight: 800;
+          font-size: 11px;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
           cursor: pointer;
           text-decoration: none;
           transition: all 0.3s;
@@ -592,7 +656,7 @@ export default function Home() {
         }
 
         .ticker {
-          background: #212121;
+          background: linear-gradient(90deg, #1e3a8a, #f97316);
           padding: 12px 0;
           overflow: hidden;
         }
@@ -611,20 +675,23 @@ export default function Home() {
           gap: 16px;
           padding: 0 48px;
           color: white;
-          font-weight: 600;
+          font-weight: 700;
           font-size: 12px;
           white-space: nowrap;
         }
         .ticker-highlight {
-          background: #ff9f00;
-          color: white;
+          background: white;
+          color: #f97316;
           padding: 6px 18px;
-          border-radius: 4px;
-          font-weight: 700;
+          border-radius: 100px;
+          font-weight: 800;
+          font-size: 11px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
         }
 
         .stats {
-          background: #2874f0;
+          background: linear-gradient(135deg, #1e3a8a, #f97316);
           color: white;
           padding: 60px 20px;
           position: relative;
@@ -649,19 +716,25 @@ export default function Home() {
           transform: translateY(-4px);
         }
         .stat-num {
-          font-family: 'Inter', sans-serif;
-          font-size: clamp(32px, 5vw, 48px);
-          font-weight: 800;
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: clamp(36px, 6vw, 48px);
+          font-weight: 700;
           line-height: 1;
           margin-bottom: 8px;
-          color: #ff9f00;
+          color: white;
+          letter-spacing: 0.03em;
         }
         .stat-label {
           font-size: 13px;
-          font-weight: 600;
+          font-weight: 700;
           color: rgba(255,255,255,0.9);
           text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.12em;
+        }
+
+        footer {
+          background: white;
+          border-top: 1px solid rgba(30,58,138,0.1);
         }
       `}</style>
 
@@ -679,16 +752,14 @@ export default function Home() {
         <div className="hero-inner">
           <div className="hero-left">
             <div className="hero-eyebrow">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-              </svg>
-              <span>Odisha's Premium Marketplace</span>
-            </div>
+          <span className="dot"></span>
+          <span>Odisha's Premium Marketplace</span>
+        </div>
             <h1 className="hero-title">
               Shop the Best of <span className="accent">Odisha</span>
             </h1>
             <p className="hero-desc">
-              Experience premium shopping with curated products from trusted local stores. Enjoy fast delivery by Delhivery, secure payments, and exclusive deals across Odisha.
+              Experience premium shopping with curated products from trusted local stores. Enjoy fast delivery, secure payments, and exclusive deals across Odisha.
             </p>
             <form onSubmit={handleSearch} className="hero-search">
               <input
@@ -768,8 +839,8 @@ export default function Home() {
             </svg>
           </div>
           <div className="feature-text">
-            <h4>Delhivery Shipping</h4>
-            <p>Fast & reliable delivery</p>
+            <h4>Fast Shipping</h4>
+            <p>Reliable delivery across Odisha</p>
           </div>
         </div>
       </section>
@@ -932,10 +1003,6 @@ export default function Home() {
               <Link to="/business/login" className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-xl text-white text-xs font-black uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all shadow-xl shadow-emerald-900/30">
                 Seller Login
               </Link>
-              <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900 rounded-xl border border-zinc-800">
-                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Delivery by Delhivery</span>
-              </div>
               <a href={`mailto:${CONFIG.SUPPORT_EMAIL}`} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
