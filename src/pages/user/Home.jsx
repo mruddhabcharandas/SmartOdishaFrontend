@@ -973,11 +973,11 @@ export default function Home() {
 
 
       {/* Footer */}
-      <footer className="bg-zinc-950 text-white py-16">
+      <footer className="bg-white border-t border-blue-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center justify-between mb-12 pb-10 border-b border-zinc-800">
+          <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center justify-between mb-12 pb-10 border-b border-blue-100">
             <div className="flex items-center gap-5">
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 via-blue-500 to-violet-600 flex items-center justify-center overflow-hidden shadow-2xl shadow-blue-900/30">
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-orange-500 to-blue-700 flex items-center justify-center overflow-hidden shadow-2xl shadow-orange-900/20">
                 <img
                   src="/logo.png"
                   alt="SmartOdisha"
@@ -986,11 +986,11 @@ export default function Home() {
               </div>
               <div className="flex flex-col">
                 <span className="text-2xl font-black tracking-tighter leading-none">
-                  <span className="text-emerald-400">SMART</span>
-                  <span className="text-white">ODISHA</span>
+                  <span className="text-blue-700">SMART</span>
+                  <span className="text-orange-500">ODISHA</span>
                 </span>
-                <span className="text-[11px] font-semibold text-zinc-400 tracking-widest mt-1" style={{ 
-                  background: 'linear-gradient(90deg, #10b981, #3b82f6, #8b5cf6, #10b981)', 
+                <span className="text-[11px] font-semibold text-gray-500 tracking-widest mt-1" style={{ 
+                  background: 'linear-gradient(90deg, #f97316, #1e3a8a, #f97316)', 
                   backgroundSize: '300% 100%', 
                   WebkitBackgroundClip: 'text', 
                   WebkitTextFillColor: 'transparent', 
@@ -1000,17 +1000,17 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap gap-4 items-center">
-              <Link to="/business/login" className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-blue-600 rounded-xl text-white text-xs font-black uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all shadow-xl shadow-emerald-900/30">
+              <Link to="/business/login" className="px-6 py-3 bg-gradient-to-r from-orange-500 to-blue-700 rounded-xl text-white text-xs font-black uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all shadow-xl shadow-orange-900/20">
                 Seller Login
               </Link>
-              <a href={`mailto:${CONFIG.SUPPORT_EMAIL}`} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
+              <a href={`mailto:${CONFIG.SUPPORT_EMAIL}`} className="flex items-center gap-2 text-gray-600 hover:text-orange-500 transition-colors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
                 <span className="text-sm font-semibold">Email Us</span>
               </a>
-              <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
+              <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-600 hover:text-orange-500 transition-colors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                   <path d="M12 0C5.373 0 0 5.373 0 12c0 2.646.917 5.082 2.477 7.053L0 24l5.247-1.342C7.317 23.678 9.585 24 12 24c6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z"/>
@@ -1020,51 +1020,51 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
             <div>
-              <h4 className="text-[11px] font-black text-white uppercase tracking-widest mb-5">Quick Links</h4>
+              <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Quick Links</h4>
               <div className="flex flex-col gap-3">
-                <Link to="/products" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">Shop Products</Link>
-                <Link to="/about" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">About Us</Link>
-                <Link to="/orders" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">Track Order</Link>
-                <Link to="/business/request" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">Become a Seller</Link>
+                <Link to="/products" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Shop Products</Link>
+                <Link to="/about" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">About Us</Link>
+                <Link to="/orders" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Track Order</Link>
+                <Link to="/business/request" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Become a Seller</Link>
               </div>
             </div>
             
             <div>
-              <h4 className="text-[11px] font-black text-white uppercase tracking-widest mb-5">Support</h4>
+              <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Support</h4>
               <div className="flex flex-col gap-3">
-                <Link to="/contact" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">Contact Us</Link>
-                <Link to="/orders" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">My Orders</Link>
-                <Link to="/wishlist" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">Wishlist</Link>
+                <Link to="/contact" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Contact Us</Link>
+                <Link to="/orders" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">My Orders</Link>
+                <Link to="/wishlist" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Wishlist</Link>
               </div>
             </div>
 
             <div>
-              <h4 className="text-[11px] font-black text-white uppercase tracking-widest mb-5">Legal</h4>
+              <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Legal</h4>
               <div className="flex flex-col gap-3">
-                <Link to="/privacy-policy" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">Privacy Policy</Link>
-                <Link to="/terms-of-service" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">Terms of Service</Link>
-                <Link to="/contact" className="text-zinc-400 text-sm font-semibold hover:text-white transition-colors">Return Policy</Link>
+                <Link to="/privacy-policy" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Privacy Policy</Link>
+                <Link to="/terms-of-service" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Terms of Service</Link>
+                <Link to="/contact" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Return Policy</Link>
               </div>
             </div>
 
             <div>
-              <h4 className="text-[11px] font-black text-white uppercase tracking-widest mb-5">Follow Us</h4>
+              <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Follow Us</h4>
               <div className="flex gap-4">
-                <a href="https://instagram.com/smartodisha.in?igsh=N3c3NnlhOGVmZXho" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all">
+                <a href="https://instagram.com/smartodisha.in?igsh=N3c3NnlhOGVmZXho" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-gray-600 hover:bg-orange-50 hover:text-orange-500 hover:border-orange-200 transition-all">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
                   </svg>
                 </a>
-                <a href="https://facebook.com/share/18EgsKKhie/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all">
+                <a href="https://facebook.com/share/18EgsKKhie/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-gray-600 hover:bg-orange-50 hover:text-orange-500 hover:border-orange-200 transition-all">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12.073c0 6.001 4.388 10.966 10.125 11.855v-8.383h-3.047v-3.472h3.047V9.413c0-3.007 1.789-4.668 4.533-4.668 1.31 0 2.686.238 2.686.238v2.953h-1.514c-1.488 0-1.952.925-1.952 1.874v2.256h3.321l-.531 3.472h-2.79v8.383c5.736-.889 10.125-5.854 10.125-11.855z"/>
                   </svg>
                 </a>
-                <a href="https://linkedin.com/in/Smart-Odisha-774a30415?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:bg-zinc-800 hover:text-white transition-all">
+                <a href="https://linkedin.com/in/Smart-Odisha-774a30415?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-gray-600 hover:bg-orange-50 hover:text-orange-500 hover:border-orange-200 transition-all">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M20.447 20.452h-3.554V14.89c0-1.337-.026-3.057-1.86-3.057-1.864 0-2.151 1.453-2.151 2.963v5.647H9.322V9h3.414v1.561h.046c.477-.9 1.637-1.859 3.37-1.859 3.601 0 4.268 2.37 4.268 5.455v6.295zM5.337 7.433a2.06 2.06 0 0 1-2.063-2.065c0-1.141.92-2.064 2.063-2.064 1.142 0 2.064.923 2.064 2.064 0 1.142-.922 2.065-2.064 2.065zM7.105 20.452H3.568V9h3.537v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
                   </svg>
@@ -1073,7 +1073,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-semibold text-zinc-500 uppercase tracking-widest">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">
             <span>© {new Date().getFullYear()} SmartOdisha. All rights reserved.</span>
             <span>Made with ❤️ in Odisha</span>
           </div>

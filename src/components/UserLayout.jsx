@@ -16,7 +16,6 @@ export default function UserLayout() {
   const { cartCount } = useCart()
   const { wishlistCount } = useWishlist()
   const { user, logout } = useAuth()
-  const [searchQuery, setSearchQuery] = useState('')
 
   // Hide bottom nav on these paths
   const hideBottomNav = ['/products', '/cart', '/profile', '/orders', '/enquiry', '/checkout', '/about', '/login', '/signup', '/reset-password'].some(path => {
@@ -37,13 +36,6 @@ export default function UserLayout() {
     window.location.reload()
   }
 
-  const handleSearch = (e) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(searchQuery.trim())}`
-    }
-  }
-
   useEffect(() => {}, [location.pathname])
 
   return (
@@ -52,12 +44,6 @@ export default function UserLayout() {
         @keyframes gradientMove {
           0% { background-position: 0% 50%; }
           100% { background-position: 200% 50%; }
-        }
-        .header-search-input {
-          border: none;
-          outline: none;
-          width: 100%;
-          font-size: 14px;
         }
         .nav-link-active {
           color: #2563eb;
@@ -94,28 +80,6 @@ export default function UserLayout() {
                 </div>
               </Link>
             </div>
-
-            {/* Search Bar */}
-            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-xl mx-4">
-              <div className="flex items-center w-full bg-gray-50 border border-gray-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-orange-500/30 focus-within:border-orange-500/50 transition-all">
-                <input
-                  type="text"
-                  placeholder="Search for products, brands and more..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="header-search-input px-4 py-3 bg-transparent text-gray-900 placeholder-gray-400"
-                />
-                <button
-                  type="submit"
-                  className="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3 text-white font-bold shadow-lg shadow-orange-900/20"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <circle cx="11" cy="11" r="7" strokeWidth="2" />
-                    <path d="M21 21l-4.3-4.3" strokeWidth="2" strokeLinecap="round" />
-                  </svg>
-                </button>
-              </div>
-            </form>
 
             {/* Right Section: Auth, Wishlist, Cart */}
             <div className="flex items-center gap-2">
