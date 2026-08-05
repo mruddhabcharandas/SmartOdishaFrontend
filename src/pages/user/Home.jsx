@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <div className="home-root min-h-screen">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         * { box-sizing: border-box; }
         body { font-family: 'DM Sans', sans-serif; }
         
@@ -58,14 +58,20 @@ export default function Home() {
           50% { transform: translateY(-10px); }
         }
         
+        @keyframes gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
         .home-root {
-          font-family: 'DM Sans', sans-serif;
-          background: #f0f9ff;
-          color: #1e1b2e;
+          font-family: 'Inter', sans-serif;
+          background: #f8fafc;
+          color: #0f172a;
         }
 
         .top-ticker {
-          background: linear-gradient(90deg, #1e3a8a, #f97316);
+          background: linear-gradient(90deg, #0f172a, #1e3a8a, #4f46e5);
           color: white;
           padding: 8px 20px;
           font-size: 12px;
@@ -84,10 +90,11 @@ export default function Home() {
         .ticker-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
 
         .hero {
-          color: #1e1b2e;
-          padding: 40px 20px 60px;
+          color: white;
+          padding: 80px 20px 100px;
           position: relative;
           overflow: hidden;
+          background: linear-gradient(to bottom right, #0f172a, #1e3a8a, #312e81);
         }
         .hero::before {
           content: '';
@@ -98,7 +105,7 @@ export default function Home() {
           width: 800px;
           height: 500px;
           border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(30,58,138,0.07), transparent 65%);
+          background: radial-gradient(ellipse, rgba(99,102,241,0.15), transparent 65%);
           pointer-events: none;
         }
         .hero-inner {
@@ -120,39 +127,44 @@ export default function Home() {
         .hero-left {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 24px;
         }
         .hero-eyebrow {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 6px 16px;
-          background: rgba(30,58,138,0.1);
-          border: 1px solid rgba(30,58,138,0.2);
+          padding: 8px 18px;
+          background: rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(10px);
           border-radius: 100px;
           font-size: 11px;
           font-weight: 700;
           width: fit-content;
           letter-spacing: 0.15em;
           text-transform: uppercase;
-          color: #f97316;
+          color: #a5b4fc;
         }
-        .hero-eyebrow span.dot { width: 5px; height: 5px; border-radius: 50%; background: #f97316; box-shadow: 0 0 5px rgba(249,115,22,0.5); animation: pulse 2s ease infinite; }
-        @keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.7); } }
+        .hero-eyebrow span.dot { width: 5px; height: 5px; border-radius: 50%; background: #6366f1; box-shadow: 0 0 5px rgba(99,102,241,0.5); }
         .hero-title {
           font-family: 'Bebas Neue', sans-serif;
-          font-size: clamp(36px, 6vw, 64px);
+          font-size: clamp(38px, 6vw, 68px);
           line-height: 1.1;
           letter-spacing: 0.03em;
-          color: #1e1b2e;
+          color: white;
         }
         .hero-title .accent {
-          color: #f97316;
+          background: linear-gradient(90deg, #93c5fd, #a5b4fc, #c4b5fd);
+          background-size: 200% 200%;
+          -webkit-background-clip: text;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: gradient 8s ease infinite;
         }
         .hero-desc {
           font-size: 16px;
           line-height: 1.6;
-          color: #6b7280;
+          color: #94a3b8;
           max-width: 520px;
           font-weight: 500;
         }
@@ -170,22 +182,28 @@ export default function Home() {
           flex: 1;
           padding: 16px 20px;
           border-radius: 14px 0 0 14px;
-          border: 1px solid rgba(30,58,138,0.15);
+          border: 1px solid rgba(255,255,255,0.15);
           border-right: none;
           outline: none;
           font-size: 14px;
           font-weight: 500;
-          background: white;
-          color: #1e1b2e;
+          background: rgba(255,255,255,0.08);
+          backdrop-filter: blur(10px);
+          color: white;
+          transition: all 0.3s;
         }
         .hero-search-input::placeholder {
-          color: #9ca3af;
+          color: #94a3b8;
+        }
+        .hero-search-input:focus {
+          background: rgba(255,255,255,0.15);
+          border-color: rgba(99,102,241,0.5);
         }
         .hero-search-btn {
           padding: 16px 28px;
           border-radius: 0 14px 14px 0;
           border: none;
-          background: linear-gradient(135deg, #f97316, #1e3a8a);
+          background: linear-gradient(135deg, #3b82f6, #4f46e5, #7c3aed);
           color: white;
           font-weight: 800;
           font-size: 11px;
@@ -193,11 +211,11 @@ export default function Home() {
           text-transform: uppercase;
           cursor: pointer;
           transition: all 0.3s;
-          box-shadow: 0 8px 24px rgba(249,115,22,0.25);
+          box-shadow: 0 8px 24px rgba(79,70,229,0.3);
         }
         .hero-search-btn:hover {
           transform: translateY(-2px);
-          box-shadow: 0 14px 32px rgba(249,115,22,0.35);
+          box-shadow: 0 14px 32px rgba(79,70,229,0.4);
         }
         .hero-cta {
           display: flex;
@@ -205,7 +223,7 @@ export default function Home() {
           gap: 12px;
         }
         .btn-primary {
-          background: linear-gradient(135deg, #f97316, #1e3a8a);
+          background: linear-gradient(135deg, #3b82f6, #4f46e5, #7c3aed);
           color: white;
           border: none;
           padding: 15px 32px;
@@ -221,16 +239,16 @@ export default function Home() {
           justify-content: center;
           gap: 8px;
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 8px 24px rgba(249,115,22,0.25);
+          box-shadow: 0 8px 24px rgba(79,70,229,0.35);
         }
         .btn-primary:hover {
           transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 14px 32px rgba(249,115,22,0.35);
+          box-shadow: 0 14px 32px rgba(79,70,229,0.45);
         }
         .btn-secondary {
-          background: white;
-          color: #f97316;
-          border: 1px solid rgba(30,58,138,0.15);
+          background: rgba(255,255,255,0.08);
+          color: white;
+          border: 1px solid rgba(255,255,255,0.15);
           padding: 14px 30px;
           border-radius: 14px;
           font-weight: 800;
@@ -243,10 +261,12 @@ export default function Home() {
           align-items: center;
           justify-content: center;
           gap: 8px;
+          backdrop-filter: blur(10px);
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .btn-secondary:hover {
-          border-color: #f97316;
+          border-color: #6366f1;
+          background: rgba(255,255,255,0.15);
           transform: translateY(-2px);
         }
         .hero-right {
@@ -260,18 +280,18 @@ export default function Home() {
           max-width: 400px;
           height: auto;
           border-radius: 28px;
-          box-shadow: 0 20px 60px -20px rgba(30,58,138,0.3);
+          box-shadow: 0 20px 60px -20px rgba(79,70,229,0.3);
           transition: all 0.5s ease;
           animation: float 6s ease-in-out infinite;
         }
         .hero-image:hover {
           transform: scale(1.03);
-          box-shadow: 0 30px 80px -30px rgba(30,58,138,0.4);
+          box-shadow: 0 30px 80px -30px rgba(79,70,229,0.4);
         }
 
         .features {
           max-width: 1280px;
-          margin: 0 auto 0;
+          margin: 0 auto;
           padding: 0 20px;
           display: grid;
           grid-template-columns: repeat(2, 1fr);
@@ -284,14 +304,14 @@ export default function Home() {
         }
         .feature-card {
           background: white;
-          border: 1px solid rgba(30,58,138,0.1);
+          border: 1px solid rgba(79,70,229,0.1);
           border-radius: 18px;
           padding: 24px 20px;
           display: flex;
           flex-direction: column;
           align-items: center;
           gap: 12px;
-          box-shadow: 0 2px 12px rgba(30,58,138,0.04);
+          box-shadow: 0 2px 12px rgba(79,70,229,0.04);
           text-align: center;
           transition: all 0.3s ease;
           cursor: pointer;
@@ -304,25 +324,25 @@ export default function Home() {
         .feature-card:nth-child(3) { animation-delay: 0.2s; }
         .feature-card:nth-child(4) { animation-delay: 0.3s; }
         @keyframes fadeInUp { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform: translateY(0); } }
-        .feature-card::before { content: ''; position: absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.2), transparent); opacity:0; transition: opacity 0.2s; }
+        .feature-card::before { content: ''; position: absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(79,70,229,0.2), transparent); opacity:0; transition: opacity 0.2s; }
         .feature-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 6px 24px rgba(249,115,22,0.12);
-          border-color: rgba(249,115,22,0.2);
+          box-shadow: 0 6px 24px rgba(99,102,241,0.12);
+          border-color: rgba(99,102,241,0.2);
         }
         .feature-card:hover::before { opacity:1; }
         .feature-icon {
           width: 56px;
           height: 56px;
-          background: #f0f9ff;
-          border: 1px solid rgba(30,58,138,0.1);
+          background: #eef2ff;
+          border: 1px solid rgba(99,102,241,0.1);
           border-radius: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
         }
-        .feature-icon svg { width: 24px; height: 24px; color: #f97316; }
+        .feature-icon svg { width: 24px; height: 24px; color: #4f46e5; }
         .feature-text h4 {
           font-size: 14px;
           font-weight: 700;
@@ -361,12 +381,12 @@ export default function Home() {
           font-weight: 700;
           text-transform: uppercase;
           letter-spacing: 0.18em;
-          color: #f97316;
+          color: #4f46e5;
           display: flex;
           align-items: center;
           gap: 8px;
         }
-        .section-eyebrow::before { content: ''; width: 20px; height: 2px; background: rgba(30,58,138,0.35); border-radius: 2px; }
+        .section-eyebrow::before { content: ''; width: 20px; height: 2px; background: rgba(79,70,229,0.35); border-radius: 2px; }
         .section-title {
           font-family: 'Bebas Neue', sans-serif;
           font-size: clamp(24px, 4vw, 36px);
@@ -385,9 +405,9 @@ export default function Home() {
         .section-btn {
           padding: 10px 20px;
           background: white;
-          border: 1px solid rgba(30,58,138,0.15);
+          border: 1px solid rgba(79,70,229,0.15);
           border-radius: 12px;
-          color: #f97316;
+          color: #4f46e5;
           font-weight: 800;
           font-size: 11px;
           letter-spacing: 0.12em;
@@ -400,9 +420,9 @@ export default function Home() {
           gap: 6px;
         }
         .section-btn:hover {
-          background: #f97316;
+          background: #4f46e5;
           color: white;
-          border-color: #f97316;
+          border-color: #4f46e5;
           transform: translateY(-2px);
         }
 
@@ -419,29 +439,29 @@ export default function Home() {
         }
         .store-card {
           background: white;
-          border: 1px solid rgba(30,58,138,0.1);
+          border: 1px solid rgba(79,70,229,0.1);
           border-radius: 18px;
           overflow: hidden;
           cursor: pointer;
           text-decoration: none;
           color: #1e1b2e;
           transition: all 0.3s ease;
-          box-shadow: 0 2px 12px rgba(30,58,138,0.04);
+          box-shadow: 0 2px 12px rgba(79,70,229,0.04);
           display: flex;
           flex-direction: column;
           position: relative;
         }
         .store-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 6px 24px rgba(249,115,22,0.12);
-          border-color: rgba(249,115,22,0.2);
+          box-shadow: 0 6px 24px rgba(99,102,241,0.12);
+          border-color: rgba(99,102,241,0.2);
         }
-        .store-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.2), transparent); opacity:0; transition: opacity 0.2s; }
+        .store-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(79,70,229,0.2), transparent); opacity:0; transition: opacity 0.2s; }
         .store-card:hover::before { opacity:1; }
         .store-image-container {
           width: 100%;
           aspect-ratio: 4/3;
-          background: #f0f9ff;
+          background: #f8fafc;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -497,29 +517,29 @@ export default function Home() {
         }
         .product-card {
           background: white;
-          border: 1px solid rgba(30,58,138,0.1);
+          border: 1px solid rgba(79,70,229,0.1);
           border-radius: 18px;
           overflow: hidden;
           cursor: pointer;
           text-decoration: none;
           color: #1e1b2e;
           transition: all 0.3s ease;
-          box-shadow: 0 2px 12px rgba(30,58,138,0.04);
+          box-shadow: 0 2px 12px rgba(79,70,229,0.04);
           display: flex;
           flex-direction: column;
           position: relative;
         }
         .product-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 6px 24px rgba(249,115,22,0.12);
-          border-color: rgba(249,115,22,0.2);
+          box-shadow: 0 6px 24px rgba(99,102,241,0.12);
+          border-color: rgba(99,102,241,0.2);
         }
-        .product-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.2), transparent); opacity:0; transition: opacity 0.2s; }
+        .product-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(79,70,229,0.2), transparent); opacity:0; transition: opacity 0.2s; }
         .product-card:hover::before { opacity:1; }
         .product-image-container {
           width: 100%;
           aspect-ratio: 1;
-          background: #f0f9ff;
+          background: #f8fafc;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -553,7 +573,7 @@ export default function Home() {
           font-family: 'Bebas Neue', sans-serif;
           font-size: 20px;
           font-weight: 700;
-          color: #f97316;
+          color: #4f46e5;
           letter-spacing: 0.03em;
         }
         .product-mrp {
@@ -563,7 +583,7 @@ export default function Home() {
         }
 
         .offers {
-          background: white;
+          background: #f8fafc;
         }
         .offers-grid {
           display: grid;
@@ -576,13 +596,13 @@ export default function Home() {
           border-radius: 18px;
           overflow: hidden;
           aspect-ratio: 16/9;
-          background: linear-gradient(135deg, #1e3a8a, #f97316);
+          background: linear-gradient(135deg, #0f172a, #1e3a8a, #4f46e5);
           box-shadow: 0 4px 16px rgba(30,58,138,0.15);
           transition: all 0.3s ease;
         }
         .offer-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 8px 32px rgba(249,115,22,0.25);
+          box-shadow: 0 8px 32px rgba(99,102,241,0.25);
         }
         .offer-card::before {
           content: '';
@@ -608,7 +628,7 @@ export default function Home() {
         .offer-tag {
           display: inline-flex;
           background: white;
-          color: #f97316;
+          color: #4f46e5;
           padding: 6px 16px;
           border-radius: 100px;
           font-size: 11px;
@@ -636,7 +656,7 @@ export default function Home() {
           width: fit-content;
           margin-top: 20px;
           background: white;
-          color: #f97316;
+          color: #4f46e5;
           border: none;
           padding: 12px 24px;
           border-radius: 12px;
@@ -656,7 +676,7 @@ export default function Home() {
         }
 
         .ticker {
-          background: linear-gradient(90deg, #1e3a8a, #f97316);
+          background: linear-gradient(90deg, #0f172a, #1e3a8a, #4f46e5);
           padding: 12px 0;
           overflow: hidden;
         }
@@ -681,7 +701,7 @@ export default function Home() {
         }
         .ticker-highlight {
           background: white;
-          color: #f97316;
+          color: #4f46e5;
           padding: 6px 18px;
           border-radius: 100px;
           font-weight: 800;
@@ -691,7 +711,7 @@ export default function Home() {
         }
 
         .stats {
-          background: linear-gradient(135deg, #1e3a8a, #f97316);
+          background: linear-gradient(135deg, #0f172a, #1e3a8a, #4f46e5);
           color: white;
           padding: 60px 20px;
           position: relative;
@@ -734,7 +754,7 @@ export default function Home() {
 
         footer {
           background: white;
-          border-top: 1px solid rgba(30,58,138,0.1);
+          border-top: 1px solid rgba(79,70,229,0.1);
         }
       `}</style>
 
@@ -748,7 +768,12 @@ export default function Home() {
       </div>
 
       {/* Hero */}
-      <section className="hero">
+      <section className="hero relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl floating"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl floating" style={{ animationDelay: '3s' }}></div>
+        </div>
         <div className="hero-inner">
           <div className="hero-left">
             <div className="hero-eyebrow">
@@ -973,11 +998,11 @@ export default function Home() {
 
 
       {/* Footer */}
-      <footer className="bg-white border-t border-blue-100 py-16">
+      <footer className="bg-white border-t border-indigo-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center justify-between mb-12 pb-10 border-b border-blue-100">
+          <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center justify-between mb-12 pb-10 border-b border-indigo-50">
             <div className="flex items-center gap-5">
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-orange-500 to-blue-700 flex items-center justify-center overflow-hidden shadow-2xl shadow-orange-900/20">
+              <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center overflow-hidden shadow-2xl shadow-indigo-900/10">
                 <img
                   src="/logo.png"
                   alt="SmartOdisha"
@@ -986,11 +1011,11 @@ export default function Home() {
               </div>
               <div className="flex flex-col">
                 <span className="text-2xl font-black tracking-tighter leading-none">
-                  <span className="text-blue-700">SMART</span>
-                  <span className="text-orange-500">ODISHA</span>
+                  <span className="text-indigo-700">SMART</span>
+                  <span className="text-blue-600">ODISHA</span>
                 </span>
-                <span className="text-[11px] font-semibold text-gray-500 tracking-widest mt-1" style={{ 
-                  background: 'linear-gradient(90deg, #f97316, #1e3a8a, #f97316)', 
+                <span className="text-[11px] font-semibold text-gray-400 tracking-widest mt-1" style={{ 
+                  background: 'linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6, #3b82f6)', 
                   backgroundSize: '300% 100%', 
                   WebkitBackgroundClip: 'text', 
                   WebkitTextFillColor: 'transparent', 
@@ -1000,17 +1025,17 @@ export default function Home() {
             </div>
 
             <div className="flex flex-wrap gap-4 items-center">
-              <Link to="/business/login" className="px-6 py-3 bg-gradient-to-r from-orange-500 to-blue-700 rounded-xl text-white text-xs font-black uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all shadow-xl shadow-orange-900/20">
+              <Link to="/business/login" className="px-6 py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-xl text-white text-xs font-black uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all shadow-xl shadow-indigo-900/20">
                 Seller Login
               </Link>
-              <a href={`mailto:${CONFIG.SUPPORT_EMAIL}`} className="flex items-center gap-2 text-gray-600 hover:text-orange-500 transition-colors">
+              <a href={`mailto:${CONFIG.SUPPORT_EMAIL}`} className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
                 <span className="text-sm font-semibold">Email Us</span>
               </a>
-              <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-600 hover:text-orange-500 transition-colors">
+              <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                   <path d="M12 0C5.373 0 0 5.373 0 12c0 2.646.917 5.082 2.477 7.053L0 24l5.247-1.342C7.317 23.678 9.585 24 12 24c6.627 0 12-5.373 12-12 0-6.627-5.373-12-12-12z"/>
@@ -1024,47 +1049,47 @@ export default function Home() {
             <div>
               <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Quick Links</h4>
               <div className="flex flex-col gap-3">
-                <Link to="/products" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Shop Products</Link>
-                <Link to="/about" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">About Us</Link>
-                <Link to="/orders" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Track Order</Link>
-                <Link to="/business/request" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Become a Seller</Link>
+                <Link to="/products" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Shop Products</Link>
+                <Link to="/about" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">About Us</Link>
+                <Link to="/orders" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Track Order</Link>
+                <Link to="/business/request" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Become a Seller</Link>
               </div>
             </div>
             
             <div>
               <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Support</h4>
               <div className="flex flex-col gap-3">
-                <Link to="/contact" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Contact Us</Link>
-                <Link to="/orders" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">My Orders</Link>
-                <Link to="/wishlist" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Wishlist</Link>
+                <Link to="/contact" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Contact Us</Link>
+                <Link to="/orders" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">My Orders</Link>
+                <Link to="/wishlist" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Wishlist</Link>
               </div>
             </div>
 
             <div>
               <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Legal</h4>
               <div className="flex flex-col gap-3">
-                <Link to="/privacy-policy" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Privacy Policy</Link>
-                <Link to="/terms-of-service" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Terms of Service</Link>
-                <Link to="/contact" className="text-gray-600 text-sm font-semibold hover:text-orange-500 transition-colors">Return Policy</Link>
+                <Link to="/privacy-policy" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Privacy Policy</Link>
+                <Link to="/terms-of-service" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Terms of Service</Link>
+                <Link to="/contact" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Return Policy</Link>
               </div>
             </div>
 
             <div>
               <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Follow Us</h4>
               <div className="flex gap-4">
-                <a href="https://instagram.com/smartodisha.in?igsh=N3c3NnlhOGVmZXho" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-gray-600 hover:bg-orange-50 hover:text-orange-500 hover:border-orange-200 transition-all">
+                <a href="https://instagram.com/smartodisha.in?igsh=N3c3NnlhOGVmZXho" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 hover:border-indigo-200 transition-all">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
                     <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
                   </svg>
                 </a>
-                <a href="https://facebook.com/share/18EgsKKhie/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-gray-600 hover:bg-orange-50 hover:text-orange-500 hover:border-orange-200 transition-all">
+                <a href="https://facebook.com/share/18EgsKKhie/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 hover:border-indigo-200 transition-all">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12.073c0 6.001 4.388 10.966 10.125 11.855v-8.383h-3.047v-3.472h3.047V9.413c0-3.007 1.789-4.668 4.533-4.668 1.31 0 2.686.238 2.686.238v2.953h-1.514c-1.488 0-1.952.925-1.952 1.874v2.256h3.321l-.531 3.472h-2.79v8.383c5.736-.889 10.125-5.854 10.125-11.855z"/>
                   </svg>
                 </a>
-                <a href="https://linkedin.com/in/Smart-Odisha-774a30415?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center text-gray-600 hover:bg-orange-50 hover:text-orange-500 hover:border-orange-200 transition-all">
+                <a href="https://linkedin.com/in/Smart-Odisha-774a30415?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-gray-600 hover:bg-indigo-100 hover:text-indigo-600 hover:border-indigo-200 transition-all">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M20.447 20.452h-3.554V14.89c0-1.337-.026-3.057-1.86-3.057-1.864 0-2.151 1.453-2.151 2.963v5.647H9.322V9h3.414v1.561h.046c.477-.9 1.637-1.859 3.37-1.859 3.601 0 4.268 2.37 4.268 5.455v6.295zM5.337 7.433a2.06 2.06 0 0 1-2.063-2.065c0-1.141.92-2.064 2.063-2.064 1.142 0 2.064.923 2.064 2.064 0 1.142-.922 2.065-2.064 2.065zM7.105 20.452H3.568V9h3.537v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/>
                   </svg>

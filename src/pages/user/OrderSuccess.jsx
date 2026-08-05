@@ -92,7 +92,7 @@ export default function OrderSuccess() {
             width: 48px;
             height: 48px;
             border: 4px solid rgba(249,115,22,0.1);
-            border-top: 4px solid #f97316;
+            border-top: 4px solid #4f46e5;
             border-radius: 50%;
             animation: osSpin 1s linear infinite;
             margin-bottom: 16px;
@@ -117,7 +117,7 @@ export default function OrderSuccess() {
           <div className="text-4xl mb-4">⚠️</div>
           <h1 className="text-xl font-bold text-white mb-2">Order Not Found</h1>
           <p className="text-slate-400 mb-6">We couldn't retrieve the details for this order. It might still be processing.</p>
-          <Link to="/" className="inline-block bg-orange-500 text-white font-bold py-3 px-8 rounded-xl hover:bg-orange-600 transition-colors">
+          <Link to="/" className="inline-block bg-indigo-600 text-white font-bold py-3 px-8 rounded-xl hover:bg-indigo-700 transition-colors">
             Go Home
           </Link>
         </div>
@@ -198,7 +198,7 @@ export default function OrderSuccess() {
           margin-bottom: 8px;
           line-height: 1;
         }
-        .os-title span { color: #f97316; }
+        .os-title span { color: #4f46e5; }
         .os-subtitle {
           text-align: center;
           font-size: 14px;
@@ -301,8 +301,8 @@ export default function OrderSuccess() {
           box-shadow: 0 0 15px rgba(16,185,129,0.4);
         }
         .os-timeline-step.current .os-step-node {
-          background: #f97316;
-          border-color: #f97316;
+          background: #4f46e5;
+          border-color: #4f46e5;
           color: white;
           box-shadow: 0 0 15px rgba(249,115,22,0.4);
           animation: pulseNode 1.5s infinite alternate;
@@ -314,7 +314,7 @@ export default function OrderSuccess() {
           text-align: center;
         }
         .os-timeline-step.active .os-step-lbl { color: #10b981; }
-        .os-timeline-step.current .os-step-lbl { color: #f97316; }
+        .os-timeline-step.current .os-step-lbl { color: #4f46e5; }
 
         .os-sect-title {
           font-size: 16px;
@@ -328,7 +328,7 @@ export default function OrderSuccess() {
         .os-sect-title span {
           width: 8px; height: 8px;
           border-radius: 50%;
-          background: #f97316;
+          background: #4f46e5;
         }
 
         .os-item-card {
@@ -431,7 +431,7 @@ export default function OrderSuccess() {
           color: #fff;
         }
         .os-sum-val.green { color: #10b981; font-weight: 700; }
-        .os-sum-val.orange { color: #f97316; font-weight: 800; }
+        .os-sum-val.orange { color: #4f46e5; font-weight: 800; }
 
         .os-actions-row {
           display: grid;
@@ -455,7 +455,7 @@ export default function OrderSuccess() {
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .os-btn-primary {
-          background: #f97316;
+          background: #4f46e5;
           color: white;
           box-shadow: 0 8px 24px rgba(249,115,22,0.2);
         }
@@ -614,7 +614,7 @@ export default function OrderSuccess() {
                     <span className="os-sum-val orange">₹{Number(advancePaid).toLocaleString('en-IN')}</span>
                   </div>
                   <div className="os-sum-row" style={{background:'rgba(249,115,22,0.05)', borderRadius:'10px', padding:'8px 10px', marginTop: '6px'}}>
-                    <span style={{fontWeight: 700, color:'#f97316'}}>Due on Delivery (COD)</span>
+                    <span style={{fontWeight: 700, color:'#4f46e5'}}>Due on Delivery (COD)</span>
                     <span className="os-sum-val orange">₹{Number(remainingCod).toLocaleString('en-IN')}</span>
                   </div>
                 </>

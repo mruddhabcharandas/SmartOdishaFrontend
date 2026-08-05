@@ -588,15 +588,15 @@ export default function Enquiry() {
     <>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap');
-        .ct-empty-root{font-family:'DM Sans',sans-serif;background:#f0f9ff;min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;}
-        .ct-empty-root::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(30,58,138,.04)1px,transparent 1px),linear-gradient(90deg,rgba(30,58,138,.04)1px,transparent 1px);background-size:60px 60px;}
-        .ct-empty-box{background:white;border:1px solid rgba(30,58,138,.14);border-radius:28px;padding:56px 40px;text-align:center;max-width:400px;width:100%;position:relative;overflow:hidden;box-shadow:0 4px 32px rgba(30,58,138,.07);animation:ctUp .5s ease both;}
-        .ct-empty-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #f97316, #f97316);}
-        .ct-empty-ico{width:80px;height:80px;border-radius:24px;background:#f0f9ff;border:1px solid rgba(30,58,138,.18);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 24px;}
-        .ct-empty-h{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#1e1b2e;letter-spacing:.03em;margin-bottom:10px;}
-        .ct-empty-p{font-size:14px;color:#9ca3af;margin-bottom:32px;line-height:1.6;}
+        .ct-empty-root{font-family:'DM Sans',sans-serif;background:#f8fafc;min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;}
+        .ct-empty-root::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(79,70,229,.04)1px,transparent 1px),linear-gradient(90deg,rgba(79,70,229,.04)1px,transparent 1px);background-size:60px 60px;}
+        .ct-empty-box{background:white;border:1px solid rgba(79,70,229,.14);border-radius:28px;padding:56px 40px;text-align:center;max-width:400px;width:100%;position:relative;overflow:hidden;box-shadow:0 4px 32px rgba(79,70,229,.07);animation:ctUp .5s ease both;}
+        .ct-empty-box::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg, #4f46e5, #4f46e5);}
+        .ct-empty-ico{width:80px;height:80px;border-radius:24px;background:#f8fafc;border:1px solid rgba(79,70,229,.18);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 24px;}
+        .ct-empty-h{font-family:'Bebas Neue',sans-serif;font-size:36px;color:#0f172a;letter-spacing:.03em;margin-bottom:10px;}
+        .ct-empty-p{font-size:14px;color:#94a3b8;margin-bottom:32px;line-height:1.6;}
         .ct-empty-btn{
-          display:inline-flex;align-items:center;gap:10px;background:#f97316;color:white;
+          display:inline-flex;align-items:center;gap:10px;background:#4f46e5;color:white;
           padding:15px 36px;border-radius:14px;font-size:11px;font-weight:800;
           letter-spacing:.14em;text-transform:uppercase;text-decoration:none;
           box-shadow:0 8px 24px rgba(124,58,237,.28);
@@ -709,7 +709,7 @@ export default function Enquiry() {
             border: 3px solid transparent;
             border-radius: 50%;
             animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-            border-top-color: #f97316;
+            border-top-color: #4f46e5;
           }
           @keyframes verifyIn {
             from { opacity: 0; transform: translateY(24px) scale(0.96); }
@@ -752,70 +752,70 @@ export default function Enquiry() {
 
         .ct-root{
           font-family:'DM Sans',system-ui,sans-serif;
-          background:#f0f9ff; min-height:100vh; color:#1e1b2e;
+          background:#f8fafc; min-height:100vh; color:#0f172a;
           position:relative; overflow-x:hidden;
           padding-bottom:32px;
         }
         .ct-root::before{
           content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
-          background-image:linear-gradient(rgba(30,58,138,.04)1px,transparent 1px),linear-gradient(90deg,rgba(30,58,138,.04)1px,transparent 1px);
+          background-image:linear-gradient(rgba(79,70,229,.04)1px,transparent 1px),linear-gradient(90deg,rgba(79,70,229,.04)1px,transparent 1px);
           background-size:60px 60px;
         }
-        .ct-blob{position:fixed;top:-180px;left:50%;transform:translateX(-50%);width:800px;height:500px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(ellipse,rgba(30,58,138,.07),transparent 65%);}
+        .ct-blob{position:fixed;top:-180px;left:50%;transform:translateX(-50%);width:800px;height:500px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(ellipse,rgba(79,70,229,.07),transparent 65%);}
 
         .ct-wrap{max-width:1200px;margin:0 auto;padding:36px 16px 24px;position:relative;z-index:1;}
         @media(min-width:600px){.ct-wrap{padding:48px 24px 24px;}}
 
         .ct-hd{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:32px;animation:ctUp .5s ease both;}
-        .ct-eyebrow{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:100px;background:rgba(30,58,138,.1);border:1px solid rgba(30,58,138,.22);color:#f97316;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;}
-        .ct-edot{width:5px;height:5px;border-radius:50%;background:#f97316;box-shadow:0 0 5px rgba(124,58,237,.5);animation:ctPulse 2s ease infinite;}
+        .ct-eyebrow{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;border-radius:100px;background:rgba(79,70,229,.1);border:1px solid rgba(79,70,229,.22);color:#4f46e5;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;margin-bottom:10px;}
+        .ct-edot{width:5px;height:5px;border-radius:50%;background:#4f46e5;box-shadow:0 0 5px rgba(124,58,237,.5);animation:ctPulse 2s ease infinite;}
         @keyframes ctPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-        .ct-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,50px);color:#1e1b2e;letter-spacing:.02em;line-height:1;margin-bottom:6px;}
-        .ct-h1 span{color:#f97316;}
-        .ct-sub{font-size:13px;color:#6b7280;}
+        .ct-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,5vw,50px);color:#0f172a;letter-spacing:.02em;line-height:1;margin-bottom:6px;}
+        .ct-h1 span{color:#4f46e5;}
+        .ct-sub{font-size:13px;color:#64748b;}
 
         .ct-grid{display:grid;grid-template-columns:1fr;gap:20px;}
         @media(min-width:960px){.ct-grid{grid-template-columns:1fr 360px;align-items:start;gap:24px;}}
 
         .ct-item{
-          background:white; border:1px solid rgba(30,58,138,.1);
+          background:white; border:1px solid rgba(79,70,229,.1);
           border-radius:18px; padding:18px 20px;
           display:grid; grid-template-columns: 88px 1fr 120px; gap:16px; position:relative; overflow:hidden;
-          transition:all .25s; box-shadow:0 2px 12px rgba(30,58,138,.04);
+          transition:all .25s; box-shadow:0 2px 12px rgba(79,70,229,.04);
           animation:ctUp .5s ease both;
         }
-        .ct-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(30,58,138,.2),transparent);opacity:0;transition:opacity .2s;}
+        .ct-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(79,70,229,.2),transparent);opacity:0;transition:opacity .2s;}
         .ct-item:hover{border-color:rgba(124,58,237,.22);box-shadow:0 6px 24px rgba(124,58,237,.08);}
         .ct-item:hover::before{opacity:1;}
 
         @media(max-width:640px){
           .ct-item{grid-template-columns:72px 1fr;padding:14px;gap:12px;}
-          .ct-line-total{grid-column:1 / -1;flex-direction:row;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px dashed rgba(30,58,138,0.1);margin-top:4px;}
+          .ct-line-total{grid-column:1 / -1;flex-direction:row;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px dashed rgba(79,70,229,0.1);margin-top:4px;}
           .ct-line-price{font-size:18px;}
           .ct-item-name{font-size:13px;}
           .ct-qty-ctrl{scale:0.9;transform-origin:left;}
         }
 
-        .ct-img{width:88px;height:88px;flex-shrink:0;background:#f9f7ff;border:1px solid rgba(30,58,138,.1);border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+        .ct-img{width:88px;height:88px;flex-shrink:0;background:#f8fafc;border:1px solid rgba(79,70,229,.1);border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
         .ct-img img{width:100%;height:100%;object-fit:contain;padding:8px;}
         .ct-img-ph{font-size:28px;opacity:.3;}
         @media(max-width:500px){.ct-img{width:64px;height:64px;}}
 
         .ct-item-body{flex:1;min-width:0;}
-        .ct-item-name{font-size:15px;font-weight:700;color:#1e1b2e;line-height:1.3;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+        .ct-item-name{font-size:15px;font-weight:700;color:#0f172a;line-height:1.3;margin-bottom:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
         .ct-item-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;}
-        .ct-item-variant{font-size:10px;font-weight:700;color:#f97316;text-transform:uppercase;letter-spacing:.1em;background:rgba(124,58,237,.06);padding:2px 8px;border-radius:6px;border:1px solid rgba(124,58,237,.1);}
-        .ct-unit-price{font-size:13px;font-weight:600;color:#6b7280;}
-        .ct-delivery{font-size:11px;color:#9ca3af;margin-bottom:10px;}
+        .ct-item-variant{font-size:10px;font-weight:700;color:#4f46e5;text-transform:uppercase;letter-spacing:.1em;background:rgba(124,58,237,.06);padding:2px 8px;border-radius:6px;border:1px solid rgba(124,58,237,.1);}
+        .ct-unit-price{font-size:13px;font-weight:600;color:#64748b;}
+        .ct-delivery{font-size:11px;color:#94a3b8;margin-bottom:10px;}
         .ct-delivery b{color:#059669;}
 
         .ct-qty-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
-        .ct-qty-ctrl{display:inline-flex;align-items:center;background:white;border:1.5px solid rgba(30,58,138,.25);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(124,58,237,0.06);}
-        .ct-qty-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#f97316;background:none;border:none;cursor:pointer;transition:all .2s cubic-bezier(0.4,0,0.2,1);font-family:'DM Sans',sans-serif;}
-        .ct-qty-btn:hover:not(:disabled){background:rgba(30,58,138,.08);color:#6d28d9;}
+        .ct-qty-ctrl{display:inline-flex;align-items:center;background:white;border:1.5px solid rgba(79,70,229,.25);border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(124,58,237,0.06);}
+        .ct-qty-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#4f46e5;background:none;border:none;cursor:pointer;transition:all .2s cubic-bezier(0.4,0,0.2,1);font-family:'DM Sans',sans-serif;}
+        .ct-qty-btn:hover:not(:disabled){background:rgba(79,70,229,.08);color:#6d28d9;}
         .ct-qty-btn:active:not(:disabled){transform:scale(0.9);}
         .ct-qty-btn:disabled{opacity:.3;cursor:not-allowed;}
-        .ct-qty-val{width:44px;text-align:center;font-size:14px;font-weight:800;color:#1e1b2e;border-left:1px solid rgba(30,58,138,.12);border-right:1px solid rgba(30,58,138,.12);line-height:36px;background:white;border-top:none;border-bottom:none;outline:none;}
+        .ct-qty-val{width:44px;text-align:center;font-size:14px;font-weight:800;color:#0f172a;border-left:1px solid rgba(79,70,229,.12);border-right:1px solid rgba(79,70,229,.12);line-height:36px;background:white;border-top:none;border-bottom:none;outline:none;}
         .ct-action-btn{font-size:11px;font-weight:800;letter-spacing:.08em;background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:8px;font-family:'DM Sans',sans-serif;transition:all .25s cubic-bezier(0.4,0,0.2,1);}
         .ct-action-btn.remove{color:#ef4444;background:rgba(239,68,68,.05);}
         .ct-action-btn.remove:hover{color:white;background:#ef4444;transform:translateY(-1px);box-shadow:0 4px 12px rgba(239,68,68,.2);}
@@ -831,30 +831,30 @@ export default function Enquiry() {
         .ct-tier-max{font-size:11px;font-weight:700;color:#059669;}
 
         .ct-line-total{text-align:right;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-start;gap:4px;}
-        .ct-line-price{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#f97316;letter-spacing:.03em;}
+        .ct-line-price{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#4f46e5;letter-spacing:.03em;}
         .ct-line-unlock{font-size:10px;font-weight:700;color:#d97706;text-align:right;max-width:120px;line-height:1.4;}
         @media(max-width:500px){.ct-line-total{flex-direction:row;align-items:center;justify-content:space-between;}}
 
         .ct-section{background:white;border:1px solid rgba(15,23,42,.1);border-radius:16px;padding:20px;margin-bottom:14px;animation:ctUp .5s ease both;box-shadow:0 1px 10px rgba(15,23,42,.05);}
         .ct-section-title{font-size:16px;font-weight:800;color:#0f172a;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-        .ct-section-title span{width:26px;height:26px;border-radius:10px;background:linear-gradient(135deg,#f97316,#1e40af);display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:800;}
+        .ct-section-title span{width:26px;height:26px;border-radius:10px;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:800;}
 
         .ct-address-option{border:2px solid rgba(15,23,42,.12);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;margin-bottom:10px;}
-        .ct-address-option.selected{border-color:#f97316;background:rgba(249,115,22,.06);box-shadow:0 0 0 1px rgba(249,115,22,.1);}
-        .ct-address-option:hover{border-color:rgba(249,115,22,.4);}
+        .ct-address-option.selected{border-color:#4f46e5;background:rgba(79,70,229,.06);box-shadow:0 0 0 1px rgba(79,70,229,.1);}
+        .ct-address-option:hover{border-color:rgba(79,70,229,.4);}
         .ct-address-name{font-weight:800;color:#0f172a;margin-bottom:4px;}
         .ct-address-text{font-size:13px;color:#64748b;line-height:1.6;}
         .ct-address-actions{display:flex;gap:8px;margin-top:12px;}
         .ct-address-btn{font-size:11px;font-weight:700;letter-spacing:.08em;padding:6px 12px;border-radius:8px;border:none;cursor:pointer;background:none;}
-        .ct-address-btn.edit{color:#1e40af;background:rgba(30,64,175,.06);}
+        .ct-address-btn.edit{color:#7c3aed;background:rgba(30,64,175,.06);}
         .ct-address-btn.delete{color:#dc2626;background:rgba(220,38,38,.06);}
         .ct-address-btn.default{color:#16a34a;background:rgba(22,163,74,.06);}
-        .ct-add-address-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:12px;border:2px dashed rgba(15,23,42,.2);background:white;color:#1e40af;font-size:12px;font-weight:800;letter-spacing:.08em;cursor:pointer;transition:all .2s;}
-        .ct-add-address-btn:hover{border-color:#f97316;color:#f97316;background:rgba(249,115,22,.04);}
+        .ct-add-address-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:12px;border:2px dashed rgba(15,23,42,.2);background:white;color:#7c3aed;font-size:12px;font-weight:800;letter-spacing:.08em;cursor:pointer;transition:all .2s;}
+        .ct-add-address-btn:hover{border-color:#4f46e5;color:#4f46e5;background:rgba(79,70,229,.04);}
 
         .ct-payment-option{border:2px solid rgba(15,23,42,.12);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px;}
-        .ct-payment-option.selected{border-color:#f97316;background:rgba(249,115,22,.06);box-shadow:0 0 0 1px rgba(249,115,22,.1);}
-        .ct-payment-option:hover{border-color:rgba(249,115,22,.4);}
+        .ct-payment-option.selected{border-color:#4f46e5;background:rgba(79,70,229,.06);box-shadow:0 0 0 1px rgba(79,70,229,.1);}
+        .ct-payment-option:hover{border-color:rgba(79,70,229,.4);}
         .ct-payment-icon{width:44px;height:44px;border-radius:12px;background:rgba(15,23,42,.05);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
         .ct-payment-info{flex:1;}
         .ct-payment-title{font-weight:800;color:#0f172a;margin-bottom:4px;}
@@ -867,7 +867,7 @@ export default function Enquiry() {
           animation:ctUp .5s ease both;
           @media(min-width:960px){position:sticky;top:24px;}
         }
-        .ct-summary::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#f97316,#1e40af,transparent);}
+        .ct-summary::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,transparent,#4f46e5,#7c3aed,transparent);}
         .ct-summary-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#0f172a;letter-spacing:.03em;margin-bottom:18px;}
 
         .ct-summary-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
@@ -878,7 +878,7 @@ export default function Enquiry() {
         .ct-summary-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(15,23,42,.1),transparent);margin:12px 0;}
         .ct-summary-total-row{display:flex;align-items:baseline;justify-content:space-between;}
         .ct-summary-total-label{font-size:13px;font-weight:800;color:#0f172a;text-transform:uppercase;letter-spacing:.08em;}
-        .ct-summary-total-val{font-family:'Bebas Neue',sans-serif;font-size:38px;color:#f97316;letter-spacing:.03em;}
+        .ct-summary-total-val{font-family:'Bebas Neue',sans-serif;font-size:38px;color:#4f46e5;letter-spacing:.03em;}
 
         .ct-savings-badge{display:flex;align-items:center;gap:10px;background:rgba(22,163,74,.06);border:1px solid rgba(22,163,74,.15);border-radius:12px;padding:14px 16px;margin-bottom:16px;}
         .ct-savings-ico{width:36px;height:36px;border-radius:10px;background:rgba(22,163,74,.12);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
@@ -886,10 +886,10 @@ export default function Enquiry() {
         .ct-savings-sub{font-size:11px;font-weight:500;color:#64748b;}
 
         .ct-min-progress{margin:16px 0;}
-        .ct-min-track{height:5px;background:rgba(30,58,138,.12);border-radius:100px;overflow:hidden;margin-bottom:7px;}
-        .ct-min-fill{height:5px;border-radius:100px;transition:width .4s;background:linear-gradient(90deg,#f97316,#f97316);}
-        .ct-min-text{font-size:11px;font-weight:600;color:#9ca3af;}
-        .ct-min-text b{color:#f97316;}
+        .ct-min-track{height:5px;background:rgba(79,70,229,.12);border-radius:100px;overflow:hidden;margin-bottom:7px;}
+        .ct-min-fill{height:5px;border-radius:100px;transition:width .4s;background:linear-gradient(90deg,#4f46e5,#4f46e5);}
+        .ct-min-text{font-size:11px;font-weight:600;color:#94a3b8;}
+        .ct-min-text b{color:#4f46e5;}
         .ct-min-text.met{color:#059669;font-weight:700;}
 
         .ct-checkout-btn{
@@ -901,7 +901,7 @@ export default function Enquiry() {
           position:relative;overflow:hidden;
         }
         .ct-checkout-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transform:translateX(-100%);transition:transform 0.6s;}
-        .ct-checkout-btn.ready{background:linear-gradient(135deg,#f97316,#1e3a8a);color:white;box-shadow:0 8px 24px rgba(124,58,237,.3);}
+        .ct-checkout-btn.ready{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;box-shadow:0 8px 24px rgba(124,58,237,.3);}
         .ct-checkout-btn.ready:hover{transform:translateY(-4px) scale(1.02);box-shadow:0 16px 48px rgba(124,58,237,.45);}
         .ct-checkout-btn.ready:hover::after{transform:translateX(100%);}
         .ct-checkout-btn.disabled{background:#f3f4f6;color:#d1d5db;cursor:not-allowed;}
@@ -912,34 +912,34 @@ export default function Enquiry() {
           cursor:pointer;font-family:'DM Sans',sans-serif;
           transition:all .2s;white-space:nowrap;
         }
-        .ct-coupon-btn.ready{background:linear-gradient(135deg,#f97316,#1e3a8a);color:white;}
+        .ct-coupon-btn.ready{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;}
         .ct-coupon-btn.ready:hover{opacity:.9;}
         .ct-coupon-btn:disabled{background:#f3f4f6;color:#d1d5db;cursor:not-allowed;}
 
-        .ct-secure-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#9ca3af;margin-top:12px;font-weight:500;}
+        .ct-secure-note{display:flex;align-items:center;justify-content:center;gap:6px;font-size:11px;color:#94a3b8;margin-top:12px;font-weight:500;}
 
         .ct-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;}
         .ct-modal{background:white;border-radius:20px;max-width:500px;width:100%;max-height:90vh;overflow:auto;animation:ctUp 0.3s ease;}
-        .ct-modal-header{padding:20px 24px;border-bottom:1px solid rgba(30,58,138,.1);display:flex;align-items:center;justify-content:space-between;}
-        .ct-modal-title{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#1e1b2e;}
-        .ct-modal-close{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;border:none;background:rgba(30,58,138,.08);cursor:pointer;font-size:18px;color:#1e1b2e;}
+        .ct-modal-header{padding:20px 24px;border-bottom:1px solid rgba(79,70,229,.1);display:flex;align-items:center;justify-content:space-between;}
+        .ct-modal-title{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#0f172a;}
+        .ct-modal-close{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;border:none;background:rgba(79,70,229,.08);cursor:pointer;font-size:18px;color:#0f172a;}
         .ct-modal-body{padding:24px;}
         .ct-form-group{margin-bottom:16px;}
-        .ct-form-label{display:block;font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
-        .ct-form-input{width:100%;padding:12px 16px;border:1.5px solid rgba(30,58,138,.15);border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;background:white;outline:none;transition:all .2s;}
-        .ct-form-input:focus{border-color:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,.15);}
+        .ct-form-label{display:block;font-size:11px;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;}
+        .ct-form-input{width:100%;padding:12px 16px;border:1.5px solid rgba(79,70,229,.15);border-radius:12px;font-size:14px;font-family:'DM Sans',sans-serif;background:white;outline:none;transition:all .2s;}
+        .ct-form-input:focus{border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.15);}
         .ct-form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
         .ct-checkbox-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
-        .ct-checkbox{width:18px;height:18px;accent-color:#f97316;}
-        .ct-checkbox-label{font-size:13px;color:#1e1b2e;font-weight:600;}
-        .ct-modal-footer{padding:16px 24px;border-top:1px solid rgba(30,58,138,.1);display:flex;justify-content:flex-end;gap:12px;}
+        .ct-checkbox{width:18px;height:18px;accent-color:#4f46e5;}
+        .ct-checkbox-label{font-size:13px;color:#0f172a;font-weight:600;}
+        .ct-modal-footer{padding:16px 24px;border-top:1px solid rgba(79,70,229,.1);display:flex;justify-content:flex-end;gap:12px;}
         .ct-modal-btn{padding:12px 24px;border-radius:12px;border:none;font-size:12px;font-weight:800;letter-spacing:.08em;cursor:pointer;transition:all .2s;}
-        .ct-modal-btn.cancel{background:rgba(30,58,138,.08);color:#1e1b2e;}
-        .ct-modal-btn.save{background:linear-gradient(135deg,#f97316,#1e3a8a);color:white;}
+        .ct-modal-btn.cancel{background:rgba(79,70,229,.08);color:#0f172a;}
+        .ct-modal-btn.save{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;}
 
         @keyframes ctUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
 
-        .ct-cart-items-title{font-size:18px;font-weight:800;color:#1e1b2e;margin-bottom:16px;}
+        .ct-cart-items-title{font-size:18px;font-weight:800;color:#0f172a;margin-bottom:16px;}
       `}</style>
 
       <div className="ct-root">
@@ -1010,7 +1010,7 @@ export default function Enquiry() {
                         </div>
                         
                         <div className="ct-item-body">
-                          <div className="ct-item-name">{item.name}{hasAttributes && <span style={{marginLeft:8,color:'#6b7280',fontSize:'0.9em',fontWeight:500}}>({Object.values(displayAttributes).filter(v => v).map(v => String(v).toUpperCase()).join(', ')})</span>}</div>
+                          <div className="ct-item-name">{item.name}{hasAttributes && <span style={{marginLeft:8,color:'#64748b',fontSize:'0.9em',fontWeight:500}}>({Object.values(displayAttributes).filter(v => v).map(v => String(v).toUpperCase()).join(', ')})</span>}</div>
                           <div className="ct-item-meta">
                             <span className="ct-unit-price">₹{safeNum(unitPrice(item)).toLocaleString()} / unit</span>
                             <span style={{fontSize:9,fontWeight:700,letterSpacing:'.1em',textTransform:'uppercase',padding:'2px 8px',borderRadius:100,background:isOutOfStock?'rgba(239,68,68,.1)':itemStock<=5?'rgba(245,158,11,.1)':'rgba(5,150,105,.1)',color:isOutOfStock?'#ef4444':itemStock<=5?'#d97706':'#059669',border:`1px solid ${isOutOfStock?'rgba(239,68,68,.2)':itemStock<=5?'rgba(245,158,11,.2)':'rgba(5,150,105,.2)'}`}}>
@@ -1021,7 +1021,7 @@ export default function Enquiry() {
                           {tiers.length>0 && (
                             <div className="ct-tier-nudge" style={{background:'rgba(124,58,237,.05)',border:'1px solid rgba(124,58,237,.15)'}}>
                               <div className="ct-tier-bar-track" style={{background:'rgba(124,58,237,.1)'}}>
-                                <div className="ct-tier-bar-fill" style={{width:`${pct}%`,background:'#f97316'}} />
+                                <div className="ct-tier-bar-fill" style={{width:`${pct}%`,background:'#4f46e5'}} />
                               </div>
                               <div className="ct-tier-nudge-row">
                                 {next ? (() => {
@@ -1031,8 +1031,8 @@ export default function Enquiry() {
                                   const estSave = perOff * (safeNum(item.quantity) + delta)
                                   return (
                                     <>
-                                      <div className="ct-tier-text" style={{color:'#f97316'}}>Add {delta} more to save ₹{safeNum(estSave).toLocaleString()} (₹{safeNum(effUnit).toLocaleString()}/unit)</div>
-                                      <button className="ct-tier-add-btn" style={{background:'#f97316'}} onClick={() => updateQuantity(itemId, itemSku, safeNum(next.quantity))}>Add {delta} units</button>
+                                      <div className="ct-tier-text" style={{color:'#4f46e5'}}>Add {delta} more to save ₹{safeNum(estSave).toLocaleString()} (₹{safeNum(effUnit).toLocaleString()}/unit)</div>
+                                      <button className="ct-tier-add-btn" style={{background:'#4f46e5'}} onClick={() => updateQuantity(itemId, itemSku, safeNum(next.quantity))}>Add {delta} units</button>
                                     </>
                                   )
                                 })() : <div className="ct-tier-max" style={{color:'#059669'}}>✓ Max bulk savings applied</div>}
@@ -1137,8 +1137,8 @@ export default function Enquiry() {
                   <div style={{
                     marginTop: '16px',
                     padding: '14px',
-                    backgroundColor: 'rgba(249,115,22,0.05)',
-                    border: '1px solid rgba(249,115,22,0.15)',
+                    backgroundColor: 'rgba(79,70,229,0.05)',
+                    border: '1px solid rgba(79,70,229,0.15)',
                     borderRadius: '12px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1146,7 +1146,7 @@ export default function Enquiry() {
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '13px', color: '#0f172a', fontWeight: 700 }}>COD Advance (15%)</span>
-                      <span style={{ fontSize: '15px', fontWeight: 800, color: '#f97316' }}>
+                      <span style={{ fontSize: '15px', fontWeight: 800, color: '#4f46e5' }}>
                         ₹{safeNum(Math.ceil(safeNum(totalPayable) * 0.15)).toLocaleString()}
                       </span>
                     </div>
@@ -1169,7 +1169,7 @@ export default function Enquiry() {
                     {availableCoupons.length > 0 && (
                       <button 
                         onClick={() => setShowAvailableCoupons(!showAvailableCoupons)}
-                        style={{width:'100%',marginTop:'12px',padding:'10px',background:'rgba(30,58,138,.05)',border:'1px dashed rgba(30,58,138,.25)',borderRadius:'10px',fontSize:'12px',fontWeight:700,color:'#1e3a8a',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px'}}
+                        style={{width:'100%',marginTop:'12px',padding:'10px',background:'rgba(79,70,229,.05)',border:'1px dashed rgba(79,70,229,.25)',borderRadius:'10px',fontSize:'12px',fontWeight:700,color:'#7c3aed',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px'}}
                       >
                         🎟️ {showAvailableCoupons ? 'Hide' : 'View'} Available Coupons ({availableCoupons.length})
                       </button>
@@ -1182,17 +1182,17 @@ export default function Enquiry() {
                             <div 
                               key={coupon._id}
                               style={{
-                                border:`1px solid ${isEligible ? 'rgba(249,115,22,.3)' : 'rgba(156,163,175,.3)'}`,
+                                border:`1px solid ${isEligible ? 'rgba(79,70,229,.3)' : 'rgba(156,163,175,.3)'}`,
                                 borderRadius:'12px',
                                 padding:'12px',
-                                background:isEligible ? 'rgba(249,115,22,.05)' : 'rgba(243,244,246,.5)',
+                                background:isEligible ? 'rgba(79,70,229,.05)' : 'rgba(243,244,246,.5)',
                                 display:'flex',
                                 flexDirection:'column',
                                 gap:'8px'
                               }}
                             >
                               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px'}}>
-                                <div style={{fontWeight:800,fontSize:'14px',color:isEligible ? '#f97316' : '#9ca3af'}}>{coupon.code}</div>
+                                <div style={{fontWeight:800,fontSize:'14px',color:isEligible ? '#4f46e5' : '#94a3b8'}}>{coupon.code}</div>
                                 <button 
                                   onClick={() => isEligible && handleApplyAvailableCoupon(coupon)}
                                   disabled={!isEligible || isApplying}
@@ -1203,8 +1203,8 @@ export default function Enquiry() {
                                     fontWeight:800,
                                     border:'none',
                                     cursor:isEligible ? 'pointer' : 'not-allowed',
-                                    background:isEligible ? 'linear-gradient(135deg,#f97316,#1e3a8a)' : '#e5e7eb',
-                                    color:isEligible ? 'white' : '#9ca3af'
+                                    background:isEligible ? 'linear-gradient(135deg,#4f46e5,#7c3aed)' : '#e5e7eb',
+                                    color:isEligible ? 'white' : '#94a3b8'
                                   }}
                                 >
                                   {isEligible ? 'Apply' : 'Not Eligible'}
@@ -1214,7 +1214,7 @@ export default function Enquiry() {
                                 {coupon.type === 'PERCENT' ? `${coupon.value}% OFF` : `FLAT ₹${coupon.value} OFF`}
                                 {coupon.maxDiscount > 0 && ` (Max ₹${coupon.maxDiscount})`}
                               </div>
-                              <div style={{fontSize:'11px',color:'#9ca3af'}}>
+                              <div style={{fontSize:'11px',color:'#94a3b8'}}>
                                 Min order: ₹{coupon.minAmount || 0}
                                 {coupon.usageLimit > 0 && ` • ${coupon.usageLimit - (coupon.usedCount || 0)} uses left`}
                               </div>
@@ -1227,10 +1227,10 @@ export default function Enquiry() {
                 )}
                 
                 {appliedCoupon && (
-                  <div className="ct-savings-badge" style={{marginTop:'16px',background:'rgba(249,115,22,.07)',borderColor:'rgba(249,115,22,.18)'}}>
-                    <div className="ct-savings-ico" style={{background:'rgba(249,115,22,.12)'}}>🎟️</div>
+                  <div className="ct-savings-badge" style={{marginTop:'16px',background:'rgba(79,70,229,.07)',borderColor:'rgba(79,70,229,.18)'}}>
+                    <div className="ct-savings-ico" style={{background:'rgba(79,70,229,.12)'}}>🎟️</div>
                     <div>
-                      <div className="ct-savings-text" style={{color:'#f97316'}}>{appliedCoupon.code} Applied</div>
+                      <div className="ct-savings-text" style={{color:'#4f46e5'}}>{appliedCoupon.code} Applied</div>
                       <div className="ct-savings-sub">₹{safeNum(couponDiscount).toLocaleString()} saved</div>
                     </div>
                     <button style={{marginLeft:'auto',background:'none',border:'none',color:'#ef4444',fontWeight:800,fontSize:'11px',letterSpacing:'0.08em',cursor:'pointer'}} onClick={handleRemoveCoupon}>REMOVE</button>
@@ -1298,8 +1298,8 @@ export default function Enquiry() {
                   <div style={{
                     marginTop: '16px',
                     padding: '14px',
-                    backgroundColor: 'rgba(249,115,22,0.05)',
-                    border: '1px solid rgba(249,115,22,0.15)',
+                    backgroundColor: 'rgba(79,70,229,0.05)',
+                    border: '1px solid rgba(79,70,229,0.15)',
                     borderRadius: '12px',
                     display: 'flex',
                     flexDirection: 'column',
@@ -1307,7 +1307,7 @@ export default function Enquiry() {
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '13px', color: '#0f172a', fontWeight: 700 }}>COD Advance (15%)</span>
-                      <span style={{ fontSize: '15px', fontWeight: 800, color: '#f97316' }}>
+                      <span style={{ fontSize: '15px', fontWeight: 800, color: '#4f46e5' }}>
                         ₹{safeNum(Math.ceil(safeNum(totalPayable) * 0.15)).toLocaleString()}
                       </span>
                     </div>
@@ -1330,7 +1330,7 @@ export default function Enquiry() {
                     {availableCoupons.length > 0 && (
                       <button 
                         onClick={() => setShowAvailableCoupons(!showAvailableCoupons)}
-                        style={{width:'100%',marginTop:'12px',padding:'10px',background:'rgba(30,58,138,.05)',border:'1px dashed rgba(30,58,138,.25)',borderRadius:'10px',fontSize:'12px',fontWeight:700,color:'#1e3a8a',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px'}}
+                        style={{width:'100%',marginTop:'12px',padding:'10px',background:'rgba(79,70,229,.05)',border:'1px dashed rgba(79,70,229,.25)',borderRadius:'10px',fontSize:'12px',fontWeight:700,color:'#7c3aed',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:'6px'}}
                       >
                         🎟️ {showAvailableCoupons ? 'Hide' : 'View'} Available Coupons ({availableCoupons.length})
                       </button>
@@ -1343,17 +1343,17 @@ export default function Enquiry() {
                             <div 
                               key={coupon._id}
                               style={{
-                                border:`1px solid ${isEligible ? 'rgba(249,115,22,.3)' : 'rgba(156,163,175,.3)'}`,
+                                border:`1px solid ${isEligible ? 'rgba(79,70,229,.3)' : 'rgba(156,163,175,.3)'}`,
                                 borderRadius:'12px',
                                 padding:'12px',
-                                background:isEligible ? 'rgba(249,115,22,.05)' : 'rgba(243,244,246,.5)',
+                                background:isEligible ? 'rgba(79,70,229,.05)' : 'rgba(243,244,246,.5)',
                                 display:'flex',
                                 flexDirection:'column',
                                 gap:'8px'
                               }}
                             >
                               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px'}}>
-                                <div style={{fontWeight:800,fontSize:'14px',color:isEligible ? '#f97316' : '#9ca3af'}}>{coupon.code}</div>
+                                <div style={{fontWeight:800,fontSize:'14px',color:isEligible ? '#4f46e5' : '#94a3b8'}}>{coupon.code}</div>
                                 <button 
                                   onClick={() => isEligible && handleApplyAvailableCoupon(coupon)}
                                   disabled={!isEligible || isApplying}
@@ -1364,8 +1364,8 @@ export default function Enquiry() {
                                     fontWeight:800,
                                     border:'none',
                                     cursor:isEligible ? 'pointer' : 'not-allowed',
-                                    background:isEligible ? 'linear-gradient(135deg,#f97316,#1e3a8a)' : '#e5e7eb',
-                                    color:isEligible ? 'white' : '#9ca3af'
+                                    background:isEligible ? 'linear-gradient(135deg,#4f46e5,#7c3aed)' : '#e5e7eb',
+                                    color:isEligible ? 'white' : '#94a3b8'
                                   }}
                                 >
                                   {isEligible ? 'Apply' : 'Not Eligible'}
@@ -1375,7 +1375,7 @@ export default function Enquiry() {
                                 {coupon.type === 'PERCENT' ? `${coupon.value}% OFF` : `FLAT ₹${coupon.value} OFF`}
                                 {coupon.maxDiscount > 0 && ` (Max ₹${coupon.maxDiscount})`}
                               </div>
-                              <div style={{fontSize:'11px',color:'#9ca3af'}}>
+                              <div style={{fontSize:'11px',color:'#94a3b8'}}>
                                 Min order: ₹{coupon.minAmount || 0}
                                 {coupon.usageLimit > 0 && ` • ${coupon.usageLimit - (coupon.usedCount || 0)} uses left`}
                               </div>
@@ -1388,10 +1388,10 @@ export default function Enquiry() {
                 )}
                 
                 {appliedCoupon && (
-                  <div className="ct-savings-badge" style={{marginTop:'16px',background:'rgba(249,115,22,.07)',borderColor:'rgba(249,115,22,.18)'}}>
-                    <div className="ct-savings-ico" style={{background:'rgba(249,115,22,.12)'}}>🎟️</div>
+                  <div className="ct-savings-badge" style={{marginTop:'16px',background:'rgba(79,70,229,.07)',borderColor:'rgba(79,70,229,.18)'}}>
+                    <div className="ct-savings-ico" style={{background:'rgba(79,70,229,.12)'}}>🎟️</div>
                     <div>
-                      <div className="ct-savings-text" style={{color:'#f97316'}}>{appliedCoupon.code} Applied</div>
+                      <div className="ct-savings-text" style={{color:'#4f46e5'}}>{appliedCoupon.code} Applied</div>
                       <div className="ct-savings-sub">₹{safeNum(couponDiscount).toLocaleString()} saved</div>
                     </div>
                     <button style={{marginLeft:'auto',background:'none',border:'none',color:'#ef4444',fontWeight:800,fontSize:'11px',letterSpacing:'0.08em',cursor:'pointer'}} onClick={handleRemoveCoupon}>REMOVE</button>

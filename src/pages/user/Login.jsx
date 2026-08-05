@@ -187,7 +187,7 @@ export default function Login() {
 
         <div className="flex gap-2 bg-gradient-to-br from-blue-50 to-indigo-50 p-1.5 rounded-2xl border border-blue-100">
           <button onClick={()=>{setMode('password'); setOtpSent(false);}} className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${mode==='password'?'bg-white shadow-md border border-blue-200 text-blue-700':'text-gray-400 hover:text-gray-600'}`} type="button">Password Login</button>
-          <button onClick={()=>{setMode('otp');}} className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${mode==='otp'?'bg-white shadow-md border border-indigo-200 text-orange-600':'text-gray-400 hover:text-gray-600'}`} type="button">OTP Login</button>
+          <button onClick={()=>{setMode('otp');}} className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${mode==='otp'?'bg-white shadow-md border border-indigo-200 text-indigo-600':'text-gray-400 hover:text-gray-600'}`} type="button">OTP Login</button>
         </div>
 
         <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
@@ -208,7 +208,7 @@ export default function Login() {
               <div className="group">
                 <div className="flex items-center justify-between ml-1 mb-1">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Password</label>
-                  <Link to="/forgot-password" size="sm" className="text-[10px] font-black uppercase tracking-widest text-orange-600 hover:text-indigo-700">
+                  <Link to="/forgot-password" size="sm" className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-700">
                     Forgot?
                   </Link>
                 </div>
@@ -272,7 +272,7 @@ export default function Login() {
 
           <p className="text-center text-xs text-gray-400 font-bold mt-6 uppercase tracking-widest">
             New to SmartOdisha?{' '}
-            <Link to="/signup" state={{ from }} className="text-blue-700 hover:text-orange-600">
+            <Link to="/signup" state={{ from }} className="text-blue-700 hover:text-indigo-600">
               Create Account
             </Link>
           </p>

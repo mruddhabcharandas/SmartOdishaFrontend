@@ -107,8 +107,8 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
         }
         .pc-premium-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.08), 0 8px 10px -6px rgba(2, 132, 199, 0.08);
-          border-color: rgba(2, 132, 199, 0.15);
+          box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.12), 0 8px 10px -6px rgba(79, 70, 229, 0.08);
+          border-color: rgba(79, 70, 229, 0.15);
         }
         .pc-img-container {
           position: relative;
@@ -165,7 +165,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           transition: color 0.15s;
         }
         .pc-title:hover {
-          color: #0284c7;
+          color: #4f46e5;
         }
         .pc-rating-row {
           display: flex;
@@ -194,9 +194,9 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           align-items: center;
           gap: 2px;
           margin-left: auto;
-          background: rgba(2, 132, 199, 0.05);
-          border: 1px solid rgba(2, 132, 199, 0.1);
-          color: #0284c7;
+          background: rgba(79, 70, 229, 0.05);
+          border: 1px solid rgba(79, 70, 229, 0.1);
+          color: #4f46e5;
           font-size: 9px;
           font-weight: 800;
           padding: 1px 5px;
@@ -333,7 +333,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           {totalStock <= 0 ? (
             <span style={{ color: '#ef4444', fontWeight: 600 }}>Out of Stock</span>
           ) : totalStock <= 5 ? (
-            <span style={{ color: '#f97316', fontWeight: 600 }}>Only {totalStock} left</span>
+            <span style={{ color: '#7c3aed', fontWeight: 600 }}>Only {totalStock} left</span>
           ) : (
             <b style={{ color: '#059669', fontWeight: 600 }}>In Stock</b>
           )}

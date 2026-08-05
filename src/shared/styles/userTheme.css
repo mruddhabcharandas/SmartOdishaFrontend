@@ -1,0 +1,95 @@
+/* SmartOdisha user theme — matches About page palette */
+:root {
+  --so-bg: linear-gradient(to bottom right, #f8fafc, rgba(239, 246, 255, 0.3), rgba(238, 242, 255, 0.3));
+  --so-hero: linear-gradient(to bottom right, #0f172a, #1e3a8a, #312e81);
+  --so-cta: linear-gradient(to bottom right, #2563eb, #4338ca, #7c3aed);
+  --so-accent: #4f46e5;
+  --so-accent-light: #6366f1;
+  --so-blue: #3b82f6;
+  --so-indigo: #4338ca;
+  --so-purple: #7c3aed;
+  --so-text: #0f172a;
+  --so-text-muted: #64748b;
+  --so-card-shadow: 0 32px 64px -12px rgba(59, 130, 246, 0.15);
+  --so-font: 'Inter', system-ui, sans-serif;
+}
+
+@keyframes so-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes so-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.so-page-bg {
+  background: var(--so-bg);
+  font-family: var(--so-font);
+}
+
+.so-hero-bg {
+  background: var(--so-hero);
+}
+
+.so-cta-bg {
+  background: var(--so-cta);
+}
+
+.so-gradient-text {
+  background: linear-gradient(to right, #93c5fd, #a5b4fc, #c4b5fd);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: so-gradient 8s ease infinite;
+}
+
+.so-floating {
+  animation: so-float 6s ease-in-out infinite;
+}
+
+.so-card {
+  background: white;
+  border: 1px solid #f1f5f9;
+  border-radius: 32px;
+  box-shadow: 0 25px 50px -12px rgba(148, 163, 184, 0.25);
+  transition: all 0.5s ease;
+}
+
+.so-card:hover {
+  box-shadow: var(--so-card-shadow);
+  transform: translateY(-4px);
+}
+
+.so-btn-primary {
+  background: linear-gradient(135deg, #2563eb, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-weight: 800;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+}
+
+.so-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(79, 70, 229, 0.45);
+}
+
+.so-btn-secondary {
+  background: white;
+  color: #4f46e5;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 16px;
+  font-weight: 800;
+  transition: all 0.3s ease;
+}
+
+.so-btn-secondary:hover {
+  border-color: #4f46e5;
+  background: #eef2ff;
+  transform: translateY(-2px);
+}

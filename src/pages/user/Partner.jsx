@@ -5,7 +5,7 @@ import PasswordInput from '../../components/PasswordInput'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { CONFIG } from '../../shared/lib/config.js'
 
-const COLORS = ['#1e3a8a', '#3b82f6', '#4f46e5', '#2563eb', '#93c5fd', '#818cf8']
+const COLORS = ['#7c3aed', '#3b82f6', '#4f46e5', '#2563eb', '#93c5fd', '#818cf8']
 
 export default function Partner() {
   const navigate = useNavigate()
@@ -109,7 +109,7 @@ export default function Partner() {
 
         .pr-root {
           font-family: 'DM Sans', system-ui, sans-serif;
-          background: #dbeafe;
+          background: #eef2ff;
           min-height: 100vh;
           color: #1e1b2e;
           position: relative;
@@ -121,8 +121,8 @@ export default function Partner() {
           content: '';
           position: fixed; inset: 0;
           background-image:
-            linear-gradient(rgba(30,58,138,0.04) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(30,58,138,0.04) 1px, transparent 1px);
+            linear-gradient(rgba(79,70,229,0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(79,70,229,0.04) 1px, transparent 1px);
           background-size: 60px 60px;
           pointer-events: none; z-index: 0;
         }
@@ -131,13 +131,13 @@ export default function Partner() {
         .pr-blob {
           position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
           width: 900px; height: 600px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(30,58,138,0.1), transparent 65%);
+          background: radial-gradient(ellipse, rgba(79,70,229,0.1), transparent 65%);
           pointer-events: none; z-index: 0;
         }
         .pr-blob2 {
           position: fixed; bottom: -200px; right: -150px;
           width: 600px; height: 600px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(249,115,22,0.07), transparent 65%);
+          background: radial-gradient(ellipse, rgba(79,70,229,0.07), transparent 65%);
           pointer-events: none; z-index: 0;
         }
 
@@ -162,11 +162,11 @@ export default function Partner() {
 
         .pr-logo {
           width: 48px; height: 48px; border-radius: 14px;
-          background: linear-gradient(135deg, #1e3a8a, #f97316);
+          background: linear-gradient(135deg, #7c3aed, #4f46e5);
           display: flex; align-items: center; justify-content: center;
           font-size: 12px; font-weight: 900; color: white;
-          box-shadow: 0 8px 24px rgba(30,58,138,0.3);
-          border: 1px solid rgba(30,58,138,0.4);
+          box-shadow: 0 8px 24px rgba(79,70,229,0.3);
+          border: 1px solid rgba(79,70,229,0.4);
           overflow: hidden; position: relative;
         }
 
@@ -174,14 +174,14 @@ export default function Partner() {
         .pr-eyebrow {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 6px 18px; border-radius: 100px;
-          background: rgba(30,58,138,0.1);
-          border: 1px solid rgba(30,58,138,0.25);
-          color: #1e3a8a;
+          background: rgba(79,70,229,0.1);
+          border: 1px solid rgba(79,70,229,0.25);
+          color: #7c3aed;
           font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase;
         }
         .pr-eyebrow-dot {
           width: 6px; height: 6px; border-radius: 50%;
-          background: #f97316; box-shadow: 0 0 6px rgba(249,115,22,0.5);
+          background: #4f46e5; box-shadow: 0 0 6px rgba(79,70,229,0.5);
           animation: prPulse 2s ease infinite;
         }
         @keyframes prPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
@@ -194,7 +194,7 @@ export default function Partner() {
           letter-spacing: 0.02em; line-height: 0.95;
           margin: 12px 0 10px;
         }
-        .pr-title span { color: #f97316; }
+        .pr-title span { color: #4f46e5; }
 
         .pr-subtitle {
           font-size: 14px; color: #6b7280; font-weight: 300;
@@ -205,17 +205,17 @@ export default function Partner() {
         .pr-form {
           display: flex; flex-direction: column; gap: 10px;
           background: white;
-          border: 1px solid rgba(30,58,138,0.15);
+          border: 1px solid rgba(79,70,229,0.15);
           border-radius: 24px; padding: 20px;
-          box-shadow: 0 8px 40px rgba(30,58,138,0.08);
+          box-shadow: 0 8px 40px rgba(79,70,229,0.08);
           width: 100%; max-width: 420px;
           align-self: flex-start;
         }
 
         .pr-input {
           width: 100%; box-sizing: border-box;
-          background: #dbeafe;
-          border: 1px solid rgba(30,58,138,0.2);
+          background: #eef2ff;
+          border: 1px solid rgba(79,70,229,0.2);
           border-radius: 14px; padding: 13px 16px;
           font-size: 13px; font-weight: 600; color: #1e1b2e;
           outline: none; font-family: 'DM Sans', sans-serif;
@@ -223,21 +223,21 @@ export default function Partner() {
         }
         .pr-input::placeholder { color: #9ca3af; }
         .pr-input:focus {
-          border-color: rgba(30,58,138,0.5); background: white;
-          box-shadow: 0 0 0 3px rgba(30,58,138,0.08);
+          border-color: rgba(79,70,229,0.5); background: white;
+          box-shadow: 0 0 0 3px rgba(79,70,229,0.08);
         }
 
         /* same as Home btn-primary */
         .pr-btn {
           width: 100%;
           display: inline-flex; align-items: center; justify-content: center; gap: 12px;
-          background: linear-gradient(135deg, #1e3a8a, #f97316); color: white;
+          background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white;
           border: none; border-radius: 16px; padding: 16px 32px;
           font-size: 11px; font-weight: 800;
           letter-spacing: 0.15em; text-transform: uppercase;
           cursor: pointer; font-family: 'DM Sans', sans-serif;
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 8px 24px rgba(30,58,138,0.3);
+          box-shadow: 0 8px 24px rgba(79,70,229,0.3);
           position: relative; overflow: hidden;
         }
         .pr-btn::after {
@@ -247,7 +247,7 @@ export default function Partner() {
         }
         .pr-btn:hover:not(:disabled) { 
           transform: translateY(-3px) scale(1.02); 
-          box-shadow: 0 16px 48px rgba(30,58,138,0.45); 
+          box-shadow: 0 16px 48px rgba(79,70,229,0.45); 
         }
         .pr-btn:hover:not(:disabled)::after { transform: translateX(100%); }
         .pr-btn:active:not(:disabled) { transform: translateY(-1px) scale(0.97); }
@@ -265,23 +265,23 @@ export default function Partner() {
         /* ── ONBOARDING — mirrors Home CTA section ── */
         .pr-onboard {
           background: white;
-          border: 1px solid rgba(30,58,138,0.15);
+          border: 1px solid rgba(79,70,229,0.15);
           border-radius: 32px; padding: 64px 40px; text-align: center;
           position: relative; overflow: hidden;
-          box-shadow: 0 8px 50px rgba(30,58,138,0.07);
+          box-shadow: 0 8px 50px rgba(79,70,229,0.07);
           animation: prFadeUp 0.7s 0.1s ease both;
         }
         /* same top blue-orange stripe as Home CTA */
         .pr-onboard::after {
           content: '';
           position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, transparent 10%, #1e3a8a 50%, #f97316 90%);
+          background: linear-gradient(90deg, transparent 10%, #7c3aed 50%, #4f46e5 90%);
           border-radius: 32px 32px 0 0;
         }
         .pr-onboard-glow {
           position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
           width: 500px; height: 300px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(30,58,138,0.07), transparent 70%);
+          background: radial-gradient(ellipse, rgba(79,70,229,0.07), transparent 70%);
           pointer-events: none;
         }
         .pr-onboard-title {
@@ -290,27 +290,27 @@ export default function Partner() {
           line-height: 1; letter-spacing: 0.02em;
           color: #1e1b2e; margin: 16px 0;
         }
-        .pr-onboard-title em { color: #f97316; font-style: normal; }
+        .pr-onboard-title em { color: #4f46e5; font-style: normal; }
         .pr-onboard-sub {
           font-size: 16px; color: #6b7280; font-weight: 300;
           max-width: 460px; margin: 0 auto 40px; line-height: 1.7;
         }
         .pr-contact-card {
           display: inline-flex; align-items: center; gap: 16px;
-          background: #dbeafe; border: 1px solid rgba(30,58,138,0.2);
+          background: #eef2ff; border: 1px solid rgba(79,70,229,0.2);
           padding: 18px 32px; border-radius: 16px; transition: all 0.25s;
         }
         .pr-contact-card:hover {
-          background: white; border-color: rgba(30,58,138,0.4);
-          box-shadow: 0 8px 24px rgba(30,58,138,0.1); transform: translateY(-2px);
+          background: white; border-color: rgba(79,70,229,0.4);
+          box-shadow: 0 8px 24px rgba(79,70,229,0.1); transform: translateY(-2px);
         }
         .pr-contact-icon {
           width: 46px; height: 46px; border-radius: 13px;
-          background: linear-gradient(135deg, #1e3a8a, #f97316);
+          background: linear-gradient(135deg, #7c3aed, #4f46e5);
           display: flex; align-items: center; justify-content: center;
-          box-shadow: 0 6px 18px rgba(30,58,138,0.3); flex-shrink: 0;
+          box-shadow: 0 6px 18px rgba(79,70,229,0.3); flex-shrink: 0;
         }
-        .pr-contact-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #1e3a8a; }
+        .pr-contact-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #7c3aed; }
         .pr-contact-value { font-size: 16px; font-weight: 700; color: #1e1b2e; margin-top: 3px; }
 
         /* ── EMPTY ── */
@@ -321,10 +321,10 @@ export default function Partner() {
         }
         .pr-empty-icon {
           width: 80px; height: 80px; border-radius: 24px;
-          background: #dbeafe; border: 1px solid rgba(30,58,138,0.2);
+          background: #eef2ff; border: 1px solid rgba(79,70,229,0.2);
           display: flex; align-items: center; justify-content: center;
           font-size: 32px; margin-bottom: 20px;
-          box-shadow: inset 0 2px 8px rgba(30,58,138,0.06);
+          box-shadow: inset 0 2px 8px rgba(79,70,229,0.06);
         }
         .pr-empty h3 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #1e1b2e; letter-spacing: 0.05em; }
         .pr-empty p { font-size: 13px; color: #9ca3af; margin-top: 6px; max-width: 260px; }
@@ -332,32 +332,32 @@ export default function Partner() {
         /* ── PROFILE CARD — same white card style as Home trust badges ── */
         .pr-profile {
           background: white;
-          border: 1px solid rgba(30,58,138,0.15);
+          border: 1px solid rgba(79,70,229,0.15);
           border-radius: 28px; padding: 36px 40px;
           position: relative; overflow: hidden;
-          box-shadow: 0 8px 40px rgba(30,58,138,0.07);
+          box-shadow: 0 8px 40px rgba(79,70,229,0.07);
           animation: prFadeUp 0.6s ease both;
         }
         .pr-profile::before {
           content: '';
           position: absolute; top: 0; left: 0; right: 0; height: 3px;
-          background: linear-gradient(90deg, transparent 10%, #1e3a8a 50%, #f97316 90%);
+          background: linear-gradient(90deg, transparent 10%, #7c3aed 50%, #4f46e5 90%);
         }
         .pr-profile-glow {
           position: absolute; top: -60px; right: -60px;
           width: 280px; height: 280px; border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(30,58,138,0.06), transparent 70%);
+          background: radial-gradient(ellipse, rgba(79,70,229,0.06), transparent 70%);
           pointer-events: none;
         }
 
         .pr-avatar {
           width: 64px; height: 64px; border-radius: 18px;
-          background: linear-gradient(135deg, #1e3a8a, #f97316);
+          background: linear-gradient(135deg, #7c3aed, #4f46e5);
           display: flex; align-items: center; justify-content: center;
           font-family: 'Bebas Neue', sans-serif;
           font-size: 26px; color: white; letter-spacing: 0.05em;
-          box-shadow: 0 8px 24px rgba(30,58,138,0.3);
-          border: 1px solid rgba(30,58,138,0.3); margin-bottom: 14px;
+          box-shadow: 0 8px 24px rgba(79,70,229,0.3);
+          border: 1px solid rgba(79,70,229,0.3); margin-bottom: 14px;
         }
 
         .pr-partner-name {
@@ -369,10 +369,10 @@ export default function Partner() {
 
         .pr-code-pill {
           display: inline-flex; align-items: center; gap: 8px;
-          background: #dbeafe; border: 1px solid rgba(30,58,138,0.25);
+          background: #eef2ff; border: 1px solid rgba(79,70,229,0.25);
           padding: 10px 20px; border-radius: 12px;
           font-family: 'Bebas Neue', sans-serif;
-          font-size: 22px; color: #f97316; letter-spacing: 0.08em;
+          font-size: 22px; color: #4f46e5; letter-spacing: 0.08em;
         }
         .pr-rate {
           display: inline-flex; align-items: center; gap: 6px;
@@ -389,16 +389,16 @@ export default function Partner() {
         @media(min-width:640px) { .pr-stats { grid-template-columns: repeat(4, 1fr); } }
 
         .pr-stat {
-          background: #dbeafe; border: 1px solid rgba(30,58,138,0.1);
+          background: #eef2ff; border: 1px solid rgba(79,70,229,0.1);
           border-radius: 18px; padding: 20px 18px;
           transition: all 0.3s; position: relative; overflow: hidden;
         }
         .pr-stat::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(30,58,138,0.35), transparent);
+          background: linear-gradient(90deg, transparent, rgba(79,70,229,0.35), transparent);
           opacity: 0; transition: opacity 0.3s;
         }
-        .pr-stat:hover { background: white; border-color: rgba(30,58,138,0.25); box-shadow: 0 6px 24px rgba(30,58,138,0.08); transform: translateY(-2px); }
+        .pr-stat:hover { background: white; border-color: rgba(79,70,229,0.25); box-shadow: 0 6px 24px rgba(79,70,229,0.08); transform: translateY(-2px); }
         .pr-stat:hover::before { opacity: 1; }
         .pr-stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9ca3af; margin-bottom: 8px; }
         .pr-stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #1e1b2e; letter-spacing: 0.02em; line-height: 1; }
@@ -418,44 +418,44 @@ export default function Partner() {
         /* same white card as Home trust badges */
         .pr-card {
           background: white;
-          border: 1px solid rgba(30,58,138,0.12);
+          border: 1px solid rgba(79,70,229,0.12);
           border-radius: 24px; padding: 30px;
-          box-shadow: 0 4px 24px rgba(30,58,138,0.05);
+          box-shadow: 0 4px 24px rgba(79,70,229,0.05);
           position: relative; overflow: hidden;
           transition: all 0.3s;
         }
-        .pr-card:hover { box-shadow: 0 8px 40px rgba(30,58,138,0.1); border-color: rgba(30,58,138,0.25); }
+        .pr-card:hover { box-shadow: 0 8px 40px rgba(79,70,229,0.1); border-color: rgba(79,70,229,0.25); }
         .pr-card::before {
           content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(30,58,138,0.4), transparent);
+          background: linear-gradient(90deg, transparent, rgba(79,70,229,0.4), transparent);
         }
         .pr-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
         .pr-card-title { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9ca3af; }
-        .pr-card-dot { width: 6px; height: 6px; border-radius: 50%; background: #f97316; box-shadow: 0 0 6px rgba(249,115,22,0.4); animation: prPulse 2s ease infinite; }
-        .pr-count-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #f97316; background: #dbeafe; border: 1px solid rgba(30,58,138,0.2); padding: 3px 10px; border-radius: 8px; }
+        .pr-card-dot { width: 6px; height: 6px; border-radius: 50%; background: #4f46e5; box-shadow: 0 0 6px rgba(79,70,229,0.4); animation: prPulse 2s ease infinite; }
+        .pr-count-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #4f46e5; background: #eef2ff; border: 1px solid rgba(79,70,229,0.2); padding: 3px 10px; border-radius: 8px; }
 
         .pr-empty-chart {
           height: 260px; display: flex; align-items: center; justify-content: center;
-          background: #dbeafe; border-radius: 14px;
-          border: 1px dashed rgba(30,58,138,0.2);
+          background: #eef2ff; border-radius: 14px;
+          border: 1px dashed rgba(79,70,229,0.2);
           font-size: 13px; color: #9ca3af; font-weight: 500;
         }
 
         /* ── PAYOUTS ── */
         .pr-payout {
-          background: #dbeafe; border: 1px solid rgba(30,58,138,0.08);
+          background: #eef2ff; border: 1px solid rgba(79,70,229,0.08);
           border-radius: 14px; padding: 16px 18px; margin-bottom: 10px; transition: all 0.25s;
         }
-        .pr-payout:hover { background: white; border-color: rgba(30,58,138,0.2); box-shadow: 0 4px 16px rgba(30,58,138,0.06); }
-        .pr-payout-amount { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #f97316; letter-spacing: 0.03em; }
+        .pr-payout:hover { background: white; border-color: rgba(79,70,229,0.2); box-shadow: 0 4px 16px rgba(79,70,229,0.06); }
+        .pr-payout-amount { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #4f46e5; letter-spacing: 0.03em; }
         .pr-payout-date { font-size: 10px; color: #9ca3af; font-weight: 600; }
-        .pr-method { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #f97316; background: #dbeafe; border: 1px solid rgba(30,58,138,0.2); padding: 3px 10px; border-radius: 6px; }
+        .pr-method { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #4f46e5; background: #eef2ff; border: 1px solid rgba(79,70,229,0.2); padding: 3px 10px; border-radius: 6px; }
         .pr-utr { font-size: 10px; color: #9ca3af; font-weight: 600; }
         .pr-notes { font-size: 11px; color: #9ca3af; font-style: italic; margin-top: 6px; }
 
         /* ── SALES LIST ── */
         .pr-sale {
-          background: #dbeafe; border: 1px solid rgba(30,58,138,0.08);
+          background: #eef2ff; border: 1px solid rgba(79,70,229,0.08);
           border-radius: 14px; padding: 14px 16px; margin-bottom: 8px;
           display: flex; justify-content: space-between; align-items: center;
         }
@@ -465,7 +465,7 @@ export default function Partner() {
 
         .pr-scroll { max-height: 300px; overflow-y: auto; padding-right: 4px; }
         .pr-scroll::-webkit-scrollbar { width: 3px; }
-        .pr-scroll::-webkit-scrollbar-thumb { background: rgba(30,58,138,0.25); border-radius: 10px; }
+        .pr-scroll::-webkit-scrollbar-thumb { background: rgba(79,70,229,0.25); border-radius: 10px; }
 
         .pr-no-pay { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 220px; gap: 10px; text-align: center; }
 
@@ -488,7 +488,7 @@ export default function Partner() {
         /* each step card */
         .pr-step-card {
           background: white;
-          border: 1px solid rgba(30,58,138,0.12);
+          border: 1px solid rgba(79,70,229,0.12);
           border-radius: 20px;
           padding: 28px 28px 28px 24px;
           position: relative;
@@ -496,29 +496,29 @@ export default function Partner() {
           transition: all 0.3s;
           display: flex;
           gap: 20px;
-          box-shadow: 0 2px 16px rgba(30,58,138,0.05);
+          box-shadow: 0 2px 16px rgba(79,70,229,0.05);
         }
         .pr-step-card:hover {
-          border-color: rgba(30,58,138,0.28);
-          box-shadow: 0 8px 32px rgba(30,58,138,0.1);
+          border-color: rgba(79,70,229,0.28);
+          box-shadow: 0 8px 32px rgba(79,70,229,0.1);
           transform: translateY(-2px);
         }
         /* top accent line */
         .pr-step-card::before {
           content: '';
           position: absolute; top: 0; left: 0; right: 0; height: 2px;
-          background: linear-gradient(90deg, transparent, rgba(30,58,138,0.3), transparent);
+          background: linear-gradient(90deg, transparent, rgba(79,70,229,0.3), transparent);
           opacity: 0; transition: opacity 0.3s;
         }
         .pr-step-card:hover::before { opacity: 1; }
 
         /* active card — step 1 */
         .pr-step-card.active-card {
-          border-color: rgba(30,58,138,0.25);
-          background: linear-gradient(135deg, white 60%, #dbeafe);
-          box-shadow: 0 4px 24px rgba(30,58,138,0.1);
+          border-color: rgba(79,70,229,0.25);
+          background: linear-gradient(135deg, white 60%, #eef2ff);
+          box-shadow: 0 4px 24px rgba(79,70,229,0.1);
         }
-        .pr-step-card.active-card::before { opacity: 1; background: linear-gradient(90deg, transparent, #1e3a8a, transparent); }
+        .pr-step-card.active-card::before { opacity: 1; background: linear-gradient(90deg, transparent, #7c3aed, transparent); }
 
         /* done card — step 4 */
         .pr-step-card.done-card {
@@ -538,8 +538,8 @@ export default function Partner() {
 
         .pr-step-circle {
           width: 44px; height: 44px; border-radius: 50%;
-          background: #dbeafe;
-          border: 2px solid rgba(30,58,138,0.18);
+          background: #eef2ff;
+          border: 2px solid rgba(79,70,229,0.18);
           display: flex; align-items: center; justify-content: center;
           font-family: 'Bebas Neue', sans-serif;
           font-size: 18px; color: #9ca3af; letter-spacing: 0.05em;
@@ -547,8 +547,8 @@ export default function Partner() {
           transition: all 0.3s;
         }
         .pr-step-circle.active {
-          background: #1e3a8a; border-color: #1e3a8a; color: white;
-          box-shadow: 0 6px 20px rgba(30,58,138,0.35);
+          background: #7c3aed; border-color: #7c3aed; color: white;
+          box-shadow: 0 6px 20px rgba(79,70,229,0.35);
         }
         .pr-step-circle.done {
           background: #059669; border-color: #059669; color: white;
@@ -562,9 +562,9 @@ export default function Partner() {
         .pr-step-tag {
           display: inline-block;
           font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
-          color: #1e3a8a;
-          background: rgba(30,58,138,0.08);
-          border: 1px solid rgba(30,58,138,0.18);
+          color: #7c3aed;
+          background: rgba(79,70,229,0.08);
+          border: 1px solid rgba(79,70,229,0.18);
           padding: 3px 10px; border-radius: 100px;
           margin-bottom: 8px;
         }
@@ -583,35 +583,35 @@ export default function Partner() {
 
         .pr-step-btn {
           display: inline-flex; align-items: center; gap: 8px;
-          background: #1e3a8a; color: white;
+          background: #7c3aed; color: white;
           padding: 11px 22px; border-radius: 10px;
           font-size: 11px; font-weight: 700;
           text-transform: uppercase; letter-spacing: 0.14em;
           text-decoration: none; transition: all 0.25s;
-          box-shadow: 0 6px 20px rgba(30,58,138,0.28);
+          box-shadow: 0 6px 20px rgba(79,70,229,0.28);
         }
-        .pr-step-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(30,58,138,0.4); }
+        .pr-step-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(79,70,229,0.4); }
         .pr-step-btn:active { transform: scale(0.97); }
 
         .pr-step-contact {
           display: inline-flex; align-items: center; gap: 12px;
-          background: #dbeafe; border: 1px solid rgba(30,58,138,0.18);
+          background: #eef2ff; border: 1px solid rgba(79,70,229,0.18);
           padding: 12px 16px; border-radius: 12px;
         }
 
         .pr-step-info {
           display: inline-flex; align-items: flex-start; gap: 8px;
-          background: rgba(30,58,138,0.05);
-          border: 1px solid rgba(30,58,138,0.12);
+          background: rgba(79,70,229,0.05);
+          border: 1px solid rgba(79,70,229,0.12);
           padding: 10px 14px; border-radius: 10px;
-          font-size: 12px; color: #1e3a8a; font-weight: 500; line-height: 1.5;
+          font-size: 12px; color: #7c3aed; font-weight: 500; line-height: 1.5;
         }
 
         /* connector arrows between cards on desktop */
         @media(min-width:900px) {
           .pr-step-connector {
             display: flex; align-items: center; justify-content: center;
-            color: rgba(30,58,138,0.25); font-size: 20px;
+            color: rgba(79,70,229,0.25); font-size: 20px;
             padding: 8px 0;
           }
         }
@@ -877,7 +877,7 @@ export default function Partner() {
                       <div className="pr-stat-label">Current Balance</div>
                       <div className="pr-stat-val">₹{data.balance.toLocaleString()}</div>
                     </div>
-                    <div className="pr-stat" style={{ border: '1px solid rgba(30,58,138,0.1)', background: 'white' }}>
+                    <div className="pr-stat" style={{ border: '1px solid rgba(79,70,229,0.1)', background: 'white' }}>
                       <div className="pr-stat-label">Total Referrals</div>
                       <div className="pr-stat-val">{data.bills?.length || 0}</div>
                     </div>

@@ -31,21 +31,21 @@ const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
 
   :root {
-    --bg: #f0f9ff;
-    --bg2: #e0f2fe;
+    --bg: #f8fafc;
+    --bg2: #f1f5f9;
     --card: #ffffff;
-    --ink: #1e1b2e;
+    --ink: #0f172a;
     --ink2: #334155;
-    --ink3: #6b7280;
-    --ink4: #9ca3af;
-    --border: rgba(30,58,138,0.1);
-    --border2: rgba(30,58,138,0.2);
-    --primary: #f97316;
-    --primary-dark: #ea580c;
-    --primary-dim: rgba(249,115,22,0.08);
-    --primary-glow: rgba(249,115,22,0.25);
-    --secondary: #1e3a8a;
-    --secondary-dim: rgba(30,58,138,0.08);
+    --ink3: #64748b;
+    --ink4: #94a3b8;
+    --border: rgba(79,70,229,0.1);
+    --border2: rgba(79,70,229,0.15);
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --primary-dim: rgba(79,70,229,0.08);
+    --primary-glow: rgba(79,70,229,0.2);
+    --secondary: #7c3aed;
+    --secondary-dim: rgba(124,58,237,0.08);
     --green: #10b981;
     --green-dim: rgba(16,185,129,0.08);
     --red: #ef4444;
@@ -55,9 +55,9 @@ const STYLES = `
     --r-md: 12px;
     --r-lg: 18px;
     --r-xl: 28px;
-    --shadow-sm: 0 1px 2px rgba(30,58,138,0.04), 0 1px 1px rgba(30,58,138,0.06);
-    --shadow-md: 0 4px 12px -2px rgba(249,115,22,0.1), 0 2px 4px -1px rgba(249,115,22,0.06);
-    --shadow-lg: 0 10px 25px -5px rgba(249,115,22,0.15), 0 4px 6px -2px rgba(249,115,22,0.05);
+    --shadow-sm: 0 1px 2px rgba(79,70,229,0.03), 0 1px 1px rgba(79,70,229,0.04);
+    --shadow-md: 0 4px 12px -2px rgba(79,70,229,0.08), 0 2px 4px -1px rgba(79,70,229,0.04);
+    --shadow-lg: 0 10px 25px -5px rgba(79,70,229,0.12), 0 4px 6px -2px rgba(79,70,229,0.04);
     --t: 0.25s ease;
   }
 
@@ -556,7 +556,7 @@ const STYLES = `
   }
   .pd-btn-cart {
     flex: 1; padding: 14px 20px;
-    background: linear-gradient(135deg, #f97316, #1e3a8a); color: #fff;
+    background: linear-gradient(135deg, #3b82f6, #4f46e5); color: #fff;
     border: none; border-radius: 12px;
     font-size: 14px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -564,11 +564,11 @@ const STYLES = `
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .pd-btn-cart:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(249,115,22,0.25); }
+  .pd-btn-cart:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.25); }
 
   .pd-btn-buy {
     flex: 1; padding: 14px 20px;
-    background: linear-gradient(135deg, #1e3a8a, #f97316); color: #fff;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff;
     border: none; border-radius: 12px;
     font-size: 14px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -576,7 +576,7 @@ const STYLES = `
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .pd-btn-buy:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,58,138,0.25); }
+  .pd-btn-buy:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.25); }
   .pd-btn-cart:disabled, .pd-btn-buy:disabled { background: var(--bg2); color: var(--ink4); cursor: not-allowed; }
 
   /* ── Mobile Sticky CTA ── */
@@ -594,7 +594,7 @@ const STYLES = `
 
   .pd-mob-cart {
     flex: 1; padding: 14px;
-    background: linear-gradient(135deg, #f97316, #1e3a8a); color: #fff;
+    background: linear-gradient(135deg, #3b82f6, #4f46e5); color: #fff;
     border: none; border-radius: 12px;
     font-size: 13px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -605,7 +605,7 @@ const STYLES = `
 
   .pd-mob-buy {
     flex: 1; padding: 14px;
-    background: linear-gradient(135deg, #1e3a8a, #f97316); color: #fff;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff;
     border: none; border-radius: 12px;
     font-size: 13px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;

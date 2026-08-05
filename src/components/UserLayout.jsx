@@ -39,26 +39,26 @@ export default function UserLayout() {
   useEffect(() => {}, [location.pathname])
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col so-page-bg">
       <style>{`
         @keyframes gradientMove {
           0% { background-position: 0% 50%; }
           100% { background-position: 200% 50%; }
         }
         .nav-link-active {
-          color: #2563eb;
-          border-bottom: 2px solid #2563eb;
+          color: #4f46e5;
+          border-bottom: 2px solid #4f46e5;
         }
       `}</style>
 
       {/* Main Header - Premium */}
-      <header className="sticky top-0 z-50 bg-white border-b border-blue-100 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-indigo-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center gap-3">
               <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-orange-500 to-blue-700 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-lg shadow-orange-900/20">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center transition-all group-hover:scale-105 overflow-hidden shadow-lg shadow-indigo-500/30">
                   <img
                     src="/logo.png"
                     alt="SmartOdisha"
@@ -67,11 +67,11 @@ export default function UserLayout() {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-lg font-black tracking-tighter leading-none">
-                    <span className="text-blue-700">SMART</span>
-                    <span className="text-orange-500">ODISHA</span>
+                    <span className="text-indigo-700">SMART</span>
+                    <span className="text-blue-600">ODISHA</span>
                   </span>
-                  <span className="text-[9px] font-semibold text-gray-500 tracking-widest mt-0.5" style={{ 
-                    background: 'linear-gradient(90deg, #f97316, #1e3a8a, #f97316)', 
+                  <span className="text-[9px] font-semibold text-slate-500 tracking-widest mt-0.5" style={{ 
+                    background: 'linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6, #3b82f6)', 
                     backgroundSize: '200% 100%', 
                     WebkitBackgroundClip: 'text', 
                     WebkitTextFillColor: 'transparent', 
@@ -87,7 +87,7 @@ export default function UserLayout() {
               <div className="hidden sm:flex items-center gap-3">
                 {user ? (
                   <div className="flex items-center gap-2">
-                    <div className="h-9 w-9 rounded-full bg-gradient-to-br from-orange-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-orange-900/20 overflow-hidden">
+                    <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-indigo-500/30 overflow-hidden">
                       {user?.avatar && (
                         <img
                           src={getImageUrl(user.avatar)}
@@ -107,7 +107,7 @@ export default function UserLayout() {
                         {user?.name?.charAt(0)?.toUpperCase() || 'U'}
                       </span>
                     </div>
-                    <Link to="/profile" className="text-xs font-semibold text-gray-700 hover:text-orange-500 transition-colors">
+                    <Link to="/profile" className="text-xs font-semibold text-slate-700 hover:text-indigo-600 transition-colors">
                       Hi, {user.name?.split(' ')[0] || 'User'}
                     </Link>
                     <button
@@ -126,7 +126,7 @@ export default function UserLayout() {
                     <Link
                       to="/login"
                       state={{ from: location.pathname + location.search }}
-                      className="text-xs font-semibold text-gray-700 hover:text-orange-500 transition-colors"
+                      className="text-xs font-semibold text-slate-700 hover:text-indigo-600 transition-colors"
                     >
                       Login / Sign Up
                     </Link>
@@ -137,13 +137,13 @@ export default function UserLayout() {
               {/* Wishlist */}
               <Link
                 to="/wishlist"
-                className="group relative p-2 rounded-xl hover:bg-gray-100 transition-all"
+                className="group relative p-2 rounded-xl hover:bg-indigo-50 transition-all"
               >
-                <svg className="w-6 h-6 text-gray-700 group-hover:text-orange-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-6 h-6 text-slate-700 group-hover:text-indigo-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M12 21s-6-4.35-8.5-8C1.5 10 2 6.5 5.2 4.5 8.5 2.5 11 4 12 6c1-2 3.5-3.5 6.8-1.5C22 6.5 22.5 10 20.5 13c-2.5 3.65-8.5 8-8.5 8z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 {wishlistCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-black text-white bg-gradient-to-br from-orange-500 to-red-500 rounded-full shadow-lg shadow-orange-900/20">
+                  <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-black text-white bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full shadow-lg shadow-indigo-500/30">
                     {wishlistCount}
                   </span>
                 )}
@@ -152,15 +152,15 @@ export default function UserLayout() {
               {/* Cart */}
               <Link
                 to="/cart"
-                className="group relative p-2 rounded-xl hover:bg-gray-100 transition-all"
+                className="group relative p-2 rounded-xl hover:bg-indigo-50 transition-all"
               >
-                <svg className="w-6 h-6 text-gray-700 group-hover:text-orange-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <svg className="w-6 h-6 text-slate-700 group-hover:text-indigo-600 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                   <path d="M7 6h13l-1.2 7H9.2L7 6Z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   <circle cx="10" cy="19" r="1.4" fill="currentColor" />
                   <circle cx="17" cy="19" r="1.4" fill="currentColor" />
                 </svg>
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-black text-white bg-gradient-to-br from-orange-500 to-blue-700 rounded-full shadow-lg shadow-orange-900/20">
+                  <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center text-[10px] font-black text-white bg-gradient-to-br from-blue-600 to-indigo-700 rounded-full shadow-lg shadow-indigo-500/30">
                     {cartCount}
                   </span>
                 )}
@@ -179,7 +179,7 @@ export default function UserLayout() {
       {/* Mobile bottom nav (hidden on certain pages) */}
       {!hideBottomNav && (
         <nav className="lg:hidden fixed bottom-4 inset-x-4 z-40">
-          <div className="max-w-md mx-auto h-16 bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-orange-100 flex items-center justify-around px-2">
+          <div className="max-w-md mx-auto h-16 bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-indigo-100 flex items-center justify-around px-2">
             {bottomNavItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -188,12 +188,12 @@ export default function UserLayout() {
                 className={({ isActive }) =>
                   classNames(
                     'flex flex-col items-center justify-center gap-0.5 transition-all px-3 py-2 rounded-2xl relative',
-                    isActive ? 'text-orange-500 bg-orange-50 scale-105' : 'text-gray-600 hover:text-orange-500'
+                    isActive ? 'text-indigo-600 bg-indigo-50 scale-105' : 'text-slate-600 hover:text-indigo-600'
                   )
                 }
               >
                 {item.showCount && item.count > 0 && (
-                  <span className="absolute top-1 right-1 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-orange-500 rounded-full">
+                  <span className="absolute top-1 right-1 h-4 w-4 flex items-center justify-center text-[8px] font-black text-white bg-indigo-600 rounded-full">
                     {item.count}
                   </span>
                 )}
