@@ -44,7 +44,7 @@ export default function Wishlist() {
         <p className="text-gray-500 mb-8">Save products you love for later. Start exploring now!</p>
         <Link
           to="/products"
-          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-orange-500 text-white text-sm font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all active:scale-95"
+          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all active:scale-95"
         >
           Browse Products
         </Link>
@@ -79,7 +79,7 @@ export default function Wishlist() {
                   />
                 </Link>
                 {discount > 0 && (
-                  <div className="absolute top-3 left-3 px-2 py-1 rounded-md bg-orange-500 text-white text-[10px] font-black uppercase tracking-wider">
+                  <div className="absolute top-3 left-3 px-2 py-1 rounded-md bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider">
                     {discount}% OFF
                   </div>
                 )}
@@ -104,7 +104,7 @@ export default function Wishlist() {
                 </div>
                 <button
                   onClick={() => addToCart(product)}
-                  className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-orange-500 text-white font-black text-sm uppercase tracking-widest shadow-md hover:shadow-lg transition-all active:scale-95"
+                  className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm uppercase tracking-widest shadow-md hover:shadow-lg transition-all active:scale-95"
                 >
                   Add to Cart
                 </button>

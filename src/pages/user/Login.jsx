@@ -150,7 +150,7 @@ export default function Login() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12 bg-gray-50">
       <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-[2.5rem] shadow-xl border border-blue-100 animate-in fade-in zoom-in-95 duration-500">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center h-20 w-20 rounded-3xl bg-gradient-to-br from-blue-50 to-orange-50 overflow-hidden mb-4">
+          <div className="inline-flex items-center justify-center h-20 w-20 rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-50 overflow-hidden mb-4">
             <img src={logo} alt="SmartOdisha" className="h-full w-full object-contain" />
           </div>
           <h2 className="text-3xl font-black text-gray-900 tracking-tight">Welcome back</h2>
@@ -161,7 +161,7 @@ export default function Login() {
           type="button"
           onClick={handleGoogleLogin}
           disabled={googleLoading}
-          className="w-full flex items-center justify-center gap-3 py-4 rounded-3xl border-2 border-blue-100 bg-white hover:bg-gradient-to-br from-blue-50 to-orange-50 transition-all text-sm font-bold text-gray-700 disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-3 py-4 rounded-3xl border-2 border-blue-100 bg-white hover:bg-gradient-to-br from-blue-50 to-indigo-50 transition-all text-sm font-bold text-gray-700 disabled:opacity-50"
         >
           {googleLoading ? (
             <div className="w-5 h-5 border-2 border-gray-700 border-t-transparent rounded-full animate-spin"></div>
@@ -185,9 +185,9 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="flex gap-2 bg-gradient-to-br from-blue-50 to-orange-50 p-1.5 rounded-2xl border border-blue-100">
+        <div className="flex gap-2 bg-gradient-to-br from-blue-50 to-indigo-50 p-1.5 rounded-2xl border border-blue-100">
           <button onClick={()=>{setMode('password'); setOtpSent(false);}} className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${mode==='password'?'bg-white shadow-md border border-blue-200 text-blue-700':'text-gray-400 hover:text-gray-600'}`} type="button">Password Login</button>
-          <button onClick={()=>{setMode('otp');}} className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${mode==='otp'?'bg-white shadow-md border border-orange-200 text-orange-600':'text-gray-400 hover:text-gray-600'}`} type="button">OTP Login</button>
+          <button onClick={()=>{setMode('otp');}} className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${mode==='otp'?'bg-white shadow-md border border-indigo-200 text-orange-600':'text-gray-400 hover:text-gray-600'}`} type="button">OTP Login</button>
         </div>
 
         <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
@@ -198,7 +198,7 @@ export default function Login() {
                 name="email"
                 type="email"
                 required
-                className="w-full bg-gradient-to-br from-blue-50 to-orange-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full bg-gradient-to-br from-blue-50 to-indigo-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 placeholder="support@smartodisha.in"
                 value={formData.email}
                 onChange={handleChange}
@@ -208,7 +208,7 @@ export default function Login() {
               <div className="group">
                 <div className="flex items-center justify-between ml-1 mb-1">
                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Password</label>
-                  <Link to="/forgot-password" size="sm" className="text-[10px] font-black uppercase tracking-widest text-orange-600 hover:text-orange-700">
+                  <Link to="/forgot-password" size="sm" className="text-[10px] font-black uppercase tracking-widest text-orange-600 hover:text-indigo-700">
                     Forgot?
                   </Link>
                 </div>
@@ -216,7 +216,7 @@ export default function Login() {
                   name="password"
                   required
                   autoComplete="current-password"
-                  inputClassName="w-full bg-gradient-to-br from-blue-50 to-orange-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  inputClassName="w-full bg-gradient-to-br from-blue-50 to-indigo-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
@@ -231,7 +231,7 @@ export default function Login() {
                     inputMode="numeric"
                     pattern="[0-9]*"
                     maxLength="6"
-                    className="w-full bg-gradient-to-br from-blue-50 to-orange-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                    className="w-full bg-gradient-to-br from-blue-50 to-indigo-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                     placeholder={otpSent ? "123456" : "Will be sent to email"}
                     value={otp}
                     onChange={(e)=>setOtp(e.target.value)}
@@ -254,7 +254,7 @@ export default function Login() {
                     }
                   }}
                   disabled={loading || !formData.email}
-                  className="h-12 px-4 rounded-2xl bg-gradient-to-r from-blue-600 to-orange-500 text-white text-[10px] font-black uppercase tracking-widest disabled:opacity-50 shadow-lg shadow-blue-200"
+                  className="h-12 px-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-500 text-white text-[10px] font-black uppercase tracking-widest disabled:opacity-50 shadow-lg shadow-blue-200"
                 >
                   {otpSent ? 'Resend OTP' : 'Send OTP'}
                 </button>
@@ -265,7 +265,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-orange-500 text-white py-5 rounded-3xl text-sm font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 disabled:opacity-50"
+            className="w-full bg-gradient-to-r from-blue-600 to-indigo-500 text-white py-5 rounded-3xl text-sm font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 disabled:opacity-50"
           >
             {loading ? 'Authenticating...' : (mode==='password' ? 'Sign In' : (otpSent ? 'Verify & Sign In' : 'Send OTP'))}
           </button>

@@ -5,7 +5,7 @@ import PasswordInput from '../../components/PasswordInput'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
 import { CONFIG } from '../../shared/lib/config.js'
 
-const COLORS = ['#1e3a8a', '#f97316', '#3b82f6', '#ea580c', '#93c5fd', '#fed7aa']
+const COLORS = ['#1e3a8a', '#3b82f6', '#4f46e5', '#2563eb', '#93c5fd', '#818cf8']
 
 export default function Partner() {
   const navigate = useNavigate()
@@ -109,7 +109,7 @@ export default function Partner() {
 
         .pr-root {
           font-family: 'DM Sans', system-ui, sans-serif;
-          background: #f0f9ff;
+          background: #dbeafe;
           min-height: 100vh;
           color: #1e1b2e;
           position: relative;
@@ -214,7 +214,7 @@ export default function Partner() {
 
         .pr-input {
           width: 100%; box-sizing: border-box;
-          background: #f0f9ff;
+          background: #dbeafe;
           border: 1px solid rgba(30,58,138,0.2);
           border-radius: 14px; padding: 13px 16px;
           font-size: 13px; font-weight: 600; color: #1e1b2e;
@@ -297,7 +297,7 @@ export default function Partner() {
         }
         .pr-contact-card {
           display: inline-flex; align-items: center; gap: 16px;
-          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.2);
+          background: #dbeafe; border: 1px solid rgba(30,58,138,0.2);
           padding: 18px 32px; border-radius: 16px; transition: all 0.25s;
         }
         .pr-contact-card:hover {
@@ -321,7 +321,7 @@ export default function Partner() {
         }
         .pr-empty-icon {
           width: 80px; height: 80px; border-radius: 24px;
-          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.2);
+          background: #dbeafe; border: 1px solid rgba(30,58,138,0.2);
           display: flex; align-items: center; justify-content: center;
           font-size: 32px; margin-bottom: 20px;
           box-shadow: inset 0 2px 8px rgba(30,58,138,0.06);
@@ -369,7 +369,7 @@ export default function Partner() {
 
         .pr-code-pill {
           display: inline-flex; align-items: center; gap: 8px;
-          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.25);
+          background: #dbeafe; border: 1px solid rgba(30,58,138,0.25);
           padding: 10px 20px; border-radius: 12px;
           font-family: 'Bebas Neue', sans-serif;
           font-size: 22px; color: #f97316; letter-spacing: 0.08em;
@@ -389,7 +389,7 @@ export default function Partner() {
         @media(min-width:640px) { .pr-stats { grid-template-columns: repeat(4, 1fr); } }
 
         .pr-stat {
-          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.1);
+          background: #dbeafe; border: 1px solid rgba(30,58,138,0.1);
           border-radius: 18px; padding: 20px 18px;
           transition: all 0.3s; position: relative; overflow: hidden;
         }
@@ -432,30 +432,30 @@ export default function Partner() {
         .pr-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
         .pr-card-title { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: #9ca3af; }
         .pr-card-dot { width: 6px; height: 6px; border-radius: 50%; background: #f97316; box-shadow: 0 0 6px rgba(249,115,22,0.4); animation: prPulse 2s ease infinite; }
-        .pr-count-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #f97316; background: #f0f9ff; border: 1px solid rgba(30,58,138,0.2); padding: 3px 10px; border-radius: 8px; }
+        .pr-count-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #f97316; background: #dbeafe; border: 1px solid rgba(30,58,138,0.2); padding: 3px 10px; border-radius: 8px; }
 
         .pr-empty-chart {
           height: 260px; display: flex; align-items: center; justify-content: center;
-          background: #f0f9ff; border-radius: 14px;
+          background: #dbeafe; border-radius: 14px;
           border: 1px dashed rgba(30,58,138,0.2);
           font-size: 13px; color: #9ca3af; font-weight: 500;
         }
 
         /* ── PAYOUTS ── */
         .pr-payout {
-          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.08);
+          background: #dbeafe; border: 1px solid rgba(30,58,138,0.08);
           border-radius: 14px; padding: 16px 18px; margin-bottom: 10px; transition: all 0.25s;
         }
         .pr-payout:hover { background: white; border-color: rgba(30,58,138,0.2); box-shadow: 0 4px 16px rgba(30,58,138,0.06); }
         .pr-payout-amount { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #f97316; letter-spacing: 0.03em; }
         .pr-payout-date { font-size: 10px; color: #9ca3af; font-weight: 600; }
-        .pr-method { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #f97316; background: #f0f9ff; border: 1px solid rgba(30,58,138,0.2); padding: 3px 10px; border-radius: 6px; }
+        .pr-method { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #f97316; background: #dbeafe; border: 1px solid rgba(30,58,138,0.2); padding: 3px 10px; border-radius: 6px; }
         .pr-utr { font-size: 10px; color: #9ca3af; font-weight: 600; }
         .pr-notes { font-size: 11px; color: #9ca3af; font-style: italic; margin-top: 6px; }
 
         /* ── SALES LIST ── */
         .pr-sale {
-          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.08);
+          background: #dbeafe; border: 1px solid rgba(30,58,138,0.08);
           border-radius: 14px; padding: 14px 16px; margin-bottom: 8px;
           display: flex; justify-content: space-between; align-items: center;
         }
@@ -515,7 +515,7 @@ export default function Partner() {
         /* active card — step 1 */
         .pr-step-card.active-card {
           border-color: rgba(30,58,138,0.25);
-          background: linear-gradient(135deg, white 60%, #f0f9ff);
+          background: linear-gradient(135deg, white 60%, #dbeafe);
           box-shadow: 0 4px 24px rgba(30,58,138,0.1);
         }
         .pr-step-card.active-card::before { opacity: 1; background: linear-gradient(90deg, transparent, #1e3a8a, transparent); }
@@ -538,7 +538,7 @@ export default function Partner() {
 
         .pr-step-circle {
           width: 44px; height: 44px; border-radius: 50%;
-          background: #f0f9ff;
+          background: #dbeafe;
           border: 2px solid rgba(30,58,138,0.18);
           display: flex; align-items: center; justify-content: center;
           font-family: 'Bebas Neue', sans-serif;
@@ -595,7 +595,7 @@ export default function Partner() {
 
         .pr-step-contact {
           display: inline-flex; align-items: center; gap: 12px;
-          background: #f0f9ff; border: 1px solid rgba(30,58,138,0.18);
+          background: #dbeafe; border: 1px solid rgba(30,58,138,0.18);
           padding: 12px 16px; border-radius: 12px;
         }
 
