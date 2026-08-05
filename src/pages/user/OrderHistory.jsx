@@ -648,7 +648,7 @@ export default function OrderHistory() {
                 const sc          = getStatusColor(order.status)
                 const eta         = getETA(order.createdAt)
                 
-                const canCancel = !["CANCELLED", "RETURNED", "SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED", "FULFILLED"].includes(order.status) && !order.shipping?.waybill && !order.shiprocketOrderId;
+                const canCancel = !["CANCELLED", "RETURNED", "SHIPPED", "OUT_FOR_DELIVERY", "DELIVERED", "FULFILLED"].includes(order.status) && !order.shipping?.waybill && !order.delhiveryOrderId && !order.shiprocketOrderId;
 
                 return (
                   <div
