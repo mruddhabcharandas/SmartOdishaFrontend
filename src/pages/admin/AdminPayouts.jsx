@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
+import ImageUpload from '../../components/ImageUpload'
 
 export default function AdminPayouts() {
   const { notify } = useToast()
@@ -15,6 +16,13 @@ export default function AdminPayouts() {
   const [referenceId, setReferenceId] = useState('')
   const [note, setNote] = useState('')
   const [paying, setPaying] = useState(false)
+
+  // Deduction Modal State
+  const [deductModal, setDeductModal] = useState(null) // holds selected store details
+  const [deductAmount, setDeductAmount] = useState('')
+  const [deductNote, setDeductNote] = useState('')
+  const [proofImage, setProofImage] = useState('')
+  const [deducting, setDeducting] = useState(false)
 
   const loadData = async () => {
     setLoading(true)
@@ -70,6 +78,42 @@ export default function AdminPayouts() {
       notify(err.response?.data?.message || 'Failed to process payout', 'error')
     } finally {
       setPaying(false)
+    }
+  }
+
+  const handleDeductClick = (store) => {
+    setDeductModal(store)
+    setDeductAmount('')
+    setDeductNote('')
+    setProofImage('')
+  }
+
+  const handleProcessDeduction = async (e) => {
+    e.preventDefault()
+    if (!deductModal) return
+
+    const deductVal = Number(deductAmount)
+    if (isNaN(deductVal) || deductVal <= 0) {
+      notify('Please enter a valid amount greater than 0', 'error')
+      return
+    }
+
+    setDeducting(true)
+    try {
+      await api.post('/api/admin/payouts/deduct', {
+        storeId: deductModal._id,
+        amount: deductVal,
+        note: deductNote || `Wallet deduction`,
+        proofImage
+      })
+      notify('Deduction processed successfully', 'success')
+      setDeductModal(null)
+      loadData()
+    } catch (err) {
+      console.error(err)
+      notify(err.response?.data?.message || 'Failed to process deduction', 'error')
+    } finally {
+      setDeducting(false)
     }
   }
 
@@ -191,13 +235,21 @@ export default function AdminPayouts() {
                         ₹{store.walletPaid?.toLocaleString('en-IN') || 0}
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() => handlePayClick(store)}
-                          disabled={!store.walletPending || store.walletPending <= 0}
-                          className="px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-100 hover:from-blue-500 hover:to-indigo-500 transition-all disabled:opacity-40 disabled:shadow-none"
-                        >
-                          Pay Seller
-                        </button>
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => handlePayClick(store)}
+                            disabled={!store.walletPending || store.walletPending <= 0}
+                            className="px-3 py-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold rounded-xl shadow-md shadow-blue-100 hover:from-blue-500 hover:to-indigo-500 transition-all disabled:opacity-40 disabled:shadow-none"
+                          >
+                            Pay Seller
+                          </button>
+                          <button
+                            onClick={() => handleDeductClick(store)}
+                            className="px-3 py-1.5 bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold rounded-xl shadow-md shadow-rose-100 hover:from-rose-500 hover:to-red-500 transition-all"
+                          >
+                            Deduct
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -238,12 +290,20 @@ export default function AdminPayouts() {
                         <span className={`px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider ${
                           tx.type === 'EARNING' 
                             ? 'bg-green-50 text-green-700 border border-green-100' 
-                            : 'bg-blue-50 text-blue-700 border border-blue-100'
+                            : tx.type === 'PAYOUT'
+                            ? 'bg-blue-50 text-blue-700 border border-blue-100'
+                            : 'bg-rose-50 text-rose-700 border border-rose-100'
                         }`}>
                           {tx.type}
                         </span>
                       </td>
-                      <td className={`px-6 py-4 font-black ${tx.type === 'EARNING' ? 'text-green-600' : 'text-blue-600'}`}>
+                      <td className={`px-6 py-4 font-black ${
+                        tx.type === 'EARNING' 
+                          ? 'text-green-600' 
+                          : tx.type === 'PAYOUT'
+                          ? 'text-blue-600'
+                          : 'text-rose-600'
+                      }`}>
                         {tx.type === 'EARNING' ? '+' : '-'} ₹{tx.amount?.toLocaleString('en-IN') || 0}
                       </td>
                       <td className="px-6 py-4 text-gray-700">
@@ -253,6 +313,16 @@ export default function AdminPayouts() {
                         )}
                         {tx.order && (
                           <div className="text-[10px] text-gray-400 mt-0.5">Order Total: ₹{tx.order.totalEstimate} (Customer: {tx.order.customer?.name})</div>
+                        )}
+                        {tx.proofImage && (
+                          <div className="mt-2">
+                            <a href={tx.proofImage} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-600 hover:underline">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M15 3h6v6M10 14L21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                              </svg>
+                              View Proof Image
+                            </a>
+                          </div>
                         )}
                       </td>
                     </tr>
@@ -338,6 +408,88 @@ export default function AdminPayouts() {
                   className="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold rounded-xl shadow-md hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50"
                 >
                   {paying ? 'Processing...' : 'Confirm Transfer'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Deduct Wallet Modal */}
+      {deductModal && (
+        <div className="panel-modal-overlay">
+          <div className="panel-modal max-w-md">
+            <div className="panel-modal-header bg-gradient-to-r from-red-50 to-rose-50/50">
+              <h3 className="text-base font-bold text-gray-900">Process Wallet Deduction for {deductModal.name}</h3>
+              <button 
+                onClick={() => setDeductModal(null)}
+                className="text-gray-400 hover:text-gray-600 text-lg font-bold"
+              >&times;</button>
+            </div>
+            <form onSubmit={handleProcessDeduction}>
+              <div className="panel-modal-body space-y-4">
+                <div>
+                  <label className="panel-label">Store Pending balance</label>
+                  <div className="text-xl font-bold text-indigo-600">₹{deductModal.walletPending?.toLocaleString('en-IN') || 0}</div>
+                </div>
+
+                <div>
+                  <label className="panel-label">Deduction Amount (₹)</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={deductAmount}
+                    onChange={(e) => setDeductAmount(e.target.value)}
+                    className="panel-input"
+                    placeholder="Enter amount to deduct"
+                  />
+                </div>
+
+                <div>
+                  <label className="panel-label">Reason / Notes for Deduction</label>
+                  <input
+                    type="text"
+                    required
+                    value={deductNote}
+                    onChange={(e) => setDeductNote(e.target.value)}
+                    className="panel-input"
+                    placeholder="E.g. Sent wrong item weight (10kg instead of 5kg)"
+                  />
+                </div>
+
+                <div>
+                  <label className="panel-label">Upload Proof Image (e.g. shipping weight proof)</label>
+                  <div className="mt-1 flex flex-col gap-2">
+                    {proofImage ? (
+                      <div className="relative inline-block">
+                        <img src={proofImage} alt="Deduction Proof" className="h-32 w-full object-cover rounded-xl border border-gray-200" />
+                        <button 
+                          type="button" 
+                          onClick={() => setProofImage('')}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-md hover:bg-red-600"
+                        >✕</button>
+                      </div>
+                    ) : (
+                      <ImageUpload onUploaded={(url) => setProofImage(url)} />
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="panel-modal-footer bg-gray-50/50">
+                <button
+                  type="button"
+                  onClick={() => setDeductModal(null)}
+                  className="px-4 py-2 border border-gray-200 text-gray-500 rounded-xl text-xs font-bold hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={deducting}
+                  className="px-4 py-2 bg-gradient-to-r from-rose-600 to-red-600 text-white text-xs font-bold rounded-xl shadow-md hover:from-rose-500 hover:to-red-500 disabled:opacity-50"
+                >
+                  {deducting ? 'Processing...' : 'Confirm Deduction'}
                 </button>
               </div>
             </form>

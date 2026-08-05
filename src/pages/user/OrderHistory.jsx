@@ -156,7 +156,7 @@ export default function OrderHistory() {
     setLoading(true)
     try {
       await api.post(`/api/orders/${cancellingId}/cancel-customer`, { reason: cancelReason })
-      notify('Order cancelled successfully!', 'success')
+      notify('Order cancelled successfully! Your refund amount will be credited to your bank account in 2-3 days.', 'success')
       // Reload orders
       const { data } = await api.get('/api/orders/my')
       setOrders(data)

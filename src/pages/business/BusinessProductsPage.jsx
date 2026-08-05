@@ -103,7 +103,10 @@ export default function BusinessProductsPage() {
         images: form.imageUrls,
         description: form.description,
         highlights: form.highlights || [],
-        specifications: form.specifications || {},
+        specifications: Object.entries(form.specifications || {}).map(([key, value]) => ({
+          key: key.trim(),
+          value: String(value || '').trim()
+        })).filter(s => s.key),
         section: form.section || '',
         variantDisplayType: form.variantDisplayType,
         variants: []
@@ -130,7 +133,12 @@ export default function BusinessProductsPage() {
       height: p.height || '',
       hsnCode: p.hsnCode || '',
       highlights: p.highlights || [],
-      specifications: p.specifications || {}
+      specifications: Array.isArray(p.specifications)
+        ? p.specifications.reduce((acc, curr) => {
+            if (curr && curr.key) acc[curr.key] = curr.value || '';
+            return acc;
+          }, {})
+        : p.specifications || {}
     })
   }
 
@@ -153,7 +161,10 @@ export default function BusinessProductsPage() {
         gst: Number(editing.gst || 0),
         images: editing.imageUrls,
         highlights: editing.highlights || [],
-        specifications: editing.specifications || {},
+        specifications: Object.entries(editing.specifications || {}).map(([key, value]) => ({
+          key: key.trim(),
+          value: String(value || '').trim()
+        })).filter(s => s.key),
         section: editing.section || '',
         variantDisplayType: editing.variantDisplayType || 'selector'
       })
@@ -223,92 +234,92 @@ export default function BusinessProductsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="md:col-span-2">
           <label className="panel-label">Product Name</label>
-          <input className="panel-input" value={data.name} onChange={e => setData({ ...data, name: e.target.value })} required />
+          <input className="panel-input" value={data.name || ''} onChange={e => setData({ ...data, name: e.target.value })} required />
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Selling Price (₹)</label>
-          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.price} onChange={e => setData({ ...data, price: e.target.value })} required />
+          <label className="panel-label">Selling Price (₹)</label>
+          <input type="number" className="panel-input mt-1" value={data.price || ''} onChange={e => setData({ ...data, price: e.target.value })} required />
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">MRP (₹)</label>
-          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.mrp || ''} onChange={e => setData({ ...data, mrp: e.target.value })} />
+          <label className="panel-label">MRP (₹)</label>
+          <input type="number" className="panel-input mt-1" value={data.mrp || ''} onChange={e => setData({ ...data, mrp: e.target.value })} />
         </div>
         {!isEdit && (
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase">Stock</label>
-            <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.stock} onChange={e => setData({ ...data, stock: e.target.value })} required />
+            <label className="panel-label">Stock</label>
+            <input type="number" className="panel-input mt-1" value={data.stock || ''} onChange={e => setData({ ...data, stock: e.target.value })} required />
           </div>
         )}
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Weight (grams)</label>
-          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" placeholder="e.g. 500" value={data.weight} onChange={e => setData({ ...data, weight: e.target.value })} />
+          <label className="panel-label">Weight (grams)</label>
+          <input type="number" className="panel-input mt-1" placeholder="e.g. 500" value={data.weight || ''} onChange={e => setData({ ...data, weight: e.target.value })} />
           <p className="text-[10px] text-gray-400 mt-1">Used for delivery charge calculation</p>
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Length (cm)</label>
-          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" placeholder="e.g. 20" value={data.length} onChange={e => setData({ ...data, length: e.target.value })} />
+          <label className="panel-label">Length (cm)</label>
+          <input type="number" className="panel-input mt-1" placeholder="e.g. 20" value={data.length || ''} onChange={e => setData({ ...data, length: e.target.value })} />
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Width (cm)</label>
-          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" placeholder="e.g. 15" value={data.width} onChange={e => setData({ ...data, width: e.target.value })} />
+          <label className="panel-label">Width (cm)</label>
+          <input type="number" className="panel-input mt-1" placeholder="e.g. 15" value={data.width || ''} onChange={e => setData({ ...data, width: e.target.value })} />
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Height (cm)</label>
-          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" placeholder="e.g. 10" value={data.height} onChange={e => setData({ ...data, height: e.target.value })} />
+          <label className="panel-label">Height (cm)</label>
+          <input type="number" className="panel-input mt-1" placeholder="e.g. 10" value={data.height || ''} onChange={e => setData({ ...data, height: e.target.value })} />
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">GST %</label>
-          <input type="number" className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.gst} onChange={e => setData({ ...data, gst: e.target.value })} />
+          <label className="panel-label">GST %</label>
+          <input type="number" className="panel-input mt-1" value={data.gst || ''} onChange={e => setData({ ...data, gst: e.target.value })} />
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">HSN Code</label>
-          <input className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.hsnCode || ''} onChange={e => setData({ ...data, hsnCode: e.target.value })} />
+          <label className="panel-label">HSN Code</label>
+          <input className="panel-input mt-1" value={data.hsnCode || ''} onChange={e => setData({ ...data, hsnCode: e.target.value })} />
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Brand</label>
-          <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.brandId || ''} onChange={e => setData({ ...data, brandId: e.target.value })}>
+          <label className="panel-label">Brand</label>
+          <select className="panel-input mt-1" value={data.brandId || ''} onChange={e => setData({ ...data, brandId: e.target.value })}>
             <option value="">No Brand</option>
             {brands.map(b => <option key={b._id} value={b._id}>{b.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Category</label>
-          <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.categoryId || ''} onChange={e => setData({ ...data, categoryId: e.target.value, subCategoryId: '' })} required>
+          <label className="panel-label">Category</label>
+          <select className="panel-input mt-1" value={data.categoryId || ''} onChange={e => setData({ ...data, categoryId: e.target.value, subCategoryId: '' })} required>
             <option value="">Select category</option>
             {categories.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-xs font-bold text-gray-500 uppercase">Subcategory</label>
-          <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.subCategoryId || ''} onChange={e => setData({ ...data, subCategoryId: e.target.value })}>
+          <label className="panel-label">Subcategory</label>
+          <select className="panel-input mt-1" value={data.subCategoryId || ''} onChange={e => setData({ ...data, subCategoryId: e.target.value })}>
             <option value="">Optional</option>
             {subcategories.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
           </select>
         </div>
         {sections.length > 0 && (
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase">Section</label>
-            <select className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold" value={data.section || ''} onChange={e => setData({ ...data, section: e.target.value })}>
+            <label className="panel-label">Section</label>
+            <select className="panel-input mt-1" value={data.section || ''} onChange={e => setData({ ...data, section: e.target.value })}>
               <option value="">None</option>
               {sections.map(sec => <option key={sec} value={sec}>{sec}</option>)}
             </select>
           </div>
         )}
         <div className="md:col-span-2">
-          <label className="text-xs font-bold text-gray-500 uppercase">Product Images</label>
+          <label className="panel-label">Product Images</label>
           <div className="mt-2">
             <ImageGallery urls={data.imageUrls || []} onChange={urls => setData({ ...data, imageUrls: urls })} />
           </div>
         </div>
         <div className="md:col-span-2">
           <div className="flex justify-between items-center mb-2">
-            <label className="text-xs font-bold text-gray-500 uppercase">Highlights</label>
+            <label className="panel-label" style={{ marginBottom: 0 }}>Highlights</label>
             <button type="button" onClick={addHighlight} className="text-xs font-semibold text-blue-600 hover:text-blue-800">+ Add Highlight</button>
           </div>
           <div className="space-y-2">
             {(data.highlights || []).map((h, i) => (
               <div key={i} className="flex gap-2">
-                <input className="flex-1 bg-gray-50 rounded-xl px-4 py-2 text-sm" value={h} onChange={(e) => updateHighlight(i, e.target.value)} placeholder="e.g. Premium quality material" />
+                <input className="panel-input flex-1" value={h} onChange={(e) => updateHighlight(i, e.target.value)} placeholder="e.g. Premium quality material" />
                 <button type="button" onClick={() => removeHighlight(i)} className="px-3 text-red-500 hover:text-red-700 font-semibold">✕</button>
               </div>
             ))}
@@ -316,22 +327,22 @@ export default function BusinessProductsPage() {
         </div>
         <div className="md:col-span-2">
           <div className="flex justify-between items-center mb-2">
-            <label className="text-xs font-bold text-gray-500 uppercase">Specifications</label>
+            <label className="panel-label" style={{ marginBottom: 0 }}>Specifications</label>
             <button type="button" onClick={addSpec} className="text-xs font-semibold text-blue-600 hover:text-blue-800">+ Add Spec</button>
           </div>
           <div className="space-y-2">
             {Object.entries(data.specifications || {}).map(([key, value]) => (
               <div key={key} className="flex gap-2">
-                <input className="w-1/3 bg-gray-50 rounded-xl px-4 py-2 text-sm" value={key} onChange={(e) => updateSpec(key, e.target.value, value)} placeholder="e.g. Color" />
-                <input className="flex-1 bg-gray-50 rounded-xl px-4 py-2 text-sm" value={value} onChange={(e) => updateSpec(key, key, e.target.value)} placeholder="e.g. Blue" />
+                <input className="panel-input w-1/3" value={key} onChange={(e) => updateSpec(key, e.target.value, value)} placeholder="e.g. Color" />
+                <input className="panel-input flex-1" value={value} onChange={(e) => updateSpec(key, key, e.target.value)} placeholder="e.g. Blue" />
                 <button type="button" onClick={() => removeSpec(key)} className="px-3 text-red-500 hover:text-red-700 font-semibold">✕</button>
               </div>
             ))}
           </div>
         </div>
         <div className="md:col-span-2">
-          <label className="text-xs font-bold text-gray-500 uppercase">Description</label>
-          <textarea className="w-full mt-1 bg-gray-50 rounded-xl px-4 py-3 text-sm min-h-[100px]" value={data.description || ''} onChange={e => setData({ ...data, description: e.target.value })} />
+          <label className="panel-label">Description</label>
+          <textarea className="panel-input mt-1 min-h-[100px]" value={data.description || ''} onChange={e => setData({ ...data, description: e.target.value })} />
         </div>
       </div>
     )
