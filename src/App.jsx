@@ -14,6 +14,7 @@ import AdminLayout from './components/AdminLayout.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import StaffManagement from './pages/admin/StaffManagement.jsx'
 import Sellers from './pages/admin/Sellers.jsx'
+import AdminPayouts from './pages/admin/AdminPayouts.jsx'
 import Offers from './pages/admin/Offers.jsx'
 import Categories from './pages/admin/Categories.jsx'
 import SubCategories from './pages/admin/SubCategories.jsx'
@@ -46,6 +47,7 @@ import BusinessRequest from './pages/business/Request.jsx'
 import BusinessProducts from './pages/business/BusinessProductsPage.jsx'
 import BusinessInventory from './pages/business/BusinessInventory.jsx'
 import BusinessProfile from './pages/business/BusinessProfile.jsx'
+import BusinessWallet from './pages/business/BusinessWallet.jsx'
 import BusinessOrders from './pages/business/Orders.jsx'
 import BusinessProtectedRoute from './components/BusinessProtectedRoute.jsx'
 import BusinessLayout from './components/BusinessLayout.jsx'
@@ -76,6 +78,7 @@ export default function App() {
         <Route path="settings" element={<Settings />} />
         <Route path="staff" element={<StaffManagement />} />
         <Route path="sellers" element={<Sellers />} />
+        <Route path="payouts" element={<AdminPayouts />} />
         <Route path="offers" element={<Offers />} />
       </Route>
 
@@ -96,6 +99,7 @@ export default function App() {
         <Route path="orders" element={<BusinessOrders />} />
         <Route path="products" element={<BusinessProducts />} />
         <Route path="inventory" element={<BusinessInventory />} />
+        <Route path="wallet" element={<BusinessWallet />} />
         <Route path="profile" element={<BusinessProfile />} />
       </Route>
 
