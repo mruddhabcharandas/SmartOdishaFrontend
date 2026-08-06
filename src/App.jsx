@@ -15,6 +15,7 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import StaffManagement from './pages/admin/StaffManagement.jsx'
 import Sellers from './pages/admin/Sellers.jsx'
 import AdminPayouts from './pages/admin/AdminPayouts.jsx'
+import AdminHeroSlides from './pages/admin/AdminHeroSlides.jsx'
 import Offers from './pages/admin/Offers.jsx'
 import Categories from './pages/admin/Categories.jsx'
 import SubCategories from './pages/admin/SubCategories.jsx'
@@ -79,6 +80,7 @@ export default function App() {
         <Route path="staff" element={<StaffManagement />} />
         <Route path="sellers" element={<Sellers />} />
         <Route path="payouts" element={<AdminPayouts />} />
+        <Route path="hero-slides" element={<AdminHeroSlides />} />
         <Route path="offers" element={<Offers />} />
       </Route>
 

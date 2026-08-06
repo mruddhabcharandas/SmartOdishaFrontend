@@ -20,10 +20,25 @@ export default function Wishlist() {
       const num = Number(val);
       return isNaN(num) || !isFinite(num) ? 0 : num;
     };
-    if (!Array.isArray(product.variants) || product.variants.length === 0) return safeNumber(product.price || 0);
-    const activeVariants = product.variants.filter(v => v.isActive !== false && safeNumber(v.price || 0) > 0);
-    if (activeVariants.length === 0) return safeNumber(product.price || 0);
-    return Math.min(...activeVariants.map(v => safeNumber(v.price || 0)));
+    const storePercentage = safeNumber(product?.store?.storePercentage ?? 0);
+    const getFinalPrice = (base) => safeNumber(base) * (1 + storePercentage / 100);
+
+    if (!Array.isArray(product.variants) || product.variants.length === 0) {
+      return getFinalPrice(product.originalStorePrice ?? product.price ?? 0);
+    }
+    const activeVariants = product.variants.filter(v => v.isActive !== false);
+    if (activeVariants.length === 0) {
+      return getFinalPrice(product.originalStorePrice ?? product.price ?? 0);
+    }
+    const variantFinalPrices = activeVariants.map(v => ({
+      variant: v,
+      finalPrice: getFinalPrice(v.originalStorePrice ?? v.price ?? 0)
+    })).filter(vp => vp.finalPrice > 0);
+
+    if (variantFinalPrices.length === 0) {
+      return getFinalPrice(product.originalStorePrice ?? product.price ?? 0);
+    }
+    return Math.min(...variantFinalPrices.map(vp => vp.finalPrice));
   }
 
   const getDisplayMrp = (product, minPrice) => {
@@ -31,9 +46,19 @@ export default function Wishlist() {
       const num = Number(val);
       return isNaN(num) || !isFinite(num) ? 0 : num;
     };
-    if (!Array.isArray(product.variants) || product.variants.length === 0) return safeNumber(product.mrp || product.price || 0);
-    const variantWithMinPrice = product.variants.find(v => v.isActive !== false && safeNumber(v.price || 0) === minPrice);
-    return safeNumber(variantWithMinPrice?.mrp || product.mrp || minPrice || 0);
+    const storePercentage = safeNumber(product?.store?.storePercentage ?? 0);
+    const getFinalPrice = (base) => safeNumber(base) * (1 + storePercentage / 100);
+
+    if (!Array.isArray(product.variants) || product.variants.length === 0) {
+      return safeNumber(product.mrp) > 0 ? getFinalPrice(product.mrp) : (safeNumber(product.price) > 0 ? getFinalPrice(product.price) : minPrice);
+    }
+    const activeVariants = product.variants.filter(v => v.isActive !== false);
+    if (activeVariants.length === 0) {
+      return safeNumber(product.mrp) > 0 ? getFinalPrice(product.mrp) : (safeNumber(product.price) > 0 ? getFinalPrice(product.price) : minPrice);
+    }
+    const variantWithMrp = activeVariants.find(v => v.mrp != null && safeNumber(v.mrp) > 0);
+    if (variantWithMrp) return getFinalPrice(variantWithMrp.mrp);
+    return safeNumber(product.mrp) > 0 ? getFinalPrice(product.mrp) : (safeNumber(product.price) > 0 ? getFinalPrice(product.price) : minPrice);
   }
 
   if (displayItems.length === 0) {

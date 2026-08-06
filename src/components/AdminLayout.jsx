@@ -275,6 +275,18 @@ export default function AdminLayout() {
                   Staff Management
                 </>
               ), 'staff')}
+              {link('/admin/hero-slides', (
+                <>
+                  <span className="inline-block w-4 h-4 mr-2 align-middle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                      <line x1="21" y1="12" x2="3" y2="12" />
+                      <line x1="12" y1="21" x2="12" y2="3" />
+                    </svg>
+                  </span>
+                  Hero Slides
+                </>
+              ), 'settings')}
               <div className="pt-6 mt-6 border-t border-blue-50">
                 <div className="text-[10px] font-black uppercase text-gray-400 tracking-[0.2em] mb-4 px-2">
                   System

@@ -9,7 +9,7 @@ export default function ImageUpload({ onUploaded }){
     try {
       const fd = new FormData(); fd.append('file', file)
       const { data } = await api.post('/api/uploads/image', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
-      onUploaded?.(data.url)
+      onUploaded?.(data.url, data.key || data.publicId)
     } finally { setLoading(false); e.target.value = '' }
   }
   return (

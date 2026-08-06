@@ -13,6 +13,8 @@ export default function Home() {
   const [stores, setStores] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [products, setProducts] = useState([])
+  const [heroSlides, setHeroSlides] = useState([])
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
 
   useEffect(() => {
     setSEO('SmartOdisha | Premium Shopping Destination', 'Your premium destination for quality products from trusted local stores in Odisha.')
@@ -27,7 +29,16 @@ export default function Home() {
     api.get('/api/offers?activeOnly=true').then(({ data }) => setOffers(data || [])).catch(() => setOffers([]))
     api.get('/api/public/stores').then(({ data }) => setStores(data?.filter(store => store.isPopular) || [])).catch(() => setStores([]))
     api.get('/api/products?limit=12').then(({ data }) => setProducts(data?.items || [])).catch(() => setProducts([]))
+    api.get('/api/public/hero-slides').then(({ data }) => setHeroSlides(data || [])).catch(() => setHeroSlides([]))
   }, [])
+
+  useEffect(() => {
+    if (heroSlides.length <= 1) return
+    const interval = setInterval(() => {
+      setCurrentSlideIndex((prev) => (prev + 1) % heroSlides.length)
+    }, 4500)
+    return () => clearInterval(interval)
+  }, [heroSlides])
 
   const tickerLoop = useMemo(() => {
     const neutral = [
@@ -288,6 +299,57 @@ export default function Home() {
           transform: scale(1.03);
           box-shadow: 0 30px 80px -30px rgba(79,70,229,0.4);
         }
+
+        .hero-slider-container {
+          width: 100%;
+          max-width: 500px;
+          aspect-ratio: 16/9;
+          border-radius: 28px;
+          overflow: hidden;
+          position: relative;
+          box-shadow: 0 20px 60px -20px rgba(79,70,229,0.3);
+          animation: float 6s ease-in-out infinite;
+          background: rgba(255,255,255,0.05);
+        }
+        .hero-slider-container:hover {
+          transform: scale(1.02);
+          box-shadow: 0 30px 80px -30px rgba(79,70,229,0.4);
+        }
+        .hero-slide {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          transition: opacity 0.8s ease-in-out;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+        }
+        .hero-slide.active {
+          opacity: 1;
+          z-index: 10;
+        }
+        .hero-slide-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .hero-slide-title-overlay {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(transparent, rgba(0,0,0,0.85));
+          color: white;
+          padding: 24px;
+          font-weight: 800;
+          font-size: 16px;
+          z-index: 20;
+          text-align: left;
+          letter-spacing: 0.02em;
+        }
+
 
         .features {
           max-width: 1280px;
@@ -817,7 +879,39 @@ export default function Home() {
             </div>
           </div>
           <div className="hero-right">
-            <img src="/banner.jpeg" alt="SmartOdisha Banner" className="hero-image" />
+            {heroSlides.length > 0 ? (
+              <div className="hero-slider-container">
+                {heroSlides.map((slide, idx) => (
+                  <div
+                    key={slide._id}
+                    className={`hero-slide ${idx === currentSlideIndex ? 'active' : ''}`}
+                    onClick={() => slide.link && navigate(slide.link)}
+                    style={{ cursor: slide.link ? 'pointer' : 'default' }}
+                  >
+                    <img src={slide.image?.url} alt={slide.title || 'Slide'} className="hero-slide-img" />
+                    {slide.title && (
+                      <div className="hero-slide-title-overlay">
+                        {slide.title}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {heroSlides.length > 1 && (
+                  <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                    {heroSlides.map((_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={(e) => { e.stopPropagation(); setCurrentSlideIndex(idx); }}
+                        className={`w-2 h-2 rounded-full transition-all ${idx === currentSlideIndex ? 'bg-white w-4' : 'bg-white/50'}`}
+                        style={{ border: 'none', padding: 0, cursor: 'pointer' }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <img src="/banner.jpeg" alt="SmartOdisha Banner" className="hero-image" />
+            )}
           </div>
         </div>
       </section>
