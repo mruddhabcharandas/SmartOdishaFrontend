@@ -23,7 +23,8 @@ const Ico = ({ n, cls = 'w-5 h-5' }) => {
     trash: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16',
     close: 'M6 18L18 6M6 6l12 12',
     send: 'M12 19l9 2-9-18-9 18 9-2zm0 0v-8',
-    check: 'M5 13l4 4L19 7'
+    check: 'M5 13l4 4L19 7',
+    bank: 'M3 10h18M6 21V10M10 21V10M14 21V10M18 21V10M4 10V6a2 2 0 012-2h12a2 2 0 012 2v4M2 21h20'
   }
   return (
     <svg className={cls} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
@@ -75,7 +76,14 @@ export default function BusinessProfile() {
     },
     pickupName: '',
     pickupPhone: '',
-    delhiveryPickupLocation: ''
+    delhiveryPickupLocation: '',
+    bankDetails: {
+      accountName: '',
+      accountNumber: '',
+      ifscCode: '',
+      bankName: ''
+    },
+    upiId: ''
   })
   const [passwordData, setPasswordData] = useState({
     oldPassword: '',
@@ -119,7 +127,14 @@ export default function BusinessProfile() {
         },
         pickupName: data.pickupName || '',
         pickupPhone: data.pickupPhone || '',
-        delhiveryPickupLocation: data.delhiveryPickupLocation || ''
+        delhiveryPickupLocation: data.delhiveryPickupLocation || '',
+        bankDetails: {
+          accountName: data.bankDetails?.accountName || '',
+          accountNumber: data.bankDetails?.accountNumber || '',
+          ifscCode: data.bankDetails?.ifscCode || '',
+          bankName: data.bankDetails?.bankName || ''
+        },
+        upiId: data.upiId || ''
       })
     } catch (err) {
       notify('Failed to load profile', 'error')
@@ -235,6 +250,7 @@ export default function BusinessProfile() {
     { id: 'overview', label: 'Overview', icon: 'home' },
     { id: 'personal', label: 'Profile', icon: 'user' },
     { id: 'pickup', label: 'Pickup', icon: 'map' },
+    { id: 'banking', label: 'Bank & UPI', icon: 'bank' },
     { id: 'settings', label: 'Settings', icon: 'gear' }
   ]
 
@@ -557,6 +573,80 @@ export default function BusinessProfile() {
                     className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-orange-500 to-blue-700 hover:from-orange-600 hover:to-blue-800 active:scale-[0.98] transition-all shadow-lg shadow-orange-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {saving ? 'Saving…' : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+          {/* Bank & UPI Section */}
+          {activeSection === 'banking' && (
+            <div className="pf-panel bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-100">
+                <h2 className="pf-display font-black text-slate-800">Bank Details & UPI</h2>
+                <p className="text-slate-400 text-xs mt-0.5">Manage bank account and UPI details for payout verification</p>
+              </div>
+              <form onSubmit={handleSave} className="p-5 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Account Holder Name</label>
+                    <input
+                      type="text"
+                      value={formData.bankDetails?.accountName || ''}
+                      onChange={(e) => handleInputChange('bankDetails.accountName', e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      placeholder="Account Holder Name"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Bank Name</label>
+                    <input
+                      type="text"
+                      value={formData.bankDetails?.bankName || ''}
+                      onChange={(e) => handleInputChange('bankDetails.bankName', e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      placeholder="e.g. HDFC Bank"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Account Number</label>
+                    <input
+                      type="text"
+                      value={formData.bankDetails?.accountNumber || ''}
+                      onChange={(e) => handleInputChange('bankDetails.accountNumber', e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      placeholder="Account Number"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">IFSC Code</label>
+                    <input
+                      type="text"
+                      value={formData.bankDetails?.ifscCode || ''}
+                      onChange={(e) => handleInputChange('bankDetails.ifscCode', e.target.value.toUpperCase())}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      placeholder="IFSC Code"
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">UPI ID</label>
+                    <input
+                      type="text"
+                      value={formData.upiId || ''}
+                      onChange={(e) => handleInputChange('upiId', e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      placeholder="e.g., storename@upi"
+                    />
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-slate-100">
+                  <button
+                    type="submit"
+                    disabled={saving}
+                    className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-orange-500 to-blue-700 hover:from-orange-600 hover:to-blue-800 active:scale-[0.98] transition-all shadow-lg shadow-orange-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {saving ? 'Saving…' : 'Save Details'}
                   </button>
                 </div>
               </form>

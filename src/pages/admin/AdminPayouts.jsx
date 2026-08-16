@@ -358,6 +358,44 @@ export default function AdminPayouts() {
                   <div className="text-xl font-bold text-indigo-600">₹{payoutModal.walletPending?.toLocaleString('en-IN') || 0}</div>
                 </div>
 
+                {/* Seller Payment Details */}
+                <div style={{
+                  padding: '14px',
+                  backgroundColor: 'rgba(79,70,229,0.04)',
+                  border: '1px dashed rgba(79,70,229,0.2)',
+                  borderRadius: '16px',
+                  fontSize: '12.5px',
+                  color: '#475569',
+                  lineHeight: '1.6'
+                }}>
+                  <div style={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '8px', fontSize: '13px' }}>Seller Settlement details:</div>
+                  {payoutModal.bankDetails && payoutModal.bankDetails.accountNumber ? (
+                    <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '4px' }}>
+                      <span className="font-semibold text-gray-500">Account Name:</span>
+                      <span className="font-bold text-gray-800">{payoutModal.bankDetails.accountName || 'N/A'}</span>
+                      
+                      <span className="font-semibold text-gray-500">Account Number:</span>
+                      <span className="font-bold text-gray-800">{payoutModal.bankDetails.accountNumber}</span>
+                      
+                      <span className="font-semibold text-gray-500">IFSC Code:</span>
+                      <span className="font-bold text-gray-800">{payoutModal.bankDetails.ifscCode || 'N/A'}</span>
+                      
+                      <span className="font-semibold text-gray-500">Bank Name:</span>
+                      <span className="font-bold text-gray-800">{payoutModal.bankDetails.bankName || 'N/A'}</span>
+                    </div>
+                  ) : (
+                    <div style={{ color: '#ef4444', fontStyle: 'italic', marginBottom: '4px' }}>No Bank Details configured by seller.</div>
+                  )}
+                  {payoutModal.upiId ? (
+                    <div style={{ marginTop: '8px', borderTop: '1px solid rgba(79,70,229,0.1)', paddingTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span className="font-semibold text-gray-500">UPI ID:</span>
+                      <span className="font-bold text-indigo-600 bg-indigo-50/50 px-2 py-0.5 rounded-lg border border-indigo-100">{payoutModal.upiId}</span>
+                    </div>
+                  ) : (
+                    <div style={{ color: '#ef4444', fontStyle: 'italic', marginTop: '8px', borderTop: '1px solid rgba(79,70,229,0.1)', paddingTop: '8px' }}>No UPI ID configured by seller.</div>
+                  )}
+                </div>
+
                 <div>
                   <label className="panel-label">Transfer Payout Amount (₹)</label>
                   <input

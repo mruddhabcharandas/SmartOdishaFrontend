@@ -1100,7 +1100,14 @@ export default function Enquiry() {
                 <div className={`ct-payment-option ${selectedPaymentMethod === 'COD' ? 'selected' : ''}`} onClick={() => setSelectedPaymentMethod('COD')} style={{opacity:svc.cod === false ? 0.5 : 1,pointerEvents:svc.cod === false ? 'none' : 'auto'}}>
                   <div className="ct-payment-icon">💵</div>
                   <div className="ct-payment-info">
-                    <div className="ct-payment-title">Cash on Delivery</div>
+                    <div className="ct-payment-title">
+                      Cash on Delivery
+                      {shippingInfo.codCharge > 0 && (
+                        <span style={{ marginLeft: '6px', fontSize: '11px', color: '#f97316', fontWeight: 'bold' }}>
+                          (+₹{shippingInfo.codCharge} COD Fee)
+                        </span>
+                      )}
+                    </div>
                     <div className="ct-payment-desc">Pay in cash when your order arrives {svc.cod === false && ' (Not available for this pincode)'}</div>
                   </div>
                 </div>
