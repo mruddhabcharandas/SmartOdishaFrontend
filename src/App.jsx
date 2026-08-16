@@ -17,6 +17,7 @@ import Sellers from './pages/admin/Sellers.jsx'
 import AdminPayouts from './pages/admin/AdminPayouts.jsx'
 import AdminHeroSlides from './pages/admin/AdminHeroSlides.jsx'
 import Offers from './pages/admin/Offers.jsx'
+import SellerRequests from './pages/admin/SellerRequests.jsx'
 import Categories from './pages/admin/Categories.jsx'
 import SubCategories from './pages/admin/SubCategories.jsx'
 import Home from './pages/user/Home.jsx'
@@ -82,6 +83,7 @@ export default function App() {
         <Route path="payouts" element={<AdminPayouts />} />
         <Route path="hero-slides" element={<AdminHeroSlides />} />
         <Route path="offers" element={<Offers />} />
+        <Route path="seller-requests" element={<SellerRequests />} />
       </Route>
 
       <Route path="/business/login" element={<BusinessLogin />} />

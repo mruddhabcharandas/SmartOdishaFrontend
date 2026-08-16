@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
+import { useToast } from '../../components/Toast'
 
 export default function Settings() {
+  const { notify } = useToast()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  const [passData, setPassData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  const [passLoading, setPassLoading] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -22,12 +27,42 @@ export default function Settings() {
     load()
   }, [])
 
+  const handlePasswordChange = async (e) => {
+    e.preventDefault()
+    if (!passData.currentPassword || !passData.newPassword) {
+      notify('All password fields are required', 'error')
+      return
+    }
+    if (passData.newPassword.length < 6) {
+      notify('New password must be at least 6 characters long', 'error')
+      return
+    }
+    if (passData.newPassword !== passData.confirmPassword) {
+      notify('Passwords do not match', 'error')
+      return
+    }
+
+    try {
+      setPassLoading(true)
+      await api.put('/api/admin/change-password', {
+        currentPassword: passData.currentPassword,
+        newPassword: passData.newPassword
+      })
+      notify('Password updated successfully', 'success')
+      setPassData({ currentPassword: '', newPassword: '', confirmPassword: '' })
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to update password', 'error')
+    } finally {
+      setPassLoading(false)
+    }
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-lg font-semibold text-gray-900">Store settings</h1>
-        <p className="text-[11px] text-gray-500">
-          Key details used on SmartOdisha bills and stock alerts.
+        <h1 className="text-xl font-bold text-gray-900">System settings</h1>
+        <p className="text-xs text-gray-500 mt-1">
+          Key details used on SmartOdisha bills, stock alerts, and profile security.
         </p>
       </div>
 
@@ -35,46 +70,92 @@ export default function Settings() {
       {error && <div className="text-sm text-red-600">{error}</div>}
 
       {data && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-2">
-            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-3">
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-wide">
               Billing profile
             </div>
-            <div className="text-sm text-gray-900 font-medium">{data.companyName}</div>
+            <div className="text-sm text-gray-900 font-bold">{data.companyName}</div>
             {data.companyAddress && (
-              <div className="text-xs text-gray-600 whitespace-pre-line">
+              <div className="text-xs text-gray-600 whitespace-pre-line leading-relaxed">
                 {data.companyAddress}
               </div>
             )}
             {data.companyGst && (
-              <div className="text-xs text-gray-700 mt-1">GSTIN: {data.companyGst}</div>
+              <div className="text-xs text-gray-700 font-medium">GSTIN: {data.companyGst}</div>
             )}
-            <div className="text-xs text-gray-600 mt-2 space-y-0.5">
-              {data.companyPhone && <div>Phone: {data.companyPhone}</div>}
-              {data.companyEmail && <div>Email: {data.companyEmail}</div>}
+            <div className="text-xs text-gray-500 pt-2 space-y-1 border-t border-gray-50">
+              {data.companyPhone && <div><strong>Phone:</strong> {data.companyPhone}</div>}
+              {data.companyEmail && <div><strong>Email:</strong> {data.companyEmail}</div>}
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm space-y-2">
-            <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-3">
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-wide">
               Inventory
             </div>
-            <div className="text-sm text-gray-900">
+            <div className="text-sm text-gray-900 font-medium">
               Low stock threshold:{' '}
-              <span className="font-semibold">{data.lowStockThreshold}</span>
+              <span className="font-bold text-indigo-600">{data.lowStockThreshold}</span>
             </div>
-            <div className="text-xs text-gray-600">
-              Products with stock at or below this number are treated as low stock for alerts.
+            <div className="text-xs text-gray-500 leading-relaxed">
+              Products with stock levels at or below this limit are marked as low stock for alerts.
             </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4 md:col-span-2">
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-wide">
+              Security - Change Password
+            </div>
+            <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-gray-600 block">Current Password</label>
+                <input
+                  type="password"
+                  value={passData.currentPassword}
+                  onChange={(e) => setPassData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-600 block">New Password</label>
+                  <input
+                    type="password"
+                    value={passData.newPassword}
+                    onChange={(e) => setPassData(prev => ({ ...prev, newPassword: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-medium text-gray-600 block">Confirm New Password</label>
+                  <input
+                    type="password"
+                    value={passData.confirmPassword}
+                    onChange={(e) => setPassData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    required
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                disabled={passLoading}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition"
+              >
+                {passLoading ? 'Updating...' : 'Update Password'}
+              </button>
+            </form>
           </div>
         </div>
       )}
 
-      <div className="text-[11px] text-gray-400">
-        To change these values, update the server environment variables (`COMPANY_*` and
-        `LOW_STOCK_THRESHOLD`) and redeploy the backend.
+      <div className="text-[10px] text-gray-400 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-100">
+        To modify the billing or inventory values, update the backend environment variables 
+        (`COMPANY_*` and `LOW_STOCK_THRESHOLD`) and restart the service.
       </div>
     </div>
   )
 }
-
