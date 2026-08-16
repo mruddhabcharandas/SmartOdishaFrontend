@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
+import ImageUpload from '../../components/ImageUpload'
+
 
 export default function Sellers() {
   const { notify } = useToast()
@@ -58,19 +60,6 @@ export default function Sellers() {
     }
   }
 
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        setFormData(prev => ({
-          ...prev,
-          image: { url: event.target.result }
-        }))
-      }
-      reader.readAsDataURL(file)
-    }
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -349,13 +338,24 @@ export default function Sellers() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Store Image</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                  />
+                  <label className="text-sm font-medium text-gray-700 block">Store Image</label>
+                  <div className="flex items-center gap-3">
+                    <ImageUpload
+                      onUploaded={(url, key) => setFormData(prev => ({
+                        ...prev,
+                        image: { url, publicId: key }
+                      }))}
+                    />
+                    {formData.image?.url && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, image: null }))}
+                        className="text-xs text-red-500 hover:text-red-700 font-bold"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
                   {formData.image?.url && (
                     <div className="mt-2">
                       <img

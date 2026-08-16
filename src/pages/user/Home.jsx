@@ -81,24 +81,6 @@ export default function Home() {
           color: #0f172a;
         }
 
-        .top-ticker {
-          background: linear-gradient(90deg, #0f172a, #1e3a8a, #4f46e5);
-          color: white;
-          padding: 8px 20px;
-          font-size: 12px;
-          font-weight: 700;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-        @media (max-width: 640px) {
-          .top-ticker { justify-content: center; text-align: center; gap: 8px; }
-        }
-        .ticker-right { display: flex; gap: 12px; }
-        .ticker-link { color: white; text-decoration: none; font-weight: 700; transition: all 0.2s; padding: 6px 16px; border-radius: 100px; background: rgba(255,255,255,0.2); font-size:11px; letter-spacing: 0.1em; text-transform: uppercase; }
-        .ticker-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
 
         .hero {
           color: white;
@@ -820,14 +802,6 @@ export default function Home() {
         }
       `}</style>
 
-      {/* Top Ticker */}
-      <div className="top-ticker">
-        <span>✦ Free Delivery on ₹999+ • 7-Day Returns • 100% Secure Checkout</span>
-        <div className="ticker-right">
-          <Link to="/orders" className="ticker-link">Track Order</Link>
-          <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="ticker-link">24/7 Support</a>
-        </div>
-      </div>
 
       {/* Hero */}
       <section className="hero relative overflow-hidden">
@@ -888,7 +862,7 @@ export default function Home() {
                     onClick={() => slide.link && navigate(slide.link)}
                     style={{ cursor: slide.link ? 'pointer' : 'default' }}
                   >
-                    <img src={slide.image?.url} alt={slide.title || 'Slide'} className="hero-slide-img" />
+                    <img src={slide.image?.url || slide.image} alt={slide.title || 'Slide'} className="hero-slide-img" />
                     {slide.title && (
                       <div className="hero-slide-title-overlay">
                         {slide.title}

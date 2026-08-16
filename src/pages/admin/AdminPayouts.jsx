@@ -215,8 +215,12 @@ export default function AdminPayouts() {
                     <tr key={store._id} className="hover:bg-blue-50/20 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          {store.image && (
-                            <img src={store.image} alt={store.name} className="h-10 w-10 rounded-xl object-cover border border-blue-50" />
+                          {store.image?.url || store.image ? (
+                            <img src={store.image?.url || store.image} alt={store.name} className="h-10 w-10 rounded-xl object-cover border border-blue-50" />
+                          ) : (
+                            <div className="h-10 w-10 rounded-xl bg-gray-100 border border-blue-50 flex items-center justify-center font-bold text-gray-400">
+                              {store.name?.charAt(0).toUpperCase()}
+                            </div>
                           )}
                           <div>
                             <div className="font-extrabold text-gray-900">{store.name}</div>

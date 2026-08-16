@@ -49,7 +49,36 @@ export default function UserLayout() {
           color: #4f46e5;
           border-bottom: 2px solid #4f46e5;
         }
+        .top-ticker {
+          background: linear-gradient(90deg, #0f172a, #1e3a8a, #4f46e5);
+          color: white;
+          padding: 8px 20px;
+          font-size: 12px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        @media (max-width: 640px) {
+          .top-ticker { justify-content: center; text-align: center; gap: 8px; }
+        }
+        .ticker-right { display: flex; gap: 12px; }
+        .ticker-link { color: white; text-decoration: none; font-weight: 700; transition: all 0.2s; padding: 6px 16px; border-radius: 100px; background: rgba(255,255,255,0.2); font-size:11px; letter-spacing: 0.1em; text-transform: uppercase; }
+        .ticker-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
       `}</style>
+
+      {/* Top Ticker - only on Home page */}
+      {location.pathname === '/' && (
+        <div className="top-ticker">
+          <span>✦ Free Delivery on ₹999+ • 7-Day Returns • 100% Secure Checkout</span>
+          <div className="ticker-right">
+            <Link to="/orders" className="ticker-link">Track Order</Link>
+            <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="ticker-link">24/7 Support</a>
+          </div>
+        </div>
+      )}
 
       {/* Main Header - Premium */}
       <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-indigo-100 shadow-sm">
