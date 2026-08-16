@@ -283,6 +283,7 @@ export default function Home() {
           justify-content: center;
           align-items: center;
           position: relative;
+          width: 100%;
         }
         .hero-image {
           width: 100%;
