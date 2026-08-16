@@ -957,8 +957,8 @@ export default function Home() {
           <div className="section-header">
             <div className="section-title-group">
               <span className="section-eyebrow">Trusted Partners</span>
-              <h2 className="section-title">Popular Stores</h2>
-              <p className="section-subtitle">Shop from verified local stores offering the best products and service</p>
+              <h2 className="section-title">Popular Sellers</h2>
+              <p className="section-subtitle">Shop from verified local sellers offering the best products and service</p>
             </div>
           </div>
           <div className="stores-grid">
@@ -989,7 +989,7 @@ export default function Home() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2">
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    Verified Store
+                    Verified
                   </div>
                 </div>
               </Link>
