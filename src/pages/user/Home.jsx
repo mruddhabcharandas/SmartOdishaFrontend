@@ -82,6 +82,25 @@ export default function Home() {
         }
 
 
+        .top-ticker {
+          background: linear-gradient(90deg, #0f172a, #1e3a8a, #4f46e5);
+          color: white;
+          padding: 8px 20px;
+          font-size: 12px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        @media (max-width: 640px) {
+          .top-ticker { justify-content: center; text-align: center; gap: 8px; }
+        }
+        .ticker-right { display: flex; gap: 12px; }
+        .ticker-link { color: white; text-decoration: none; font-weight: 700; transition: all 0.2s; padding: 6px 16px; border-radius: 100px; background: rgba(255,255,255,0.2); font-size:11px; letter-spacing: 0.1em; text-transform: uppercase; }
+        .ticker-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
+
         .hero {
           color: white;
           padding: 80px 20px 100px;
@@ -104,22 +123,18 @@ export default function Home() {
         .hero-inner {
           max-width: 1280px;
           margin: 0 auto;
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 30px;
+          display: flex;
+          flex-direction: column;
           align-items: center;
+          text-align: center;
+          gap: 40px;
           position: relative;
           z-index: 1;
-        }
-        @media (min-width: 1024px) {
-          .hero-inner {
-            grid-template-columns: 1.2fr 1fr;
-            gap: 60px;
-          }
         }
         .hero-left {
           display: flex;
           flex-direction: column;
+          align-items: center;
           gap: 24px;
         }
         .hero-eyebrow {
@@ -213,6 +228,7 @@ export default function Home() {
         .hero-cta {
           display: flex;
           flex-wrap: wrap;
+          justify-content: center;
           gap: 12px;
         }
         .btn-primary {
@@ -270,7 +286,7 @@ export default function Home() {
         }
         .hero-image {
           width: 100%;
-          max-width: 400px;
+          max-width: 800px;
           height: auto;
           border-radius: 28px;
           box-shadow: 0 20px 60px -20px rgba(79,70,229,0.3);
@@ -284,7 +300,7 @@ export default function Home() {
 
         .hero-slider-container {
           width: 100%;
-          max-width: 500px;
+          max-width: 800px;
           aspect-ratio: 16/9;
           border-radius: 28px;
           overflow: hidden;
@@ -803,6 +819,15 @@ export default function Home() {
       `}</style>
 
 
+      {/* Top Ticker */}
+      <div className="top-ticker">
+        <span>✦ Free Delivery on ₹999+ • 7-Day Returns • 100% Secure Checkout</span>
+        <div className="ticker-right">
+          <Link to="/orders" className="ticker-link">Track Order</Link>
+          <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="ticker-link">24/7 Support</a>
+        </div>
+      </div>
+
       {/* Hero */}
       <section className="hero relative overflow-hidden">
         {/* Animated background elements */}
@@ -822,21 +847,7 @@ export default function Home() {
             <p className="hero-desc">
               Experience premium shopping with curated products from trusted local stores. Enjoy fast delivery, secure payments, and exclusive deals across Odisha.
             </p>
-            <form onSubmit={handleSearch} className="hero-search">
-              <input
-                type="text"
-                placeholder="Search for products, brands, and more..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="hero-search-input"
-              />
-              <button type="submit" className="hero-search-btn">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                Search
-              </button>
-            </form>
+
             <div className="hero-cta">
               <Link to="/products" className="btn-primary">
                 Explore Products
