@@ -176,107 +176,12 @@ export default function Login() {
           Continue with Google
         </button>
 
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-blue-100"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white text-[10px] font-black uppercase tracking-widest text-gray-400">Or continue with</span>
-          </div>
-        </div>
-
-        <div className="flex gap-2 bg-gradient-to-br from-blue-50 to-indigo-50 p-1.5 rounded-2xl border border-blue-100">
-          <button onClick={()=>{setMode('password'); setOtpSent(false);}} className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${mode==='password'?'bg-white shadow-md border border-blue-200 text-blue-700':'text-gray-400 hover:text-gray-600'}`} type="button">Password Login</button>
-          <button onClick={()=>{setMode('otp');}} className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${mode==='otp'?'bg-white shadow-md border border-indigo-200 text-indigo-600':'text-gray-400 hover:text-gray-600'}`} type="button">OTP Login</button>
-        </div>
-
-        <form className="mt-4 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div className="group">
-              <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block">Email Address</label>
-              <input
-                name="email"
-                type="email"
-                required
-                className="w-full bg-gradient-to-br from-blue-50 to-indigo-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                placeholder="support@smartodisha.in"
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            {mode==='password' ? (
-              <div className="group">
-                <div className="flex items-center justify-between ml-1 mb-1">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 block">Password</label>
-                  <Link to="/forgot-password" size="sm" className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-700">
-                    Forgot?
-                  </Link>
-                </div>
-                <PasswordInput
-                  name="password"
-                  required
-                  autoComplete="current-password"
-                  inputClassName="w-full bg-gradient-to-br from-blue-50 to-indigo-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
-              </div>
-            ) : (
-              <div className="grid grid-cols-3 gap-2 items-end">
-                <div className="col-span-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1 mb-1 block">{otpSent ? 'Enter OTP' : 'One-Time Password'}</label>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength="6"
-                    className="w-full bg-gradient-to-br from-blue-50 to-indigo-50 border-none rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                    placeholder={otpSent ? "123456" : "Will be sent to email"}
-                    value={otp}
-                    onChange={(e)=>setOtp(e.target.value)}
-                    disabled={!otpSent}
-                    required
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={async ()=>{
-                    setLoading(true)
-                    try {
-                      await api.post('/api/auth/customer/login-otp/send', { email: formData.email })
-                      setOtpSent(true)
-                      notify('OTP sent to your email', 'success')
-                    } catch (err) {
-                      notify(err?.response?.data?.error || 'Failed to send OTP', 'error')
-                    } finally {
-                      setLoading(false)
-                    }
-                  }}
-                  disabled={loading || !formData.email}
-                  className="h-12 px-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-500 text-white text-[10px] font-black uppercase tracking-widest disabled:opacity-50 shadow-lg shadow-blue-200"
-                >
-                  {otpSent ? 'Resend OTP' : 'Send OTP'}
-                </button>
-              </div>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-500 text-white py-5 rounded-3xl text-sm font-black uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all transform hover:-translate-y-1 active:scale-95 disabled:opacity-50"
-          >
-            {loading ? 'Authenticating...' : (mode==='password' ? 'Sign In' : (otpSent ? 'Verify & Sign In' : 'Send OTP'))}
-          </button>
-
-          <p className="text-center text-xs text-gray-400 font-bold mt-6 uppercase tracking-widest">
-            New to SmartOdisha?{' '}
-            <Link to="/signup" state={{ from }} className="text-blue-700 hover:text-indigo-600">
-              Create Account
-            </Link>
-          </p>
-        </form>
+        <p className="text-center text-xs text-gray-400 font-bold mt-6 uppercase tracking-widest">
+          New to SmartOdisha?{' '}
+          <Link to="/signup" state={{ from }} className="text-blue-700 hover:text-indigo-600 font-semibold">
+            Create Account
+          </Link>
+        </p>
       </div>
     </div>
   )

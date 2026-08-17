@@ -245,84 +245,12 @@ export default function Signup() {
               Continue with Google
             </button>
 
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-[11px] font-bold uppercase tracking-widest text-slate-400">Or continue with</span>
-              </div>
-            </div>
-
-            <form className="space-y-5" onSubmit={handleSendOTP}>
-              <div className="space-y-4">
-                <div className="group">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Full Name</label>
-                  <input
-                    name="name"
-                    type="text"
-                    required
-                    className="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-4 text-base font-medium text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                    placeholder="Uddhab Das"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="group">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Email Address</label>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    className="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-4 text-base font-medium text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                    placeholder="support@smartodisha.in"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="group">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Phone Number</label>
-                  <input
-                    name="phone"
-                    type="tel"
-                    required
-                    maxLength={10}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-4 text-base font-medium text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                    placeholder="9827058262"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="group">
-                  <label className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400 ml-1 mb-2 block">Create Password</label>
-                  <PasswordInput
-                    name="password"
-                    required
-                    minLength={6}
-                    autoComplete="new-password"
-                    inputClassName="w-full bg-slate-50 border border-slate-200 rounded-[20px] px-5 py-4 text-base font-medium text-slate-900 placeholder-slate-400 outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 rounded-[28px] text-sm font-bold uppercase tracking-widest shadow-lg shadow-blue-200 hover:shadow-xl transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50"
-              >
-                {loading ? 'Sending OTP...' : 'Send Verification Code'}
-              </button>
-
-              <p className="text-center text-sm text-slate-500 font-medium mt-6">
-                Already have an account?{' '}
-                <Link to="/login" state={{ from }} className="text-blue-700 hover:text-indigo-700 font-semibold">
-                  Login
-                </Link>
-              </p>
-            </form>
+            <p className="text-center text-sm text-slate-500 font-medium mt-6">
+              Already have an account?{' '}
+              <Link to="/login" state={{ from }} className="text-blue-700 hover:text-indigo-700 font-semibold">
+                Login
+              </Link>
+            </p>
           </div>
         )}
 
