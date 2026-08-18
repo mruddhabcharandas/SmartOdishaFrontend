@@ -713,6 +713,16 @@ export default function ProductDetail() {
     if (isAuthenticated) refreshProfile();
   }, [isAuthenticated, refreshProfile]);
 
+  useEffect(() => {
+    api.get('/api/public/settings')
+      .then(({ data }) => {
+        if (data && data.freeDeliveryAbove !== undefined) {
+          setFreeDeliveryAbove(Number(data.freeDeliveryAbove));
+        }
+      })
+      .catch(err => console.error("Failed to load settings:", err));
+  }, []);
+
   const { data: similarProducts = [] } = useQuery({
     queryKey: ['recommendations', idOrSlug],
     queryFn: async () => {
@@ -769,6 +779,7 @@ export default function ProductDetail() {
   const [descriptionExpanded, setDescriptionExpanded] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [activeTab, setActiveTab] = useState('highlights');
+  const [freeDeliveryAbove, setFreeDeliveryAbove] = useState(999);
 
   const variantAttrs = useMemo(() => {
     if (!p) return [];
@@ -954,7 +965,7 @@ export default function ProductDetail() {
     } catch {
       const now = new Date();
       const addDays = (d, n) => { const x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; };
-      const isFree = (currentPrice || minPrice) >= 999;
+      const isFree = (currentPrice || minPrice) >= freeDeliveryAbove;
       const codCharge = Math.min(Math.max(Math.round((currentPrice || minPrice) * 0.05), 40), 100);
       setDeliveryInfo({ serviceable: true, message: 'Delivery available', etaStart: addDays(now, 3), etaEnd: addDays(now, 5), deliveryCharge: 85, codCharge, codFinalCharge: 85 + codCharge, isFreeDelivery: isFree });
     } finally { setCheckingDelivery(false); }
@@ -1465,7 +1476,7 @@ export default function ProductDetail() {
                       </div>
                       <div className="pd-del-details">
                         {deliveryInfo.codAvailable ? '✓ Cash on Delivery available' : '✗ Cash on Delivery not available'}
-                        {deliveryInfo.charge > 0 ? ` · Delivery Charge: ₹${deliveryInfo.charge}` : ' · Free Delivery'}
+                        {deliveryInfo.deliveryCharge > 0 ? ` · Delivery Charge: ₹${deliveryInfo.deliveryCharge}` : ' · Free Delivery'}
                       </div>
                     </div>
                   ) : (

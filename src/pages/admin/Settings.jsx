@@ -11,6 +11,9 @@ export default function Settings() {
   const [passData, setPassData] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
   const [passLoading, setPassLoading] = useState(false)
 
+  const [freeDeliveryAbove, setFreeDeliveryAbove] = useState('')
+  const [saveSettingsLoading, setSaveSettingsLoading] = useState(false)
+
   useEffect(() => {
     const load = async () => {
       setLoading(true)
@@ -18,6 +21,7 @@ export default function Settings() {
       try {
         const { data } = await api.get('/api/admin/settings')
         setData(data)
+        setFreeDeliveryAbove(data.freeDeliveryAbove ?? '')
       } catch (e) {
         setError('Could not load settings.')
       } finally {
@@ -26,6 +30,25 @@ export default function Settings() {
     }
     load()
   }, [])
+
+  const handleSaveDeliverySettings = async () => {
+    if (freeDeliveryAbove === '' || isNaN(Number(freeDeliveryAbove))) {
+      notify('Please enter a valid free delivery threshold', 'error')
+      return
+    }
+    setSaveSettingsLoading(true)
+    try {
+      await api.put('/api/admin/settings', {
+        freeDeliveryAbove: Number(freeDeliveryAbove)
+      })
+      notify('Delivery settings updated successfully', 'success')
+      setData(prev => prev ? { ...prev, freeDeliveryAbove: Number(freeDeliveryAbove) } : null)
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to update delivery settings', 'error')
+    } finally {
+      setSaveSettingsLoading(false)
+    }
+  }
 
   const handlePasswordChange = async (e) => {
     e.preventDefault()
@@ -100,6 +123,34 @@ export default function Settings() {
             </div>
             <div className="text-xs text-gray-500 leading-relaxed">
               Products with stock levels at or below this limit are marked as low stock for alerts.
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-3">
+            <div className="text-xs font-bold text-gray-400 uppercase tracking-wide">
+              Delivery Settings
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-medium text-gray-600 block mb-1">
+                  Free Delivery Threshold (₹)
+                </label>
+                <input
+                  type="number"
+                  value={freeDeliveryAbove}
+                  onChange={(e) => setFreeDeliveryAbove(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  placeholder="e.g. 999"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleSaveDeliverySettings}
+                disabled={saveSettingsLoading}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition"
+              >
+                {saveSettingsLoading ? 'Saving...' : 'Save Delivery Settings'}
+              </button>
             </div>
           </div>
 

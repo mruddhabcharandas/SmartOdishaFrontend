@@ -15,6 +15,7 @@ export default function Home() {
   const [products, setProducts] = useState([])
   const [heroSlides, setHeroSlides] = useState([])
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
+  const [freeDeliveryAbove, setFreeDeliveryAbove] = useState(999)
 
   useEffect(() => {
     setSEO('SmartOdisha | Premium Shopping Destination', 'Your premium destination for quality products from trusted local stores in Odisha.')
@@ -30,6 +31,11 @@ export default function Home() {
     api.get('/api/public/stores').then(({ data }) => setStores(data?.filter(store => store.isPopular) || [])).catch(() => setStores([]))
     api.get('/api/products?limit=12').then(({ data }) => setProducts(data?.items || [])).catch(() => setProducts([]))
     api.get('/api/public/hero-slides').then(({ data }) => setHeroSlides(data || [])).catch(() => setHeroSlides([]))
+    api.get('/api/public/settings').then(({ data }) => {
+      if (data && data.freeDeliveryAbove !== undefined) {
+        setFreeDeliveryAbove(Number(data.freeDeliveryAbove))
+      }
+    }).catch(() => {})
   }, [])
 
   useEffect(() => {
@@ -42,13 +48,13 @@ export default function Home() {
 
   const tickerLoop = useMemo(() => {
     const neutral = [
-      { key: 'n1', label: 'Free Delivery on Orders Above ₹999', pill: 'FREE SHIPPING' },
+      { key: 'n1', label: `Free Delivery on Orders Above ₹${freeDeliveryAbove}`, pill: 'FREE SHIPPING' },
       { key: 'n2', label: 'COD Available Across Odisha', pill: 'CASH ON DELIVERY' },
       { key: 'n3', label: '7-Day Easy Returns', pill: 'HASSLE-FREE' },
       { key: 'n4', label: '100% Secure Payments', pill: 'TRUSTED' }
     ]
     return [...neutral, ...neutral]
-  }, [])
+  }, [freeDeliveryAbove])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -822,7 +828,7 @@ export default function Home() {
 
       {/* Top Ticker */}
       <div className="top-ticker">
-        <span>✦ Free Delivery on ₹999+ • 7-Day Returns • 100% Secure Checkout</span>
+        <span>✦ Free Delivery on ₹{freeDeliveryAbove}+ • 7-Day Returns • 100% Secure Checkout</span>
         <div className="ticker-right">
           <Link to="/orders" className="ticker-link">Track Order</Link>
           <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="ticker-link">24/7 Support</a>
@@ -912,7 +918,7 @@ export default function Home() {
           </div>
           <div className="feature-text">
             <h4>Free Delivery</h4>
-            <p>On orders above ₹999</p>
+            <p>On orders above ₹{freeDeliveryAbove}</p>
           </div>
         </div>
         <div className="feature-card">

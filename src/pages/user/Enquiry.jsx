@@ -101,6 +101,7 @@ export default function Enquiry() {
     deliveryAvailable: true
   })
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('CASHFREE') // 'CASHFREE' or 'COD'
+  const [freeDeliveryAbove, setFreeDeliveryAbove] = useState(999)
 
   // Serviceability
   const [svc, setSvc] = useState({ loading: false, available: null, cod: null, etaStart: null, etaEnd: null, error: '' })
@@ -196,7 +197,6 @@ export default function Enquiry() {
       })
     } catch (err) {
       console.error('Failed to calculate shipping:', err)
-      const freeDeliveryAbove = 999
       const isPrepaidFree = orderAmt >= freeDeliveryAbove && paymentMethod === 'CASHFREE'
       const deliveryCharge = isPrepaidFree ? 0 : 85
       const codCharge = paymentMethod === 'COD' ? Math.min(Math.max(Math.round(orderAmt * 0.05), 40), 100) : 0
@@ -573,6 +573,15 @@ export default function Enquiry() {
       }
     }
     fetchCoupons()
+
+    // Fetch public settings
+    api.get('/api/public/settings')
+      .then(({ data }) => {
+        if (data && data.freeDeliveryAbove !== undefined) {
+          setFreeDeliveryAbove(Number(data.freeDeliveryAbove))
+        }
+      })
+      .catch(err => console.error("Failed to load settings:", err))
   }, [])
 
   // Recalculate shipping when payment method or coupon changes

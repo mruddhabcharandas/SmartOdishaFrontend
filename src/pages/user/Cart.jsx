@@ -16,7 +16,18 @@ export default function Cart() {
   const [appliedCoupon, setAppliedCoupon] = useState(null)
   const [couponError, setCouponError] = useState('')
   const [isApplying, setIsApplying] = useState(false)
+  const [freeDeliveryAbove, setFreeDeliveryAbove] = useState(999)
   const minAmount = Number(import.meta.env.VITE_MIN_ORDER_AMOUNT || 5000)
+
+  useEffect(() => {
+    api.get('/api/public/settings')
+      .then(({ data }) => {
+        if (data && data.freeDeliveryAbove !== undefined) {
+          setFreeDeliveryAbove(Number(data.freeDeliveryAbove))
+        }
+      })
+      .catch(err => console.error("Failed to fetch public settings:", err))
+  }, [])
 
   const safeNum = (val) => {
     const n = Number(val)
@@ -540,6 +551,17 @@ export default function Cart() {
 
         {/* ── STICKY CHECKOUT BAR ── */}
         <div className="ct-checkout-bar">
+          <div className="max-w-[1000px] mx-auto mb-3 text-center border-b border-dashed border-gray-100 pb-2">
+            {totalPayable < freeDeliveryAbove ? (
+              <span className="text-xs text-amber-600 font-bold">
+                Add <b>₹{(freeDeliveryAbove - totalPayable).toLocaleString()}</b> more for <b>FREE Delivery</b>
+              </span>
+            ) : (
+              <span className="text-xs text-emerald-600 font-bold">
+                🎉 Your order is eligible for <b>FREE Delivery</b>!
+              </span>
+            )}
+          </div>
           <div className="ct-checkout-wrap">
             <div className="ct-checkout-total">
               <span className="ct-checkout-label">Total Amount</span>
