@@ -1114,12 +1114,12 @@ export default function Home() {
               <Link to="/business/login" className="px-6 py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-xl text-white text-xs font-black uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all shadow-xl shadow-indigo-900/20">
                 Seller Login
               </Link>
-              <a href="mailto:tapantapanki11@gmail.com" className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors">
+              <a href={`mailto:${CONFIG.SUPPORT_EMAIL}`} className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                <span className="text-sm font-semibold">tapantapanki11@gmail.com</span>
+                <span className="text-sm font-semibold">Email Us</span>
               </a>
               <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366">
@@ -1143,18 +1143,16 @@ export default function Home() {
             </div>
             
             <div>
-              <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Support & Inquiries</h4>
+              <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Support & Help</h4>
               <div className="flex flex-col gap-3">
-                <a href="mailto:tapantapanki11@gmail.com" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors flex items-center gap-2">
-                  <svg className="w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                    <polyline points="22,6 12,13 2,6"/>
-                  </svg>
-                  <span>tapantapanki11@gmail.com</span>
+                <a href={`mailto:${CONFIG.SUPPORT_EMAIL}`} className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">
+                  Customer Support
                 </a>
-                <Link to="/orders" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">My Orders</Link>
-                <Link to="/wishlist" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Wishlist</Link>
-                <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">WhatsApp Support</a>
+                <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">
+                  WhatsApp Support (24/7)
+                </a>
+                <Link to="/orders" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Track Orders</Link>
+                <Link to="/wishlist" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">My Wishlist</Link>
               </div>
             </div>
 
