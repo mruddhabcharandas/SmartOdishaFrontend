@@ -264,45 +264,16 @@ export default function BusinessOrders() {
                               {/* Order Details & Summary */}
                               <div className="space-y-4">
                                 <div>
-                                  <h4 className="panel-step-title" style={{ margin: 0 }}>Order Price Summary</h4>
+                                  <h4 className="panel-step-title" style={{ margin: 0 }}>Order Value (Your Earnings)</h4>
                                   <div className="bg-white border rounded p-4 mt-2 space-y-2 text-sm shadow-sm">
                                     <div className="flex justify-between">
                                       <span className="text-gray-500">Products Subtotal:</span>
-                                      <span className="font-semibold">₹{safeNumber(o.productTotal || (o.totalEstimate - o.shippingCost - o.codCharge)).toLocaleString()}</span>
+                                      <span className="font-semibold">₹{safeNumber(o.productTotal || o.totalEstimate).toLocaleString()}</span>
                                     </div>
-                                    {o.couponDiscount > 0 && (
-                                      <div className="flex justify-between text-green-600">
-                                        <span>Coupon Discount ({o.couponCode}):</span>
-                                        <span>-₹{safeNumber(o.couponDiscount).toLocaleString()}</span>
-                                      </div>
-                                    )}
-                                    <div className="flex justify-between">
-                                      <span className="text-gray-500">Delivery Charge:</span>
-                                      <span>₹{safeNumber(o.shippingCost).toLocaleString()}</span>
-                                    </div>
-                                    {o.codCharge > 0 && (
-                                      <div className="flex justify-between">
-                                        <span className="text-gray-500">COD Fee:</span>
-                                        <span>₹{safeNumber(o.codCharge).toLocaleString()}</span>
-                                      </div>
-                                    )}
                                     <div className="border-t pt-2 flex justify-between font-bold text-gray-900">
-                                      <span>Total Price:</span>
-                                      <span className="text-blue-600">₹{o.totalEstimate.toLocaleString()}</span>
+                                      <span>Your Earnings:</span>
+                                      <span className="text-blue-600">₹{safeNumber(o.storeRevenue || o.totalEstimate).toLocaleString()}</span>
                                     </div>
-                                    
-                                    {o.paymentMethod === 'COD' && (
-                                      <div className="bg-amber-50/50 border border-amber-100 rounded p-3 mt-3 space-y-1 text-xs">
-                                        <div className="flex justify-between text-gray-700">
-                                          <span>COD Advance Paid (15%):</span>
-                                          <span className="font-bold text-green-700">₹{Math.round(o.totalEstimate - o.codDueAmount).toLocaleString()}</span>
-                                        </div>
-                                        <div className="flex justify-between text-amber-800 font-bold">
-                                          <span>Remaining Cash on Delivery:</span>
-                                          <span>₹{o.codDueAmount.toLocaleString()}</span>
-                                        </div>
-                                      </div>
-                                    )}
                                   </div>
                                 </div>
 
