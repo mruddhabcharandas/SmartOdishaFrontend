@@ -165,6 +165,8 @@ export default function About() {
             ))}
           </div>
         </div>
+      </section>
+
       {/* CTA */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-700 text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
