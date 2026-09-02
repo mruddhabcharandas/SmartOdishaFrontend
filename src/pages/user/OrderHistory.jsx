@@ -668,7 +668,7 @@ export default function OrderHistory() {
                         <div className="oh-meta-item">
                           <div className="oh-meta-label">Total</div>
                           <div className="oh-meta-val" style={{ color:'#2874f0' }}>
-                            ₹{safeNumber(order.totalEstimate).toLocaleString()}
+                            ₹{Math.round(safeNumber(order.totalEstimate)).toLocaleString()}
                           </div>
                         </div>
 
@@ -738,28 +738,28 @@ export default function OrderHistory() {
                             <div style={{display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13}}>
                               <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                 <span style={{color: '#878787'}}>Product Total:</span>
-                                <span style={{fontWeight: 600, color: '#212121'}}>₹{safeNumber(order.productTotal || (order.totalEstimate - order.shippingCost - order.codCharge)).toLocaleString()}</span>
+                                <span style={{fontWeight: 600, color: '#212121'}}>₹{Math.round(safeNumber(order.productTotal || (order.totalEstimate - order.shippingCost - order.codCharge))).toLocaleString()}</span>
                               </div>
                               {order.couponDiscount > 0 && (
                                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                   <span style={{color: '#878787'}}>Coupon Discount ({order.couponCode}):</span>
-                                  <span style={{fontWeight: 600, color: '#388e3c'}}>-₹{safeNumber(order.couponDiscount).toLocaleString()}</span>
+                                  <span style={{fontWeight: 600, color: '#388e3c'}}>-₹{Math.round(safeNumber(order.couponDiscount)).toLocaleString()}</span>
                                 </div>
                               )}
                               <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                 <span style={{color: '#878787'}}>Delivery Charges:</span>
-                                <span style={{fontWeight: 600, color: '#212121'}}>₹{safeNumber(order.shippingCost).toLocaleString()}</span>
+                                <span style={{fontWeight: 600, color: '#212121'}}>₹{Math.round(safeNumber(order.shippingCost)).toLocaleString()}</span>
                               </div>
                               {order.codCharge > 0 && (
                                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                   <span style={{color: '#878787'}}>COD Collection Fee:</span>
-                                  <span style={{fontWeight: 600, color: '#212121'}}>₹{safeNumber(order.codCharge).toLocaleString()}</span>
+                                  <span style={{fontWeight: 600, color: '#212121'}}>₹{Math.round(safeNumber(order.codCharge)).toLocaleString()}</span>
                                 </div>
                               )}
                               <div style={{height: 1, background: '#e0e0e0', margin: '4px 0'}} />
                               <div style={{display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 700}}>
                                 <span>Total Payable Value:</span>
-                                <span style={{color: '#2874f0'}}>₹{safeNumber(order.totalEstimate).toLocaleString()}</span>
+                                <span style={{color: '#2874f0'}}>₹{Math.round(safeNumber(order.totalEstimate)).toLocaleString()}</span>
                               </div>
                             </div>
                           </div>
@@ -784,11 +784,11 @@ export default function OrderHistory() {
                                 <>
                                   <div style={{display: 'flex', justifyContent: 'space-between'}}>
                                     <span style={{color: '#878787'}}>COD Advance Paid (15%):</span>
-                                    <span style={{fontWeight: 600, color: '#388e3c'}}>₹{safeNumber(Math.round(order.totalEstimate - order.codDueAmount)).toLocaleString()}</span>
+                                    <span style={{fontWeight: 600, color: '#388e3c'}}>₹{Math.round(safeNumber(order.totalEstimate - order.codDueAmount)).toLocaleString()}</span>
                                   </div>
                                   <div style={{display: 'flex', justifyContent: 'space-between', fontSize: 14, fontWeight: 700}}>
                                     <span style={{color: '#d97706'}}>Remaining Cash on Delivery:</span>
-                                    <span style={{color: '#d97706'}}>₹{safeNumber(order.codDueAmount).toLocaleString()}</span>
+                                    <span style={{color: '#d97706'}}>₹{Math.round(safeNumber(order.codDueAmount)).toLocaleString()}</span>
                                   </div>
                                 </>
                               )}
@@ -869,10 +869,10 @@ export default function OrderHistory() {
                                         )}
                                       </div>
                                       <div className="oh-item-meta" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '4px' }}>
-                                        <span className="oh-item-qty">Qty: {item.quantity} · ₹{item.price} each</span>
+                                        <span className="oh-item-qty">Qty: {item.quantity} · ₹{Math.round(item.price)} each</span>
                                       </div>
                                     </div>
-                                    <div className="oh-item-price">₹{safeNumber(safeNumber(item.price) * safeNumber(item.quantity)).toLocaleString()}</div>
+                                    <div className="oh-item-price">₹{Math.round(safeNumber(safeNumber(item.price) * safeNumber(item.quantity))).toLocaleString()}</div>
                                   </div>
                                   {canRateProduct && (
                                     <div className="oh-rate-row" onClick={(e) => e.stopPropagation()}>

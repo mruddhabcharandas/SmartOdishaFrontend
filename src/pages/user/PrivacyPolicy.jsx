@@ -35,7 +35,7 @@ export default function PrivacyPolicy() {
     {
       id: 'contact',
       title: '6. Contact Us',
-      content: 'If you have any questions regarding this privacy policy, you can contact our support team at support@smartodisha.in or call us at +91 98270 58262.'
+      content: 'If you have any questions regarding this privacy policy, you can contact our support team at tapantapanki11@gmail.com or call us at +91 98270 58262.'
     },
     {
       id: 'changes',

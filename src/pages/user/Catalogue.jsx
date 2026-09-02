@@ -167,7 +167,7 @@ export default function Catalogue() {
     const safe = v => { const n = Number(v); return isNaN(n) || !isFinite(n) ? 0 : n }
     const getMin = (p) => {
       const pct = safe(p?.store?.storePercentage ?? 0)
-      const apply = (b) => b * (1 + pct / 100)
+      const apply = (b) => Math.round(b * (1 + pct / 100))
       if (!Array.isArray(p.variants) || !p.variants.length) return apply(safe(p.originalStorePrice ?? p.price ?? 0))
       const active = p.variants.filter(v => v.isActive !== false && safe(v.originalStorePrice ?? v.price ?? 0) > 0)
       if (!active.length) return apply(safe(p.originalStorePrice ?? p.price ?? 0))

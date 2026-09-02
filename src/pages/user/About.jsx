@@ -167,6 +167,49 @@ export default function About() {
         </div>
       </section>
 
+      {/* Leadership & Management */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white border-t border-indigo-50">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-black uppercase tracking-widest mb-6">
+            Platform Leadership
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4">
+            Managed & Operated By
+          </h2>
+          <p className="text-slate-600 text-base mb-10 max-w-xl mx-auto font-medium">
+            Dedicated to empowering local commerce and delivering premium shopping experiences across Odisha.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto">
+            <div className="p-8 rounded-3xl bg-gradient-to-br from-slate-50 to-indigo-50/40 border border-indigo-100 shadow-sm flex flex-col items-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white font-black text-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-4">
+                T
+              </div>
+              <h3 className="text-xl font-black text-slate-900">Tapan Kumar Das</h3>
+              <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider mt-1">Management & Operations</span>
+            </div>
+            <div className="p-8 rounded-3xl bg-gradient-to-br from-slate-50 to-blue-50/40 border border-indigo-100 shadow-sm flex flex-col items-center">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white font-black text-2xl flex items-center justify-center shadow-lg shadow-purple-500/20 mb-4">
+                U
+              </div>
+              <h3 className="text-xl font-black text-slate-900">Uddhab Charan Das</h3>
+              <span className="text-xs font-bold text-blue-600 uppercase tracking-wider mt-1">Management & Operations</span>
+            </div>
+          </div>
+          <div className="mt-8 flex justify-center">
+            <a 
+              href="mailto:tapantapanki11@gmail.com" 
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 text-white text-sm font-bold hover:bg-indigo-600 transition-all shadow-lg"
+            >
+              <svg className="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              <span>tapantapanki11@gmail.com</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-700 text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">

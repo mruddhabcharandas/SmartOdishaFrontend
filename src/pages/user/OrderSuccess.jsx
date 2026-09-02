@@ -126,8 +126,8 @@ export default function OrderSuccess() {
   }
 
   const isCod = order.paymentMethod === 'COD'
-  const advancePaid = isCod ? Math.ceil(order.totalEstimate * 0.15) : order.totalEstimate
-  const remainingCod = isCod ? order.codDueAmount : 0
+  const advancePaid = isCod ? Math.ceil(order.totalEstimate * 0.15) : Math.round(order.totalEstimate)
+  const remainingCod = isCod ? Math.round(order.codDueAmount) : 0
 
   return (
     <>
@@ -570,7 +570,7 @@ export default function OrderSuccess() {
                         {attributesStr && <> · <span>{attributesStr}</span></>}
                       </div>
                     </div>
-                    <div className="os-item-price">₹{Number(it.lineTotal).toLocaleString('en-IN')}</div>
+                    <div className="os-item-price">₹{Math.round(Number(it.lineTotal)).toLocaleString('en-IN')}</div>
                   </div>
                 )
               })}
@@ -581,47 +581,47 @@ export default function OrderSuccess() {
             <div className="os-summary-table">
               <div className="os-sum-row">
                 <span>Items Subtotal</span>
-                <span className="os-sum-val">₹{Number(order.productTotal + (order.couponDiscount || 0)).toLocaleString('en-IN')}</span>
+                <span className="os-sum-val">₹{Math.round(Number(order.productTotal + (order.couponDiscount || 0))).toLocaleString('en-IN')}</span>
               </div>
               {order.couponDiscount > 0 && (
                 <div className="os-sum-row">
                   <span>Coupon discount ({order.couponCode})</span>
-                  <span className="os-sum-val green">-₹{Number(order.couponDiscount).toLocaleString('en-IN')}</span>
+                  <span className="os-sum-val green">-₹{Math.round(Number(order.couponDiscount)).toLocaleString('en-IN')}</span>
                 </div>
               )}
               <div className="os-sum-row">
                 <span>Shipping & Handling</span>
                 <span className="os-sum-val">
-                  {order.shippingCost === 0 ? <span className="green">FREE</span> : `₹${Number(order.shippingCost).toLocaleString('en-IN')}`}
+                  {order.shippingCost === 0 ? <span className="green">FREE</span> : `₹${Math.round(Number(order.shippingCost)).toLocaleString('en-IN')}`}
                 </span>
               </div>
               {order.codCharge > 0 && (
                 <div className="os-sum-row">
                   <span>COD Collection Fee</span>
-                  <span className="os-sum-val">₹{Number(order.codCharge).toLocaleString('en-IN')}</span>
+                  <span className="os-sum-val">₹{Math.round(Number(order.codCharge)).toLocaleString('en-IN')}</span>
                 </div>
               )}
               
               <div className="os-sum-row border-t total">
                 <span>Net Total Payable</span>
-                <span className="os-sum-val">₹{Number(order.totalEstimate).toLocaleString('en-IN')}</span>
+                <span className="os-sum-val">₹{Math.round(Number(order.totalEstimate)).toLocaleString('en-IN')}</span>
               </div>
 
               {isCod ? (
                 <>
                   <div className="os-sum-row">
                     <span>COD Advance Paid (15%)</span>
-                    <span className="os-sum-val orange">₹{Number(advancePaid).toLocaleString('en-IN')}</span>
+                    <span className="os-sum-val orange">₹{Math.round(Number(advancePaid)).toLocaleString('en-IN')}</span>
                   </div>
                   <div className="os-sum-row" style={{background:'rgba(249,115,22,0.05)', borderRadius:'10px', padding:'8px 10px', marginTop: '6px'}}>
                     <span style={{fontWeight: 700, color:'#4f46e5'}}>Due on Delivery (COD)</span>
-                    <span className="os-sum-val orange">₹{Number(remainingCod).toLocaleString('en-IN')}</span>
+                    <span className="os-sum-val orange">₹{Math.round(Number(remainingCod)).toLocaleString('en-IN')}</span>
                   </div>
                 </>
               ) : (
                 <div className="os-sum-row" style={{background:'rgba(16,185,129,0.05)', borderRadius:'10px', padding:'8px 10px', marginTop: '6px'}}>
                   <span style={{fontWeight: 700, color:'#10b981'}}>Amount Paid Online</span>
-                  <span className="os-sum-val green">₹{Number(order.totalEstimate).toLocaleString('en-IN')}</span>
+                  <span className="os-sum-val green">₹{Math.round(Number(order.totalEstimate)).toLocaleString('en-IN')}</span>
                 </div>
               )}
             </div>

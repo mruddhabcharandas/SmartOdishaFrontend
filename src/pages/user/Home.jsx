@@ -1086,7 +1086,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-white border-t border-indigo-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center justify-between mb-12 pb-10 border-b border-indigo-50">
+          <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center justify-between mb-10 pb-10 border-b border-indigo-50">
             <div className="flex items-center gap-5">
               <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center overflow-hidden shadow-2xl shadow-indigo-900/10">
                 <img
@@ -1114,12 +1114,12 @@ export default function Home() {
               <Link to="/business/login" className="px-6 py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 rounded-xl text-white text-xs font-black uppercase tracking-widest hover:shadow-lg hover:scale-105 transition-all shadow-xl shadow-indigo-900/20">
                 Seller Login
               </Link>
-              <a href={`mailto:${CONFIG.SUPPORT_EMAIL}`} className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors">
+              <a href="mailto:tapantapanki11@gmail.com" className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                   <polyline points="22,6 12,13 2,6"/>
                 </svg>
-                <span className="text-sm font-semibold">Email Us</span>
+                <span className="text-sm font-semibold">tapantapanki11@gmail.com</span>
               </a>
               <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-600 hover:text-indigo-600 transition-colors">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366">
@@ -1131,7 +1131,46 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-10">
+          {/* Leadership & Management Card */}
+          <div className="p-6 rounded-2xl bg-gradient-to-r from-slate-50 via-indigo-50/40 to-blue-50/40 border border-indigo-100 mb-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
+            <div className="flex items-start sm:items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 via-blue-600 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 flex-shrink-0">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+              </div>
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Platform Management</span>
+                <h4 className="text-sm font-extrabold text-gray-900 mt-0.5">SmartOdisha is managed & operated by</h4>
+                <div className="flex flex-wrap items-center gap-2 mt-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-indigo-100 shadow-sm text-xs font-bold text-gray-900">
+                    <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                    Tapan Kumar Das
+                  </span>
+                  <span className="text-gray-400 text-xs font-bold">&</span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white border border-indigo-100 shadow-sm text-xs font-bold text-gray-900">
+                    <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                    Uddhab Charan Das
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <a 
+                href="mailto:tapantapanki11@gmail.com" 
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-indigo-100 text-gray-700 hover:text-indigo-600 hover:border-indigo-300 hover:shadow-md transition-all text-xs font-bold"
+              >
+                <svg className="w-4 h-4 text-indigo-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+                <span>tapantapanki11@gmail.com</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 mb-10">
             <div>
               <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Quick Links</h4>
               <div className="flex flex-col gap-3">
@@ -1143,11 +1182,18 @@ export default function Home() {
             </div>
             
             <div>
-              <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Support</h4>
+              <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-widest mb-5">Support & Inquiries</h4>
               <div className="flex flex-col gap-3">
-                <Link to="/contact" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Contact Us</Link>
+                <a href="mailto:tapantapanki11@gmail.com" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors flex items-center gap-2">
+                  <svg className="w-4 h-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                    <polyline points="22,6 12,13 2,6"/>
+                  </svg>
+                  <span>tapantapanki11@gmail.com</span>
+                </a>
                 <Link to="/orders" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">My Orders</Link>
                 <Link to="/wishlist" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Wishlist</Link>
+                <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">WhatsApp Support</a>
               </div>
             </div>
 
@@ -1156,7 +1202,6 @@ export default function Home() {
               <div className="flex flex-col gap-3">
                 <Link to="/privacy-policy" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Privacy Policy</Link>
                 <Link to="/terms-of-service" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Terms of Service</Link>
-                <Link to="/contact" className="text-gray-600 text-sm font-semibold hover:text-indigo-600 transition-colors">Return Policy</Link>
               </div>
             </div>
 
@@ -1184,8 +1229,8 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-semibold text-gray-500 uppercase tracking-widest">
-            <span>© {new Date().getFullYear()} SmartOdisha. All rights reserved.</span>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-semibold text-gray-500 uppercase tracking-widest pt-6 border-t border-indigo-50">
+            <span>© {new Date().getFullYear()} SmartOdisha. Managed & Operated by Tapan Kumar Das & Uddhab Charan Das.</span>
             <span>Made with ❤️ in Odisha</span>
           </div>
         </div>

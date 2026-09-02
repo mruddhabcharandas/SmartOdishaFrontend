@@ -21,7 +21,7 @@ export default function Wishlist() {
       return isNaN(num) || !isFinite(num) ? 0 : num;
     };
     const storePercentage = safeNumber(product?.store?.storePercentage ?? 0);
-    const getFinalPrice = (base) => safeNumber(base) * (1 + storePercentage / 100);
+    const getFinalPrice = (base) => Math.round(safeNumber(base) * (1 + storePercentage / 100));
 
     if (!Array.isArray(product.variants) || product.variants.length === 0) {
       return getFinalPrice(product.originalStorePrice ?? product.price ?? 0);
@@ -38,7 +38,7 @@ export default function Wishlist() {
     if (variantFinalPrices.length === 0) {
       return getFinalPrice(product.originalStorePrice ?? product.price ?? 0);
     }
-    return Math.min(...variantFinalPrices.map(vp => vp.finalPrice));
+    return Math.round(Math.min(...variantFinalPrices.map(vp => vp.finalPrice)));
   }
 
   const getDisplayMrp = (product, minPrice) => {
@@ -47,7 +47,7 @@ export default function Wishlist() {
       return isNaN(num) || !isFinite(num) ? 0 : num;
     };
     const storePercentage = safeNumber(product?.store?.storePercentage ?? 0);
-    const getFinalPrice = (base) => safeNumber(base) * (1 + storePercentage / 100);
+    const getFinalPrice = (base) => Math.round(safeNumber(base) * (1 + storePercentage / 100));
 
     if (!Array.isArray(product.variants) || product.variants.length === 0) {
       return safeNumber(product.mrp) > 0 ? getFinalPrice(product.mrp) : (safeNumber(product.price) > 0 ? getFinalPrice(product.price) : minPrice);
@@ -96,7 +96,7 @@ export default function Wishlist() {
           return (
             <div key={idx} className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all overflow-hidden">
               <div className="relative aspect-square">
-                <Link to={`/product/${productId}`}>
+                <Link to={`/products/${productId}`}>
                   <img
                     src={imageUrl}
                     alt={product.name || 'Product'}
@@ -118,7 +118,7 @@ export default function Wishlist() {
                 </button>
               </div>
               <div className="p-5">
-                <Link to={`/product/${productId}`} className="block mb-2">
+                <Link to={`/products/${productId}`} className="block mb-2">
                   <h3 className="font-bold text-gray-900 line-clamp-2 leading-snug text-sm">{product.name}</h3>
                 </Link>
                 <div className="mb-4 flex items-center gap-2 flex-wrap">

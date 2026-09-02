@@ -32,7 +32,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
       return isNaN(num) || !isFinite(num) ? 0 : num
     }
     const storePercentage = safeNumber(p?.store?.storePercentage ?? 0)
-    const getFinalPrice = (base) => safeNumber(base) * (1 + storePercentage / 100)
+    const getFinalPrice = (base) => Math.round(safeNumber(base) * (1 + storePercentage / 100))
 
     if (!p || !Array.isArray(p.variants) || p.variants.length === 0) {
       return getFinalPrice(p?.originalStorePrice ?? p?.price ?? 0)
@@ -52,7 +52,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
       return getFinalPrice(p?.originalStorePrice ?? p?.price ?? 0)
     }
 
-    return Math.min(...variantFinalPrices.map(vp => vp.finalPrice))
+    return Math.round(Math.min(...variantFinalPrices.map(vp => vp.finalPrice)))
   }, [p])
 
   const displayMrp = useMemo(() => {
@@ -61,17 +61,17 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
       return isNaN(num) || !isFinite(num) ? 0 : num
     }
     const storePercentage = safeNumber(p?.store?.storePercentage ?? 0)
-    const getFinalPrice = (base) => safeNumber(base) * (1 + storePercentage / 100)
+    const getFinalPrice = (base) => Math.round(safeNumber(base) * (1 + storePercentage / 100))
 
     if (!p) return 0
 
     if (!Array.isArray(p.variants) || p.variants.length === 0) {
-      return safeNumber(p.mrp) > 0 ? getFinalPrice(p.mrp) : (safeNumber(p.price) > 0 ? getFinalPrice(p.price) : minPrice)
+      return Math.round(safeNumber(p.mrp) > 0 ? getFinalPrice(p.mrp) : (safeNumber(p.price) > 0 ? getFinalPrice(p.price) : minPrice))
     }
 
     const activeVariants = p.variants.filter(v => v.isActive !== false)
     if (activeVariants.length === 0) {
-      return safeNumber(p.mrp) > 0 ? getFinalPrice(p.mrp) : (safeNumber(p.price) > 0 ? getFinalPrice(p.price) : minPrice)
+      return Math.round(safeNumber(p.mrp) > 0 ? getFinalPrice(p.mrp) : (safeNumber(p.price) > 0 ? getFinalPrice(p.price) : minPrice))
     }
 
     // Try to find the first variant that has an mrp
@@ -79,7 +79,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
     if (variantWithMrp) return getFinalPrice(variantWithMrp.mrp)
 
     // Fall back to product's mrp, then price, then minPrice
-    return safeNumber(p.mrp) > 0 ? getFinalPrice(p.mrp) : (safeNumber(p.price) > 0 ? getFinalPrice(p.price) : minPrice)
+    return Math.round(safeNumber(p.mrp) > 0 ? getFinalPrice(p.mrp) : (safeNumber(p.price) > 0 ? getFinalPrice(p.price) : minPrice))
   }, [p, minPrice])
 
   const discount = displayMrp > minPrice

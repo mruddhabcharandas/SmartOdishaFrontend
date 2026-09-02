@@ -51,10 +51,10 @@ export default function Enquiry() {
       const applicable = tiers.filter(t => qty >= safeNum(t.quantity || 0)).pop()
       if (applicable) p = Math.max(0, p - safeNum(applicable.priceReduction || 0))
     }
-    return p
+    return Math.round(p)
   }
   const lineTotal = (it) => unitPrice(it) * Math.max(1, safeNum(it.quantity || 1))
-  const mrpTotal = cart.reduce((s,it) => s + safeNum(it.mrp||it.price||0) * Math.max(1,safeNum(it.quantity||1)), 0)
+  const mrpTotal = cart.reduce((s,it) => s + Math.round(safeNum(it.mrp||it.price||0)) * Math.max(1,safeNum(it.quantity||1)), 0)
   const effTotal = cart.reduce((s,it) => {
     const itemStock = it.variantSku 
       ? (it.productId?.variants?.find(v => v.sku === it.variantSku)?.stock ?? it.stock)

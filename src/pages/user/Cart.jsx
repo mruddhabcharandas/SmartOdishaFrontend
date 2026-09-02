@@ -60,10 +60,10 @@ export default function Cart() {
       const applicable = tiers.filter(t => qty >= safeNum(t.quantity || 0)).pop()
       if (applicable) p = Math.max(0, p - safeNum(applicable.priceReduction || 0))
     }
-    return p
+    return Math.round(p)
   }
   const lineTotal   = (item) => unitPrice(item) * Math.max(1, safeNum(item.quantity || 1))
-  const mrpTotal    = cart.reduce((s,it) => s + safeNum(it.mrp||it.price||0) * Math.max(1,safeNum(it.quantity||1)), 0)
+  const mrpTotal    = cart.reduce((s,it) => s + Math.round(safeNum(it.mrp||it.price||0)) * Math.max(1,safeNum(it.quantity||1)), 0)
   const effTotal    = cart.reduce((s,it) => {
     const itemStock = it.variantSku 
       ? (it.productId?.variants?.find(v => v.sku === it.variantSku)?.stock ?? it.stock)
@@ -537,7 +537,7 @@ export default function Cart() {
                       </div>
                       <div style={{ flex:1, minWidth:0 }}>
                         <div className="ct-sugg-name">{p.name}</div>
-                        <div className="ct-sugg-price">{p.price!=null?`₹${safeNum(p.price).toLocaleString()}`:'—'}</div>
+                        <div className="ct-sugg-price">{p.price!=null?`₹${Math.round(safeNum(p.price)).toLocaleString()}`:'—'}</div>
                       </div>
                       <button className="ct-sugg-add" onClick={(e) => { e.stopPropagation(); addToCart(p); }}>Add</button>
                     </div>
