@@ -18,7 +18,7 @@ export default function UserLayout() {
   const { user, logout } = useAuth()
 
   // Hide bottom nav on these paths
-  const hideBottomNav = ['/products', '/cart', '/profile', '/orders', '/enquiry', '/checkout', '/about', '/login', '/signup', '/reset-password'].some(path => {
+  const hideBottomNav = ['/products', '/cart', '/profile', '/orders', '/enquiry', '/checkout', '/about', '/login', '/signup', '/reset-password', '/leadership', '/privacy-policy', '/terms-of-service'].some(path => {
     const pathname = String(location.pathname || '');
     return typeof pathname === 'string' && pathname.includes(path);
   })

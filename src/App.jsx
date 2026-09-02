@@ -39,6 +39,7 @@ import Profile from './pages/user/Profile.jsx'
 import ManualPayment from './pages/user/ManualPayment.jsx'
 import PrivacyPolicy from './pages/user/PrivacyPolicy.jsx'
 import TermsOfService from './pages/user/TermsOfService.jsx'
+import Leadership from './pages/user/Leadership.jsx'
 import Wishlist from './pages/user/Wishlist.jsx'
 import OrderSuccess from './pages/user/OrderSuccess.jsx'
 import BusinessLogin from './pages/business/Login.jsx'
@@ -134,6 +135,7 @@ export default function App() {
         <Route path="order-success/:orderId" element={<OrderSuccess />} />
         <Route path="privacy-policy" element={<PrivacyPolicy />} />
         <Route path="terms-of-service" element={<TermsOfService />} />
+        <Route path="leadership" element={<Leadership />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />
