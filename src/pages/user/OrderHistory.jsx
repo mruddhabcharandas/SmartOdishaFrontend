@@ -1183,6 +1183,34 @@ export default function OrderHistory() {
                               <div className="oh-info-row" style={{ marginTop:4 }}>Placed: {fmtIST(order.createdAt)}</div>
                               <div className="oh-info-row">Updated: {fmtIST(order.updatedAt)}</div>
                             </div>
+                            {(order.shipping?.waybill || order.delhiveryWaybill) && (
+                              <div className="oh-info-card" style={{ background: '#f8faff', border: '1px solid #dbeafe' }}>
+                                <div className="oh-info-title" style={{ color: '#1e40af', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                  <span>Courier Tracking</span>
+                                  <span style={{ fontSize: 10, background: '#dbeafe', color: '#1e40af', padding: '2px 6px', borderRadius: 4, fontWeight: 800 }}>Delhivery Express</span>
+                                </div>
+                                <div className="oh-info-row">Waybill: <b className="oh-mono" style={{ color: '#1e3a8a' }}>{order.shipping?.waybill || order.delhiveryWaybill}</b></div>
+                                {order.shipping?.status && (
+                                  <div className="oh-info-row" style={{ color: '#0369a1', fontWeight: 600 }}>
+                                    Delhivery Status: <b style={{ textTransform: 'capitalize' }}>{order.shipping.status}</b>
+                                  </div>
+                                )}
+                                <div style={{ marginTop: 8 }}>
+                                  <a
+                                    href={order.shipping?.trackingUrl || `https://www.delhivery.com/track/package/${order.shipping?.waybill || order.delhiveryWaybill}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    style={{
+                                      display: 'inline-flex', alignItems: 'center', gap: 6,
+                                      padding: '6px 14px', borderRadius: 6, background: '#2563eb',
+                                      color: '#fff', fontSize: 12, fontWeight: 700, textDecoration: 'none'
+                                    }}
+                                  >
+                                    <span>🚚</span> Track on Delhivery ↗
+                                  </a>
+                                </div>
+                              </div>
+                            )}
                             {order.shippingAddress?.line1 && (
                               <div className="oh-info-card" style={{ gridColumn:'1/-1' }}>
                                 <div className="oh-info-title">Delivery Address</div>

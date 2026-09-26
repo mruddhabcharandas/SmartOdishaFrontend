@@ -129,6 +129,16 @@ export default function OrderSuccess() {
   const advancePaid = isCod ? Math.ceil(order.totalEstimate * 0.15) : Math.round(order.totalEstimate)
   const remainingCod = isCod ? Math.round(order.codDueAmount) : 0
 
+  const getProgressState = () => {
+    const s = String(order?.status || '').toUpperCase()
+    if (s === 'DELIVERED') return { index: 3, width: '100%', label: 'Delivered' }
+    if (s === 'OUT_FOR_DELIVERY') return { index: 2, width: '75%', label: 'Out for Delivery' }
+    if (s === 'SHIPPED') return { index: 2, width: '66%', label: 'Shipped' }
+    if (['CONFIRMED', 'PACKED', 'PROCESSING'].includes(s)) return { index: 1, width: '33%', label: 'Confirmed' }
+    return { index: 0, width: '10%', label: 'Ordered' }
+  }
+  const progress = getProgressState()
+
   return (
     <>
       <style>{`
@@ -516,27 +526,60 @@ export default function OrderSuccess() {
 
             {/* Visual Tracking Progress */}
             <div className="os-timeline-w">
-              <div className="os-timeline-title">Shipping Status Progress</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <div className="os-timeline-title" style={{ margin: 0 }}>Shipping Status Progress</div>
+                {order.delhiveryWaybill ? (
+                  <span style={{ fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '8px', background: 'rgba(99,102,241,0.15)', color: '#818cf8', border: '1px solid rgba(99,102,241,0.3)', letterSpacing: '0.05em' }}>
+                    DELHIVERY EXPRESS
+                  </span>
+                ) : (
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8' }}>{progress.label}</span>
+                )}
+              </div>
+
               <div className="os-timeline">
-                <div className="os-timeline-line-active" style={{width: '25%'}}></div>
+                <div className="os-timeline-line-active" style={{width: progress.width}}></div>
                 
-                <div className="os-timeline-step active">
-                  <div className="os-step-node">✓</div>
+                <div className={`os-timeline-step ${progress.index >= 0 ? (progress.index === 0 ? 'current' : 'active') : ''}`}>
+                  <div className="os-step-node">{progress.index > 0 ? '✓' : '●'}</div>
                   <div className="os-step-lbl">Ordered</div>
                 </div>
-                <div className="os-timeline-step current">
-                  <div className="os-step-node">●</div>
+                <div className={`os-timeline-step ${progress.index >= 1 ? (progress.index === 1 ? 'current' : 'active') : ''}`}>
+                  <div className="os-step-node">{progress.index > 1 ? '✓' : (progress.index === 1 ? '●' : '2')}</div>
                   <div className="os-step-lbl">Confirmed</div>
                 </div>
-                <div className="os-timeline-step">
-                  <div className="os-step-node">3</div>
-                  <div className="os-step-lbl">Shipped</div>
+                <div className={`os-timeline-step ${progress.index >= 2 ? (progress.index === 2 ? 'current' : 'active') : ''}`}>
+                  <div className="os-step-node">{progress.index > 2 ? '✓' : (progress.index === 2 ? '●' : '3')}</div>
+                  <div className="os-step-lbl">{order.status === 'OUT_FOR_DELIVERY' ? 'Out for Delivery' : 'Shipped'}</div>
                 </div>
-                <div className="os-timeline-step">
-                  <div className="os-step-node">4</div>
+                <div className={`os-timeline-step ${progress.index >= 3 ? 'active' : ''}`}>
+                  <div className="os-step-node">{progress.index >= 3 ? '✓' : '4'}</div>
                   <div className="os-step-lbl">Delivered</div>
                 </div>
               </div>
+
+              {order.delhiveryWaybill && (
+                <div style={{ marginTop: '18px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+                  <div>
+                    <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Waybill Number</div>
+                    <div style={{ fontSize: '14px', fontFamily: 'monospace', fontWeight: 800, color: '#f8fafc' }}>{order.delhiveryWaybill}</div>
+                  </div>
+                  {order.shipment_status && (
+                    <div>
+                      <div style={{ fontSize: '11px', color: '#64748b', textTransform: 'uppercase', fontWeight: 700 }}>Courier Status</div>
+                      <div style={{ fontSize: '13px', fontWeight: 800, color: '#38bdf8' }}>{order.shipment_status}</div>
+                    </div>
+                  )}
+                  <a
+                    href={`https://www.delhivery.com/track/package/${order.delhiveryWaybill}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ fontSize: '12px', fontWeight: 700, color: '#4f46e5', textDecoration: 'none', background: 'rgba(249,115,22,0.1)', padding: '6px 12px', borderRadius: '8px', border: '1px solid rgba(249,115,22,0.2)' }}
+                  >
+                    Track on Delhivery ↗
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Delivery Address */}

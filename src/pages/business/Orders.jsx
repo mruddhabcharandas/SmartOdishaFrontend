@@ -114,6 +114,23 @@ export default function BusinessOrders() {
     }
   }
 
+  const handleSyncDelhiveryStatus = async (id) => {
+    setActionLoading(`${id}-sync`)
+    try {
+      const { data } = await api.post(`/api/stores/orders/${id}/delhivery/sync`)
+      if (data?.hasChanged) {
+        notify(`Order status updated to ${data.orderStatus} from Delhivery (${data.delhiveryStatus})`, 'success')
+      } else {
+        notify(`Delhivery status: ${data?.delhiveryStatus || 'No change'}`, 'info')
+      }
+      loadOrders()
+    } catch (err) {
+      notify(err.response?.data?.message || err.response?.data?.error || 'Failed to sync with Delhivery', 'error')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
   const handleOpenCancel = (id) => {
     setCancellingId(id)
     setCancelReason('')
@@ -485,8 +502,22 @@ export default function BusinessOrders() {
                                         <div>
                                           <div className="text-[10px] text-blue-500 font-black uppercase tracking-wider">Delhivery Waybill</div>
                                           <div className="font-black text-blue-900 text-sm mt-0.5">{o.shipping.waybill}</div>
+                                          {o.shipping?.status && (
+                                            <div className="text-[11px] font-bold text-slate-500 mt-1 flex items-center gap-1.5">
+                                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-pulse"></span>
+                                              Delhivery Status: <span className="text-blue-700 font-extrabold uppercase">{o.shipping.status}</span>
+                                            </div>
+                                          )}
                                         </div>
-                                        <div className="flex gap-2">
+                                        <div className="flex flex-wrap gap-2">
+                                          <button
+                                            onClick={() => handleSyncDelhiveryStatus(o._id)}
+                                            disabled={actionLoading === `${o._id}-sync`}
+                                            className="px-3 py-1.5 bg-indigo-600 text-white font-bold rounded-xl text-xs hover:bg-indigo-700 transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+                                            title="Sync latest live status from Delhivery"
+                                          >
+                                            <span>🔄</span> {actionLoading === `${o._id}-sync` ? "Syncing..." : "Sync"}
+                                          </button>
                                           {o.shipping.trackingUrl && (
                                             <a
                                               href={o.shipping.trackingUrl}

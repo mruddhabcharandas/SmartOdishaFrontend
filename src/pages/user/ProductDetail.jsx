@@ -330,22 +330,57 @@ const STYLES = `
   .pd-stock.out { background: #fee2e2; color: #b91c1c; }
   .pd-stock-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
-  /* Wishlist Button in Info Card (Desktop) */
-  .pd-btn-wishlist {
-    display: none;
+  /* Action Buttons in Info Card (Share & Wishlist) */
+  .pd-head-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
   }
-  @media (min-width: 768px) {
-    .pd-btn-wishlist {
-      display: flex;
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--card); border: 1px solid #e2e8f0;
-      align-items: center; justify-content: center;
-      cursor: pointer; color: var(--ink2);
-      transition: var(--t); flex-shrink: 0;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-    }
-    .pd-btn-wishlist:hover { background: var(--bg2); border-color: #cbd5e1; }
-    .pd-btn-wishlist.active { color: var(--red); background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.12); }
+  .pd-btn-action {
+    width: 42px; height: 42px; border-radius: 50%;
+    background: var(--card); border: 1px solid #e2e8f0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--ink2);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+  .pd-btn-action:hover { background: var(--bg2); border-color: #cbd5e1; color: var(--ink); transform: translateY(-1px); }
+  .pd-btn-action.active { color: var(--red); background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.12); }
+
+  .pd-meta-share {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #f1f5f9; color: #475569;
+    font-size: 11px; font-weight: 700;
+    padding: 3px 9px; border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer; transition: all 0.2s;
+    margin-left: auto;
+  }
+  .pd-meta-share:hover { background: #e2e8f0; color: #0f172a; }
+
+  /* Share Modal */
+  .pd-share-modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+  }
+  .pd-share-modal {
+    background: #ffffff;
+    border-radius: 24px;
+    max-width: 440px; width: 100%;
+    padding: 24px;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+    border: 1px solid #f1f5f9;
+    position: relative;
+    animation: pdModalIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes pdModalIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
   }
 
   /* Trust Badges */
@@ -808,6 +843,8 @@ export default function ProductDetail() {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [activeTab, setActiveTab] = useState('highlights');
   const [freeDeliveryAbove, setFreeDeliveryAbove] = useState(999);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const variantAttrs = useMemo(() => {
     if (!p) return [];
@@ -1156,12 +1193,43 @@ export default function ProductDetail() {
     if (ok) { await refreshCart(); navigate('/order'); }
   };
 
-  const handleShare = async () => {
+  const getProductShareUrl = () => {
+    return window.location.origin + '/products/' + (p?.slug || p?._id || idOrSlug);
+  };
+
+  const handleShare = async (e) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    const shareUrl = getProductShareUrl();
+    const shareData = {
+      title: p?.name || 'SmartOdisha',
+      text: `Check out ${p?.name || 'this product'} on SmartOdisha!`,
+      url: shareUrl,
+    };
+
+    if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent || '')) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        if (err && err.name !== 'AbortError') {
+          setShareModalOpen(true);
+        }
+      }
+    } else {
+      setShareModalOpen(true);
+    }
+  };
+
+  const handleCopyLink = async () => {
     try {
-      const shareUrl = window.location.origin + '/products/' + (p.slug || p._id);
-      if (navigator.share) await navigator.share({ title: p.name, text: 'Check out ' + p.name + ' on SmartOdisha', url: shareUrl });
-      else { await navigator.clipboard.writeText(shareUrl); notify('Link copied!', 'success'); }
-    } catch { }
+      const shareUrl = getProductShareUrl();
+      await navigator.clipboard.writeText(shareUrl);
+      setCopiedLink(true);
+      notify('Product link copied to clipboard!', 'success');
+      setTimeout(() => setCopiedLink(false), 2500);
+    } catch {
+      notify('Failed to copy link', 'error');
+    }
   };
 
   if (loading) return (
@@ -1299,16 +1367,33 @@ export default function ProductDetail() {
                   {p.brand && <div className="pd-brand-strip">{p.brand.name || p.brand}</div>}
                   <h1 className="pd-title">{p.name}</h1>
                 </div>
-                <button
-                  className={`pd-btn-wishlist ${isInWishlist(p._id || p.id) ? 'active' : ''}`}
-                  onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
-                  title="Wishlist"
-                >
-                  {isInWishlist(p._id || p.id)
-                    ? <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                  }
-                </button>
+                <div className="pd-head-actions">
+                  <button
+                    type="button"
+                    className="pd-btn-action"
+                    onClick={handleShare}
+                    title="Share Product"
+                  >
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="18" cy="5" r="3"></circle>
+                      <circle cx="6" cy="12" r="3"></circle>
+                      <circle cx="18" cy="19" r="3"></circle>
+                      <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                      <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className={`pd-btn-action ${isInWishlist(p._id || p.id) ? 'active' : ''}`}
+                    onClick={() => isInWishlist(p._id || p.id) ? removeFromWishlist(p._id || p.id) : addToWishlist({ ...p, id: p._id || p.id })}
+                    title="Wishlist"
+                  >
+                    {isInWishlist(p._id || p.id)
+                      ? <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                      : <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    }
+                  </button>
+                </div>
               </div>
 
               <div className="pd-meta">
@@ -1320,6 +1405,21 @@ export default function ProductDetail() {
                 ) : null}
                 {p.ratingCount ? <span className="pd-rating-ct">{p.ratingCount} ratings</span> : null}
                 <span className="pd-assured">✓ Assured</span>
+                <button
+                  type="button"
+                  className="pd-meta-share"
+                  onClick={handleShare}
+                  title="Share with friends"
+                >
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                  </svg>
+                  Share
+                </button>
               </div>
 
               <div className="pd-price-block">
@@ -1667,6 +1767,199 @@ export default function ProductDetail() {
           Buy Now
         </button>
       </motion.div>
+
+      {/* ── Share Modal ── */}
+      {shareModalOpen && (
+        <div className="pd-share-modal-overlay" onClick={() => setShareModalOpen(false)}>
+          <div className="pd-share-modal" onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#eef2ff', color: '#4f46e5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="18" cy="5" r="3"></circle>
+                    <circle cx="6" cy="12" r="3"></circle>
+                    <circle cx="18" cy="19" r="3"></circle>
+                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                  </svg>
+                </div>
+                <div>
+                  <h3 style={{ fontSize: 17, fontWeight: 700, color: '#0f172a', margin: 0 }}>Share this Product</h3>
+                  <p style={{ fontSize: 12, color: '#64748b', margin: 0 }}>Share with friends, family or on social media</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShareModalOpen(false)}
+                style={{
+                  width: 32, height: 32, borderRadius: 8, border: 'none', background: '#f1f5f9',
+                  color: '#64748b', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}
+              >
+                ×
+              </button>
+            </div>
+
+            {/* Product Mini Preview */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 12, padding: 10,
+              background: '#f8fafc', borderRadius: 14, border: '1px solid #e2e8f0', marginBottom: 20
+            }}>
+              <img
+                src={getImageUrl(imgs[0] || p.images?.[0] || p.image, 120)}
+                alt={p.name}
+                style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: 8, background: '#fff', padding: 2, border: '1px solid #e2e8f0' }}
+              />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {p.name}
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#059669', marginTop: 2 }}>
+                  ₹{displayPrice.toLocaleString('en-IN')}
+                  {displayMrpRounded > displayPrice && (
+                    <span style={{ fontSize: 11, color: '#94a3b8', textDecoration: 'line-through', marginLeft: 6 }}>
+                      ₹{displayMrpRounded.toLocaleString('en-IN')}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Share Buttons */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 20 }}>
+              {/* WhatsApp */}
+              <a
+                href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`Check out ${p.name} on SmartOdisha: ${getProductShareUrl()}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: '12px 8px', borderRadius: 14, background: '#f0fdf4', border: '1px solid #bbf7d0',
+                  textDecoration: 'none', transition: 'transform 0.15s, background 0.15s', cursor: 'pointer'
+                }}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#22c55e', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                  </svg>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#166534' }}>WhatsApp</span>
+              </a>
+
+              {/* Twitter / X */}
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out ${p.name} on SmartOdisha!`)}&url=${encodeURIComponent(getProductShareUrl())}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: '12px 8px', borderRadius: 14, background: '#f8fafc', border: '1px solid #e2e8f0',
+                  textDecoration: 'none', transition: 'transform 0.15s, background 0.15s', cursor: 'pointer'
+                }}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#0f172a', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#334155' }}>X / Twitter</span>
+              </a>
+
+              {/* Facebook */}
+              <a
+                href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getProductShareUrl())}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: '12px 8px', borderRadius: 14, background: '#eff6ff', border: '1px solid #bfdbfe',
+                  textDecoration: 'none', transition: 'transform 0.15s, background 0.15s', cursor: 'pointer'
+                }}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#1877f2', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#1e40af' }}>Facebook</span>
+              </a>
+
+              {/* Native / More */}
+              <button
+                type="button"
+                onClick={async () => {
+                  if (navigator.share) {
+                    try {
+                      await navigator.share({
+                        title: p.name,
+                        text: `Check out ${p.name} on SmartOdisha`,
+                        url: getProductShareUrl()
+                      });
+                    } catch {}
+                  } else {
+                    handleCopyLink();
+                  }
+                }}
+                style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                  padding: '12px 8px', borderRadius: 14, background: '#f8fafc', border: '1px solid #e2e8f0',
+                  textDecoration: 'none', transition: 'transform 0.15s, background 0.15s', cursor: 'pointer'
+                }}
+              >
+                <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#64748b', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="19" cy="12" r="1"></circle>
+                    <circle cx="5" cy="12" r="1"></circle>
+                  </svg>
+                </div>
+                <span style={{ fontSize: 11, fontWeight: 600, color: '#334155' }}>More...</span>
+              </button>
+            </div>
+
+            {/* Copy Link Field */}
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8,
+              background: '#f1f5f9', padding: '6px 8px 6px 14px', borderRadius: 12,
+              border: '1px solid #e2e8f0'
+            }}>
+              <input
+                type="text"
+                readOnly
+                value={getProductShareUrl()}
+                style={{
+                  flex: 1, border: 'none', background: 'transparent',
+                  fontSize: 12.5, color: '#334155', outline: 'none',
+                  textOverflow: 'ellipsis', whiteSpace: 'nowrap', overflow: 'hidden'
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                style={{
+                  padding: '8px 14px', borderRadius: 8, border: 'none',
+                  background: copiedLink ? '#15803d' : '#4f46e5',
+                  color: '#fff', fontSize: 12, fontWeight: 600, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  transition: 'all 0.2s', flexShrink: 0
+                }}
+              >
+                {copiedLink ? (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    Copy
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <RecommendationModal isOpen={recOpen} onClose={() => setRecOpen(false)} products={recItems} onAddToCart={handleAddToCart} />
     </div>

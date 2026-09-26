@@ -15,6 +15,7 @@ export default function Orders(){
   const [loading, setLoading] = useState(false)
   const [sendingId, setSendingId] = useState('')
   const [actionLoading, setActionLoading] = useState(null)
+  const [syncingAll, setSyncingAll] = useState(false)
 
   const load = async (p = 1) => {
     setLoading(true)
@@ -34,11 +35,41 @@ export default function Orders(){
       notify('Creating Delhivery Express shipment...', 'info')
       const { data } = await api.post(`/api/orders/${id}/delhivery/standard-shipment`)
       if (data.success) {
-        notify('Delhivery shipment created successfully', 'success')
+        notify('Delhivery shipment created successfully! Order marked as SHIPPED.', 'success')
         load(page)
       }
     } catch (err) {
       notify(err.response?.data?.error || 'Failed to create shipment', 'error')
+    }
+  }
+
+  const syncDelhiveryStatus = async (orderId) => {
+    try {
+      setActionLoading(`${orderId}-sync`)
+      const { data } = await api.post(`/api/shipping/delhivery/sync/${orderId}`)
+      if (data?.hasChanged) {
+        notify(`Order status updated to ${data.orderStatus} from Delhivery (${data.delhiveryStatus})`, 'success')
+      } else {
+        notify(`Delhivery status: ${data?.delhiveryStatus || 'No change'}`, 'info')
+      }
+      load(page)
+    } catch (err) {
+      notify(err?.response?.data?.message || 'Failed to sync with Delhivery', 'error')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const syncAllDelhivery = async () => {
+    try {
+      setSyncingAll(true)
+      const { data } = await api.post('/api/shipping/delhivery/sync-all')
+      notify(`Synced ${data.total || 0} active Delhivery shipments (${data.updated || 0} updated)`, 'success')
+      load(page)
+    } catch (err) {
+      notify('Failed to sync Delhivery shipments', 'error')
+    } finally {
+      setSyncingAll(false)
     }
   }
 
@@ -157,6 +188,14 @@ export default function Orders(){
             className="px-4 py-2.5 rounded-xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest"
           >
             Search
+          </button>
+          <button
+            onClick={syncAllDelhivery}
+            disabled={syncingAll}
+            className="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+            title="Sync all active shipments directly from Delhivery"
+          >
+            <span>🔄</span> {syncingAll ? 'Syncing...' : 'Sync Delhivery'}
           </button>
         </div>
       </div>
@@ -434,12 +473,29 @@ export default function Orders(){
                                           {actionLoading === `${o._id}-SHIP` ? '🚀 Creating Shipment...' : '🚀 Create Express Shipment'}
                                         </button>
                                       ) : (
-                                        <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-center justify-between">
+                                        <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                           <div>
-                                            <div className="text-[8px] font-black text-blue-400 uppercase tracking-widest">Waybill</div>
+                                            <div className="text-[8px] font-black text-blue-400 uppercase tracking-widest">Delhivery Waybill</div>
                                             <div className="text-sm font-black text-blue-700">{o.shipping.waybill}</div>
+                                            {o.shipping?.status && (
+                                              <div className="text-[10px] font-bold text-slate-500 mt-0.5 flex items-center gap-1.5">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block animate-pulse"></span>
+                                                Status: <span className="text-blue-700 font-extrabold uppercase">{o.shipping.status}</span>
+                                              </div>
+                                            )}
                                           </div>
-                                          <div className="flex items-center gap-2">
+                                          <div className="flex flex-wrap items-center gap-2">
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                syncDelhiveryStatus(o._id);
+                                              }}
+                                              disabled={actionLoading === `${o._id}-sync`}
+                                              className="px-3.5 py-2 bg-indigo-600 text-white text-[10px] font-black uppercase rounded-xl shadow-md hover:bg-indigo-500 transition-all flex items-center gap-1.5 disabled:opacity-50"
+                                              title="Sync latest live status from Delhivery"
+                                            >
+                                              <span>🔄</span> {actionLoading === `${o._id}-sync` ? 'Syncing...' : 'Sync'}
+                                            </button>
                                             <button
                                               onClick={(e) => {
                                                 e.stopPropagation();
@@ -450,7 +506,7 @@ export default function Orders(){
                                               <span>🏷️</span> Print Label
                                             </button>
                                             {o.shipping.trackingUrl && (
-                                              <a href={o.shipping.trackingUrl} target="_blank" rel="noreferrer" className="px-5 py-2 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-md hover:bg-blue-500 transition-all">Track Order</a>
+                                              <a href={o.shipping.trackingUrl} target="_blank" rel="noreferrer" className="px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-md hover:bg-blue-500 transition-all">Track</a>
                                             )}
                                           </div>
                                         </div>
