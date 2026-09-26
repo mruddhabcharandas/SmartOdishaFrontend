@@ -19,12 +19,31 @@ export default function BusinessOrders() {
   // Filters
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [searchQuery, setSearchQuery] = useState('')
+  const [syncingAll, setSyncingAll] = useState(false)
 
   // Cancel Modal States
   const [showCancelModal, setShowCancelModal] = useState(false)
   const [cancellingId, setCancellingId] = useState(null)
   const [cancelReason, setCancelReason] = useState('')
   const [actionLoading, setActionLoading] = useState(null)
+
+  const handleSyncAllOrders = async () => {
+    setSyncingAll(true)
+    notify('Syncing all orders with Delhivery live tracking...', 'info')
+    try {
+      const { data } = await api.post('/api/stores/orders/sync-all')
+      if (data.updatedCount > 0) {
+        notify(`Sync completed! ${data.updatedCount} orders updated to latest status.`, 'success')
+      } else {
+        notify(`Sync completed for ${data.totalOrders} shipped orders. All statuses up to date!`, 'info')
+      }
+      loadOrders()
+    } catch (err) {
+      notify(err.response?.data?.message || err.response?.data?.error || 'Failed to sync orders', 'error')
+    } finally {
+      setSyncingAll(false)
+    }
+  }
 
   const loadOrders = async () => {
     setLoading(true)
@@ -198,12 +217,22 @@ export default function BusinessOrders() {
             Track incoming purchases, print Delhivery shipping labels, and manage order fulfillments.
           </p>
         </div>
-        <button
-          onClick={loadOrders}
-          className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl border border-slate-200 transition-all flex items-center gap-1.5 self-start md:self-auto"
-        >
-          <span>🔄</span> Refresh
-        </button>
+        <div className="flex items-center gap-2 self-start md:self-auto">
+          <button
+            onClick={handleSyncAllOrders}
+            disabled={syncingAll}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm shadow-indigo-600/20 transition-all flex items-center gap-1.5"
+            title="Sync all shipped orders with Delhivery live tracking status"
+          >
+            <span>{syncingAll ? '⏳' : '🚚'}</span> {syncingAll ? 'Syncing...' : 'Sync All Orders'}
+          </button>
+          <button
+            onClick={loadOrders}
+            className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl border border-slate-200 transition-all flex items-center gap-1.5"
+          >
+            <span>🔄</span> Refresh
+          </button>
+        </div>
       </div>
 
       {/* KPI Stats Bar */}

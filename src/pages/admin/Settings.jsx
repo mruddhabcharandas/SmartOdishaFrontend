@@ -195,7 +195,7 @@ export default function Settings() {
                 />
               </div>
               <p className="text-[11px] text-gray-500 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                ℹ️ <strong>Note:</strong> Agar aap Slack, Discord, ya koi third-party CRM use karte hain aur wahan ticket alerts receive karna chahte hain toh URL enter karein. <strong>Agar zaroorat nahi hai toh ise khali (blank) chhod sakte hain</strong> — platform ka live chat bina webhook ke fully work karta hai.
+                ℹ️ <strong>Note:</strong> Enter an endpoint URL if you want real-time ticket alerts delivered to external services such as Slack, Discord, or your CRM. <strong>You can safely leave this field blank</strong> if you do not use an external service — the built-in live support chat works completely independently.
               </p>
               <button
                 type="button"

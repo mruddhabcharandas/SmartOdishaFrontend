@@ -760,7 +760,7 @@ export default function BusinessProducts() {
 
       {managingVariants && (
         <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-2 sm:p-6 backdrop-blur-md overflow-hidden">
-          <div className="bg-white rounded-3xl w-full max-w-5xl h-[92vh] max-h-[880px] shadow-2xl animate-in zoom-in-95 flex flex-col relative overflow-hidden border border-slate-100">
+          <div className="bg-white rounded-3xl w-full max-w-6xl h-[92vh] max-h-[880px] shadow-2xl animate-in zoom-in-95 flex flex-col relative overflow-hidden border border-slate-100">
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
               <div className="flex items-center gap-3 min-w-0">
@@ -954,22 +954,42 @@ export default function BusinessProducts() {
           </div>
         </div>
       )}
-      </div>
-    </>
+    </div>
   )
 }
 
 function VariantManager({ product, setEditing, onChanged, editingVariant, setEditingVariant, price = '', weight = '' }) {
   const { notify } = useToast()
-  const [activeTab, setActiveTab] = useState((product.variants || []).length === 0 && (product.attributes || []).length === 0 ? 'options' : 'list')
+  const [activeTab, setActiveTab] = useState(
+    (product.variants || []).length === 0 && (product.attributes || []).length === 0 ? 'options' : 'list'
+  )
   const [attrInput, setAttrInput] = useState('')
   const [valInput, setValInput] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all') // 'all' | 'live' | 'hidden' | 'out_of_stock'
+  const [statusFilter, setStatusFilter] = useState('all') // 'all' | 'live' | 'hidden' | 'in_stock' | 'out_of_stock'
   const [isGenerating, setIsGenerating] = useState(false)
   const [variantToDelete, setVariantToDelete] = useState(null)
 
-  const commonPresets = ['Color', 'Size', 'Storage', 'Material', 'Pack Size', 'Weight', 'Model']
+  // Bulk tools state
+  const [showBulkBar, setShowBulkBar] = useState(false)
+  const [bulkPrice, setBulkPrice] = useState('')
+  const [bulkStock, setBulkStock] = useState('')
+  const [isBulkApplying, setIsBulkApplying] = useState(false)
+
+  // Inline edits state: { [variantId]: { price, mrp, stock, sku } }
+  const [inlineEdits, setInlineEdits] = useState({})
+  const [savingRowId, setSavingRowId] = useState(null)
+  const [savingAll, setSavingAll] = useState(false)
+
+  const commonPresets = [
+    { label: 'Color', icon: '🎨' },
+    { label: 'Size', icon: '📏' },
+    { label: 'Storage', icon: '💾' },
+    { label: 'Material', icon: '🧱' },
+    { label: 'Pack Size', icon: '📦' },
+    { label: 'Weight', icon: '⚖️' },
+    { label: 'Model', icon: '🏷️' }
+  ]
 
   const getAttrMap = (v) => {
     if (!v) return {}
@@ -981,7 +1001,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
   const toggleActive = async (v) => {
     try {
       await api.put(`/api/stores/products/${product._id}/variants/${v._id}`, { isActive: !v.isActive })
-      notify('Variant status updated', 'success')
+      notify(`Variant marked as ${!v.isActive ? 'Live' : 'Hidden'}`, 'success')
       onChanged && onChanged()
     } catch { 
       notify('Update failed', 'error') 
@@ -999,7 +1019,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
         headers: { 'X-Action-Password': password },
         data: { password }
       })
-      notify('Variant deleted', 'success')
+      notify('Variant deleted successfully', 'success')
       setVariantToDelete(null)
       onChanged && onChanged()
     } catch (err) { 
@@ -1013,17 +1033,18 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
       await api.put(`/api/stores/products/${product._id}`, { attributes: next })
       setEditing(prev => ({ ...prev, attributes: next }))
       notify('Options updated', 'success')
+      onChanged && onChanged()
     } catch { 
       notify('Failed to save attributes', 'error') 
     }
   }
 
   const addAttr = async (customName) => {
-    const nameToAdd = (customName || attrInput || '').trim().toLowerCase()
+    const nameToAdd = (customName || attrInput || '').trim()
     if (!nameToAdd) return
     const currentAttrs = Array.isArray(product.attributes) ? product.attributes : []
-    const attrNames = currentAttrs.map(a => a.split(':')[0]?.toLowerCase())
-    if (attrNames.includes(nameToAdd)) return notify(`Option "${nameToAdd}" already exists`, 'error')
+    const attrNames = currentAttrs.map(a => a.split(':')[0]?.toLowerCase().trim())
+    if (attrNames.includes(nameToAdd.toLowerCase())) return notify(`Option "${nameToAdd}" already exists`, 'error')
     
     const next = [...currentAttrs, `${nameToAdd}:`]
     await updateAttributes(next)
@@ -1032,7 +1053,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
 
   const removeAttr = async (a) => {
     const name = a.split(':')[0]
-    if (!window.confirm(`Remove option "${name}" and all its values? Existing variants will keep their data, but future combinations will change.`)) return
+    if (!window.confirm(`Remove option "${name}" and all its values? Existing variants will keep their data, but combinations will update.`)) return
     const currentAttrs = Array.isArray(product.attributes) ? product.attributes : []
     const next = currentAttrs.filter(x => x !== a)
     await updateAttributes(next)
@@ -1048,9 +1069,8 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
     if (idx === -1) return
 
     const [name, valuesStr] = currentAttrs[idx].split(':')
-    const existingValues = valuesStr ? valuesStr.split(',').filter(Boolean) : []
+    const existingValues = valuesStr ? valuesStr.split(',').map(s => s.trim()).filter(Boolean) : []
     
-    // Case-insensitive dedup preserving casing
     const lowerExisting = new Set(existingValues.map(v => v.toLowerCase()))
     const uniqueToAdd = newVals.filter(v => !lowerExisting.has(v.toLowerCase()))
     
@@ -1079,46 +1099,46 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
 
   const generateCombinations = () => {
     const attrs = (product.attributes || []).map(a => {
-      const [name, valuesStr] = a.split(':');
-      const values = valuesStr ? valuesStr.split(',').filter(Boolean) : [];
-      return { name, values };
-    }).filter(a => a.values.length > 0);
+      const [name, valuesStr] = a.split(':')
+      const values = valuesStr ? valuesStr.split(',').map(s => s.trim()).filter(Boolean) : []
+      return { name, values }
+    }).filter(a => a.values.length > 0)
 
-    if (attrs.length === 0) return [];
+    if (attrs.length === 0) return []
 
     const combine = (index, current) => {
-      if (index === attrs.length) return [current];
-      const result = [];
+      if (index === attrs.length) return [current]
+      const result = []
       for (const val of attrs[index].values) {
-        result.push(...combine(index + 1, { ...current, [attrs[index].name]: val }));
+        result.push(...combine(index + 1, { ...current, [attrs[index].name]: val }))
       }
-      return result;
-    };
+      return result
+    }
 
-    const all = combine(0, {});
+    const all = combine(0, {})
     const existing = (product.variants || []).map(v => {
-      const vAttrs = getAttrMap(v);
-      const normalized = {};
-      Object.entries(vAttrs).forEach(([k, val]) => { normalized[k.toLowerCase().trim()] = String(val).toLowerCase().trim() });
+      const vAttrs = getAttrMap(v)
+      const normalized = {}
+      Object.entries(vAttrs).forEach(([k, val]) => { normalized[k.toLowerCase().trim()] = String(val).toLowerCase().trim() })
       const sorted = Object.keys(normalized).sort().reduce((obj, key) => {
-        obj[key] = normalized[key];
-        return obj;
-      }, {});
-      return JSON.stringify(sorted);
-    });
+        obj[key] = normalized[key]
+        return obj
+      }, {})
+      return JSON.stringify(sorted)
+    })
 
     return all.filter(combo => {
-      const normalized = {};
-      Object.entries(combo).forEach(([k, val]) => { normalized[k.toLowerCase().trim()] = String(val).toLowerCase().trim() });
+      const normalized = {}
+      Object.entries(combo).forEach(([k, val]) => { normalized[k.toLowerCase().trim()] = String(val).toLowerCase().trim() })
       const sorted = Object.keys(normalized).sort().reduce((obj, key) => {
-        obj[key] = normalized[key];
-        return obj;
-      }, {});
-      return !existing.includes(JSON.stringify(sorted));
-    });
-  };
+        obj[key] = normalized[key]
+        return obj
+      }, {})
+      return !existing.includes(JSON.stringify(sorted))
+    })
+  }
 
-  const missingCombinations = generateCombinations();
+  const missingCombinations = generateCombinations()
 
   const getSku = (combo) => {
     const nameParts = (product.name || '').split(' ').filter(Boolean)
@@ -1138,7 +1158,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
     try {
       const images = Array.isArray(product.images)
         ? product.images.map(img => (typeof img === 'string' ? { url: img } : img)).filter(i => i?.url)
-        : (typeof product.images === 'string' ? product.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url })) : []);
+        : (typeof product.images === 'string' ? product.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url })) : [])
 
       await api.post(`/api/stores/products/${product._id}/variants`, {
         attributes: combo,
@@ -1149,23 +1169,21 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
         images: images,
         sku: getSku(combo),
         isActive: true
-      });
-      notify('Variant added', 'success');
-      onChanged && onChanged();
+      })
+      notify('Variant added', 'success')
+      onChanged && onChanged()
     } catch (err) { 
-      notify(err.response?.data?.error || 'Failed to add variant', 'error'); 
+      notify(err.response?.data?.error || 'Failed to add variant', 'error') 
     }
-  };
+  }
 
   const addAllCombinations = async () => {
     if (!missingCombinations.length) return
-    if (!window.confirm(`Generate ${missingCombinations.length} variant(s) automatically with base price ₹${product.price}? You can adjust prices and stock after creation.`)) return;
-    
     setIsGenerating(true)
-    let success = 0;
+    let success = 0
     const images = Array.isArray(product.images)
       ? product.images.map(img => (typeof img === 'string' ? { url: img } : img)).filter(i => i?.url)
-      : (typeof product.images === 'string' ? product.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url })) : []);
+      : (typeof product.images === 'string' ? product.images.split(',').map(s=>s.trim()).filter(Boolean).map(url => ({ url })) : [])
 
     for (const combo of missingCombinations) {
       try {
@@ -1178,17 +1196,132 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
           images: images,
           sku: getSku(combo),
           isActive: true
-        });
-        success++;
+        })
+        success++
       } catch (e) { 
-        console.error("Failed to create variant:", combo, e); 
+        console.error("Failed to create variant:", combo, e) 
       }
     }
     setIsGenerating(false)
-    notify(`Created ${success} variants successfully!`, 'success');
-    setActiveTab('list');
-    onChanged && onChanged();
-  };
+    notify(`Created ${success} variants successfully!`, 'success')
+    setActiveTab('list')
+    onChanged && onChanged()
+  }
+
+  // Inline edits handler
+  const handleInlineChange = (variantId, field, value) => {
+    setInlineEdits(prev => ({
+      ...prev,
+      [variantId]: {
+        ...(prev[variantId] || {}),
+        [field]: value
+      }
+    }))
+  }
+
+  const saveInlineVariant = async (v) => {
+    const edits = inlineEdits[v._id]
+    if (!edits) return
+    setSavingRowId(v._id)
+    try {
+      const payload = {
+        price: edits.price !== undefined ? Number(edits.price) : Number(v.price),
+        mrp: edits.mrp !== undefined ? (edits.mrp ? Number(edits.mrp) : undefined) : v.mrp,
+        stock: edits.stock !== undefined ? Number(edits.stock) : Number(v.stock || 0),
+        sku: edits.sku !== undefined ? edits.sku : v.sku
+      }
+      await api.put(`/api/stores/products/${product._id}/variants/${v._id}`, payload)
+      notify('Variant saved', 'success')
+      setInlineEdits(prev => {
+        const next = { ...prev }
+        delete next[v._id]
+        return next
+      })
+      onChanged && onChanged()
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to save variant', 'error')
+    } finally {
+      setSavingRowId(null)
+    }
+  }
+
+  const saveAllInlineVariants = async () => {
+    const variantIds = Object.keys(inlineEdits)
+    if (!variantIds.length) return
+    setSavingAll(true)
+    let saved = 0
+    for (const vid of variantIds) {
+      const v = (product.variants || []).find(x => x._id === vid)
+      if (!v) continue
+      const edits = inlineEdits[vid]
+      try {
+        const payload = {
+          price: edits.price !== undefined ? Number(edits.price) : Number(v.price),
+          mrp: edits.mrp !== undefined ? (edits.mrp ? Number(edits.mrp) : undefined) : v.mrp,
+          stock: edits.stock !== undefined ? Number(edits.stock) : Number(v.stock || 0),
+          sku: edits.sku !== undefined ? edits.sku : v.sku
+        }
+        await api.put(`/api/stores/products/${product._id}/variants/${vid}`, payload)
+        saved++
+      } catch (err) {
+        console.error(`Failed to save variant ${vid}:`, err)
+      }
+    }
+    setSavingAll(false)
+    setInlineEdits({})
+    notify(`Saved ${saved} variants successfully!`, 'success')
+    onChanged && onChanged()
+  }
+
+  const handleBulkApplyPrice = async () => {
+    const pVal = Number(bulkPrice)
+    if (isNaN(pVal) || pVal < 0) return notify('Please enter a valid price', 'error')
+    setIsBulkApplying(true)
+    let count = 0
+    for (const v of product.variants || []) {
+      try {
+        await api.put(`/api/stores/products/${product._id}/variants/${v._id}`, { price: pVal })
+        count++
+      } catch (err) {}
+    }
+    setIsBulkApplying(false)
+    setBulkPrice('')
+    notify(`Updated price for ${count} variants!`, 'success')
+    onChanged && onChanged()
+  }
+
+  const handleBulkApplyStock = async () => {
+    const sVal = parseInt(bulkStock)
+    if (isNaN(sVal) || sVal < 0) return notify('Please enter a valid stock quantity', 'error')
+    setIsBulkApplying(true)
+    let count = 0
+    for (const v of product.variants || []) {
+      try {
+        await api.put(`/api/stores/products/${product._id}/variants/${v._id}`, { stock: sVal })
+        count++
+      } catch (err) {}
+    }
+    setIsBulkApplying(false)
+    setBulkStock('')
+    notify(`Updated stock for ${count} variants!`, 'success')
+    onChanged && onChanged()
+  }
+
+  const handleAutoGenerateSkus = async () => {
+    setIsBulkApplying(true)
+    let count = 0
+    for (const v of product.variants || []) {
+      try {
+        const vAttrs = getAttrMap(v)
+        const autoSku = getSku(vAttrs)
+        await api.put(`/api/stores/products/${product._id}/variants/${v._id}`, { sku: autoSku })
+        count++
+      } catch (err) {}
+    }
+    setIsBulkApplying(false)
+    notify(`Generated clean SKUs for ${count} variants!`, 'success')
+    onChanged && onChanged()
+  }
 
   const handleUpdateVariant = async (e) => {
     e.preventDefault()
@@ -1236,19 +1369,27 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
   const prices = variants.map(v => Number(v.price || 0)).filter(p => p > 0)
   const minPrice = prices.length ? Math.min(...prices) : Number(product.price || 0)
   const maxPrice = prices.length ? Math.max(...prices) : Number(product.price || 0)
+  const unsavedCount = Object.keys(inlineEdits).length
 
   return (
     <div className="space-y-6">
-      {/* Top Navigation Tabs & Quick Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/80 shadow-sm">
-        <div className="flex items-center gap-2">
+      {/* ─── STUDIO NAVIGATION & QUICK ACTION BAR ─── */}
+      <div className="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        {/* Navigation Tabs */}
+        <div className="flex items-center gap-2 bg-slate-100/80 p-1 rounded-xl">
           <button
             type="button"
             onClick={() => setActiveTab('list')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'list' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+              activeTab === 'list'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
           >
             <span>📦 Variants & Stock</span>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${activeTab === 'list' ? 'bg-indigo-800/40 text-white' : 'bg-slate-200 text-slate-700'}`}>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+              activeTab === 'list' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-200 text-slate-600'
+            }`}>
               {variants.length}
             </span>
           </button>
@@ -1256,106 +1397,187 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
           <button
             type="button"
             onClick={() => setActiveTab('options')}
-            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${activeTab === 'options' ? 'bg-indigo-600 text-white shadow-md shadow-indigo-100' : 'bg-slate-50 text-slate-600 hover:bg-slate-100'}`}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+              activeTab === 'options'
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+            }`}
           >
-            <span>⚙️ Options & Generator</span>
-            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${activeTab === 'options' ? 'bg-indigo-800/40 text-white' : 'bg-slate-200 text-slate-700'}`}>
+            <span>⚙️ Options (Size, Color...)</span>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+              activeTab === 'options' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-200 text-slate-600'
+            }`}>
               {(product.attributes || []).length}
             </span>
           </button>
         </div>
 
-        {missingCombinations.length > 0 && (
-          <button
-            type="button"
-            disabled={isGenerating}
-            onClick={addAllCombinations}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-md shadow-emerald-100 transition-all disabled:opacity-50"
-          >
-            <span>⚡ Generate Missing ({missingCombinations.length})</span>
-          </button>
-        )}
+        {/* Action Buttons */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {unsavedCount > 0 && (
+            <button
+              type="button"
+              disabled={savingAll}
+              onClick={saveAllInlineVariants}
+              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-xs transition-all flex items-center gap-1.5 animate-pulse"
+            >
+              <span>💾</span>
+              <span>{savingAll ? 'Saving...' : `Save All (${unsavedCount})`}</span>
+            </button>
+          )}
+
+          {variants.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowBulkBar(!showBulkBar)}
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold border transition-all flex items-center gap-1.5 ${
+                showBulkBar
+                  ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <span>⚡ Bulk Tools</span>
+              <span className="text-[10px]">{showBulkBar ? '▲' : '▼'}</span>
+            </button>
+          )}
+
+          {missingCombinations.length > 0 && (
+            <button
+              type="button"
+              disabled={isGenerating}
+              onClick={addAllCombinations}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-black shadow-xs transition-all flex items-center gap-1.5 disabled:opacity-50"
+            >
+              <span>✨ Generate Missing ({missingCombinations.length})</span>
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* ─── BULK TOOLS ACCORDION BAR ─── */}
+      {showBulkBar && variants.length > 0 && (
+        <div className="bg-indigo-50/70 border border-indigo-100 rounded-2xl p-4 animate-in fade-in slide-in-from-top-2 duration-150 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-black uppercase tracking-wider text-indigo-950 flex items-center gap-1.5">
+              <span>⚡</span> Fast Bulk Apply to All {variants.length} Variants
+            </span>
+            <span className="text-[11px] text-indigo-600 font-medium">Quickly set prices or inventory stock across your entire catalogue</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            {/* Bulk Price */}
+            <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-indigo-100">
+              <span className="text-xs font-bold text-slate-400 pl-1">₹</span>
+              <input
+                type="number"
+                placeholder="Set Price for all..."
+                value={bulkPrice}
+                onChange={e => setBulkPrice(e.target.value)}
+                className="w-full text-xs font-bold text-slate-900 bg-transparent outline-none"
+              />
+              <button
+                type="button"
+                disabled={isBulkApplying || !bulkPrice}
+                onClick={handleBulkApplyPrice}
+                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition disabled:opacity-40"
+              >
+                Apply
+              </button>
+            </div>
+
+            {/* Bulk Stock */}
+            <div className="flex items-center gap-2 bg-white p-2 rounded-xl border border-indigo-100">
+              <span className="text-xs font-bold text-slate-400 pl-1">📦</span>
+              <input
+                type="number"
+                placeholder="Set Stock for all..."
+                value={bulkStock}
+                onChange={e => setBulkStock(e.target.value)}
+                className="w-full text-xs font-bold text-slate-900 bg-transparent outline-none"
+              />
+              <button
+                type="button"
+                disabled={isBulkApplying || !bulkStock}
+                onClick={handleBulkApplyStock}
+                className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition disabled:opacity-40"
+              >
+                Apply
+              </button>
+            </div>
+
+            {/* Auto SKU */}
+            <div className="flex items-center justify-between bg-white p-2 px-3 rounded-xl border border-indigo-100">
+              <span className="text-xs font-semibold text-slate-700">Auto SKU Generator</span>
+              <button
+                type="button"
+                disabled={isBulkApplying}
+                onClick={handleAutoGenerateSkus}
+                className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-xs font-bold transition disabled:opacity-40"
+              >
+                Format All SKUs
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ─── TAB 1: VARIANTS LIST ─── */}
       {activeTab === 'list' && (
         <div className="space-y-4">
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Variants</span>
-              <span className="text-xl font-extrabold text-slate-900 mt-1">{variants.length}</span>
+            <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Variants</span>
+              <span className="text-2xl font-black text-slate-900 mt-1">{variants.length}</span>
             </div>
-            <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Combined Stock</span>
-              <span className="text-xl font-extrabold text-emerald-600 mt-1">{totalVariantStock} units</span>
+            <div className="bg-white p-4 rounded-2xl border border-emerald-100 shadow-xs flex flex-col">
+              <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">Combined Stock</span>
+              <span className="text-2xl font-black text-emerald-700 mt-1">{totalVariantStock} units</span>
             </div>
-            <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Price Range</span>
-              <span className="text-xl font-extrabold text-slate-900 mt-1">
+            <div className="bg-white p-4 rounded-2xl border border-indigo-100 shadow-xs flex flex-col">
+              <span className="text-[10px] font-black uppercase tracking-wider text-indigo-600">Price Range</span>
+              <span className="text-2xl font-black text-slate-900 mt-1">
                 {minPrice === maxPrice ? `₹${minPrice.toLocaleString()}` : `₹${minPrice.toLocaleString()} - ₹${maxPrice.toLocaleString()}`}
               </span>
             </div>
-            <div className="bg-white p-3.5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Uncreated Combos</span>
-              <span className={`text-xl font-extrabold mt-1 ${missingCombinations.length > 0 ? 'text-amber-600' : 'text-slate-400'}`}>
+            <div className="bg-white p-4 rounded-2xl border border-amber-100 shadow-xs flex flex-col">
+              <span className="text-[10px] font-black uppercase tracking-wider text-amber-600">Uncreated Combos</span>
+              <span className={`text-2xl font-black mt-1 ${missingCombinations.length > 0 ? 'text-amber-700' : 'text-slate-400'}`}>
                 {missingCombinations.length}
               </span>
             </div>
           </div>
 
-          {/* Alert if combinations pending */}
-          {missingCombinations.length > 0 && (
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">💡</span>
-                <div>
-                  <h4 className="text-xs font-bold text-amber-900">
-                    {missingCombinations.length} new combinations ready to generate
-                  </h4>
-                  <p className="text-[11px] text-amber-700 mt-0.5">
-                    Based on your options ({product.attributes?.map(a => a.split(':')[0]).join(', ')}), you can generate them in 1-click.
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={addAllCombinations}
-                disabled={isGenerating}
-                className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex-shrink-0"
-              >
-                Create All ({missingCombinations.length})
-              </button>
-            </div>
-          )}
-
-          {/* Search & Filter Toolbar */}
-          <div className="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          {/* Search & Filter Bar */}
+          <div className="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
             <div className="relative flex-1 max-w-sm">
               <input
                 type="text"
-                placeholder="Search variant by option or SKU..."
+                placeholder="Search variant by name, option, or SKU..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3 py-2 text-xs font-semibold text-slate-800 placeholder-slate-400 focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
               />
               <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
 
             <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto">
-              <span className="text-[10px] font-bold text-slate-400 uppercase mr-1">Filter:</span>
               {[
                 { id: 'all', label: `All (${variants.length})` },
-                { id: 'live', label: 'Live' },
-                { id: 'hidden', label: 'Hidden' },
                 { id: 'in_stock', label: 'In Stock' },
-                { id: 'out_of_stock', label: 'Out of Stock' }
+                { id: 'out_of_stock', label: 'Out of Stock' },
+                { id: 'live', label: 'Live' },
+                { id: 'hidden', label: 'Hidden' }
               ].map(f => (
                 <button
                   key={f.id}
                   type="button"
                   onClick={() => setStatusFilter(f.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${statusFilter === f.id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    statusFilter === f.id
+                      ? 'bg-slate-900 text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
                 >
                   {f.label}
                 </button>
@@ -1363,20 +1585,21 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
             </div>
           </div>
 
-          {/* Variants List Table / Cards */}
+          {/* Variants List Table with Fast Inline Inputs */}
           {filteredVariants.length > 0 ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-50/80 border-b border-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-400">
-                      <th className="py-3 px-4 w-12">Photo</th>
-                      <th className="py-3 px-4">Variant Options</th>
-                      <th className="py-3 px-4">Price & MRP</th>
-                      <th className="py-3 px-4">Stock</th>
-                      <th className="py-3 px-4">SKU / Weight</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-black uppercase tracking-wider text-slate-500">
+                      <th className="py-3.5 px-4 w-12">Photo</th>
+                      <th className="py-3.5 px-4">Variant Options</th>
+                      <th className="py-3.5 px-4 w-36">Selling Price (₹)</th>
+                      <th className="py-3.5 px-4 w-28">MRP (₹)</th>
+                      <th className="py-3.5 px-4 w-32">Stock (Units)</th>
+                      <th className="py-3.5 px-4 w-36">SKU Code</th>
+                      <th className="py-3.5 px-4 w-24">Status</th>
+                      <th className="py-3.5 px-4 text-right w-28">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 text-xs">
@@ -1384,19 +1607,37 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                       const vAttrs = getAttrMap(v)
                       const entries = Object.entries(vAttrs)
                       const primaryImg = (v.images && v.images[0]?.url) || (Array.isArray(v.images) && typeof v.images[0] === 'string' && v.images[0]) || (product.images?.[0]?.url) || null
-                      const inStock = (v.stock || 0) > 0
+                      const edits = inlineEdits[v._id] || {}
+                      const currentPrice = edits.price !== undefined ? edits.price : v.price
+                      const currentMrp = edits.mrp !== undefined ? edits.mrp : (v.mrp || '')
+                      const currentStock = edits.stock !== undefined ? edits.stock : (v.stock || 0)
+                      const currentSku = edits.sku !== undefined ? edits.sku : (v.sku || '')
+                      const hasEdits = !!inlineEdits[v._id]
+                      const isSaving = savingRowId === v._id
+                      const inStock = Number(currentStock) > 0
 
                       return (
-                        <tr key={v._id} className="hover:bg-slate-50/80 transition-colors group">
+                        <tr key={v._id} className={`transition-colors group ${hasEdits ? 'bg-indigo-50/40' : 'hover:bg-slate-50/70'}`}>
                           {/* Image */}
                           <td className="py-3 px-4">
-                            <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200/80 overflow-hidden flex items-center justify-center flex-shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => setEditingVariant({
+                                ...v,
+                                imageUrls: (v.images || []).map(img => (typeof img === 'string' ? img : img.url)).filter(Boolean)
+                              })}
+                              className="w-11 h-11 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center flex-shrink-0 relative group/img cursor-pointer"
+                              title="Click to manage variant photos"
+                            >
                               {primaryImg ? (
                                 <img src={primaryImg} alt="" className="w-full h-full object-contain p-0.5" />
                               ) : (
-                                <span className="text-sm opacity-30">📦</span>
+                                <span className="text-base opacity-40">📦</span>
                               )}
-                            </div>
+                              <div className="absolute inset-0 bg-slate-900/60 text-white text-[9px] font-bold flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity">
+                                📷 Edit
+                              </div>
+                            </button>
                           </td>
 
                           {/* Options */}
@@ -1404,8 +1645,8 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                             <div className="flex flex-wrap items-center gap-1.5">
                               {entries.length > 0 ? (
                                 entries.map(([k, val]) => (
-                                  <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-900 font-bold text-xs uppercase tracking-tight">
-                                    <span className="text-indigo-400 font-medium text-[10px]">{k}:</span>
+                                  <span key={k} className="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-100 border border-slate-200/80 rounded-lg text-slate-800 font-bold text-xs">
+                                    <span className="text-slate-400 font-medium text-[10px]">{k}:</span>
                                     <span>{val}</span>
                                   </span>
                                 ))
@@ -1415,42 +1656,67 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                             </div>
                           </td>
 
-                          {/* Price */}
+                          {/* Direct Inline Price */}
                           <td className="py-3 px-4">
-                            <div className="font-extrabold text-slate-900 text-sm">
-                              ₹{Number(v.price || 0).toLocaleString()}
-                            </div>
-                            {Number(v.mrp) > Number(v.price) && (
-                              <div className="text-[10px] text-slate-400 line-through font-medium">
-                                ₹{Number(v.mrp).toLocaleString()}
-                              </div>
-                            )}
-                          </td>
-
-                          {/* Stock */}
-                          <td className="py-3 px-4">
-                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${inStock ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60' : 'bg-rose-50 text-rose-700 border border-rose-200/60'}`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${inStock ? 'bg-emerald-500' : 'bg-rose-500'}`} />
-                              {inStock ? `${v.stock} in stock` : 'Out of Stock'}
-                            </span>
-                          </td>
-
-                          {/* SKU & Weight */}
-                          <td className="py-3 px-4">
-                            <div className="font-mono text-[10px] text-slate-700 bg-slate-100 px-1.5 py-0.5 rounded inline-block">
-                              {v.sku || 'No SKU'}
-                            </div>
-                            <div className="text-[11px] text-slate-400 mt-0.5">
-                              {v.weight ? `${v.weight}g` : 'No weight'}
+                            <div className="relative">
+                              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">₹</span>
+                              <input
+                                type="number"
+                                value={currentPrice}
+                                onChange={e => handleInlineChange(v._id, 'price', e.target.value)}
+                                className="w-full pl-6 pr-2 py-1.5 rounded-xl border border-slate-200 bg-white font-black text-slate-900 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition"
+                              />
                             </div>
                           </td>
 
-                          {/* Status */}
+                          {/* Direct Inline MRP */}
+                          <td className="py-3 px-4">
+                            <input
+                              type="number"
+                              placeholder="MRP"
+                              value={currentMrp}
+                              onChange={e => handleInlineChange(v._id, 'mrp', e.target.value)}
+                              className="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white font-semibold text-slate-500 text-xs focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition"
+                            />
+                          </td>
+
+                          {/* Direct Inline Stock */}
+                          <td className="py-3 px-4">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                value={currentStock}
+                                onChange={e => handleInlineChange(v._id, 'stock', e.target.value)}
+                                className={`w-20 px-2.5 py-1.5 rounded-xl border font-black text-xs outline-none transition ${
+                                  inStock
+                                    ? 'border-emerald-300 text-emerald-800 bg-emerald-50/40 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20'
+                                    : 'border-rose-300 text-rose-700 bg-rose-50/40 focus:border-rose-500 focus:ring-2 focus:ring-rose-500/20'
+                                }`}
+                              />
+                              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${inStock ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                            </div>
+                          </td>
+
+                          {/* Direct Inline SKU */}
+                          <td className="py-3 px-4">
+                            <input
+                              type="text"
+                              value={currentSku}
+                              onChange={e => handleInlineChange(v._id, 'sku', e.target.value)}
+                              className="w-full px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white font-mono font-bold text-slate-700 text-[11px] focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition"
+                            />
+                          </td>
+
+                          {/* Live/Hidden Toggle */}
                           <td className="py-3 px-4">
                             <button
                               type="button"
                               onClick={() => toggleActive(v)}
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${v.isActive !== false ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'}`}
+                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                                v.isActive !== false
+                                  ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'
+                                  : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                              }`}
                               title="Click to toggle Live / Hidden"
                             >
                               <span className={`w-1.5 h-1.5 rounded-full ${v.isActive !== false ? 'bg-emerald-500' : 'bg-slate-400'}`} />
@@ -1461,25 +1727,36 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                           {/* Actions */}
                           <td className="py-3 px-4 text-right">
                             <div className="flex items-center justify-end gap-1.5">
-                              <button
-                                type="button"
-                                onClick={() => setEditingVariant({
-                                  ...v,
-                                  imageUrls: (v.images || []).map(img => (typeof img === 'string' ? img : img.url)).filter(Boolean)
-                                })}
-                                className="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold flex items-center gap-1 transition-all"
-                                title="Edit Variant"
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                <span>Edit</span>
-                              </button>
+                              {hasEdits ? (
+                                <button
+                                  type="button"
+                                  disabled={isSaving}
+                                  onClick={() => saveInlineVariant(v)}
+                                  className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold flex items-center gap-1 transition shadow-xs"
+                                  title="Save Changes"
+                                >
+                                  <span>{isSaving ? '...' : '✓ Save'}</span>
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingVariant({
+                                    ...v,
+                                    imageUrls: (v.images || []).map(img => (typeof img === 'string' ? img : img.url)).filter(Boolean)
+                                  })}
+                                  className="p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                                  title="Photos & Specifications"
+                                >
+                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 onClick={() => deleteVariant(v)}
-                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-all"
+                                className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
                                 title="Delete Variant"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                               </button>
                             </div>
                           </td>
@@ -1491,7 +1768,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-12 text-center shadow-sm space-y-4">
+            <div className="bg-white rounded-3xl border border-slate-200/90 p-12 text-center shadow-xs space-y-4">
               <div className="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-3xl">
                 🎨
               </div>
@@ -1523,41 +1800,48 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
       {activeTab === 'options' && (
         <div className="space-y-6">
           {/* Quick Presets & Add Option Card */}
-          <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+          <div className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-xs space-y-5">
             <div>
-              <h4 className="text-sm font-bold text-slate-900">Product Option Attributes</h4>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <h4 className="text-base font-extrabold text-slate-900">Product Option Attributes</h4>
+              <p className="text-xs text-slate-500 mt-1">
                 Options define the variations of this product (e.g. Color, Size, Storage). Each combination becomes a sellable variant with its own price, SKU, and inventory.
               </p>
             </div>
 
             {/* Common Presets */}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <span className="text-[11px] font-bold text-slate-400 uppercase">Quick Add Preset:</span>
-              {commonPresets.map(preset => {
-                const currentNames = (product.attributes || []).map(a => a.split(':')[0]?.toLowerCase())
-                const alreadyAdded = currentNames.includes(preset.toLowerCase())
-                return (
-                  <button
-                    key={preset}
-                    type="button"
-                    disabled={alreadyAdded}
-                    onClick={() => addAttr(preset)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${alreadyAdded ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200/60' : 'bg-indigo-50 text-indigo-700 border border-indigo-200/70 hover:bg-indigo-100 shadow-sm'}`}
-                  >
-                    <span>{alreadyAdded ? '✓' : '+'}</span>
-                    <span>{preset}</span>
-                  </button>
-                )
-              })}
+            <div className="space-y-2">
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">Quick Preset Shortcuts:</span>
+              <div className="flex flex-wrap items-center gap-2">
+                {commonPresets.map(preset => {
+                  const currentNames = (product.attributes || []).map(a => a.split(':')[0]?.toLowerCase().trim())
+                  const alreadyAdded = currentNames.includes(preset.label.toLowerCase())
+                  return (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      disabled={alreadyAdded}
+                      onClick={() => addAttr(preset.label)}
+                      className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                        alreadyAdded
+                          ? 'bg-slate-100 text-slate-400 cursor-not-allowed border border-slate-200/60'
+                          : 'bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 shadow-2xs'
+                      }`}
+                    >
+                      <span>{preset.icon}</span>
+                      <span>{preset.label}</span>
+                      {alreadyAdded && <span className="text-[10px] text-emerald-600">✓</span>}
+                    </button>
+                  )
+                })}
+              </div>
             </div>
 
-            {/* Custom Input */}
-            <div className="flex gap-2 max-w-md pt-1">
+            {/* Custom Option Name Input */}
+            <div className="flex gap-2 max-w-md pt-2 border-t border-slate-100">
               <input
                 type="text"
-                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-900 outline-none focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-400"
-                placeholder="Or custom option name (e.g. Finish, Volume)..."
+                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-900 outline-none focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-400"
+                placeholder="Or custom option name (e.g. Finish, Pack Size)..."
                 value={attrInput}
                 onChange={e => setAttrInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && addAttr()}
@@ -1565,34 +1849,34 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
               <button
                 type="button"
                 onClick={() => addAttr()}
-                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-sm flex-shrink-0"
+                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition-all shadow-xs flex-shrink-0"
               >
-                Add Option
+                + Add Option
               </button>
             </div>
           </div>
 
-          {/* Active Defined Options */}
-          <div className="space-y-3">
+          {/* Active Defined Options Cards */}
+          <div className="space-y-4">
             {Array.isArray(product.attributes) && product.attributes.length > 0 ? (
               product.attributes.map(attr => {
                 const [name, valuesStr] = attr.split(':')
-                const values = valuesStr ? valuesStr.split(',').filter(Boolean) : []
+                const values = valuesStr ? valuesStr.split(',').map(s => s.trim()).filter(Boolean) : []
                 return (
-                  <div key={name} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                      <div className="flex items-center gap-2">
-                        <span className="px-3 py-1 rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-800 font-extrabold text-xs uppercase tracking-wider">
+                  <div key={name} className="bg-white p-5 rounded-2xl border border-slate-200/90 shadow-xs space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                      <div className="flex items-center gap-2.5">
+                        <span className="px-3.5 py-1 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-800 font-black text-xs uppercase tracking-wider">
                           {name}
                         </span>
-                        <span className="text-xs text-slate-400 font-medium">
+                        <span className="text-xs text-slate-400 font-semibold">
                           ({values.length} {values.length === 1 ? 'value' : 'values'})
                         </span>
                       </div>
                       <button
                         type="button"
                         onClick={() => removeAttr(attr)}
-                        className="text-xs font-semibold text-rose-500 hover:text-rose-700 hover:bg-rose-50 px-2.5 py-1 rounded-lg transition-colors"
+                        className="text-xs font-bold text-rose-500 hover:text-rose-700 hover:bg-rose-50 px-3 py-1.5 rounded-lg transition-colors"
                       >
                         Remove Option
                       </button>
@@ -1603,7 +1887,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                       {values.map(v => (
                         <span
                           key={v}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 shadow-sm group hover:border-slate-300"
+                          className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 shadow-2xs group hover:border-slate-300"
                         >
                           <span>{v}</span>
                           <button
@@ -1621,7 +1905,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                       <div className="inline-flex items-center gap-1.5 ml-1">
                         <input
                           type="text"
-                          className="bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-800 outline-none focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all w-48 placeholder-slate-400"
+                          className="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-1.5 text-xs font-semibold text-slate-800 outline-none focus:bg-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all w-52 placeholder-slate-400"
                           placeholder="Add value (e.g. Red, Blue)..."
                           value={valInput[name] || ''}
                           onChange={e => setValInput(prev => ({ ...prev, [name]: e.target.value }))}
@@ -1630,39 +1914,41 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                         <button
                           type="button"
                           onClick={() => addAttrValue(name, valInput[name])}
-                          className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-all"
+                          className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition-all"
                         >
                           + Add
                         </button>
                       </div>
                     </div>
                     <p className="text-[11px] text-slate-400 font-medium">
-                      Tip: You can paste comma-separated values like <code className="bg-slate-100 px-1 py-0.5 rounded text-slate-600">S, M, L, XL</code> to add them all at once.
+                      Tip: You can paste comma-separated values like <code className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-700 font-semibold">S, M, L, XL</code> to add them all at once.
                     </p>
                   </div>
                 )
               })
             ) : (
-              <div className="bg-white rounded-2xl border border-slate-200/80 p-8 text-center text-slate-400 text-xs">
-                No options defined yet. Add common presets above or enter a custom option name.
+              <div className="bg-white rounded-3xl border border-slate-200/90 p-8 text-center text-slate-400 text-xs font-medium">
+                No options defined yet. Click any preset shortcut above or enter a custom option name to start.
               </div>
             )}
           </div>
 
           {/* Combinations Matrix Calculator Card */}
           {Array.isArray(product.attributes) && product.attributes.filter(a => a.split(':')[1]).length > 0 && (
-            <div className="bg-gradient-to-br from-indigo-900 to-slate-900 text-white p-6 rounded-3xl shadow-xl space-y-4">
+            <div className="bg-white border-2 border-indigo-100 rounded-3xl p-6 shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-widest text-indigo-300">Variant Matrix Preview</span>
-                  <h3 className="text-xl font-bold mt-1">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-wider border border-indigo-200">
+                    Matrix Studio
+                  </div>
+                  <h3 className="text-lg font-black text-slate-900 mt-1">
                     {product.attributes.filter(a => a.split(':')[1]).map(a => {
-                      const [name, vals] = a.split(':');
-                      return `${vals.split(',').filter(Boolean).length} ${name}`;
-                    }).join(' × ')} = {missingCombinations.length + variants.length} Total Combinations
+                      const [name, vals] = a.split(':')
+                      return `${vals.split(',').filter(Boolean).length} ${name}`
+                    }).join(' × ')} = {missingCombinations.length + variants.length} Total Variations
                   </h3>
-                  <p className="text-xs text-indigo-200/80 mt-1">
-                    {variants.length} created · {missingCombinations.length} ready to generate
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    <strong className="text-emerald-600 font-bold">{variants.length} active</strong> in inventory · <strong className="text-amber-600 font-bold">{missingCombinations.length} ready to generate</strong>
                   </p>
                 </div>
 
@@ -1671,7 +1957,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                     type="button"
                     disabled={isGenerating}
                     onClick={addAllCombinations}
-                    className="px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-900 font-extrabold text-xs uppercase tracking-wider rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 flex-shrink-0"
+                    className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs uppercase tracking-wider rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 flex-shrink-0"
                   >
                     <span>⚡ Generate All {missingCombinations.length} Variants</span>
                   </button>
@@ -1680,9 +1966,9 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
 
               {/* Individual Missing Combinations Chips */}
               {missingCombinations.length > 0 ? (
-                <div className="pt-3 border-t border-indigo-800/60 space-y-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-300">
-                    Click any combination to create individually:
+                <div className="pt-3 border-t border-slate-100 space-y-2">
+                  <span className="text-[11px] font-bold text-slate-500 block">
+                    Click any combination chip below to create it individually:
                   </span>
                   <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto custom-scrollbar pr-1">
                     {missingCombinations.map((combo, i) => (
@@ -1690,17 +1976,17 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                         key={i}
                         type="button"
                         onClick={() => addCombination(combo)}
-                        className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white text-xs font-semibold transition-all flex items-center gap-1.5"
+                        className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-800 text-xs font-bold transition flex items-center gap-1.5 shadow-2xs"
                       >
-                        <span className="text-emerald-400">+</span>
+                        <span className="text-indigo-600 font-extrabold">+</span>
                         <span>{Object.values(combo).join(' / ')}</span>
                       </button>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="pt-3 border-t border-indigo-800/60 flex items-center gap-2 text-xs text-emerald-300 font-bold">
-                  <span>✓ All possible combinations are already created and live in your catalogue!</span>
+                <div className="pt-3 border-t border-slate-100 flex items-center gap-2 text-xs text-emerald-700 font-bold">
+                  <span>✓ All possible combinations are already generated and active in your catalogue!</span>
                 </div>
               )}
             </div>
@@ -1708,19 +1994,19 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
         </div>
       )}
 
-      {/* ─── EDIT VARIANT MODAL / DRAWER ─── */}
+      {/* ─── FULL EDIT VARIANT MODAL / DRAWER ─── */}
       {editingVariant && (
-        <div className="fixed inset-0 bg-slate-900/70 flex items-center justify-center z-[70] backdrop-blur-md p-4 overflow-y-auto">
+        <div className="fixed inset-0 bg-slate-900/70 flex items-center justify-center z-[70] backdrop-blur-md p-4 overflow-y-auto animate-in fade-in duration-150">
           <form 
             onSubmit={handleUpdateVariant} 
-            className="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-lg shadow-2xl space-y-5 animate-in zoom-in-95 my-auto border border-slate-100"
+            className="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-lg shadow-2xl space-y-5 my-auto border border-slate-100 animate-in zoom-in-95"
           >
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h4 className="text-base font-bold text-slate-900">Edit Variant Details</h4>
-                <div className="flex flex-wrap gap-1.5 mt-1">
+                <h4 className="text-base font-extrabold text-slate-900">Edit Variant Details</h4>
+                <div className="flex flex-wrap gap-1.5 mt-1.5">
                   {Object.entries(getAttrMap(editingVariant)).map(([k, val]) => (
-                    <span key={k} className="px-2 py-0.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-bold rounded-md uppercase">
+                    <span key={k} className="px-2.5 py-0.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-[10px] font-black rounded-md uppercase">
                       {k}: {val}
                     </span>
                   ))}
@@ -1813,7 +2099,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                           })}
                           className="absolute inset-0 bg-rose-900/70 text-white font-bold text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          ✕ Remove
+                          ✕
                         </button>
                       </div>
                     ))}
@@ -1842,7 +2128,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
                     setEditingVariant(prev => ({ ...prev, imageUrls: [...(prev.imageUrls || []), url] }))
                   }} />
                 </div>
-                <p className="text-[10px] text-slate-400">Upload new image or paste a link and press Enter.</p>
+                <p className="text-[10px] text-slate-400">Upload an image file or paste a direct image URL.</p>
               </div>
             </div>
 
@@ -1864,11 +2150,15 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
             </div>
           </form>
         </div>
+      )}
+
+      {/* Confirm Delete Variant Modal with Password Security */}
       {variantToDelete && (
         <ConfirmModal
           open={!!variantToDelete}
           title="Delete Variant?"
           message={`Are you sure you want to delete this variant? This will permanently remove its inventory.`}
+          confirmText="Delete Variant"
           onConfirm={confirmDeleteVariant}
           onCancel={() => setVariantToDelete(null)}
         />
