@@ -188,7 +188,21 @@ export default function Products() {
     setEditing(null); load(page); notify('Product updated','success')
   }
   const remove = (p) => setToDelete(p)
-  const confirmDelete = async () => { if (!toDelete) return; await api.delete(`/api/products/${toDelete._id}`); setToDelete(null); load(page); notify('Product deleted','success') }
+  const confirmDelete = async (password) => {
+    if (!toDelete) return
+    try {
+      await api.delete(`/api/products/${toDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      setToDelete(null)
+      load(page)
+      notify('Product deleted', 'success')
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to delete product', 'error')
+      throw err
+    }
+  }
 
   return (
     <>

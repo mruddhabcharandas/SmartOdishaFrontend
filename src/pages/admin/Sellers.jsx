@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
 import ImageUpload from '../../components/ImageUpload'
+import ConfirmModal from '../../components/ConfirmModal'
 
 
 export default function Sellers() {
@@ -10,6 +11,7 @@ export default function Sellers() {
   const [showModal, setShowModal] = useState(false)
   const [editingStore, setEditingStore] = useState(null)
   const [reviewingPickupStore, setReviewingPickupStore] = useState(null)
+  const [storeToDelete, setStoreToDelete] = useState(null)
   const [loading, setLoading] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -157,14 +159,19 @@ export default function Sellers() {
     setShowModal(true)
   }
 
-  const deleteStore = async (storeId) => {
-    if (!window.confirm('Are you sure you want to delete this seller?')) return
+  const confirmDeleteStore = async (password) => {
+    if (!storeToDelete) return
     try {
-      await api.delete(`/api/admin/stores/${storeId}`)
+      await api.delete(`/api/admin/stores/${storeToDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
       notify('Seller deleted successfully', 'success')
+      setStoreToDelete(null)
       loadStores()
     } catch (err) {
       notify(err?.response?.data?.error || 'Failed to delete seller', 'error')
+      throw err
     }
   }
 
@@ -305,7 +312,7 @@ export default function Sellers() {
                   Edit
                 </button>
                 <button
-                  onClick={() => deleteStore(store._id)}
+                  onClick={() => setStoreToDelete(store)}
                   className="px-3 py-2 bg-red-50 text-red-700 rounded-lg text-sm font-medium hover:bg-red-100 transition"
                 >
                   Delete
@@ -658,6 +665,15 @@ export default function Sellers() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={!!storeToDelete}
+        title="Delete Seller"
+        message={`Are you sure you want to delete seller "${storeToDelete?.name || ''}" (${storeToDelete?.email || ''})? This action cannot be undone.`}
+        confirmText="Delete Seller"
+        onConfirm={confirmDeleteStore}
+        onClose={() => setStoreToDelete(null)}
+      />
     </div>
   )
 }

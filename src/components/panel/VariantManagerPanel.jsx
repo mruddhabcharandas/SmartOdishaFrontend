@@ -2,6 +2,7 @@ import { useState } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../Toast'
 import ImageUpload from '../ImageUpload'
+import ConfirmModal from '../ConfirmModal'
 
 /**
  * Shared variant manager for Seller & Admin panels.
@@ -13,6 +14,7 @@ export default function VariantManagerPanel({ product, apiPrefix, onChanged, onC
   const [attrInput, setAttrInput] = useState('')
   const [valInput, setValInput] = useState({})
   const [editingVariant, setEditingVariant] = useState(null)
+  const [variantToDelete, setVariantToDelete] = useState(null)
 
   const refresh = async () => {
     if (apiPrefix.includes('/stores/')) {
@@ -173,11 +175,24 @@ export default function VariantManagerPanel({ product, apiPrefix, onChanged, onC
     refresh()
   }
 
-  const deleteVariant = async (v) => {
-    if (!window.confirm('Delete this variant?')) return
-    await api.delete(`${apiPrefix}/${local._id}/variants/${v._id}`)
-    notify('Variant deleted', 'success')
-    refresh()
+  const deleteVariant = (v) => {
+    setVariantToDelete(v)
+  }
+
+  const confirmDeleteVariant = async (password) => {
+    if (!variantToDelete) return
+    try {
+      await api.delete(`${apiPrefix}/${local._id}/variants/${variantToDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      notify('Variant deleted', 'success')
+      setVariantToDelete(null)
+      refresh()
+    } catch (err) {
+      notify(err.response?.data?.error || 'Variant delete failed', 'error')
+      throw err
+    }
   }
 
   const missingCombinations = generateCombinations()
@@ -309,6 +324,16 @@ export default function VariantManagerPanel({ product, apiPrefix, onChanged, onC
           )}
         </div>
       </div>
+
+      {variantToDelete && (
+        <ConfirmModal
+          open={!!variantToDelete}
+          title="Delete Variant?"
+          message="Are you sure you want to delete this variant? This will permanently remove its inventory."
+          onConfirm={confirmDeleteVariant}
+          onCancel={() => setVariantToDelete(null)}
+        />
+      )}
     </div>
   )
 }

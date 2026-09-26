@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
 import ImageUpload from '../../components/ImageUpload'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function AdminHeroSlides() {
   const { notify } = useToast()
@@ -9,6 +10,7 @@ export default function AdminHeroSlides() {
   const [loading, setLoading] = useState(true)
   const [form, setForm] = useState({ title: '', link: '', url: '', publicId: '' })
   const [creating, setCreating] = useState(false)
+  const [slideToDelete, setSlideToDelete] = useState(null)
 
   const loadSlides = async () => {
     setLoading(true)
@@ -55,16 +57,20 @@ export default function AdminHeroSlides() {
     }
   }
 
-  const handleDeleteSlide = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this slide? It will be removed from Cloudinary too.')) return
-
+  const confirmDeleteSlide = async (password) => {
+    if (!slideToDelete) return
     try {
-      await api.delete(`/api/admin/hero-slides/${id}`)
+      await api.delete(`/api/admin/hero-slides/${slideToDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
       notify('Hero slide deleted successfully', 'success')
+      setSlideToDelete(null)
       loadSlides()
     } catch (err) {
       console.error(err)
-      notify('Failed to delete hero slide', 'error')
+      notify(err?.response?.data?.error || 'Failed to delete hero slide', 'error')
+      throw err
     }
   }
 
@@ -167,7 +173,7 @@ export default function AdminHeroSlides() {
                     </div>
                     <div className="flex justify-end mt-4 md:mt-0">
                       <button
-                        onClick={() => handleDeleteSlide(slide._id)}
+                        onClick={() => setSlideToDelete(slide)}
                         className="px-4 py-2 border border-red-200 text-red-500 rounded-xl text-xs font-bold hover:bg-red-50 hover:border-red-300 transition-all flex items-center gap-2"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
@@ -185,6 +191,15 @@ export default function AdminHeroSlides() {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={!!slideToDelete}
+        title="Delete Hero Slide"
+        message={`Are you sure you want to delete the hero slide "${slideToDelete?.title || 'Untitled'}"? It will also be removed from Cloudinary.`}
+        confirmText="Delete Slide"
+        onConfirm={confirmDeleteSlide}
+        onClose={() => setSlideToDelete(null)}
+      />
     </div>
   )
 }

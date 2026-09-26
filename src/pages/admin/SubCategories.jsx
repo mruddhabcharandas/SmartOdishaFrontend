@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
 import ImageUpload from '../../components/ImageUpload'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function SubCategories() {
   const [items, setItems] = useState([])
@@ -9,10 +10,25 @@ export default function SubCategories() {
   const [selectedBrand, setSelectedBrand] = useState('')
   const [form, setForm] = useState({ name: '', slug: '', categoryId: '', image: '' })
   const [editing, setEditing] = useState(null)
+  const [toDelete, setToDelete] = useState(null)
 
   const load = async () => {
     const { data } = await api.get('/api/subcategories')
     setItems(data)
+  }
+
+  const confirmDelete = async (password) => {
+    if (!toDelete) return
+    try {
+      await api.delete(`/api/subcategories/${toDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      setToDelete(null)
+      load()
+    } catch (err) {
+      throw err
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -114,9 +130,18 @@ export default function SubCategories() {
                       <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Category: {s.category?.name || '-'} | Slug: {s.slug}</div>
                     </div>
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); toggle(s); }} className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${s.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-gray-50 text-gray-400 border border-gray-100'}`}>
-                    {s.isActive ? 'Active' : 'Hidden'}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={(e) => { e.stopPropagation(); toggle(s); }} className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${s.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-gray-50 text-gray-400 border border-gray-100'}`}>
+                      {s.isActive ? 'Active' : 'Hidden'}
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setToDelete(s); }}
+                      className="p-2 rounded-xl transition-all text-gray-400 hover:text-red-600 hover:bg-red-50"
+                      title="Delete Subcategory"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -151,6 +176,16 @@ export default function SubCategories() {
             </div>
           </form>
         </div>
+      )}
+
+      {toDelete && (
+        <ConfirmModal
+          open={!!toDelete}
+          title="Delete Subcategory?"
+          message={`Are you sure you want to delete subcategory "${toDelete.name}"? Products under this subcategory may be affected.`}
+          onConfirm={confirmDelete}
+          onCancel={() => setToDelete(null)}
+        />
       )}
     </div>
   )

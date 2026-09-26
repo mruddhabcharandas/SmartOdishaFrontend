@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function SellerRequests() {
   const { notify } = useToast()
   const [requests, setRequests] = useState([])
   const [loading, setLoading] = useState(false)
   const [selectedRequest, setSelectedRequest] = useState(null)
+  const [requestToDelete, setRequestToDelete] = useState(null)
   const [actionLoading, setActionLoading] = useState(false)
 
   const loadRequests = async () => {
@@ -59,18 +61,22 @@ export default function SellerRequests() {
     }
   }
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this request record?')) {
-      return
-    }
+  const confirmDelete = async (password) => {
+    if (!requestToDelete) return
     try {
       setActionLoading(true)
-      const { data } = await api.delete(`/api/admin/store-requests/${id}`)
+      const id = requestToDelete._id || requestToDelete
+      const { data } = await api.delete(`/api/admin/store-requests/${id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
       notify(data.message || 'Request record deleted successfully', 'success')
+      setRequestToDelete(null)
       setSelectedRequest(null)
       loadRequests()
     } catch (err) {
       notify(err.response?.data?.error || 'Failed to delete request', 'error')
+      throw err
     } finally {
       setActionLoading(false)
     }
@@ -175,7 +181,7 @@ export default function SellerRequests() {
                       )}
                       <button
                         disabled={actionLoading}
-                        onClick={() => handleDelete(req._id)}
+                        onClick={() => setRequestToDelete(req)}
                         className="px-3 py-1.5 text-gray-400 hover:text-red-500 rounded-lg text-xs font-bold transition"
                       >
                         Delete
@@ -284,6 +290,15 @@ export default function SellerRequests() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={!!requestToDelete}
+        title="Delete Seller Request"
+        message={`Are you sure you want to delete the seller request for "${requestToDelete?.businessName || ''}"? This action cannot be undone.`}
+        confirmText="Delete Request"
+        onConfirm={confirmDelete}
+        onClose={() => setRequestToDelete(null)}
+      />
     </div>
   )
 }

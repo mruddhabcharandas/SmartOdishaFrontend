@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function Offers(){
   const [items, setItems] = useState([])
   const [editingId, setEditingId] = useState(null)
+  const [toDelete, setToDelete] = useState(null)
   const [form, setForm] = useState({
     title: '', bannerImage: '', discountPercent: '', products: '', startDate: '', endDate: '', isActive: true
   })
@@ -84,10 +86,21 @@ export default function Offers(){
     }
   }
 
-  const remove = async (id) => {
-    if (!confirm('Delete this offer?')) return
-    await api.delete(`/api/offers/${id}`)
-    load()
+  const remove = (o) => setToDelete(o)
+
+  const confirmDelete = async (password) => {
+    if (!toDelete) return
+    try {
+      const id = toDelete._id || toDelete
+      await api.delete(`/api/offers/${id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      setToDelete(null)
+      load()
+    } catch (err) {
+      throw err
+    }
   }
 
   return (
@@ -197,7 +210,7 @@ export default function Offers(){
                       <path d="M18.5 2.5a2.121 2.121 0 113 3L12 15l-4 1 1-4 9.5-9.5z" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
                   </button>
-                  <button onClick={() => remove(o._id)} className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-all">
+                  <button onClick={() => remove(o)} className="p-2 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-all">
                     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5">
                       <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -208,6 +221,15 @@ export default function Offers(){
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        open={!!toDelete}
+        title="Delete Offer"
+        message={`Are you sure you want to delete the offer "${toDelete?.title || ''}"? This action cannot be undone.`}
+        confirmText="Delete Offer"
+        onConfirm={confirmDelete}
+        onClose={() => setToDelete(null)}
+      />
     </div>
   )
 }

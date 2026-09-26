@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
 import ImageUpload from '../../components/ImageUpload'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function Categories(){
   const [items, setItems] = useState([])
   const [form, setForm] = useState({ name:'', slug:'', image:'' })
   const [editing, setEditing] = useState(null)
+  const [toDelete, setToDelete] = useState(null)
   
   const load = async () => { 
     const {data} = await api.get('/api/categories')
@@ -20,10 +22,18 @@ export default function Categories(){
     load() 
   }
   const toggle = async (c) => { await api.put(`/api/categories/${c._id}`, { isActive: !c.isActive }); load() }
-  const remove = async (id) => { 
-    if(window.confirm('Are you sure you want to delete this category?')) {
-      await api.delete(`/api/categories/${id}`); 
-      load();
+  const remove = (c) => setToDelete(c)
+  const confirmDelete = async (password) => { 
+    if (!toDelete) return
+    try {
+      await api.delete(`/api/categories/${toDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      setToDelete(null)
+      load()
+    } catch (err) {
+      throw err
     }
   }
   const update = async (e) => {
@@ -109,7 +119,7 @@ export default function Categories(){
                       )}
                     </button>
                     <button 
-                      onClick={(e)=>{ e.stopPropagation(); remove(c._id); }} 
+                      onClick={(e)=>{ e.stopPropagation(); remove(c); }} 
                       className="p-2 rounded-xl transition-all text-gray-400 hover:text-red-600 hover:bg-red-50"
                       title="Delete Category"
                     >
@@ -158,6 +168,16 @@ export default function Categories(){
             </div>
           </form>
         </div>
+      )}
+
+      {toDelete && (
+        <ConfirmModal
+          open={!!toDelete}
+          title="Delete Category?"
+          message={`Are you sure you want to delete category "${toDelete.name}"? Products in this category may be affected.`}
+          onConfirm={confirmDelete}
+          onCancel={() => setToDelete(null)}
+        />
       )}
     </div>
   )

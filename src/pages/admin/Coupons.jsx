@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function Coupons(){
   const [items, setItems] = useState([])
   const [expandedId, setExpandedId] = useState(null)
   const [editingId, setEditingId] = useState(null)
+  const [toDelete, setToDelete] = useState(null)
   const [form, setForm] = useState({
     code:'', type:'PERCENT', value:'', minAmount:'', minOrderValue:'', maxDiscount:'', expiryDate:'', usageLimit:'',
     partnerId:'', partnerCommissionPercent:'', maxTotalSales:'', isActive:true, isPublic:true, password:''
@@ -67,15 +69,20 @@ export default function Coupons(){
     load(); 
   }
 
-  const remove = async (c)=>{ 
-    if (c.isActive) {
-      if (!confirm(`Disable coupon "${c.code}"?`)) return;
-      await api.delete(`/api/coupons/${c._id}`); 
-    } else {
-      if (!confirm(`Permanently DELETE coupon "${c.code}"? This cannot be undone.`)) return;
-      await api.delete(`/api/coupons/${c._id}`); 
+  const remove = (c) => setToDelete(c)
+
+  const confirmDelete = async (password) => { 
+    if (!toDelete) return
+    try {
+      await api.delete(`/api/coupons/${toDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      setToDelete(null)
+      load()
+    } catch (err) {
+      throw err
     }
-    load(); 
   }
 
   const toggleStatus = async (c) => {
@@ -325,6 +332,16 @@ export default function Coupons(){
           </div>
         </div>
       </div>
+
+      {toDelete && (
+        <ConfirmModal
+          open={!!toDelete}
+          title="Delete Coupon?"
+          message={`Are you sure you want to delete coupon code "${toDelete.code}"? This will disable future checkouts with this coupon.`}
+          onConfirm={confirmDelete}
+          onCancel={() => setToDelete(null)}
+        />
+      )}
     </div>
   )
 }

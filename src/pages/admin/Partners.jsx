@@ -2,6 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts'
+import ConfirmModal from '../../components/ConfirmModal'
 
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899']
 
@@ -11,6 +12,7 @@ export default function Partners() {
   const [loading, setLoading] = useState(true)
   const [selectedCode, setSelectedCode] = useState(null)
   const [viewingPartner, setViewingPartner] = useState(null)
+  const [partnerToDelete, setPartnerToDelete] = useState(null)
   const [form, setForm] = useState({ amount:'', method:'MANUAL', utr:'', razorpayPaymentId:'', notes:'' })
   const [partners, setPartners] = useState([])
   const [newPartner, setNewPartner] = useState({ name:'', email:'', phone:'', password:'' })
@@ -48,14 +50,19 @@ export default function Partners() {
     }
   }
 
-  const deletePartner = async (id) => {
-    if (!confirm('Delete this partner?')) return
+  const confirmDeletePartner = async (password) => {
+    if (!partnerToDelete) return
     try {
-      await api.put(`/api/partner-accounts/${id}`, { isActive: false })
+      await api.delete(`/api/partner-accounts/${partnerToDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
       loadPartners()
-      notify('Partner removed','success')
-    } catch {
-      notify('Failed to remove partner','error')
+      setPartnerToDelete(null)
+      notify('Partner removed', 'success')
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to remove partner', 'error')
+      throw err
     }
   }
 
@@ -116,7 +123,7 @@ export default function Partners() {
                       <div className="text-xs font-black text-gray-900 truncate">{p.name}</div>
                       <div className="text-[9px] text-gray-500 font-bold truncate">{p.phone || 'No Phone'}</div>
                     </div>
-                    <button onClick={() => deletePartner(p._id)} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
+                    <button onClick={() => setPartnerToDelete(p)} className="p-2 text-gray-400 hover:text-red-500 transition-colors">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>
                   </div>
@@ -345,6 +352,15 @@ export default function Partners() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={!!partnerToDelete}
+        title="Remove Partner"
+        message={`Are you sure you want to remove partner "${partnerToDelete?.name || ''}"?`}
+        confirmText="Remove Partner"
+        onConfirm={confirmDeletePartner}
+        onClose={() => setPartnerToDelete(null)}
+      />
     </div>
   )
 }

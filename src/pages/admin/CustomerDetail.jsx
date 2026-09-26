@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function CustomerDetail() {
   const { id } = useParams()
@@ -9,6 +10,8 @@ export default function CustomerDetail() {
   const { notify } = useToast()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+
   const load = async () => {
     setLoading(true)
     try {
@@ -20,11 +23,19 @@ export default function CustomerDetail() {
   }
   useEffect(() => { load() }, [id])
 
-  const remove = async () => {
-    if (!confirm('Delete this customer permanently?')) return
-    await api.delete(`/api/admin/customers/${id}`)
-    notify('Customer deleted', 'success')
-    nav('/admin/customers')
+  const confirmDelete = async (password) => {
+    try {
+      await api.delete(`/api/admin/customers/${id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      notify('Customer deleted', 'success')
+      setShowDeleteModal(false)
+      nav('/admin/customers')
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to delete customer', 'error')
+      throw err
+    }
   }
 
   if (loading) return <div className="p-6">Loading…</div>
@@ -42,7 +53,7 @@ export default function CustomerDetail() {
             </span>
           </div>
         </div>
-        <button onClick={remove} className="px-4 py-2 rounded-xl bg-red-600 text-white text-xs font-bold">Delete</button>
+        <button onClick={() => setShowDeleteModal(true)} className="px-4 py-2 rounded-xl bg-red-600 text-white text-xs font-bold">Delete</button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white border rounded-2xl overflow-hidden">
@@ -100,6 +111,15 @@ export default function CustomerDetail() {
           )}
         </div>
       </div>
+
+      <ConfirmModal
+        open={showDeleteModal}
+        title="Delete Customer"
+        message={`Are you sure you want to permanently delete customer "${user?.name || ''}" (${user?.email || user?.phone || ''})? This action cannot be undone.`}
+        confirmText="Delete Customer"
+        onConfirm={confirmDelete}
+        onClose={() => setShowDeleteModal(false)}
+      />
     </div>
   )
 }

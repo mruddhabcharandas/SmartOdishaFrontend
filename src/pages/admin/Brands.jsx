@@ -1,15 +1,31 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
 import ImageUpload from '../../components/ImageUpload'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function Brands() {
   const [items, setItems] = useState([])
   const [form, setForm] = useState({ name: '', slug: '', logo: '' })
   const [editing, setEditing] = useState(null)
+  const [toDelete, setToDelete] = useState(null)
 
   const load = async () => {
     const { data } = await api.get('/api/brands')
     setItems(data)
+  }
+
+  const confirmDelete = async (password) => {
+    if (!toDelete) return
+    try {
+      await api.delete(`/api/brands/${toDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      setToDelete(null)
+      load()
+    } catch (err) {
+      throw err
+    }
   }
 
   useEffect(() => { load() }, [])
@@ -83,9 +99,18 @@ export default function Brands() {
                       <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Slug: {b.slug}</div>
                     </div>
                   </div>
-                  <button onClick={(e) => { e.stopPropagation(); toggle(b); }} className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${b.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-gray-50 text-gray-400 border border-gray-100'}`}>
-                    {b.isActive ? 'Active' : 'Hidden'}
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button onClick={(e) => { e.stopPropagation(); toggle(b); }} className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${b.isActive ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-gray-50 text-gray-400 border border-gray-100'}`}>
+                      {b.isActive ? 'Active' : 'Hidden'}
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setToDelete(b); }}
+                      className="p-2 rounded-xl transition-all text-gray-400 hover:text-red-600 hover:bg-red-50"
+                      title="Delete Brand"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -120,6 +145,16 @@ export default function Brands() {
             </div>
           </form>
         </div>
+      )}
+
+      {toDelete && (
+        <ConfirmModal
+          open={!!toDelete}
+          title="Delete Brand?"
+          message={`Are you sure you want to delete brand "${toDelete.name}"? Products under this brand will be unlinked.`}
+          onConfirm={confirmDelete}
+          onCancel={() => setToDelete(null)}
+        />
       )}
     </div>
   )

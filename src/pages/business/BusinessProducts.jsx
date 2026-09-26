@@ -196,7 +196,21 @@ export default function BusinessProducts() {
     setEditing(null); load(page); notify('Product updated','success')
   }
   const remove = (p) => setToDelete(p)
-  const confirmDelete = async () => { if (!toDelete) return; await api.delete(`/api/stores/products/${toDelete._id}`); setToDelete(null); load(page); notify('Product deleted','success') }
+  const confirmDelete = async (password) => {
+    if (!toDelete) return
+    try {
+      await api.delete(`/api/stores/products/${toDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      setToDelete(null)
+      load(page)
+      notify('Product deleted', 'success')
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to delete product', 'error')
+      throw err
+    }
+  }
 
   return (
     <>
@@ -953,6 +967,7 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all') // 'all' | 'live' | 'hidden' | 'out_of_stock'
   const [isGenerating, setIsGenerating] = useState(false)
+  const [variantToDelete, setVariantToDelete] = useState(null)
 
   const commonPresets = ['Color', 'Size', 'Storage', 'Material', 'Pack Size', 'Weight', 'Model']
 
@@ -973,16 +988,23 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
     }
   }
 
-  const deleteVariant = async (v) => {
-    const attrs = getAttrMap(v)
-    const label = Object.values(attrs).join(' / ') || v.sku || 'Variant'
-    if (!window.confirm(`Delete variant "${label}"? This will permanently remove its inventory.`)) return
+  const deleteVariant = (v) => {
+    setVariantToDelete(v)
+  }
+
+  const confirmDeleteVariant = async (password) => {
+    if (!variantToDelete) return
     try {
-      await api.delete(`/api/stores/products/${product._id}/variants/${v._id}`)
+      await api.delete(`/api/stores/products/${product._id}/variants/${variantToDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
       notify('Variant deleted', 'success')
+      setVariantToDelete(null)
       onChanged && onChanged()
-    } catch { 
-      notify('Delete failed', 'error') 
+    } catch (err) { 
+      notify(err.response?.data?.error || 'Delete failed', 'error') 
+      throw err
     }
   }
 
@@ -1842,6 +1864,14 @@ function VariantManager({ product, setEditing, onChanged, editingVariant, setEdi
             </div>
           </form>
         </div>
+      {variantToDelete && (
+        <ConfirmModal
+          open={!!variantToDelete}
+          title="Delete Variant?"
+          message={`Are you sure you want to delete this variant? This will permanently remove its inventory.`}
+          onConfirm={confirmDeleteVariant}
+          onCancel={() => setVariantToDelete(null)}
+        />
       )}
     </div>
   )

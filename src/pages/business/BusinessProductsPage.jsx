@@ -200,15 +200,19 @@ export default function BusinessProductsPage() {
     }
   }
 
-  const confirmDelete = async () => {
+  const confirmDelete = async (password) => {
     if (!toDelete) return
     try {
-      await api.delete(`/api/stores/products/${toDelete._id}`)
+      await api.delete(`/api/stores/products/${toDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
       setToDelete(null)
       load()
       notify('Product deleted successfully', 'success')
-    } catch {
-      notify('Delete failed', 'error')
+    } catch (err) {
+      notify(err.response?.data?.error || 'Delete failed', 'error')
+      throw err
     }
   }
 

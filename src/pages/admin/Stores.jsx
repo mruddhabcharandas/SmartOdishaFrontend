@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
+import ConfirmModal from '../../components/ConfirmModal'
 
 export default function Stores() {
   const { notify } = useToast()
   const [stores, setStores] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [editingStore, setEditingStore] = useState(null)
+  const [storeToDelete, setStoreToDelete] = useState(null)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -138,14 +140,19 @@ export default function Stores() {
     }
   }
 
-  const deleteStore = async (storeId) => {
-    if (!window.confirm('Are you sure you want to delete this store?')) return
+  const confirmDeleteStore = async (password) => {
+    if (!storeToDelete) return
     try {
-      await api.delete(`/admin/stores/${storeId}`)
+      await api.delete(`/api/admin/stores/${storeToDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
       notify('Store deleted successfully', 'success')
+      setStoreToDelete(null)
       loadStores()
     } catch (err) {
       notify(err?.response?.data?.error || 'Failed to delete store', 'error')
+      throw err
     }
   }
 
@@ -232,7 +239,7 @@ export default function Stores() {
                   Edit
                 </button>
                 <button
-                  onClick={() => deleteStore(store._id)}
+                  onClick={() => setStoreToDelete(store)}
                   className="px-3 py-2 bg-red-50 text-red-700 rounded-lg text-sm font-medium hover:bg-red-100 transition"
                 >
                   Delete
@@ -497,6 +504,15 @@ export default function Stores() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={!!storeToDelete}
+        title="Delete Store"
+        message={`Are you sure you want to delete store "${storeToDelete?.name || ''}" (${storeToDelete?.email || ''})? This action cannot be undone.`}
+        confirmText="Delete Store"
+        onConfirm={confirmDeleteStore}
+        onClose={() => setStoreToDelete(null)}
+      />
     </div>
   )
 }

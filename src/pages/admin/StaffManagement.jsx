@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '../../lib/api'
+import ConfirmModal from '../../components/ConfirmModal'
 
 const COMPONENTS = [
   { id: 'products', label: 'Products' },
@@ -23,6 +24,7 @@ export default function StaffManagement() {
   const [form, setForm] = useState({ name: '', email: '', password: '', permissions: [] })
   const [editing, setEditing] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [staffToDelete, setStaffToDelete] = useState(null)
 
   const load = async () => {
     try {
@@ -64,13 +66,18 @@ export default function StaffManagement() {
     }
   }
 
-  const remove = async (id) => {
-    if (!window.confirm('Are you sure?')) return
+  const confirmDeleteStaff = async (password) => {
+    if (!staffToDelete) return
     try {
-      await api.delete(`/api/admin/staff/${id}`)
+      await api.delete(`/api/admin/staff/${staffToDelete._id}`, {
+        headers: { 'X-Action-Password': password },
+        data: { password }
+      })
+      setStaffToDelete(null)
       load()
     } catch (err) {
-      alert('Failed to delete staff')
+      alert(err.response?.data?.error || 'Failed to delete staff')
+      throw err
     }
   }
 
@@ -163,7 +170,7 @@ export default function StaffManagement() {
                     <button onClick={() => setEditing({ ...s })} className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     </button>
-                    <button onClick={() => remove(s._id)} className="p-2 text-gray-400 hover:text-red-600 transition-colors">
+                    <button onClick={() => setStaffToDelete(s)} className="p-2 text-gray-400 hover:text-red-600 transition-colors">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>
                   </div>
@@ -230,6 +237,15 @@ export default function StaffManagement() {
           </div>
         </div>
       )}
+
+      <ConfirmModal
+        open={!!staffToDelete}
+        title="Delete Staff Member"
+        message={`Are you sure you want to delete staff member "${staffToDelete?.name || ''}" (${staffToDelete?.email || ''})? This action cannot be undone.`}
+        confirmText="Delete Staff"
+        onConfirm={confirmDeleteStaff}
+        onClose={() => setStaffToDelete(null)}
+      />
     </div>
   )
 }
