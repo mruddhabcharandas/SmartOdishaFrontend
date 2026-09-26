@@ -18,6 +18,7 @@ export default function SupportTickets() {
   const [mediaPrompt, setMediaPrompt] = useState('')
   const [mediaType, setMediaType] = useState('IMAGE_OR_VIDEO')
   const [requestingMedia, setRequestingMedia] = useState(false)
+  const [selectedOrderModal, setSelectedOrderModal] = useState(null)
 
   const handleRequestMedia = async (e) => {
     e.preventDefault()
@@ -330,31 +331,87 @@ export default function SupportTickets() {
                 </div>
               </div>
 
-              {/* Related Customer & Order Pill Strip */}
-              <div className="px-5 py-3 bg-slate-50 border-b border-slate-100 flex flex-wrap items-center gap-4 text-xs">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-slate-400">Customer:</span>
-                  <b className="text-slate-900">{selectedTicket.customer?.name || 'Customer'}</b>
-                  {selectedTicket.customer?.phone && (
-                    <span className="text-slate-500 font-mono">({selectedTicket.customer.phone})</span>
+              {/* Related Customer & Order Details Strip */}
+              <div className="px-5 py-3.5 bg-gradient-to-r from-slate-50 via-indigo-50/30 to-slate-50 border-b border-slate-200/80 flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="flex flex-wrap items-center gap-3">
+                  {/* Customer Info Card */}
+                  <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-slate-200 shadow-2xs">
+                    <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-[11px]">
+                      {selectedTicket.customer?.name?.charAt(0)?.toUpperCase() || 'C'}
+                    </span>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-slate-900 leading-tight">
+                        {selectedTicket.customer?.name || 'Customer'}
+                      </span>
+                      <div className="flex items-center gap-2 text-[10px] text-slate-500">
+                        {selectedTicket.customer?.phone && (
+                          <span className="font-mono">{selectedTicket.customer.phone}</span>
+                        )}
+                        {selectedTicket.customer?.email && (
+                          <span>• {selectedTicket.customer.email}</span>
+                        )}
+                      </div>
+                    </div>
+                    {selectedTicket.customer?.phone && (
+                      <div className="flex items-center gap-1 ml-1 pl-2 border-l border-slate-100">
+                        <a
+                          href={`https://wa.me/91${selectedTicket.customer.phone.replace(/[^0-9]/g, '')}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          title="Chat on WhatsApp"
+                          className="p-1 rounded-md text-emerald-600 hover:bg-emerald-50 transition text-sm"
+                        >
+                          💬
+                        </a>
+                        <a
+                          href={`tel:${selectedTicket.customer.phone}`}
+                          title="Call Customer"
+                          className="p-1 rounded-md text-blue-600 hover:bg-blue-50 transition text-sm"
+                        >
+                          📞
+                        </a>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Linked Order Button */}
+                  {selectedTicket.order ? (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedOrderModal(selectedTicket.order)}
+                      className="flex items-center gap-2 bg-white hover:bg-indigo-50/60 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-indigo-300 shadow-2xs transition group text-left cursor-pointer"
+                    >
+                      <span className="text-sm">📦</span>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-black text-slate-900 group-hover:text-indigo-600 transition">
+                            Order #{selectedTicket.order.orderNumber || (selectedTicket.order._id ? selectedTicket.order._id.slice(-6).toUpperCase() : '')}
+                          </span>
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-emerald-100 text-emerald-800">
+                            {selectedTicket.order.status || 'Active'}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-500">
+                          ₹{Number(selectedTicket.order.totalEstimate || 0).toLocaleString('en-IN')} · Click for details 🔍
+                        </span>
+                      </div>
+                    </button>
+                  ) : (
+                    <div className="text-[11px] text-slate-400 italic bg-white px-3 py-1.5 rounded-xl border border-slate-200">
+                      General Inquiry (No order attached)
+                    </div>
                   )}
                 </div>
 
                 {selectedTicket.order && (
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-slate-400">Related Order:</span>
-                    <Link
-                      to="/admin/orders"
-                      className="font-bold text-blue-600 hover:text-blue-700 underline"
-                    >
-                      #{selectedTicket.order.orderNumber || (selectedTicket.order._id ? selectedTicket.order._id.slice(-6).toUpperCase() : '')}
-                    </Link>
-                    {selectedTicket.order.totalEstimate && (
-                      <span className="text-emerald-600 font-bold">
-                        · ₹{Number(selectedTicket.order.totalEstimate).toLocaleString('en-IN')}
-                      </span>
-                    )}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedOrderModal(selectedTicket.order)}
+                    className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition flex items-center gap-1 shadow-xs cursor-pointer"
+                  >
+                    <span>View Order Details</span>
+                    <span>→</span>
+                  </button>
                 )}
               </div>
 
@@ -529,7 +586,7 @@ export default function SupportTickets() {
               </div>
 
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
-                ℹ️ <b>Amazon-style Single Upload:</b> Once the customer uploads their verification media, the upload button is permanently locked for audit integrity.
+                ℹ️ <b>Secure Verification Upload:</b> Once the customer uploads their verification photo or video, it is securely locked for support verification records.
               </div>
 
               <div className="flex justify-end gap-2 pt-2">
@@ -549,6 +606,167 @@ export default function SupportTickets() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Order Details Modal */}
+      {selectedOrderModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg">
+                  📦
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-black text-slate-900 text-base">
+                      Order #{selectedOrderModal.orderNumber || (selectedOrderModal._id ? selectedOrderModal._id.slice(-6).toUpperCase() : '')}
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800">
+                      {selectedOrderModal.status}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    Placed on {selectedOrderModal.createdAt ? new Date(selectedOrderModal.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedOrderModal(null)}
+                className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-600 transition cursor-pointer"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto space-y-5">
+              {/* Logistics & Payment Summary Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">
+                    Payment Summary
+                  </span>
+                  <div className="text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Method:</span>
+                      <span className="font-bold text-slate-900">{selectedOrderModal.paymentMethod || 'Prepaid'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Payment Status:</span>
+                      <span className={`font-bold ${selectedOrderModal.paymentStatus === 'PAID' ? 'text-emerald-600' : 'text-amber-600'}`}>
+                        {selectedOrderModal.paymentStatus || 'PAID'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between pt-1 border-t border-slate-200">
+                      <span className="font-bold text-slate-800">Total Amount:</span>
+                      <span className="font-extrabold text-indigo-600">₹{Number(selectedOrderModal.totalEstimate || 0).toLocaleString('en-IN')}</span>
+                    </div>
+                    {selectedOrderModal.codDueAmount > 0 && (
+                      <div className="flex justify-between text-amber-700">
+                        <span>COD Due at Delivery:</span>
+                        <span className="font-bold">₹{selectedOrderModal.codDueAmount}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">
+                    Delhivery Tracking
+                  </span>
+                  <div className="text-xs space-y-1">
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">AWB Waybill:</span>
+                      <span className="font-mono font-bold text-slate-900">
+                        {selectedOrderModal.delhiveryTracking?.waybill || 'Not yet dispatched'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-600">Shipment Status:</span>
+                      <span className="font-bold text-indigo-700">
+                        {selectedOrderModal.delhiveryTracking?.status || selectedOrderModal.status}
+                      </span>
+                    </div>
+                    {selectedOrderModal.delhiveryTracking?.waybill && (
+                      <div className="pt-1">
+                        <a
+                          href={`https://www.delhivery.com/track/package/${selectedOrderModal.delhiveryTracking.waybill}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[11px] text-blue-600 hover:text-blue-800 underline font-semibold flex items-center gap-1"
+                        >
+                          <span>Track on Delhivery Portal</span> ↗
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Shipping Address */}
+              {selectedOrderModal.shippingAddress && (
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-white">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">
+                    Delivery Address
+                  </span>
+                  <p className="text-xs text-slate-700 leading-relaxed">
+                    {selectedOrderModal.shippingAddress.line1}
+                    {selectedOrderModal.shippingAddress.line2 ? `, ${selectedOrderModal.shippingAddress.line2}` : ''}, {selectedOrderModal.shippingAddress.city}, {selectedOrderModal.shippingAddress.state} - <strong>{selectedOrderModal.shippingAddress.pincode}</strong>
+                  </p>
+                </div>
+              )}
+
+              {/* Order Items List */}
+              <div>
+                <span className="text-xs font-black uppercase tracking-wider text-slate-700 block mb-2">
+                  Items in Order ({selectedOrderModal.items?.length || 0})
+                </span>
+                <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden bg-white">
+                  {Array.isArray(selectedOrderModal.items) && selectedOrderModal.items.length > 0 ? (
+                    selectedOrderModal.items.map((item, idx) => (
+                      <div key={idx} className="p-3 flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {item.image ? (
+                            <img src={typeof item.image === 'string' ? item.image : (item.image?.url || '')} alt={item.name} className="w-full h-full object-contain p-1" />
+                          ) : (
+                            <span className="text-lg">🛍️</span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-bold text-slate-900 truncate">{item.name}</p>
+                          <p className="text-[11px] text-slate-500">Qty: {item.quantity} · ₹{item.price} each</p>
+                        </div>
+                        <div className="text-xs font-bold text-slate-900">
+                          ₹{Number(item.price * item.quantity).toLocaleString('en-IN')}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="p-4 text-xs text-slate-400 italic text-center">Item breakdown not loaded</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+              <Link
+                to="/admin/orders"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline"
+              >
+                Open Orders Panel ↗
+              </Link>
+              <button
+                onClick={() => setSelectedOrderModal(null)}
+                className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold cursor-pointer"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

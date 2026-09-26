@@ -139,25 +139,25 @@ const STYLES = `
   /* ── Card base ── */
   .pd-card {
     background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-md);
-    box-shadow: var(--shadow-sm);
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px -2px rgba(15, 23, 42, 0.04);
     overflow: hidden;
-    transition: box-shadow var(--t);
+    transition: all var(--t);
   }
-  .pd-card:hover { box-shadow: var(--shadow-md); }
+  .pd-card:hover { box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.08); }
   .pd-card-body { padding: 20px; }
-  @media (min-width: 768px) { .pd-card-body { padding: 24px; } }
+  @media (min-width: 768px) { .pd-card-body { padding: 26px; } }
 
   /* ── Image Gallery ── */
   .pd-gallery { display: flex; flex-direction: column; gap: 12px; }
 
   .pd-stage {
     position: relative;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--r-lg);
-    box-shadow: var(--shadow-sm);
+    background: radial-gradient(circle at center, #ffffff 40%, #f8fafc 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
     overflow: hidden;
     aspect-ratio: 1;
     cursor: zoom-in;
@@ -170,11 +170,11 @@ const STYLES = `
   .pd-stage-img {
     width: 100%; height: 100%;
     object-fit: contain;
-    padding: 32px;
-    transition: transform 0.4s ease;
+    padding: 28px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     display: block;
   }
-  .pd-stage:hover .pd-stage-img { transform: scale(1.02); }
+  .pd-stage:hover .pd-stage-img { transform: scale(1.05); }
 
   .pd-stage-no-img {
     width: 100%; height: 100%;
@@ -184,11 +184,12 @@ const STYLES = `
 
   .pd-badge-off {
     position: absolute; top: 16px; left: 16px; z-index: 10;
-    background: var(--primary);
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     color: #fff;
-    font-size: 12px; font-weight: 700;
-    padding: 6px 14px; border-radius: 4px;
-    box-shadow: 0 2px 8px var(--primary-glow);
+    font-size: 12px; font-weight: 800;
+    padding: 5px 12px; border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    letter-spacing: 0.03em;
   }
 
   .pd-img-skeleton {
@@ -211,15 +212,15 @@ const STYLES = `
   .pd-thumb {
     width: 72px; height: 72px; flex-shrink: 0;
     background: var(--card);
-    border: 2px solid var(--border);
-    border-radius: var(--r-sm);
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
     overflow: hidden; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
-    transition: var(--t); padding: 8px;
+    transition: all var(--t); padding: 6px;
   }
-  .pd-thumb:hover { border-color: var(--primary); }
-  .pd-thumb.on { border-color: var(--primary); background: var(--primary-dim); }
-  .pd-thumb img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+  .pd-thumb:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .pd-thumb.on { border-color: var(--primary); background: var(--primary-dim); box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.2); }
+  .pd-thumb img { width: 100%; height: 100%; object-fit: contain; border-radius: 6px; }
 
   @media (min-width: 768px) {
     .pd-gallery {
@@ -255,60 +256,65 @@ const STYLES = `
 
   .pd-brand-strip {
     display: inline-flex; align-items: center; gap: 6px;
-    font-size: 12px; font-weight: 600;
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--primary); margin-bottom: 12px;
   }
   .pd-brand-strip::before { content:''; width:16px; height:2px; background:var(--primary); border-radius:2px; }
 
   .pd-title {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(20px, 3.5vw, 28px);
-    font-weight: 600; color: var(--ink);
-    line-height: 1.3; letter-spacing: -0.01em;
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: clamp(22px, 3.5vw, 29px);
+    font-weight: 700; color: #0f172a;
+    line-height: 1.3; letter-spacing: -0.02em;
     margin-bottom: 12px;
   }
 
   .pd-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
   .pd-rating {
     display: inline-flex; align-items: center; gap: 5px;
-    background: var(--green); color: #fff;
-    font-size: 12px; font-weight: 600;
-    padding: 4px 10px; border-radius: 6px;
+    background: #059669; color: #fff;
+    font-size: 12px; font-weight: 700;
+    padding: 3px 9px; border-radius: 6px;
   }
   .pd-rating-ct { font-size: 13px; font-weight: 500; color: var(--ink3); }
   .pd-assured {
-    font-size: 11px; font-weight: 700;
-    color: var(--primary);
-    background: var(--primary-dim);
-    padding: 4px 10px; border-radius: 6px;
+    font-size: 11px; font-weight: 800;
+    color: #4338ca;
+    background: #eef2ff;
+    border: 1px solid #e0e7ff;
+    padding: 3px 9px; border-radius: 6px;
+    letter-spacing: 0.02em;
   }
 
   /* Price Section */
   .pd-price-block {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
   }
   .pd-price-lbl {
-    font-size: 11px; font-weight: 700;
+    font-size: 11px; font-weight: 800;
     text-transform: uppercase; letter-spacing: 0.08em;
-    color: var(--green); margin-bottom: 8px;
+    color: #059669; margin-bottom: 6px;
   }
-  .pd-price-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .pd-price-row { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
   .pd-price {
-    font-family: 'Inter', sans-serif;
-    font-size: clamp(28px, 5vw, 36px);
-    font-weight: 700; color: var(--ink);
-    line-height: 1; letter-spacing: -0.01em;
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(30px, 5vw, 38px);
+    font-weight: 800; color: #0f172a;
+    line-height: 1; letter-spacing: -0.02em;
   }
   .pd-price-mrp {
-    font-size: 16px; font-weight: 400;
-    color: var(--ink4); text-decoration: line-through;
+    font-size: 16px; font-weight: 500;
+    color: #94a3b8; text-decoration: line-through;
   }
   .pd-save {
-    background: var(--green-dim); color: var(--green);
-    font-size: 12px; font-weight: 700;
-    padding: 4px 10px; border-radius: 6px;
+    background: #dcfce7; color: #15803d;
+    font-size: 12.5px; font-weight: 800;
+    padding: 3px 9px; border-radius: 6px;
   }
   .pd-tax { font-size: 12px; color: var(--ink3); font-weight: 500; margin-top: 8px; }
 
@@ -317,11 +323,11 @@ const STYLES = `
     display: inline-flex; align-items: center; gap: 8px;
     padding: 6px 12px; border-radius: 6px;
     font-size: 12px; font-weight: 600;
-    margin-top: 12px;
+    margin-top: 14px;
   }
-  .pd-stock.in { background: var(--green-dim); color: var(--green); }
-  .pd-stock.low { background: var(--yellow-dim); color: var(--yellow); }
-  .pd-stock.out { background: rgba(239,68,68,0.08); color: var(--red); }
+  .pd-stock.in { background: #dcfce7; color: #166534; }
+  .pd-stock.low { background: #fef3c7; color: #b45309; }
+  .pd-stock.out { background: #fee2e2; color: #b91c1c; }
   .pd-stock-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
   /* Wishlist Button in Info Card (Desktop) */
@@ -332,30 +338,36 @@ const STYLES = `
     .pd-btn-wishlist {
       display: flex;
       width: 44px; height: 44px; border-radius: 50%;
-      background: var(--card); border: 1px solid var(--border);
+      background: var(--card); border: 1px solid #e2e8f0;
       align-items: center; justify-content: center;
       cursor: pointer; color: var(--ink2);
       transition: var(--t); flex-shrink: 0;
-      box-shadow: var(--shadow-sm);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
-    .pd-btn-wishlist:hover { background: var(--bg2); border-color: var(--border2); }
+    .pd-btn-wishlist:hover { background: var(--bg2); border-color: #cbd5e1; }
     .pd-btn-wishlist.active { color: var(--red); background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.12); }
   }
 
   /* Trust Badges */
   .pd-trust-badges {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-    margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border);
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+    margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;
+  }
+  @media (min-width: 500px) {
+    .pd-trust-badges { grid-template-columns: repeat(4, 1fr); }
   }
   .pd-trust-item {
     display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px;
+    background: #f8fafc; border: 1px solid #f1f5f9; padding: 12px 8px; border-radius: 12px;
+    transition: all 0.2s ease;
   }
+  .pd-trust-item:hover { background: #f1f5f9; border-color: #e2e8f0; }
   .pd-trust-icon {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--primary-dim); display: flex; align-items: center;
-    justify-content: center; color: var(--primary);
+    width: 34px; height: 34px; border-radius: 50%;
+    background: #eef2ff; display: flex; align-items: center;
+    justify-content: center; color: #4f46e5;
   }
-  .pd-trust-text { font-size: 11px; font-weight: 600; color: var(--ink2); }
+  .pd-trust-text { font-size: 11px; font-weight: 700; color: #334155; line-height: 1.2; }
 
   /* ── Divider Label ── */
   .pd-dlabel {
@@ -555,29 +567,41 @@ const STYLES = `
     display: flex; gap: 12px;
   }
   .pd-btn-cart {
-    flex: 1; padding: 14px 20px;
-    background: linear-gradient(135deg, #3b82f6, #4f46e5); color: #fff;
+    flex: 1; padding: 15px 20px;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%); color: #fff;
     border: none; border-radius: 12px;
     font-size: 14px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    box-shadow: 0 4px 14px rgba(49, 46, 129, 0.25);
   }
-  .pd-btn-cart:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(79,70,229,0.25); }
+  .pd-btn-cart:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #3730a3 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(49, 46, 129, 0.38);
+  }
+  .pd-btn-cart:active:not(:disabled) { transform: scale(0.98); }
 
   .pd-btn-buy {
-    flex: 1; padding: 14px 20px;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff;
+    flex: 1; padding: 15px 20px;
+    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #7c3aed 100%); color: #fff;
     border: none; border-radius: 12px;
     font-size: 14px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
   }
-  .pd-btn-buy:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(124,58,237,0.25); }
-  .pd-btn-cart:disabled, .pd-btn-buy:disabled { background: var(--bg2); color: var(--ink4); cursor: not-allowed; }
+  .pd-btn-buy:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4338ca 0%, #4f46e5 50%, #6d28d9 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.45);
+  }
+  .pd-btn-buy:active:not(:disabled) { transform: scale(0.98); }
+  .pd-btn-cart:disabled, .pd-btn-buy:disabled { background: #f1f5f9; color: var(--ink4); cursor: not-allowed; box-shadow: none; }
 
   /* ── Mobile Sticky CTA ── */
   .pd-sticky-cta {
@@ -585,35 +609,39 @@ const STYLES = `
     background: rgba(255,255,255,0.98);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid var(--border);
+    border-top: 1px solid #e2e8f0;
     padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
     display: flex; gap: 10px;
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
   }
   @media (min-width: 768px) { .pd-sticky-cta { display: none; } }
 
   .pd-mob-cart {
     flex: 1; padding: 14px;
-    background: linear-gradient(135deg, #3b82f6, #4f46e5); color: #fff;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); color: #fff;
     border: none; border-radius: 12px;
     font-size: 13px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
     transition: var(--t);
     text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(30, 27, 75, 0.2);
   }
   .pd-mob-cart:hover:not(:disabled) { transform: translateY(-2px); }
+  .pd-mob-cart:active:not(:disabled) { transform: scale(0.98); }
 
   .pd-mob-buy {
     flex: 1; padding: 14px;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: #fff;
     border: none; border-radius: 12px;
     font-size: 13px; font-weight: 700; font-family: inherit;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
     transition: var(--t);
     text-transform: uppercase;
+    box-shadow: 0 3px 10px rgba(99, 102, 241, 0.25);
   }
   .pd-mob-buy:hover:not(:disabled) { transform: translateY(-2px); }
-  .pd-mob-cart:disabled, .pd-mob-buy:disabled { background: var(--bg2); color: var(--ink4); cursor: not-allowed; }
+  .pd-mob-buy:active:not(:disabled) { transform: scale(0.98); }
+  .pd-mob-cart:disabled, .pd-mob-buy:disabled { background: #f1f5f9; color: var(--ink4); cursor: not-allowed; box-shadow: none; }
 
   /* ── Hide desktop CTA on mobile ── */
   .pd-desktop-cta { display: none; }
@@ -1295,7 +1323,14 @@ export default function ProductDetail() {
               </div>
 
               <div className="pd-price-block">
-                <div className="pd-price-lbl">Special Price</div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div className="pd-price-lbl">Special Price</div>
+                  {displayMrpRounded > displayPrice && (
+                    <span style={{ fontSize: '11.5px', fontWeight: '800', color: '#15803d', background: '#dcfce7', padding: '2px 8px', borderRadius: '6px' }}>
+                      Save ₹{(displayMrpRounded - displayPrice).toLocaleString('en-IN')}
+                    </span>
+                  )}
+                </div>
                 <div className="pd-price-row">
                   <span className="pd-price">₹{displayPrice.toLocaleString('en-IN')}</span>
                   {displayMrpRounded > displayPrice && (
@@ -1305,7 +1340,7 @@ export default function ProductDetail() {
                     </>
                   )}
                 </div>
-                <div className="pd-tax">{p.gst > 0 ? `Inclusive of ${p.gst}% GST` : 'Inclusive of all taxes'}</div>
+                <div className="pd-tax">{p.gst > 0 ? `Inclusive of ${p.gst}% GST` : 'Inclusive of all taxes · Free Delhivery Shipping'}</div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
@@ -1318,21 +1353,27 @@ export default function ProductDetail() {
               <div className="pd-trust-badges">
                 <div className="pd-trust-item">
                   <div className="pd-trust-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                   </div>
-                  <div className="pd-trust-text">Secure Checkout</div>
+                  <div className="pd-trust-text">100% Authentic Quality</div>
+                </div>
+                <div className="pd-trust-item">
+                  <div className="pd-trust-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  </div>
+                  <div className="pd-trust-text">Delhivery Express Dispatch</div>
                 </div>
                 <div className="pd-trust-item">
                   <div className="pd-trust-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                   </div>
-                  <div className="pd-trust-text">7 Days Return</div>
+                  <div className="pd-trust-text">7 Days Easy Return</div>
                 </div>
                 <div className="pd-trust-item">
                   <div className="pd-trust-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                   </div>
-                  <div className="pd-trust-text">100% Assured</div>
+                  <div className="pd-trust-text">Secure UPI & COD</div>
                 </div>
               </div>
             </div>

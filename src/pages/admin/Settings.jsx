@@ -175,33 +175,33 @@ export default function Settings() {
           <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <div className="text-xs font-bold text-gray-400 uppercase tracking-wide">
-                Customer Support Webhook
+                Customer Support Webhook <span className="text-gray-400 font-normal lowercase">(optional)</span>
               </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                Live Dispatch
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                Optional Integration
               </span>
             </div>
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div>
                 <label className="text-xs font-medium text-gray-600 block mb-1">
-                  Webhook URL (HTTP POST)
+                  External Webhook URL (Slack, Discord, Bot, or CRM)
                 </label>
                 <input
                   type="url"
                   value={supportWebhookUrl}
                   onChange={(e) => setSupportWebhookUrl(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                  placeholder="https://your-crm.com/api/webhooks/support"
+                  placeholder="Optional: leave blank if not using external webhook"
                 />
               </div>
-              <p className="text-[11px] text-gray-500 leading-relaxed">
-                Sends instant POST payloads for ticket creation, WhatsApp-style customer messages, agent replies, media requests, and customer verification uploads.
+              <p className="text-[11px] text-gray-500 leading-relaxed bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                ℹ️ <strong>Note:</strong> Agar aap Slack, Discord, ya koi third-party CRM use karte hain aur wahan ticket alerts receive karna chahte hain toh URL enter karein. <strong>Agar zaroorat nahi hai toh ise khali (blank) chhod sakte hain</strong> — platform ka live chat bina webhook ke fully work karta hai.
               </p>
               <button
                 type="button"
                 onClick={handleSaveWebhookSettings}
                 disabled={saveWebhookLoading}
-                className="px-4 py-2 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition"
               >
                 {saveWebhookLoading ? 'Saving...' : 'Save Webhook URL'}
               </button>

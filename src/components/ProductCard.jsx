@@ -95,32 +95,32 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
       <style>{`
         .pc-premium-card {
           background: #ffffff;
-          border-radius: 14px;
+          border-radius: 16px;
           border: 1px solid #e2e8f0;
           overflow: hidden;
           display: flex;
           flex-direction: column;
           height: 100%;
           width: 100%;
-          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
           cursor: pointer;
           position: relative;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+          box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
         }
         .pc-premium-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 12px 28px -6px rgba(79, 70, 229, 0.15), 0 8px 12px -6px rgba(79, 70, 229, 0.08);
-          border-color: rgba(79, 70, 229, 0.3);
+          transform: translateY(-5px);
+          box-shadow: 0 18px 36px -8px rgba(79, 70, 229, 0.16), 0 8px 16px -4px rgba(15, 23, 42, 0.06);
+          border-color: rgba(99, 102, 241, 0.35);
         }
         .pc-img-container {
           position: relative;
           width: 100%;
           aspect-ratio: 1/1;
-          background: #f8fafc;
+          background: radial-gradient(circle at center, #ffffff 40%, #f8fafc 100%);
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 12px;
+          padding: 16px;
           border-bottom: 1px solid #f1f5f9;
           overflow: hidden;
           flex-shrink: 0;
@@ -129,43 +129,62 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           width: 100%;
           height: 100%;
           object-fit: contain;
-          transition: transform 0.35s ease;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .pc-premium-card:hover .pc-img-container img {
-          transform: scale(1.05);
+          transform: scale(1.07);
         }
         .pc-badge-discount {
           position: absolute;
-          top: 8px;
-          left: 8px;
-          background: #16a34a;
+          top: 10px;
+          left: 10px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
           color: white;
-          padding: 2px 7px;
-          border-radius: 6px;
-          font-size: 10px;
+          padding: 3px 8px;
+          border-radius: 7px;
+          font-size: 11px;
           font-weight: 800;
           z-index: 10;
-          letter-spacing: 0.02em;
-          box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+          letter-spacing: 0.03em;
+          box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+        }
+        .pc-badge-top-assured {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(8px);
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          color: #4338ca;
+          font-size: 10px;
+          font-weight: 700;
+          padding: 3px 7px;
+          border-radius: 6px;
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          gap: 3px;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
         .pc-content {
-          padding: 12px;
+          padding: 14px 14px 16px;
           flex: 1;
           display: flex;
           flex-direction: column;
           justify-content: space-between;
-          gap: 10px;
+          gap: 12px;
+          background: #ffffff;
         }
         .pc-body {
           display: flex;
           flex-direction: column;
-          gap: 5px;
+          gap: 6px;
         }
         .pc-title {
-          font-size: 13px;
+          font-size: 13.5px;
           font-weight: 600;
-          color: #1e293b;
-          line-height: 19px;
+          color: #0f172a;
+          line-height: 1.4;
           height: 38px;
           min-height: 38px;
           max-height: 38px;
@@ -175,6 +194,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           overflow: hidden;
           text-decoration: none;
           transition: color 0.15s;
+          letter-spacing: -0.01em;
         }
         .pc-title:hover {
           color: #4f46e5;
@@ -187,42 +207,39 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           min-height: 20px;
         }
         .pc-rating-badge {
-          background: #16a34a;
+          background: #059669;
           color: white;
-          padding: 1px 5px;
-          border-radius: 4px;
-          font-size: 10px;
+          padding: 1px 6px;
+          border-radius: 5px;
+          font-size: 11px;
           font-weight: 700;
           display: inline-flex;
           align-items: center;
-          gap: 2px;
+          gap: 3px;
         }
         .pc-rating-count {
-          font-size: 11px;
-          color: #94a3b8;
+          font-size: 11.5px;
+          color: #64748b;
           font-weight: 500;
         }
-        .pc-assured-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 2px;
+        .pc-free-del-pill {
           margin-left: auto;
-          background: rgba(79, 70, 229, 0.06);
-          border: 1px solid rgba(79, 70, 229, 0.12);
-          color: #4f46e5;
-          font-size: 9px;
-          font-weight: 800;
-          padding: 1px 5px;
+          font-size: 10px;
+          font-weight: 700;
+          color: #0369a1;
+          background: #f0f9ff;
+          border: 1px solid #e0f2fe;
+          padding: 1px 6px;
           border-radius: 4px;
           letter-spacing: 0.02em;
-          text-transform: uppercase;
         }
         .pc-price-box {
-          height: 38px;
-          min-height: 38px;
+          height: 42px;
+          min-height: 42px;
           display: flex;
           flex-direction: column;
           justify-content: center;
+          margin-top: 2px;
         }
         .pc-price-main {
           display: flex;
@@ -230,20 +247,22 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           gap: 6px;
         }
         .pc-price-selling {
-          font-size: 16px;
+          font-size: 18px;
           font-weight: 800;
           color: #0f172a;
-          line-height: 1.2;
+          line-height: 1.1;
+          letter-spacing: -0.02em;
         }
         .pc-price-sub {
           display: flex;
-          align-items: baseline;
+          align-items: center;
           gap: 6px;
-          height: 15px;
-          min-height: 15px;
+          height: 16px;
+          min-height: 16px;
+          margin-top: 2px;
         }
         .pc-price-mrp {
-          font-size: 11px;
+          font-size: 12px;
           color: #94a3b8;
           text-decoration: line-through;
           font-weight: 500;
@@ -254,6 +273,9 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           font-weight: 700;
           color: #16a34a;
           line-height: 1;
+          background: #dcfce7;
+          padding: 1px 5px;
+          border-radius: 4px;
         }
         .pc-price-placeholder {
           font-size: 11px;
@@ -261,7 +283,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           line-height: 1;
         }
         .pc-info-row {
-          font-size: 11px;
+          font-size: 11.5px;
           color: #64748b;
           font-weight: 600;
           height: 18px;
@@ -269,15 +291,25 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           display: flex;
           align-items: center;
         }
-        .pc-info-row b {
+        .pc-stock-in {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
           color: #059669;
+          font-weight: 600;
+        }
+        .pc-stock-dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: currentColor;
         }
         .pc-action-btn {
           width: 100%;
-          padding: 9px 12px;
-          border-radius: 8px;
+          padding: 10px 14px;
+          border-radius: 10px;
           border: none;
-          font-size: 12px;
+          font-size: 12.5px;
           font-weight: 700;
           cursor: pointer;
           margin-top: auto;
@@ -285,16 +317,22 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           align-items: center;
           justify-content: center;
           gap: 6px;
-          transition: all 0.2s;
-          background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+          transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+          background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);
           color: white;
-          box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+          box-shadow: 0 3px 10px rgba(49, 46, 129, 0.25);
+          letter-spacing: 0.01em;
         }
         .pc-action-btn:hover:not(:disabled) {
-          background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 60%, #3730a3 100%);
+          box-shadow: 0 6px 18px rgba(49, 46, 129, 0.35);
+          transform: translateY(-1px);
+        }
+        .pc-action-btn:active:not(:disabled) {
+          transform: scale(0.98);
         }
         .pc-action-btn:disabled {
-          background: #e2e8f0;
+          background: #f1f5f9;
           color: #94a3b8;
           cursor: not-allowed;
           box-shadow: none;
@@ -308,6 +346,10 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
             {discount}% OFF
           </div>
         )}
+
+        <div className="pc-badge-top-assured">
+          <span style={{ color: '#6366f1' }}>✦</span> Assured
+        </div>
 
         {p.images?.length ? (
           <img
@@ -344,9 +386,13 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
                   ({Number(p.ratingCount || 0).toLocaleString()})
                 </span>
               </>
-            ) : null}
-            <span className="pc-assured-badge">
-              ✓ Assured
+            ) : (
+              <span className="pc-rating-count" style={{ fontSize: '11px', color: '#94a3b8' }}>
+                Newly Added
+              </span>
+            )}
+            <span className="pc-free-del-pill">
+              Fast Delivery
             </span>
           </div>
 
@@ -376,11 +422,17 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           {/* Stock / Delivery Status */}
           <div className="pc-info-row">
             {totalStock <= 0 ? (
-              <span style={{ color: '#ef4444', fontWeight: 600 }}>Out of Stock</span>
+              <span style={{ color: '#ef4444', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <span className="pc-stock-dot" style={{ background: '#ef4444' }} /> Out of Stock
+              </span>
             ) : totalStock <= 5 ? (
-              <span style={{ color: '#7c3aed', fontWeight: 600 }}>Only {totalStock} left</span>
+              <span style={{ color: '#d97706', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <span className="pc-stock-dot" style={{ background: '#f59e0b' }} /> Only {totalStock} left
+              </span>
             ) : (
-              <b style={{ color: '#059669', fontWeight: 600 }}>In Stock</b>
+              <span className="pc-stock-in">
+                <span className="pc-stock-dot" /> In Stock & Ready to Ship
+              </span>
             )}
           </div>
         </div>
@@ -414,7 +466,17 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
             }
           }}
         >
-          {p.variants?.length > 0 ? '👁️ View Options' : '🛒 Add to Cart'}
+          {p.variants?.length > 0 ? (
+            <>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg>
+              View Options
+            </>
+          ) : (
+            <>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              Add to Cart
+            </>
+          )}
         </button>
       </div>
     </div>

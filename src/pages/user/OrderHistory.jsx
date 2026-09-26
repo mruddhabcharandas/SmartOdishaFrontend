@@ -201,7 +201,20 @@ export default function OrderHistory() {
   useEffect(() => {
     if (!token) { navigate('/login', { state: { from: location.pathname + location.search } }); return }
     api.get('/api/orders/my')
-      .then(({ data }) => { setOrders(data); setLoading(false) })
+      .then(({ data }) => {
+        setOrders(data)
+        if (Array.isArray(data)) {
+          data.forEach(o => {
+            if (o.feedbackRating && o.feedbackRating > 0 && Array.isArray(o.items)) {
+              o.items.forEach(it => {
+                const pid = orderLineProductId(it)
+                if (pid) markProductReviewed(pid)
+              })
+            }
+          })
+        }
+        setLoading(false)
+      })
       .catch(() => setLoading(false))
     fetchMyTickets()
   }, [token, navigate])
@@ -364,6 +377,12 @@ export default function OrderHistory() {
         rating: feedbackRating,
         comment: feedbackComment,
         tags: feedbackTags
+      })
+
+      // Also mark all items in this order as reviewed
+      feedbackOrder.items?.forEach((it) => {
+        const pid = orderLineProductId(it)
+        if (pid) markProductReviewed(pid)
       })
 
       // Also submit ratings for any order items rated in the modal
@@ -1185,8 +1204,9 @@ export default function OrderHistory() {
                           <div className="oh-items-list">
                             {order.items.map((item, i) => {
                               const pid = orderLineProductId(item)
+                              const isOrderFeedbackDone = !!(order.feedbackRating && order.feedbackRating > 0)
                               const canRateProduct = ['DELIVERED', 'FULFILLED'].includes(order.status) && !!pid
-                              const already = pid && reviewedProductIds.has(pid)
+                              const already = (pid && reviewedProductIds.has(pid)) || isOrderFeedbackDone
                               
                               const getAttrs = (attr) => {
                                 if (!attr) return {};
@@ -1226,7 +1246,7 @@ export default function OrderHistory() {
                                   {canRateProduct && (
                                     <div className="oh-rate-row" onClick={(e) => e.stopPropagation()}>
                                       {already ? (
-                                        <span className="oh-rate-done">Thanks — your product rating was saved.</span>
+                                        <span className="oh-rate-done">✓ Feedback & Rating Recorded</span>
                                       ) : (
                                         <>
                                           <span className="oh-rate-lbl">Rate product</span>
