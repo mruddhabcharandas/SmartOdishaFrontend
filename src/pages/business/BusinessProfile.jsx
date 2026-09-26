@@ -40,7 +40,7 @@ const Avatar = ({ user, size = 'md' }) => {
   if (user?.avatar)
     return <img src={user.avatar} alt={user.name} className={`${sz} rounded-2xl object-cover ring-2 ring-white shadow-md`} />
   return (
-    <div className={`${sz} rounded-2xl bg-gradient-to-br from-orange-500 to-blue-700 flex items-center justify-center font-black text-white ring-2 ring-white shadow-md`}>
+    <div className={`${sz} rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center font-black text-white ring-2 ring-white shadow-md`}>
       {user?.name?.charAt(0)?.toUpperCase() || 'S'}
     </div>
   )
@@ -93,8 +93,12 @@ export default function BusinessProfile() {
     useOtp: false
   })
   const [pickupPassword, setPickupPassword] = useState('')
+  const [bankPassword, setBankPassword] = useState('')
   const [otpSent, setOtpSent] = useState(false)
   const [sendingOtp, setSendingOtp] = useState(false)
+
+  const hasActivePickup = !!(profile?.pickupAddress?.line1 && profile?.pickupAddress?.city && profile?.pickupAddress?.pincode)
+  const isPickupPending = profile?.pickupAddressStatus === 'PENDING_APPROVAL'
 
   useEffect(() => {
     loadProfile()
@@ -204,21 +208,50 @@ export default function BusinessProfile() {
 
   const handlePickupSave = async (e) => {
     e.preventDefault()
-    if (!pickupPassword) {
-      notify('Please enter your password to save pickup address', 'error')
+    if (hasActivePickup && !pickupPassword) {
+      notify('Please enter your password to modify pickup address', 'error')
+      return
+    }
+    try {
+      setSaving(true)
+      const payload = {
+        delhiveryPickupLocation: formData.delhiveryPickupLocation,
+        pickupName: formData.pickupName,
+        pickupPhone: formData.pickupPhone,
+        pickupAddress: formData.pickupAddress
+      }
+      if (pickupPassword) {
+        payload.currentPassword = pickupPassword
+      }
+      const res = await api.put('/api/stores/profile', payload)
+      notify(res.data?.message || 'Pickup address updated successfully', 'success')
+      setPickupPassword('')
+      loadProfile()
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to update pickup address', 'error')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleBankSave = async (e) => {
+    e.preventDefault()
+    if (!bankPassword) {
+      notify('Please enter your account password to update bank / UPI details', 'error')
       return
     }
     try {
       setSaving(true)
       await api.put('/api/stores/profile', {
-        ...formData,
-        currentPassword: pickupPassword
+        bankDetails: formData.bankDetails,
+        upiId: formData.upiId,
+        currentPassword: bankPassword
       })
-      notify('Pickup address updated successfully', 'success')
-      setPickupPassword('')
+      notify('Bank & UPI details updated successfully', 'success')
+      setBankPassword('')
       loadProfile()
     } catch (err) {
-      notify(err.response?.data?.error || 'Failed to update pickup address', 'error')
+      notify(err.response?.data?.error || 'Failed to update bank details', 'error')
     } finally {
       setSaving(false)
     }
@@ -268,13 +301,13 @@ export default function BusinessProfile() {
       `}</style>
 
       {/* Top Header */}
-      <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-blue-700 text-white">
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border-b border-slate-800">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest text-blue-200">
-              Store Panel
+            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-300">
+              Seller Portal
             </p>
-            <h1 className="pf-display font-black text-base leading-tight truncate">
+            <h1 className="pf-display font-black text-base leading-tight truncate text-white">
               {profile?.name || 'Store'}
             </h1>
           </div>
@@ -287,8 +320,8 @@ export default function BusinessProfile() {
             <button key={id} onClick={() => setActiveSection(id)}
               className={`flex-shrink-0 flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-bold rounded-t-xl transition-all
                   ${activeSection === id
-                    ? 'bg-slate-50 text-orange-600'
-                    : 'text-blue-200 hover:text-white'}`}>
+                    ? 'bg-slate-50 text-indigo-700 shadow-xs'
+                    : 'text-indigo-200 hover:text-white'}`}>
               <Ico n={icon} cls="w-4 h-4" />
               {label}
             </button>
@@ -299,7 +332,7 @@ export default function BusinessProfile() {
       <div className="max-w-5xl mx-auto px-4 py-5 lg:py-8 lg:flex lg:gap-6">
         {/* Desktop Sidebar */}
         <aside className="hidden lg:flex flex-col gap-3 w-56 flex-shrink-0">
-          <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-3">
+          <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs flex items-center gap-3">
             <Avatar user={profile} size="md" />
             <div className="flex-1 min-w-0">
               <div className="pf-display font-black text-slate-800 text-sm truncate">
@@ -311,13 +344,13 @@ export default function BusinessProfile() {
             </div>
           </div>
 
-          <nav className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <nav className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
             {navItems.map(({ id, label, icon }) => (
               <button key={id} onClick={() => setActiveSection(id)}
                 className={`w-full flex items-center gap-3 px-4 py-3.5 text-sm font-semibold text-left transition-all border-l-2
                     ${activeSection === id
-                      ? 'border-orange-500 bg-orange-50 text-orange-700'
-                      : 'border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-800'}`}>
+                      ? 'border-indigo-600 bg-indigo-50/70 text-indigo-700 font-bold'
+                      : 'border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}>
               <Ico n={icon} cls="w-4 h-4 flex-shrink-0" />
               {label}
             </button>
@@ -330,34 +363,36 @@ export default function BusinessProfile() {
           {/* Overview Section */}
           {activeSection === 'overview' && (
             <div className="pf-panel space-y-4">
-              <div className="bg-gradient-to-br from-orange-500 to-blue-700 rounded-2xl p-5 text-white relative overflow-hidden">
-                <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
-                <div className="absolute right-8 bottom-0 w-20 h-20 bg-white/5 rounded-full translate-y-1/2"></div>
-                <p className="text-orange-200 text-xs font-bold uppercase tracking-widest mb-1">Welcome back</p>
-                <h2 className="pf-display font-black text-2xl leading-tight mb-3">
-                  {profile?.name?.split(' ')[0] || 'Seller'} 👋
+              <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white relative overflow-hidden shadow-sm">
+                <div className="absolute right-0 top-0 w-36 h-36 bg-indigo-500/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-xl"></div>
+                <div className="absolute right-8 bottom-0 w-24 h-24 bg-indigo-500/10 rounded-full translate-y-1/2 blur-lg"></div>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-black uppercase tracking-wider mb-2 border border-indigo-500/30">
+                  Store Profile
+                </div>
+                <h2 className="pf-display font-black text-2xl leading-tight mb-1 text-white">
+                  {profile?.name || 'Seller'} 👋
                 </h2>
-                <p className="text-orange-200 text-sm">{profile?.email}</p>
+                <p className="text-indigo-200/80 text-xs font-mono">{profile?.email}</p>
               </div>
 
-              <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+              <div className="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="pf-display font-black text-slate-800 text-sm">Profile Info</h3>
-                  <button onClick={() => setActiveSection('personal')} className="text-orange-600 text-xs font-bold hover:underline">Edit →</button>
+                  <h3 className="pf-display font-black text-slate-800 text-sm">Profile Details</h3>
+                  <button onClick={() => setActiveSection('personal')} className="text-indigo-600 text-xs font-bold hover:underline">Edit Info →</button>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 flex-shrink-0">
+                <div className="space-y-2.5">
+                  <div className="flex items-center gap-3 text-xs">
+                    <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 flex-shrink-0">
                       <Ico n="user" cls="w-4 h-4" />
                     </div>
-                    <span className="text-slate-600 font-medium">{profile?.name}</span>
+                    <span className="text-slate-700 font-semibold">{profile?.name}</span>
                   </div>
                   {profile?.phone && (
-                    <div className="flex items-center gap-3 text-sm">
-                      <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 flex-shrink-0">
+                    <div className="flex items-center gap-3 text-xs">
+                      <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 flex-shrink-0">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                       </div>
-                      <span className="text-slate-600 font-medium">{profile.phone}</span>
+                      <span className="text-slate-700 font-semibold">{profile.phone}</span>
                     </div>
                   )}
                 </div>
@@ -433,7 +468,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                       required
                     />
                   </div>
@@ -443,7 +478,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div className="space-y-1">
@@ -452,7 +487,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.gstNumber}
                       onChange={(e) => handleInputChange('gstNumber', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     />
                   </div>
                 </div>
@@ -461,7 +496,7 @@ export default function BusinessProfile() {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-orange-500 to-blue-700 hover:from-orange-600 hover:to-blue-800 active:scale-[0.98] transition-all shadow-lg shadow-orange-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-sm shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
                   >
                     {saving ? 'Saving…' : 'Save Changes'}
                   </button>
@@ -477,6 +512,40 @@ export default function BusinessProfile() {
                 <h2 className="pf-display font-black text-slate-800">Pickup Address</h2>
                 <p className="text-slate-400 text-xs mt-0.5">Manage your Delhivery pickup details</p>
               </div>
+
+              {isPickupPending && (
+                <div className="m-5 mb-0 p-4 rounded-xl bg-amber-50 border border-amber-200">
+                  <div className="flex items-start gap-3">
+                    <span className="text-xl">⏳</span>
+                    <div>
+                      <h3 className="font-bold text-sm text-amber-900">Pickup Address Change Pending Admin Approval</h3>
+                      <p className="text-xs text-amber-700 mt-0.5 leading-relaxed">
+                        You have submitted a request to update your pickup location. Your current active location remains operational for shipping until admin reviews and approves this request.
+                      </p>
+                      {profile?.pendingPickupAddress && (
+                        <div className="mt-2.5 p-2.5 bg-white/80 rounded-lg border border-amber-200 text-xs text-amber-900">
+                          <span className="font-bold block text-[10px] uppercase tracking-wider text-amber-700">Requested Address:</span>
+                          <div>{profile.pendingPickupAddress.pickupName || formData.pickupName} ({profile.pendingPickupAddress.pickupPhone || formData.pickupPhone})</div>
+                          <div className="text-slate-600">{profile.pendingPickupAddress.line1}{profile.pendingPickupAddress.line2 ? `, ${profile.pendingPickupAddress.line2}` : ''}, {profile.pendingPickupAddress.city}, {profile.pendingPickupAddress.state} - {profile.pendingPickupAddress.pincode}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!hasActivePickup ? (
+                <div className="mx-5 mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 flex items-center gap-2">
+                  <span className="font-bold">⚡ Instant Activation:</span>
+                  <span>As this is your first pickup address, it will be activated immediately without requiring admin approval.</span>
+                </div>
+              ) : (
+                <div className="mx-5 mt-4 p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-800 flex items-center gap-2">
+                  <span className="font-bold">🛡️ Protected Location:</span>
+                  <span>Updating an existing pickup address requires your password and will be reviewed by admin before becoming active.</span>
+                </div>
+              )}
+
               <form onSubmit={handlePickupSave} className="p-5 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1 md:col-span-2">
@@ -485,7 +554,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.delhiveryPickupLocation}
                       onChange={(e) => handleInputChange('delhiveryPickupLocation', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                       placeholder="e.g., My Smart Odisha Warehouse"
                     />
                   </div>
@@ -495,7 +564,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.pickupName}
                       onChange={(e) => handleInputChange('pickupName', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                       placeholder="Warehouse / Store Name"
                     />
                   </div>
@@ -505,7 +574,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.pickupPhone}
                       onChange={(e) => handleInputChange('pickupPhone', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div className="space-y-1 md:col-span-2">
@@ -514,7 +583,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.pickupAddress.line1}
                       onChange={(e) => handleInputChange('pickupAddress.line1', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div className="space-y-1 md:col-span-2">
@@ -523,7 +592,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.pickupAddress.line2}
                       onChange={(e) => handleInputChange('pickupAddress.line2', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div className="space-y-1">
@@ -532,7 +601,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.pickupAddress.city}
                       onChange={(e) => handleInputChange('pickupAddress.city', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div className="space-y-1">
@@ -541,7 +610,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.pickupAddress.state}
                       onChange={(e) => handleInputChange('pickupAddress.state', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     />
                   </div>
                   <div className="space-y-1">
@@ -550,29 +619,31 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.pickupAddress.pincode}
                       onChange={(e) => handleInputChange('pickupAddress.pincode', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                     />
                   </div>
-                  <div className="space-y-1 md:col-span-2">
-                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Confirm Your Password</label>
-                    <input
-                      type="password"
-                      value={pickupPassword}
-                      onChange={(e) => setPickupPassword(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
-                      placeholder="Enter your password to save changes"
-                      required
-                    />
-                  </div>
+                  {hasActivePickup && (
+                    <div className="space-y-1 md:col-span-2">
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Confirm Your Password</label>
+                      <input
+                        type="password"
+                        value={pickupPassword}
+                        onChange={(e) => setPickupPassword(e.target.value)}
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                        placeholder="Enter your password to submit change"
+                        required
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4 border-t border-slate-100">
                   <button
                     type="submit"
-                    disabled={saving || !pickupPassword}
-                    className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-orange-500 to-blue-700 hover:from-orange-600 hover:to-blue-800 active:scale-[0.98] transition-all shadow-lg shadow-orange-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={saving || (hasActivePickup && !pickupPassword)}
+                    className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-sm shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
                   >
-                    {saving ? 'Saving…' : 'Save Changes'}
+                    {saving ? 'Saving…' : hasActivePickup ? 'Submit For Admin Approval' : 'Save & Activate Pickup Location'}
                   </button>
                 </div>
               </form>
@@ -586,7 +657,7 @@ export default function BusinessProfile() {
                 <h2 className="pf-display font-black text-slate-800">Bank Details & UPI</h2>
                 <p className="text-slate-400 text-xs mt-0.5">Manage bank account and UPI details for payout verification</p>
               </div>
-              <form onSubmit={handleSave} className="p-5 space-y-4">
+              <form onSubmit={handleBankSave} className="p-5 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Account Holder Name</label>
@@ -594,7 +665,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.bankDetails?.accountName || ''}
                       onChange={(e) => handleInputChange('bankDetails.accountName', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                       placeholder="Account Holder Name"
                     />
                   </div>
@@ -604,7 +675,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.bankDetails?.bankName || ''}
                       onChange={(e) => handleInputChange('bankDetails.bankName', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                       placeholder="e.g. HDFC Bank"
                     />
                   </div>
@@ -614,7 +685,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.bankDetails?.accountNumber || ''}
                       onChange={(e) => handleInputChange('bankDetails.accountNumber', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                       placeholder="Account Number"
                     />
                   </div>
@@ -624,7 +695,7 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.bankDetails?.ifscCode || ''}
                       onChange={(e) => handleInputChange('bankDetails.ifscCode', e.target.value.toUpperCase())}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                       placeholder="IFSC Code"
                     />
                   </div>
@@ -634,8 +705,19 @@ export default function BusinessProfile() {
                       type="text"
                       value={formData.upiId || ''}
                       onChange={(e) => handleInputChange('upiId', e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                       placeholder="e.g., storename@upi"
+                    />
+                  </div>
+                  <div className="space-y-1 md:col-span-2">
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1.5">Confirm Your Password</label>
+                    <input
+                      type="password"
+                      value={bankPassword}
+                      onChange={(e) => setBankPassword(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                      placeholder="Enter your account password to save bank details"
+                      required
                     />
                   </div>
                 </div>
@@ -643,10 +725,10 @@ export default function BusinessProfile() {
                 <div className="pt-4 border-t border-slate-100">
                   <button
                     type="submit"
-                    disabled={saving}
-                    className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-orange-500 to-blue-700 hover:from-orange-600 hover:to-blue-800 active:scale-[0.98] transition-all shadow-lg shadow-orange-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={saving || !bankPassword}
+                    className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-sm shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
                   >
-                    {saving ? 'Saving…' : 'Save Details'}
+                    {saving ? 'Saving…' : 'Save Bank & UPI Details'}
                   </button>
                 </div>
               </form>
@@ -664,7 +746,7 @@ export default function BusinessProfile() {
               {!showPasswordChange ? (
                 <button onClick={() => setShowPasswordChange(true)}
                   className="w-full bg-white rounded-2xl border border-slate-100 shadow-sm p-4 text-left flex items-center gap-4 hover:border-slate-200 hover:shadow-md active:scale-[0.98] transition-all">
-                  <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center flex-shrink-0">
                     <Ico n="lock" cls="w-5 h-5" />
                   </div>
                   <div className="flex-1">
@@ -687,14 +769,14 @@ export default function BusinessProfile() {
                       <button
                         type="button"
                         onClick={() => setPasswordData(prev => ({ ...prev, useOtp: false }))}
-                        className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all ${!passwordData.useOtp ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all ${!passwordData.useOtp ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                       >
                         Use Old Password
                       </button>
                       <button
                         type="button"
                         onClick={() => setPasswordData(prev => ({ ...prev, useOtp: true }))}
-                        className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all ${passwordData.useOtp ? 'bg-white text-orange-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all ${passwordData.useOtp ? 'bg-white text-indigo-700 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                       >
                         Use OTP
                       </button>
@@ -707,7 +789,7 @@ export default function BusinessProfile() {
                           type="password"
                           value={passwordData.oldPassword}
                           onChange={(e) => setPasswordData(prev => ({ ...prev, oldPassword: e.target.value }))}
-                          className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                           required
                         />
                       </div>
@@ -720,7 +802,7 @@ export default function BusinessProfile() {
                               type="text"
                               value={passwordData.otp}
                               onChange={(e) => setPasswordData(prev => ({ ...prev, otp: e.target.value }))}
-                              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                              className="flex-1 px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                               placeholder="Enter OTP"
                               required
                             />
@@ -728,7 +810,7 @@ export default function BusinessProfile() {
                               type="button"
                               onClick={sendOtp}
                               disabled={sendingOtp || otpSent}
-                              className="px-4 py-3 rounded-xl text-xs font-black text-white bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                              className="px-4 py-3 rounded-xl text-xs font-black text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                             >
                               {sendingOtp ? 'Sending…' : otpSent ? 'Resend' : 'Send OTP'}
                             </button>
@@ -743,7 +825,7 @@ export default function BusinessProfile() {
                         type="password"
                         value={passwordData.newPassword}
                         onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                         required
                       />
                     </div>
@@ -753,7 +835,7 @@ export default function BusinessProfile() {
                         type="password"
                         value={passwordData.confirmPassword}
                         onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
+                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white text-slate-800 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                         required
                       />
                     </div>
@@ -764,7 +846,7 @@ export default function BusinessProfile() {
                       <button
                         type="submit"
                         disabled={savingPassword || passwordData.newPassword !== passwordData.confirmPassword || !passwordData.newPassword || (passwordData.useOtp && !passwordData.otp) || (!passwordData.useOtp && !passwordData.oldPassword)}
-                        className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-gradient-to-r from-orange-500 to-blue-700 hover:from-orange-600 hover:to-blue-800 active:scale-[0.98] transition-all shadow-lg shadow-orange-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-3.5 rounded-xl font-black text-sm text-white bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] transition-all shadow-sm shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
                       >
                         {savingPassword ? 'Changing…' : 'Change Password'}
                       </button>
@@ -783,7 +865,7 @@ export default function BusinessProfile() {
           {navItems.map(({ id, label, icon }) => (
             <button key={id} onClick={() => setActiveSection(id)}
               className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 transition-all
-                  ${activeSection === id ? 'text-orange-600' : 'text-slate-400 hover:text-slate-600'}`}>
+                  ${activeSection === id ? 'text-indigo-600 font-bold' : 'text-slate-400 hover:text-slate-600'}`}>
               <Ico n={icon} cls="w-5 h-5" />
               <span className="text-[10px] font-bold">{label}</span>
             </button>

@@ -96,6 +96,51 @@ const RATING_EMOTIONS = {
   5: { text: "Excellent!", emoji: "🤩", color: "#059669" }
 }
 
+const SupportGirlAvatar = ({ size = 38 }) => (
+  <div
+    style={{
+      width: size,
+      height: size,
+      borderRadius: '50%',
+      background: 'linear-gradient(135deg, #fbcfe8, #f472b6, #db2777)',
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      boxShadow: '0 2px 5px rgba(0,0,0,0.15)',
+      overflow: 'hidden',
+      flexShrink: 0,
+      border: '2px solid #ffffff'
+    }}
+  >
+    <svg viewBox="0 0 64 64" fill="none" width="85%" height="85%">
+      {/* Hair back */}
+      <path d="M18 24C18 14 24 8 32 8C40 8 46 14 46 24C46 32 44 42 42 46C38 48 26 48 22 46C20 42 18 32 18 24Z" fill="#371b10" />
+      {/* Neck */}
+      <path d="M28 38H36V45H28V38Z" fill="#fed7aa" />
+      {/* Face */}
+      <ellipse cx="32" cy="27" rx="11" ry="12" fill="#ffedd5" />
+      {/* Hair front / bangs */}
+      <path d="M21 21C24 16 30 15 32 17C35 15 41 16 43 21C44 26 42 30 42 30C40 22 36 20 32 20C28 20 24 22 22 30C22 30 20 26 21 21Z" fill="#451a03" />
+      {/* Eyes */}
+      <circle cx="28" cy="26" r="1.5" fill="#1e293b" />
+      <circle cx="36" cy="26" r="1.5" fill="#1e293b" />
+      {/* Gentle smile */}
+      <path d="M29 32C30.5 33.5 33.5 33.5 35 32" stroke="#e11d48" strokeWidth="1.5" strokeLinecap="round" />
+      {/* Blushing cheeks */}
+      <circle cx="26" cy="29" r="1.5" fill="#fda4af" opacity="0.8" />
+      <circle cx="38" cy="29" r="1.5" fill="#fda4af" opacity="0.8" />
+      {/* Customer support headset */}
+      <path d="M21 27C20 22 24 14 32 14C40 14 44 22 43 27" stroke="#38bdf8" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+      <rect x="18" y="24" width="4" height="7" rx="2" fill="#0284c7" />
+      <rect x="42" y="24" width="4" height="7" rx="2" fill="#0284c7" />
+      <path d="M20 28C20 34 24 37 28 37" stroke="#0284c7" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <circle cx="29" cy="37" r="2" fill="#0f172a" />
+      {/* Shirt */}
+      <path d="M18 56C18 47 24 44 32 44C40 44 46 47 46 56V60H18V56Z" fill="#0284c7" />
+    </svg>
+  </div>
+)
+
 export default function OrderHistory() {
   const [orders, setOrders]       = useState([])
   const [loading, setLoading]     = useState(true)
@@ -241,13 +286,65 @@ export default function OrderHistory() {
     }
   }
 
+  const [uploadingMediaMsgId, setUploadingMediaMsgId] = useState(null)
+
+  const handleUploadMediaForRequest = async (e, msgId) => {
+    const file = e.target.files?.[0]
+    if (!file || !activeTicket) return
+
+    const isVideo = file.type.startsWith('video/')
+    const isImage = file.type.startsWith('image/')
+    if (!isVideo && !isImage) {
+      notify('Please select a valid image or video file', 'error')
+      return
+    }
+
+    if (file.size > 25 * 1024 * 1024) {
+      notify('File size must be under 25MB', 'error')
+      return
+    }
+
+    setUploadingMediaMsgId(msgId)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+
+      notify('Uploading verification media...', 'info')
+      const { data: uploadRes } = await api.post('/api/upload/media', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+
+      if (!uploadRes?.url) {
+        throw new Error('Upload did not return a valid URL')
+      }
+
+      const { data: updatedTicket } = await api.post(`/api/support-tickets/${activeTicket._id}/upload-media`, {
+        messageId: msgId,
+        fileUrl: uploadRes.url,
+        mediaType: uploadRes.mediaType || (isVideo ? 'VIDEO' : 'IMAGE')
+      })
+
+      notify('Verification media submitted successfully!', 'success')
+      setActiveTicket(updatedTicket)
+      setMyTickets((prev) => prev.map((t) => (t._id === updatedTicket._id ? updatedTicket : t)))
+    } catch (err) {
+      notify(err?.response?.data?.error || err.message || 'Failed to upload media', 'error')
+    } finally {
+      setUploadingMediaMsgId(null)
+    }
+  }
+
   // Feedback Handlers
   const handleOpenFeedback = (order, defaultRating = 5) => {
+    if (order.feedbackRating) {
+      notify('Feedback has already been submitted for this order', 'info')
+      return
+    }
     setFeedbackOrder(order)
-    setFeedbackRating(order.feedbackRating || defaultRating)
+    setFeedbackRating(defaultRating)
     setFeedbackHover(0)
-    setFeedbackTags(Array.isArray(order.feedbackTags) ? [...order.feedbackTags] : [])
-    setFeedbackComment(order.feedbackComment || '')
+    setFeedbackTags([])
+    setFeedbackComment('')
     setItemRatings({})
     setShowFeedbackModal(true)
   }
@@ -491,6 +588,9 @@ export default function OrderHistory() {
         }
         .oh-step.done:not(:last-child)::after{
           background:#3b82f6;
+        }
+        .oh-step.cancelled-step:not(:last-child)::after{
+          background:#f87171 !important;
         }
 
         .oh-step-circle{
@@ -903,35 +1003,79 @@ export default function OrderHistory() {
                     {isExpanded && (
                       <div className="oh-body">
 
-                        {/* STEPPER */}
-                        <div>
-                          <div className="oh-stepper-label">Order Lifecycle Timeline</div>
-                          <div className="oh-stepper">
-                            {STATUS_STEPS.map((step, i) => {
-                              const done = i <= statusIdx
-                              const isLast = i === STATUS_STEPS.length - 1
-                              return (
-                                <div key={step} className={`oh-step${done ? ' done' : ''}`}>
-                                  <div className={`oh-step-circle${done ? ` done${isLast && statusIdx === 4 ? ' last' : ''}` : ' idle'}`}>
-                                    {done
-                                      ? <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
-                                      : i + 1
-                                    }
-                                  </div>
-                                  <div className={`oh-step-label${done ? ` done${isLast && statusIdx === 4 ? ' last' : ''}` : ' idle'}`}>{step}</div>
+                        {/* STEPPER / LIFECYCLE */}
+                        {order.status === 'CANCELLED' ? (
+                          <div>
+                            <div className="oh-stepper-label" style={{ color: '#dc2626' }}>Order Status: Cancelled</div>
+                            <div className="oh-stepper" style={{ maxWidth: 360, margin: '8px 0 16px' }}>
+                              <div className="oh-step done cancelled-step">
+                                <div className="oh-step-circle done">
+                                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
                                 </div>
-                              )
-                            })}
-                          </div>
-                          {statusIdx < 4 && order.status !== 'CANCELLED' && (
-                            <div className="oh-eta">
-                              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                              </svg>
-                              Estimated Delivery: <b>{!isNaN(eta.getTime()) ? eta.toLocaleDateString('en-IN', { month:'short', day:'2-digit' }) : ''}</b>
+                                <div className="oh-step-label done">Order Placed</div>
+                              </div>
+                              <div className="oh-step done">
+                                <div className="oh-step-circle" style={{ background: '#dc2626', color: 'white' }}>
+                                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </div>
+                                <div className="oh-step-label" style={{ color: '#dc2626', fontWeight: 800 }}>Order Cancelled</div>
+                              </div>
                             </div>
-                          )}
-                        </div>
+
+                            {/* Cancellation alert box */}
+                            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '14px 16px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                              <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#dc2626', fontWeight: 800, flexShrink: 0 }}>
+                                ✕
+                              </div>
+                              <div style={{ fontSize: 13, color: '#991b1b', lineHeight: 1.5, flex: 1 }}>
+                                <div style={{ fontWeight: 800, fontSize: 14, color: '#b91c1c', marginBottom: 2 }}>This order has been cancelled</div>
+                                {order.refundReason && (
+                                  <div style={{ marginTop: 2 }}>
+                                    <span style={{ fontWeight: 600 }}>Reason:</span> {order.refundReason}
+                                  </div>
+                                )}
+                                {order.refundAmount > 0 ? (
+                                  <div style={{ marginTop: 6, fontWeight: 700, color: '#166534', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '6px 10px', borderRadius: 6 }}>
+                                    ✓ Refund of ₹{Math.round(order.refundAmount).toLocaleString('en-IN')} initiated to your source payment method (Status: {order.refundStatus || 'PENDING'}).
+                                  </div>
+                                ) : (
+                                  <div style={{ marginTop: 4, color: '#7f1d1d', fontSize: 12 }}>
+                                    No payment was deducted or cash on delivery was not collected.
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="oh-stepper-label">Order Lifecycle Timeline</div>
+                            <div className="oh-stepper">
+                              {STATUS_STEPS.map((step, i) => {
+                                const done = i <= statusIdx
+                                const isLast = i === STATUS_STEPS.length - 1
+                                return (
+                                  <div key={step} className={`oh-step${done ? ' done' : ''}`}>
+                                    <div className={`oh-step-circle${done ? ` done${isLast && statusIdx === 4 ? ' last' : ''}` : ' idle'}`}>
+                                      {done
+                                        ? <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
+                                        : i + 1
+                                      }
+                                    </div>
+                                    <div className={`oh-step-label${done ? ` done${isLast && statusIdx === 4 ? ' last' : ''}` : ' idle'}`}>{step}</div>
+                                  </div>
+                                )
+                              })}
+                            </div>
+                            {statusIdx < 4 && (
+                              <div className="oh-eta">
+                                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                Estimated Delivery: <b>{!isNaN(eta.getTime()) ? eta.toLocaleDateString('en-IN', { month:'short', day:'2-digit' }) : ''}</b>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
                         <div className="oh-divider" />
 
@@ -1126,13 +1270,9 @@ export default function OrderHistory() {
                               <div className="oh-section-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
                                 <span>Delivery Experience & Feedback</span>
                                 {order.feedbackRating && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleOpenFeedback(order, order.feedbackRating)}
-                                    style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: 12, fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
-                                  >
-                                    Edit Review
-                                  </button>
+                                  <span style={{ fontSize: 11, fontWeight: 700, color: '#059669', background: '#ecfdf5', border: '1px solid #a7f3d0', padding: '2px 8px', borderRadius: 999 }}>
+                                    ✓ Feedback Recorded
+                                  </span>
                                 )}
                               </div>
 
@@ -1253,13 +1393,33 @@ export default function OrderHistory() {
                           <div className="oh-section-label">Actions</div>
                           <div className="oh-action-row">
                             {['DELIVERED', 'FULFILLED'].includes(order.status) && (
-                              <button
-                                className="oh-btn outline"
-                                style={{ borderColor: '#16a34a', color: '#16a34a', background: '#f0fdf4' }}
-                                onClick={() => handleOpenFeedback(order, order.feedbackRating || 5)}
-                              >
-                                ⭐ {order.feedbackRating ? 'Edit Review' : 'Rate & Review'}
-                              </button>
+                              order.feedbackRating ? (
+                                <span
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    padding: '8px 14px',
+                                    borderRadius: 2,
+                                    background: '#ecfdf5',
+                                    color: '#065f46',
+                                    border: '1px solid #a7f3d0',
+                                    fontSize: 11,
+                                    fontWeight: 700,
+                                    textTransform: 'uppercase'
+                                  }}
+                                >
+                                  ✓ Feedback Submitted
+                                </span>
+                              ) : (
+                                <button
+                                  className="oh-btn outline"
+                                  style={{ borderColor: '#16a34a', color: '#16a34a', background: '#f0fdf4' }}
+                                  onClick={() => handleOpenFeedback(order, 5)}
+                                >
+                                  ⭐ Rate & Review
+                                </button>
+                              )
                             )}
 
                             {order.paymentStatus === 'PAID' && order.billId && (
@@ -1437,125 +1597,283 @@ export default function OrderHistory() {
                 </div>
               )}
 
-              {/* TAB 2: TICKET DETAIL & CHAT */}
+              {/* TAB 2: TICKET DETAIL & WHATSAPP-THEMED CHAT */}
               {ticketTab === 'detail' && activeTicket && (
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                    <button
-                      type="button"
-                      onClick={() => setTicketTab('list')}
-                      style={{ background: 'none', border: 'none', color: '#4f46e5', fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
-                    >
-                      ← Back to tickets
-                    </button>
-                    {activeTicket.status !== 'Resolved' && activeTicket.status !== 'Closed' && (
+                <div style={{ display: 'flex', flexDirection: 'column', height: '560px', borderRadius: 12, overflow: 'hidden', border: '1px solid #d1d7db', background: '#efeae2', margin: '-4px -6px' }}>
+                  {/* WhatsApp Green Top Bar */}
+                  <div style={{ background: '#075e54', color: 'white', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexShrink: 0, boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                       <button
                         type="button"
-                        onClick={handleResolveTicket}
-                        disabled={resolvingTicket}
-                        style={{
-                          background: '#ecfdf5',
-                          border: '1px solid #a7f3d0',
-                          color: '#065f46',
-                          fontSize: 11,
-                          fontWeight: 700,
-                          padding: '4px 10px',
-                          borderRadius: 6,
-                          cursor: 'pointer'
-                        }}
+                        onClick={() => setTicketTab('list')}
+                        style={{ background: 'none', border: 'none', color: 'white', fontSize: 18, cursor: 'pointer', display: 'flex', alignItems: 'center', padding: '4px' }}
+                        title="Back to tickets"
                       >
-                        {resolvingTicket ? 'Resolving...' : '✓ Mark as Resolved'}
+                        ←
                       </button>
+                      <div style={{ position: 'relative' }}>
+                        <SupportGirlAvatar size={40} />
+                        <span style={{ position: 'absolute', bottom: 1, right: 1, width: 10, height: 10, background: '#22c55e', border: '2px solid #075e54', borderRadius: '50%' }} />
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontWeight: 800, fontSize: 14, color: 'white', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          <span>Priya • Customer Support</span>
+                          <span style={{ fontSize: 9, background: '#128c7e', color: '#e0f2fe', padding: '1px 6px', borderRadius: 4, textTransform: 'uppercase', fontWeight: 800 }}>Official</span>
+                        </div>
+                        <div style={{ fontSize: 11, color: '#a7f3d0', display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span>online</span>
+                          <span>•</span>
+                          <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{activeTicket.category}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
+                      {activeTicket.status !== 'Resolved' && activeTicket.status !== 'Closed' && (
+                        <button
+                          type="button"
+                          onClick={handleResolveTicket}
+                          disabled={resolvingTicket}
+                          style={{
+                            background: '#25d366',
+                            border: 'none',
+                            color: '#064e3b',
+                            fontSize: 10,
+                            fontWeight: 800,
+                            padding: '5px 12px',
+                            borderRadius: 20,
+                            cursor: 'pointer',
+                            textTransform: 'uppercase',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.15)'
+                          }}
+                        >
+                          {resolvingTicket ? '...' : '✓ Resolve'}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Order & Issue Context Strip */}
+                  <div style={{ background: '#f0f2f5', borderBottom: '1px solid #e2e8f0', padding: '6px 14px', fontSize: 11, color: '#54656f', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap', flexShrink: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ fontWeight: 700, color: '#111b21' }}>Query:</span>
+                      <span style={{ color: '#075e54', fontWeight: 600 }}>{activeTicket.subject}</span>
+                    </div>
+                    {activeTicket.order && (
+                      <span style={{ fontWeight: 700, color: '#4b5563' }}>
+                        Order #{activeTicket.order.orderNumber || (activeTicket.order._id ? activeTicket.order._id.slice(-6).toUpperCase() : '')}
+                      </span>
                     )}
                   </div>
 
-                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '12px 16px', marginBottom: 14 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: '#e0e7ff', color: '#4338ca' }}>
-                        {activeTicket.category}
-                      </span>
-                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: activeTicket.status === 'Resolved' ? '#dcfce7' : '#fef3c7', color: activeTicket.status === 'Resolved' ? '#15803d' : '#b45309' }}>
-                        {activeTicket.status}
-                      </span>
-                    </div>
-                    <div style={{ fontWeight: 800, fontSize: 15, color: '#0f172a' }}>{activeTicket.subject}</div>
-                    <div style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
-                      Created on {fmtIST(activeTicket.createdAt)}
-                    </div>
-                  </div>
-
-                  {/* Conversation thread */}
-                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.04em' }}>
-                    Conversation History
-                  </div>
+                  {/* WhatsApp Chat Canvas */}
                   <div
                     style={{
-                      background: '#fff',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: 8,
-                      padding: 14,
+                      flex: 1,
+                      overflowY: 'auto',
+                      padding: '14px 16px',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: 12,
-                      maxHeight: 280,
-                      overflowY: 'auto'
+                      gap: 10,
+                      backgroundColor: '#efeae2',
+                      backgroundImage: `radial-gradient(#d1d7db 0.8px, transparent 0.8px)`,
+                      backgroundSize: '16px 16px'
                     }}
                   >
+                    {/* End to end encryption pill */}
+                    <div style={{ textAlign: 'center', margin: '2px 0 6px' }}>
+                      <span style={{ fontSize: 10, color: '#54656f', background: '#ffeecd', border: '1px solid #ffd27a', padding: '4px 12px', borderRadius: 8, display: 'inline-flex', alignItems: 'center', gap: 4, boxShadow: '0 1px 0.5px rgba(0,0,0,0.1)' }}>
+                        🔒 Messages with support are end-to-end verified for your security
+                      </span>
+                    </div>
+
                     {activeTicket.messages?.map((msg, i) => {
-                      const isAdmin = msg.senderModel === 'Admin'
+                      const isUser = msg.senderModel === 'Customer'
+                      const isMediaRequest = msg.messageType === 'MEDIA_REQUEST'
+
                       return (
                         <div
                           key={i}
                           style={{
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: isAdmin ? 'flex-start' : 'flex-end',
-                            gap: 3
+                            alignItems: isUser ? 'flex-end' : 'flex-start',
+                            gap: 2,
+                            maxWidth: '85%',
+                            alignSelf: isUser ? 'flex-end' : 'flex-start'
                           }}
                         >
-                          <div style={{ fontSize: 10, fontWeight: 700, color: isAdmin ? '#4f46e5' : '#64748b' }}>
-                            {isAdmin ? '🎧 Support Team' : 'You'}
-                          </div>
+                          {/* Sender Sub-label */}
+                          {!isUser && (
+                            <div style={{ fontSize: 10, fontWeight: 700, color: '#075e54', paddingLeft: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <SupportGirlAvatar size={16} />
+                              <span>Priya • Support Team</span>
+                            </div>
+                          )}
+
+                          {/* WhatsApp Bubble */}
                           <div
                             style={{
-                              maxWidth: '85%',
-                              padding: '10px 14px',
-                              borderRadius: isAdmin ? '4px 14px 14px 14px' : '14px 4px 14px 14px',
-                              background: isAdmin ? '#f1f5f9' : '#4f46e5',
-                              color: isAdmin ? '#1e293b' : 'white',
+                              background: isUser ? '#d9fdd3' : '#ffffff',
+                              color: '#111b21',
+                              padding: '8px 12px',
+                              borderRadius: isUser ? '10px 10px 2px 10px' : '10px 10px 10px 2px',
+                              boxShadow: '0 1px 0.5px rgba(11,20,26,0.13)',
                               fontSize: 13,
                               lineHeight: 1.45,
-                              wordBreak: 'break-word'
+                              wordBreak: 'break-word',
+                              position: 'relative'
                             }}
                           >
-                            {msg.message}
+                            {/* Media Request Card (Amazon Style) */}
+                            {isMediaRequest ? (
+                              <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: 10, margin: '2px 0 6px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#b45309', fontWeight: 800, fontSize: 12, marginBottom: 4 }}>
+                                  <span>📷 Photo / Video Verification Requested</span>
+                                </div>
+                                <div style={{ fontSize: 12, color: '#78350f', lineHeight: 1.4, marginBottom: 8 }}>
+                                  {msg.mediaRequest?.prompt || msg.message}
+                                </div>
+
+                                {msg.mediaRequest?.status === 'FULFILLED' ? (
+                                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 6, padding: 8 }}>
+                                    <div style={{ fontSize: 11, fontWeight: 700, color: '#166534', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                                      <span>✓ Verification Media Submitted (Locked)</span>
+                                    </div>
+                                    {msg.mediaRequest.fulfilledUrl && (
+                                      msg.mediaRequest.fulfilledMediaType === 'VIDEO' || msg.mediaRequest.fulfilledUrl.match(/\.(mp4|mov|webm)$/i) ? (
+                                        <video controls src={msg.mediaRequest.fulfilledUrl} style={{ width: '100%', maxHeight: 180, borderRadius: 6, marginTop: 4 }} />
+                                      ) : (
+                                        <img
+                                          src={msg.mediaRequest.fulfilledUrl}
+                                          alt="Submitted media"
+                                          style={{ width: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 6, marginTop: 4, cursor: 'pointer', background: '#ffffff' }}
+                                          onClick={() => window.open(msg.mediaRequest.fulfilledUrl, '_blank')}
+                                        />
+                                      )
+                                    )}
+                                    <div style={{ fontSize: 10, color: '#15803d', marginTop: 4 }}>
+                                      No further media can be uploaded for this request.
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <label
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: 6,
+                                        background: '#075e54',
+                                        color: 'white',
+                                        padding: '7px 14px',
+                                        borderRadius: 6,
+                                        fontSize: 11,
+                                        fontWeight: 700,
+                                        cursor: uploadingMediaMsgId === msg._id ? 'wait' : 'pointer',
+                                        boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
+                                      }}
+                                    >
+                                      {uploadingMediaMsgId === msg._id ? (
+                                        <span>Uploading Media... ⏳</span>
+                                      ) : (
+                                        <>
+                                          <span>📸 Upload Photo / Video (Single Submission)</span>
+                                          <input
+                                            type="file"
+                                            accept="image/*,video/*"
+                                            disabled={uploadingMediaMsgId === msg._id}
+                                            style={{ display: 'none' }}
+                                            onChange={(e) => handleUploadMediaForRequest(e, msg._id)}
+                                          />
+                                        </>
+                                      )}
+                                    </label>
+                                    <div style={{ fontSize: 10, color: '#92400e', marginTop: 4, fontStyle: 'italic' }}>
+                                      * Note: Like Amazon, once uploaded this request will be fulfilled and locked.
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <div>{msg.message}</div>
+                            )}
+
+                            {/* Attachments if any */}
+                            {Array.isArray(msg.attachments) && msg.attachments.length > 0 && (
+                              <div style={{ marginTop: 6, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                {msg.attachments.map((att, idx) => (
+                                  att.match(/\.(mp4|mov|webm)$/i) ? (
+                                    <video key={idx} controls src={att} style={{ maxWidth: '100%', maxHeight: 180, borderRadius: 6 }} />
+                                  ) : (
+                                    <img
+                                      key={idx}
+                                      src={att}
+                                      alt="attachment"
+                                      style={{ maxWidth: '100%', maxHeight: 180, objectFit: 'contain', borderRadius: 6, cursor: 'pointer' }}
+                                      onClick={() => window.open(att, '_blank')}
+                                    />
+                                  )
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Timestamp & read ticks */}
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 4, marginTop: 2, fontSize: 10, color: '#667781' }}>
+                              <span>{msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</span>
+                              {isUser && (
+                                <span style={{ color: '#53bdeb', fontWeight: 900, fontSize: 11 }} title="Read">✓✓</span>
+                              )}
+                            </div>
                           </div>
-                          <div style={{ fontSize: 10, color: '#94a3b8' }}>{fmtIST(msg.createdAt)}</div>
                         </div>
                       )
                     })}
                   </div>
 
-                  {/* Reply Input Form */}
-                  <form onSubmit={handleSendTicketReply} style={{ marginTop: 12 }}>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <input
-                        type="text"
-                        className="oh-form-input"
-                        placeholder="Type your message to support..."
-                        value={ticketReply}
-                        onChange={(e) => setTicketReply(e.target.value)}
-                        required
-                      />
-                      <button
-                        type="submit"
-                        className="oh-btn violet"
-                        style={{ padding: '0 18px', flexShrink: 0 }}
-                        disabled={sendingReply}
-                      >
-                        {sendingReply ? '...' : 'Send'}
-                      </button>
-                    </div>
+                  {/* WhatsApp Bottom Input Bar */}
+                  <form onSubmit={handleSendTicketReply} style={{ background: '#f0f2f5', padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 8, borderTop: '1px solid #d1d7db', flexShrink: 0 }}>
+                    <input
+                      type="text"
+                      placeholder="Type a message..."
+                      value={ticketReply}
+                      onChange={(e) => setTicketReply(e.target.value)}
+                      required
+                      style={{
+                        flex: 1,
+                        background: 'white',
+                        border: '1px solid #e2e8f0',
+                        borderRadius: 24,
+                        padding: '10px 16px',
+                        fontSize: 13,
+                        outline: 'none',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                      }}
+                    />
+                    <button
+                      type="submit"
+                      disabled={sendingReply || !ticketReply.trim()}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: '50%',
+                        background: '#00a884',
+                        border: 'none',
+                        color: 'white',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: sendingReply || !ticketReply.trim() ? 'not-allowed' : 'pointer',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                        opacity: sendingReply || !ticketReply.trim() ? 0.6 : 1,
+                        flexShrink: 0,
+                        transition: 'all 0.15s'
+                      }}
+                      title="Send Message"
+                    >
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M1.101 21.757L23.8 12.028 1.101 2.3 1 9.947l14.28 2.081L1 14.108z" />
+                      </svg>
+                    </button>
                   </form>
                 </div>
               )}

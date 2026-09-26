@@ -14,6 +14,31 @@ export default function SupportTickets() {
   const [replyMessage, setReplyMessage] = useState('')
   const [sendingReply, setSendingReply] = useState(false)
   const [updatingStatus, setUpdatingStatus] = useState(false)
+  const [showMediaModal, setShowMediaModal] = useState(false)
+  const [mediaPrompt, setMediaPrompt] = useState('')
+  const [mediaType, setMediaType] = useState('IMAGE_OR_VIDEO')
+  const [requestingMedia, setRequestingMedia] = useState(false)
+
+  const handleRequestMedia = async (e) => {
+    e.preventDefault()
+    if (!selectedTicket || requestingMedia) return
+    setRequestingMedia(true)
+    try {
+      const { data } = await api.post(`/api/support-tickets/admin/${selectedTicket._id}/request-media`, {
+        prompt: mediaPrompt.trim() || 'Please share a clear photo or video showing the item condition and parcel label.',
+        mediaType
+      })
+      notify('Photo/Video verification requested from customer', 'success')
+      setShowMediaModal(false)
+      setMediaPrompt('')
+      setSelectedTicket(data)
+      setTickets((prev) => prev.map((t) => (t._id === data._id ? data : t)))
+    } catch (err) {
+      notify(err.response?.data?.error || 'Failed to request media', 'error')
+    } finally {
+      setRequestingMedia(false)
+    }
+  }
 
   const loadTickets = async () => {
     setLoading(true)
@@ -278,20 +303,30 @@ export default function SupportTickets() {
                   </h2>
                 </div>
 
-                {/* Status Dropdown */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-slate-400">Status:</span>
-                  <select
-                    value={selectedTicket.status}
-                    disabled={updatingStatus}
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                    className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white focus:outline-none shadow-sm"
+                {/* Actions & Status */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => setShowMediaModal(true)}
+                    className="px-3 py-1.5 rounded-xl border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm"
                   >
-                    <option value="Open">Open</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Resolved">Resolved</option>
-                    <option value="Closed">Closed</option>
-                  </select>
+                    <span>📷</span> Request Photo / Video
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-slate-400">Status:</span>
+                    <select
+                      value={selectedTicket.status}
+                      disabled={updatingStatus}
+                      onChange={(e) => handleStatusChange(e.target.value)}
+                      className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-800 bg-white focus:outline-none shadow-sm"
+                    >
+                      <option value="Open">Open</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Resolved">Resolved</option>
+                      <option value="Closed">Closed</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -340,6 +375,8 @@ export default function SupportTickets() {
                 {Array.isArray(selectedTicket.messages) &&
                   selectedTicket.messages.map((m, idx) => {
                     const isAdmin = m.senderModel === 'Admin'
+                    const isMediaReq = m.messageType === 'MEDIA_REQUEST'
+
                     return (
                       <div
                         key={idx}
@@ -354,13 +391,61 @@ export default function SupportTickets() {
                           </span>
                         </div>
                         <div
-                          className={`p-3.5 rounded-2xl max-w-lg text-sm leading-relaxed whitespace-pre-wrap shadow-sm ${
+                          className={`p-3.5 rounded-2xl max-w-lg text-sm leading-relaxed shadow-sm ${
                             isAdmin
                               ? 'bg-slate-900 text-white rounded-br-none'
                               : 'bg-white text-slate-800 border border-slate-200 rounded-bl-none'
                           }`}
                         >
-                          {m.message}
+                          {isMediaReq ? (
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2 text-xs font-black text-amber-300">
+                                <span>📷 Media Verification Requested</span>
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${m.mediaRequest?.status === 'FULFILLED' ? 'bg-emerald-500 text-white' : 'bg-amber-400 text-amber-950'}`}>
+                                  {m.mediaRequest?.status === 'FULFILLED' ? '✓ Received' : 'Pending Customer Upload'}
+                                </span>
+                              </div>
+                              <p className="text-xs text-slate-200">{m.mediaRequest?.prompt || m.message}</p>
+                              {m.mediaRequest?.fulfilledUrl && (
+                                <div className="mt-2 bg-slate-800 p-2 rounded-xl border border-slate-700">
+                                  {m.mediaRequest.fulfilledMediaType === 'VIDEO' || m.mediaRequest.fulfilledUrl.match(/\.(mp4|mov|webm)$/i) ? (
+                                    <video controls src={m.mediaRequest.fulfilledUrl} className="w-full max-h-56 rounded-lg" />
+                                  ) : (
+                                    <img
+                                      src={m.mediaRequest.fulfilledUrl}
+                                      alt="Verification evidence"
+                                      className="w-full max-h-56 object-contain rounded-lg cursor-pointer bg-black/20"
+                                      onClick={() => window.open(m.mediaRequest.fulfilledUrl, '_blank')}
+                                    />
+                                  )}
+                                  <div className="text-[10px] text-slate-400 mt-1 flex justify-between">
+                                    <span>Uploaded on {m.mediaRequest.fulfilledAt ? new Date(m.mediaRequest.fulfilledAt).toLocaleDateString() : 'N/A'}</span>
+                                    <a href={m.mediaRequest.fulfilledUrl} target="_blank" rel="noreferrer" className="text-blue-400 underline">Open Full Media ↗</a>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="whitespace-pre-wrap">{m.message}</div>
+                          )}
+
+                          {Array.isArray(m.attachments) && m.attachments.length > 0 && (
+                            <div className="mt-2 space-y-2">
+                              {m.attachments.map((att, attIdx) => (
+                                att.match(/\.(mp4|mov|webm)$/i) ? (
+                                  <video key={attIdx} controls src={att} className="w-full max-h-48 rounded-lg" />
+                                ) : (
+                                  <img
+                                    key={attIdx}
+                                    src={att}
+                                    alt="attachment"
+                                    className="w-full max-h-48 object-contain rounded-lg cursor-pointer bg-slate-100"
+                                    onClick={() => window.open(att, '_blank')}
+                                  />
+                                )
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )
@@ -395,6 +480,78 @@ export default function SupportTickets() {
           )}
         </div>
       </div>
+
+      {/* REQUEST MEDIA MODAL (Amazon Style) */}
+      {showMediaModal && selectedTicket && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="text-base font-black text-slate-900">Request Photo / Video</h3>
+                <p className="text-xs text-slate-500">Customer will receive an interactive single-upload card.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowMediaModal(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleRequestMedia} className="space-y-4">
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5">
+                  Media Type Allowed
+                </label>
+                <select
+                  value={mediaType}
+                  onChange={(e) => setMediaType(e.target.value)}
+                  className="w-full p-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 bg-white outline-none focus:ring-2 focus:ring-indigo-500/20"
+                >
+                  <option value="IMAGE_OR_VIDEO">Photo or Video (Recommended)</option>
+                  <option value="IMAGE">Photo Only</option>
+                  <option value="VIDEO">Video Only (Unboxing / Damage)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black uppercase tracking-wider text-slate-600 mb-1.5">
+                  Instructions for Customer
+                </label>
+                <textarea
+                  rows="3"
+                  value={mediaPrompt}
+                  onChange={(e) => setMediaPrompt(e.target.value)}
+                  placeholder="e.g. Please share a clear unboxing video or photos showing the damaged product and parcel shipping label."
+                  className="w-full p-3 rounded-xl border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none"
+                />
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-800">
+                ℹ️ <b>Amazon-style Single Upload:</b> Once the customer uploads their verification media, the upload button is permanently locked for audit integrity.
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowMediaModal(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={requestingMedia}
+                  className="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black uppercase tracking-wider shadow-md transition-all disabled:opacity-50"
+                >
+                  {requestingMedia ? 'Sending...' : 'Send Request'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

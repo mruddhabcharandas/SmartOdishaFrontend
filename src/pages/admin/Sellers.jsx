@@ -9,7 +9,9 @@ export default function Sellers() {
   const [stores, setStores] = useState([])
   const [showModal, setShowModal] = useState(false)
   const [editingStore, setEditingStore] = useState(null)
+  const [reviewingPickupStore, setReviewingPickupStore] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [actionLoading, setActionLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -43,6 +45,36 @@ export default function Sellers() {
     }
   }
   useEffect(() => { loadStores() }, [])
+
+  const handleApprovePickup = async (storeId) => {
+    try {
+      setActionLoading(true)
+      const { data } = await api.put(`/api/admin/stores/${storeId}/approve-pickup`)
+      notify(data.message || 'Pickup address approved successfully', 'success')
+      setReviewingPickupStore(null)
+      loadStores()
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to approve pickup address', 'error')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleRejectPickup = async (storeId) => {
+    const reason = window.prompt('Reason for rejecting pickup address update (optional):')
+    if (reason === null) return
+    try {
+      setActionLoading(true)
+      const { data } = await api.put(`/api/admin/stores/${storeId}/reject-pickup`, { reason })
+      notify(data.message || 'Pickup address update rejected', 'info')
+      setReviewingPickupStore(null)
+      loadStores()
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to reject pickup address', 'error')
+    } finally {
+      setActionLoading(false)
+    }
+  }
 
   const handleFormChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -154,6 +186,24 @@ export default function Sellers() {
         </button>
       </div>
 
+      {stores.filter(s => s.pickupAddressStatus === 'PENDING_APPROVAL' && s.pendingPickupAddress?.line1).length > 0 && (
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-lg">
+              📍
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-amber-900">
+                {stores.filter(s => s.pickupAddressStatus === 'PENDING_APPROVAL' && s.pendingPickupAddress?.line1).length} Seller(s) requested pickup location changes
+              </h3>
+              <p className="text-xs text-amber-700 mt-0.5">
+                Review their updated pickup warehouses and approve or reject before shipments use the new location.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="text-center py-8 text-gray-500">Loading...</div>
       ) : (
@@ -201,6 +251,42 @@ export default function Sellers() {
                   </span>
                 </div>
               </div>
+
+              {store.pickupAddressStatus === 'PENDING_APPROVAL' && store.pendingPickupAddress?.line1 && (
+                <div className="mt-4 p-3 bg-amber-50/80 rounded-xl border border-amber-200/80 text-xs">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-black uppercase tracking-wider text-[10px] text-amber-800 flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                      Pending Pickup Approval
+                    </span>
+                    <button
+                      onClick={() => setReviewingPickupStore(store)}
+                      className="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline"
+                    >
+                      Compare
+                    </button>
+                  </div>
+                  <p className="text-slate-700 line-clamp-1">
+                    <strong className="text-slate-900">New:</strong> {store.pendingPickupAddress.line1}, {store.pendingPickupAddress.city} ({store.pendingPickupAddress.pincode})
+                  </p>
+                  <div className="mt-2.5 flex items-center gap-2">
+                    <button
+                      onClick={() => handleApprovePickup(store._id)}
+                      disabled={actionLoading}
+                      className="flex-1 py-1 px-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold transition shadow-xs disabled:opacity-50"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => handleRejectPickup(store._id)}
+                      disabled={actionLoading}
+                      className="py-1 px-2.5 bg-amber-200 hover:bg-amber-300 text-amber-900 rounded-lg text-xs font-bold transition disabled:opacity-50"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              )}
               <div className="mt-6 flex gap-2">
                 <button
                   onClick={() => togglePopular(store)}
@@ -492,6 +578,83 @@ export default function Sellers() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Review Pickup Modal */}
+      {reviewingPickupStore && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-slate-50">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Pickup Address Verification</span>
+                <h2 className="text-base font-bold text-gray-900">{reviewingPickupStore.name}</h2>
+              </div>
+              <button
+                onClick={() => setReviewingPickupStore(null)}
+                className="p-1.5 hover:bg-slate-200 rounded-lg text-slate-400 hover:text-slate-600 transition"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+
+            <div className="p-6 space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 block mb-2">Current Active Pickup Location</span>
+                  {reviewingPickupStore.pickupAddress?.line1 ? (
+                    <div className="space-y-1 text-xs">
+                      <p className="font-bold text-slate-800">{reviewingPickupStore.pickupName || reviewingPickupStore.name}</p>
+                      <p className="text-slate-600">{reviewingPickupStore.pickupPhone || reviewingPickupStore.phone}</p>
+                      <p className="text-slate-700">{reviewingPickupStore.pickupAddress?.line1}</p>
+                      {reviewingPickupStore.pickupAddress?.line2 && <p className="text-slate-700">{reviewingPickupStore.pickupAddress?.line2}</p>}
+                      <p className="text-slate-700">{reviewingPickupStore.pickupAddress?.city}, {reviewingPickupStore.pickupAddress?.state} - {reviewingPickupStore.pickupAddress?.pincode}</p>
+                      {reviewingPickupStore.delhiveryPickupLocation && (
+                        <p className="pt-2 text-[11px] text-slate-500 border-t border-slate-200">
+                          Warehouse: <strong>{reviewingPickupStore.delhiveryPickupLocation}</strong>
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-slate-400 italic">No previous pickup address recorded</p>
+                  )}
+                </div>
+
+                <div className="p-4 rounded-xl border border-amber-200 bg-amber-50/60">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-amber-700 block mb-2">Requested New Pickup Location</span>
+                  <div className="space-y-1 text-xs">
+                    <p className="font-bold text-amber-950">{reviewingPickupStore.pendingPickupAddress?.pickupName || reviewingPickupStore.pickupName || reviewingPickupStore.name}</p>
+                    <p className="text-amber-800">{reviewingPickupStore.pendingPickupAddress?.pickupPhone || reviewingPickupStore.pickupPhone || reviewingPickupStore.phone}</p>
+                    <p className="text-amber-900">{reviewingPickupStore.pendingPickupAddress?.line1}</p>
+                    {reviewingPickupStore.pendingPickupAddress?.line2 && <p className="text-amber-900">{reviewingPickupStore.pendingPickupAddress?.line2}</p>}
+                    <p className="text-amber-900 font-semibold">{reviewingPickupStore.pendingPickupAddress?.city}, {reviewingPickupStore.pendingPickupAddress?.state} - {reviewingPickupStore.pendingPickupAddress?.pincode}</p>
+                    {reviewingPickupStore.pickupAddressRequestedAt && (
+                      <p className="pt-2 text-[10px] text-amber-600 border-t border-amber-200">
+                        Requested: {new Date(reviewingPickupStore.pickupAddressRequestedAt).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+                <button
+                  onClick={() => handleRejectPickup(reviewingPickupStore._id)}
+                  disabled={actionLoading}
+                  className="px-4 py-2.5 rounded-xl border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 text-xs font-bold transition disabled:opacity-50"
+                >
+                  Reject Change
+                </button>
+                <button
+                  onClick={() => handleApprovePickup(reviewingPickupStore._id)}
+                  disabled={actionLoading}
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-200 transition disabled:opacity-50"
+                >
+                  {actionLoading ? 'Updating…' : 'Approve & Activate New Address'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

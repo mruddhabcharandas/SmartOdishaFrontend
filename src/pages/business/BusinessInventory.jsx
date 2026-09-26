@@ -37,16 +37,33 @@ export default function BusinessInventory() {
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           (p.sku && p.sku.toLowerCase().includes(searchQuery.toLowerCase()))
     const totalStock = p.variants && p.variants.length > 0
-      ? p.variants.reduce((acc, v) => acc + v.stock, 0)
-      : p.stock
+      ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0)
+      : (p.stock || 0)
 
     if (filterType === 'out_of_stock') {
       return matchesSearch && totalStock === 0
     } else if (filterType === 'low_stock') {
       return matchesSearch && totalStock > 0 && totalStock <= 10
+    } else if (filterType === 'in_stock') {
+      return matchesSearch && totalStock > 10
     }
     return matchesSearch
   })
+
+  // KPI stats
+  const totalSkus = products.reduce((acc, p) => acc + (p.variants?.length || 1), 0)
+  const lowStockCount = products.filter(p => {
+    const stock = p.variants?.length ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0) : (p.stock || 0)
+    return stock > 0 && stock <= 10
+  }).length
+  const outOfStockCount = products.filter(p => {
+    const stock = p.variants?.length ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0) : (p.stock || 0)
+    return stock === 0
+  }).length
+  const healthyStockCount = products.filter(p => {
+    const stock = p.variants?.length ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0) : (p.stock || 0)
+    return stock > 10
+  }).length
 
   const handleOpenAdjust = (product) => {
     setSelectedProduct(product)
@@ -104,246 +121,314 @@ export default function BusinessInventory() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center p-12">
+      <div className="flex items-center justify-center p-20">
         <LoadingSpinner text="Loading inventory data..." />
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
-      <div className="panel-card">
-        <div className="panel-card-header">
-          <div>
-            <h1 className="panel-title">Inventory</h1>
-            <p className="panel-subtitle">Track stock levels and adjust quantities</p>
+    <div className="space-y-6 pb-12 font-sans text-slate-800">
+      {/* Top Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100 mb-2">
+            <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+            Warehouse & Logistics
           </div>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Inventory Management</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Real-time SKU quantities, automated low-stock warnings, and historical adjustments.
+          </p>
         </div>
       </div>
 
-      <div className="panel-kpi-grid">
-        <div className="panel-kpi">
-          <div className="panel-kpi-label">Total SKUs</div>
-          <div className="panel-kpi-value">
-            {products.reduce((acc, p) => acc + (p.variants?.length || 1), 0)}
-          </div>
+      {/* KPI Stats Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-xs">
+          <div className="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Tracked SKUs</div>
+          <div className="text-2xl font-black text-slate-900 mt-1">{totalSkus}</div>
         </div>
-        <div className="panel-kpi">
-          <div className="panel-kpi-label">Low Stock</div>
-          <div className="panel-kpi-value" style={{ color: '#e53935' }}>
-            {products.filter(p => {
-              const stock = p.variants?.length ? p.variants.reduce((acc, v) => acc + v.stock, 0) : p.stock
-              return stock > 0 && stock <= 10
-            }).length}
-          </div>
+        <div className="bg-white border border-emerald-100 rounded-2xl p-4 shadow-xs">
+          <div className="text-[10px] font-black uppercase tracking-wider text-emerald-600">Healthy Stock</div>
+          <div className="text-2xl font-black text-emerald-700 mt-1">{healthyStockCount}</div>
         </div>
-        <div className="panel-kpi">
-          <div className="panel-kpi-label">Out of Stock</div>
-          <div className="panel-kpi-value" style={{ color: '#878787' }}>
-            {products.filter(p => {
-              const stock = p.variants?.length ? p.variants.reduce((acc, v) => acc + v.stock, 0) : p.stock
-              return stock === 0
-            }).length}
-          </div>
+        <div className="bg-white border border-amber-100 rounded-2xl p-4 shadow-xs">
+          <div className="text-[10px] font-black uppercase tracking-wider text-amber-600">Low Stock Alert</div>
+          <div className="text-2xl font-black text-amber-700 mt-1">{lowStockCount}</div>
+        </div>
+        <div className="bg-white border border-rose-100 rounded-2xl p-4 shadow-xs">
+          <div className="text-[10px] font-black uppercase tracking-wider text-rose-600">Out of Stock</div>
+          <div className="text-2xl font-black text-rose-700 mt-1">{outOfStockCount}</div>
         </div>
       </div>
 
-      <div className="panel-filter-bar">
-        <input
-          type="text"
-          placeholder="Search by name or SKU..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="panel-input"
-          style={{ maxWidth: 280, flex: '1 1 200px' }}
-        />
-        {['all', 'low_stock', 'out_of_stock'].map((type) => (
-          <button
-            key={type}
-            type="button"
-            onClick={() => setFilterType(type)}
-            className={`panel-filter-btn ${filterType === type ? 'active' : ''}`}
+      {/* Controls & Filter Bar */}
+      <div className="bg-white border border-slate-200/90 rounded-3xl p-5 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        {/* Search */}
+        <div className="relative flex-1 max-w-md">
+          <input
+            type="text"
+            placeholder="Search by product name or SKU..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 text-xs font-medium rounded-xl border border-slate-200 bg-slate-50/50 placeholder-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+          />
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
           >
-            {type.replace('_', ' ')}
-          </button>
-        ))}
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-bold">
+              ✕
+            </button>
+          )}
+        </div>
+
+        {/* Filter Pills */}
+        <div className="flex items-center gap-1 bg-slate-100/80 p-1 rounded-xl border border-slate-200/60 overflow-x-auto">
+          {[
+            { id: 'all', label: 'All Items' },
+            { id: 'in_stock', label: 'Healthy' },
+            { id: 'low_stock', label: 'Low Stock' },
+            { id: 'out_of_stock', label: 'Out of Stock' }
+          ].map((type) => (
+            <button
+              key={type.id}
+              type="button"
+              onClick={() => setFilterType(type.id)}
+              className={`px-3 py-1.5 text-xs font-black rounded-lg transition-all whitespace-nowrap ${
+                filterType === type.id
+                  ? 'bg-white text-indigo-700 shadow-xs border border-slate-200/60'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              {type.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Desktop Table View */}
-      <div className="panel-card panel-table-wrap hidden sm:block">
-        <table className="panel-table">
-          <thead>
-            <tr>
-              <th className="px-6 py-4 text-left">Product & Attributes</th>
-              <th className="px-6 py-4 text-center">SKU</th>
-              <th className="px-6 py-4 text-center">Current Stock</th>
-              <th className="px-6 py-4 text-center">Status</th>
-              <th className="px-6 py-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {filteredProducts.map((p) => {
-              const totalStock = p.variants && p.variants.length > 0
-                ? p.variants.reduce((acc, v) => acc + v.stock, 0)
-                : p.stock
-
-              return (
-                <React.Fragment key={p._id}>
-                  {/* Main Product Row */}
-                  <tr className="hover:bg-slate-50/40 transition-colors">
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <div className="w-10 h-10 bg-slate-50 border rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
-                        {(p.images?.[0]?.url || p.images?.[0]) ? (
-                          <img src={p.images[0].url || p.images[0]} alt="" className="panel-img-thumb" />
-                        ) : (
-                          <span className="text-lg">📦</span>
-                        )}
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 leading-tight">{p.name}</div>
-                        {p.variants && p.variants.length > 0 && (
-                          <div className="text-[10px] font-bold text-blue-600 mt-1 uppercase tracking-wider">
-                            {p.variants.length} Variants Configured
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 text-center font-mono text-xs font-bold text-slate-500">
-                      {p.variants && p.variants.length > 0 ? '—' : (p.sku || 'No SKU')}
-                    </td>
-                    <td className="px-6 py-4 text-center font-extrabold text-sm text-slate-800">
-                      {totalStock}
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                        totalStock === 0
-                          ? 'bg-red-50 text-red-700 border border-red-100'
-                          : totalStock <= 10
-                          ? 'bg-amber-50 text-amber-700 border border-amber-100'
-                          : 'bg-emerald-50 text-emerald-700 border border-emerald-100'
-                      }`}>
-                        {totalStock === 0 ? 'Out of Stock' : totalStock <= 10 ? 'Low Stock' : 'In Stock'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button type="button" onClick={() => handleOpenHistory(p)} className="panel-btn-ghost text-xs py-1">History</button>
-                      {(!p.variants || p.variants.length === 0) && (
-                        <button type="button" onClick={() => handleOpenAdjust(p)} className="panel-btn-outline text-xs py-1">Adjust</button>
-                      )}
-                    </td>
-                  </tr>
-
-                  {/* Variant Rows */}
-                  {p.variants && p.variants.length > 0 && p.variants.map((v) => {
-                    const vAttrs = v.attributes && typeof v.attributes === 'object' ? v.attributes : {}
-                    const attrLabel = Object.entries(vAttrs).map(([k, val]) => `${k}: ${val}`).join(', ')
-
-                    return (
-                      <tr key={v._id} className="bg-slate-50/30 hover:bg-slate-50/80 transition-colors">
-                        <td className="px-6 py-3 pl-16 flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-                          <span className="text-xs font-bold text-slate-600">{attrLabel || 'Default Variant'}</span>
-                        </td>
-                        <td className="px-6 py-3 text-center font-mono text-xs text-slate-500 font-semibold">{v.sku || 'No SKU'}</td>
-                        <td className="px-6 py-3 text-center text-xs font-bold text-slate-700">{v.stock}</td>
-                        <td className="px-6 py-3 text-center">
-                          <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
-                            v.stock === 0 ? 'bg-red-100 text-red-700' : v.stock <= 5 ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'
-                          }`}>
-                            {v.stock === 0 ? 'Out' : v.stock <= 5 ? 'Low' : 'OK'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-3 text-right">
-                          <button
-                            onClick={() => {
-                              setSelectedProduct(p)
-                              setAdjustData({ quantity: '', type: 'add', variantId: v._id })
-                              setShowAdjustModal(true)
-                            }}
-                            className="px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 transition-all"
-                          >
-                            Quick Adjust
-                          </button>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </React.Fragment>
-              )
-            })}
-            {filteredProducts.length === 0 && (
-              <tr>
-                <td colSpan={5} className="px-6 py-12 text-center text-gray-500 font-medium">
-                  No products found matching filters.
-                </td>
+      <div className="hidden sm:block bg-white border border-slate-200/90 rounded-3xl overflow-hidden shadow-xs">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-slate-50/70 border-b border-slate-100 text-[11px] font-black uppercase text-slate-500 tracking-wider">
+                <th className="px-6 py-4">Product & Specification</th>
+                <th className="px-6 py-4 text-center">SKU</th>
+                <th className="px-6 py-4 text-center">Available Stock</th>
+                <th className="px-6 py-4 text-center">Status</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredProducts.map((p) => {
+                const totalStock = p.variants && p.variants.length > 0
+                  ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0)
+                  : (p.stock || 0)
+                const thumb = p.images?.[0]?.url || p.images?.[0]
+
+                return (
+                  <React.Fragment key={p._id}>
+                    {/* Main Product Row */}
+                    <tr className="hover:bg-indigo-50/15 transition-colors">
+                      <td className="px-6 py-4 flex items-center gap-3">
+                        <div className="w-11 h-11 bg-slate-100 border border-slate-200/70 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {thumb ? (
+                            <img src={thumb} alt={p.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-xl">📦</span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-extrabold text-slate-900 leading-snug">{p.name}</div>
+                          {p.variants && p.variants.length > 0 && (
+                            <div className="text-[10px] font-black text-indigo-600 mt-0.5 uppercase tracking-wider">
+                              {p.variants.length} Variants Configured
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-center font-mono text-xs font-bold text-slate-500">
+                        {p.variants && p.variants.length > 0 ? '—' : (p.sku || 'No SKU')}
+                      </td>
+                      <td className="px-6 py-4 text-center font-black text-sm text-slate-900">
+                        {totalStock}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                          totalStock === 0
+                            ? 'bg-rose-50 text-rose-700 border border-rose-200/70'
+                            : totalStock <= 10
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200/70'
+                            : 'bg-emerald-50 text-emerald-700 border border-emerald-200/70'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            totalStock === 0 ? 'bg-rose-500' : totalStock <= 10 ? 'bg-amber-500' : 'bg-emerald-500'
+                          }`}></span>
+                          {totalStock === 0 ? 'Out of Stock' : totalStock <= 10 ? 'Low Stock' : 'In Stock'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="inline-flex items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenHistory(p)}
+                            className="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                          >
+                            History
+                          </button>
+                          {(!p.variants || p.variants.length === 0) && (
+                            <button
+                              type="button"
+                              onClick={() => handleOpenAdjust(p)}
+                              className="px-2.5 py-1 text-xs font-bold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 transition-colors"
+                            >
+                              Adjust
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+
+                    {/* Variant Rows */}
+                    {p.variants && p.variants.length > 0 && p.variants.map((v) => {
+                      const vAttrs = v.attributes && typeof v.attributes === 'object' ? v.attributes : {}
+                      const attrLabel = Object.entries(vAttrs).map(([k, val]) => `${k}: ${val}`).join(', ')
+                      const vStock = v.stock || 0
+
+                      return (
+                        <tr key={v._id} className="bg-slate-50/50 hover:bg-indigo-50/20 transition-colors border-t border-slate-100/60">
+                          <td className="px-6 py-3 pl-14 flex items-center gap-2">
+                            <span className="text-slate-300 font-mono text-sm leading-none">↳</span>
+                            <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                            <span className="text-xs font-bold text-slate-700">{attrLabel || 'Default Variant'}</span>
+                          </td>
+                          <td className="px-6 py-3 text-center font-mono text-xs text-slate-500 font-semibold">{v.sku || 'No SKU'}</td>
+                          <td className="px-6 py-3 text-center text-xs font-black text-slate-800">{vStock}</td>
+                          <td className="px-6 py-3 text-center">
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-black uppercase ${
+                              vStock === 0 ? 'bg-rose-100 text-rose-700' : vStock <= 5 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                            }`}>
+                              {vStock === 0 ? 'Out' : vStock <= 5 ? 'Low' : 'OK'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-3 text-right">
+                            <button
+                              onClick={() => {
+                                setSelectedProduct(p)
+                                setAdjustData({ quantity: '', type: 'add', variantId: v._id })
+                                setShowAdjustModal(true)
+                              }}
+                              className="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 transition-all shadow-xs"
+                            >
+                              Quick Adjust
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </React.Fragment>
+                )
+              })}
+              {filteredProducts.length === 0 && (
+                <tr>
+                  <td colSpan={5} className="px-6 py-16 text-center text-slate-500">
+                    <div className="text-3xl mb-2">📦</div>
+                    <div className="font-black text-slate-700 text-sm">No products found matching filters</div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Mobile Card View */}
       <div className="sm:hidden space-y-3">
         {filteredProducts.map((p) => {
           const totalStock = p.variants && p.variants.length > 0
-            ? p.variants.reduce((acc, v) => acc + v.stock, 0)
-            : p.stock
+            ? p.variants.reduce((acc, v) => acc + (v.stock || 0), 0)
+            : (p.stock || 0)
           const thumb = p.images?.[0]?.url || p.images?.[0]
 
           return (
-            <div key={p._id} className="panel-card p-4">
+            <div key={p._id} className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-xs space-y-3">
               <div className="flex gap-3 items-start">
-                <div className="w-12 h-12 bg-slate-50 border rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {thumb ? <img src={thumb} alt="" className="panel-img-thumb" /> : <span className="text-lg">📦</span>}
+                <div className="w-12 h-12 bg-slate-100 border border-slate-200/70 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {thumb ? <img src={thumb} alt="" className="w-full h-full object-cover" /> : <span className="text-lg">📦</span>}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold text-gray-900">{p.name}</div>
+                  <div className="font-bold text-slate-900 leading-snug">{p.name}</div>
                   {p.variants?.length > 0 ? (
-                    <div className="text-[10px] font-bold text-blue-600 mt-1 uppercase tracking-wider">
-                      {p.variants.length} Variants
+                    <div className="text-[10px] font-black text-indigo-600 mt-1 uppercase tracking-wider">
+                      {p.variants.length} Variants Configured
                     </div>
                   ) : (
-                    <div className="text-sm text-gray-500">
+                    <div className="text-xs text-slate-400 font-mono mt-0.5">
                       SKU: {p.sku || 'No SKU'}
                     </div>
                   )}
-                  <div className="flex items-center gap-3 mt-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${
+                  <div className="mt-2">
+                    <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-black uppercase ${
                       totalStock === 0
-                        ? 'bg-red-100 text-red-700'
-                        : totalStock <= 10 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                        ? 'bg-rose-50 text-rose-700'
+                        : totalStock <= 10 ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'
                     }`}>
-                      {totalStock} in Stock
+                      {totalStock} Available
                     </span>
                   </div>
                 </div>
               </div>
-              <div className="mt-3 flex gap-2 pt-3 border-t border-gray-100">
-                <button type="button" onClick={() => handleOpenHistory(p)} className="panel-btn-ghost text-xs py-1">History</button>
+
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleOpenHistory(p)}
+                  className="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-700"
+                >
+                  History
+                </button>
                 {(!p.variants || p.variants.length === 0) && (
-                  <button type="button" onClick={() => handleOpenAdjust(p)} className="panel-btn-outline text-xs py-1">Adjust</button>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenAdjust(p)}
+                    className="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100"
+                  >
+                    Adjust
+                  </button>
                 )}
               </div>
+
               {p.variants?.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-gray-100 space-y-2">
+                <div className="mt-2 pt-2 border-t border-slate-100 space-y-2">
                   {p.variants.map((v) => {
                     const vAttrs = v.attributes && typeof v.attributes === 'object' ? v.attributes : {}
                     const attrLabel = Object.entries(vAttrs).map(([k, val]) => `${k}: ${val}`).join(', ')
                     return (
-                      <div key={v._id} className="flex items-center justify-between p-3 bg-slate-50/50 rounded-lg">
+                      <div key={v._id} className="flex items-center justify-between p-2.5 bg-slate-50/70 rounded-xl">
                         <div className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 bg-blue-400 rounded-full"></div>
-                          <span className="text-xs font-bold text-slate-600">{attrLabel || 'Default Variant'}</span>
+                          <div className="w-1.5 h-1.5 bg-indigo-500 rounded-full"></div>
+                          <span className="text-xs font-bold text-slate-700">{attrLabel || 'Default Variant'}</span>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-[9px] font-bold text-slate-700">{v.stock}</span>
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-xs font-black text-slate-900">{v.stock || 0}</span>
                           <button
                             onClick={() => {
                               setSelectedProduct(p)
                               setAdjustData({ quantity: '', type: 'add', variantId: v._id })
                               setShowAdjustModal(true)
                             }}
-                            className="px-2.5 py-1 rounded text-[9px] font-black uppercase tracking-wider bg-white border border-blue-200 text-blue-600 hover:bg-blue-50 transition-all"
+                            className="px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 transition-all shadow-xs"
                           >
                             Adjust
                           </button>
@@ -356,33 +441,55 @@ export default function BusinessInventory() {
             </div>
           )
         })}
+
         {filteredProducts.length === 0 && (
-          <div className="panel-card p-12 text-center text-gray-500 font-medium">
-            No products found matching filters.
+          <div className="bg-white border border-slate-200/90 rounded-2xl p-12 text-center text-slate-500">
+            <div className="text-3xl mb-2">📦</div>
+            <div className="font-black text-slate-700 text-sm">No products found</div>
           </div>
         )}
       </div>
 
+      {/* Adjust Modal */}
       {showAdjustModal && selectedProduct && (
-        <div className="panel-modal-overlay">
-          <form onSubmit={handleAdjustStock} className="panel-modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
-            <div className="panel-modal-header">
-              <h3 className="panel-title">Adjust Stock</h3>
-              <button type="button" onClick={() => setShowAdjustModal(false)} className="panel-btn-ghost">✕ Close</button>
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+          onClick={() => setShowAdjustModal(false)}
+        >
+          <form
+            onSubmit={handleAdjustStock}
+            className="bg-white rounded-3xl max-w-md w-full shadow-2xl border border-slate-100 overflow-hidden"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+              <div>
+                <h3 className="font-black text-slate-900 text-base">Adjust Stock Level</h3>
+                <p className="text-xs text-slate-500 mt-0.5">Increment or decrement warehouse quantity</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAdjustModal(false)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm transition-colors"
+              >
+                ✕
+              </button>
             </div>
+
             <div className="p-6 space-y-4">
               <div>
-                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 ml-1 block mb-1">Product</label>
-                <div className="text-sm font-bold text-slate-800 bg-slate-50 p-3 rounded-xl border border-slate-200">{selectedProduct.name}</div>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Product</label>
+                <div className="text-xs font-extrabold text-slate-800 bg-slate-50 p-3 rounded-xl border border-slate-200/80">
+                  {selectedProduct.name}
+                </div>
               </div>
 
               {selectedProduct.variants && selectedProduct.variants.length > 0 && (
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 ml-1 block mb-1">Select Variant</label>
+                  <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Select Variant</label>
                   <select
                     value={adjustData.variantId}
                     onChange={(e) => setAdjustData({ ...adjustData, variantId: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all"
                   >
                     {selectedProduct.variants.map((v) => {
                       const vAttrs = v.attributes && typeof v.attributes === 'object' ? v.attributes : {}
@@ -398,53 +505,58 @@ export default function BusinessInventory() {
               )}
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 ml-1 block mb-1">Adjustment Type</label>
-                <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Adjustment Type</label>
+                <div className="grid grid-cols-2 gap-2 bg-slate-100/80 p-1 rounded-xl border border-slate-200/50">
                   <button
                     type="button"
                     onClick={() => setAdjustData({ ...adjustData, type: 'add' })}
-                    className={`flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${
-                      adjustData.type === 'add' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500'
+                    className={`py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${
+                      adjustData.type === 'add'
+                        ? 'bg-white text-emerald-700 shadow-xs border border-slate-200/60'
+                        : 'text-slate-500 hover:text-slate-800'
                     }`}
                   >
-                    Add Stock
+                    + Add Units
                   </button>
                   <button
                     type="button"
                     onClick={() => setAdjustData({ ...adjustData, type: 'subtract' })}
-                    className={`flex-1 py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${
-                      adjustData.type === 'subtract' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500'
+                    className={`py-2 rounded-lg text-xs font-black uppercase tracking-wider transition-all ${
+                      adjustData.type === 'subtract'
+                        ? 'bg-white text-rose-700 shadow-xs border border-slate-200/60'
+                        : 'text-slate-500 hover:text-slate-800'
                     }`}
                   >
-                    Reduce Stock
+                    - Deduct Units
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 ml-1 block mb-1">Quantity</label>
+                <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-1">Quantity *</label>
                 <input
                   type="number"
                   min="1"
                   required
-                  placeholder="Enter adjustment amount"
+                  placeholder="Enter quantity to adjust"
                   value={adjustData.quantity}
                   onChange={(e) => setAdjustData({ ...adjustData, quantity: e.target.value })}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 focus:bg-white transition-all"
                 />
               </div>
             </div>
-            <div className="px-5 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end gap-2">
+
+            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setShowAdjustModal(false)}
-                className="px-4 py-2 border rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-50"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-200"
+                className="px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition-all"
               >
                 Submit Adjustment
               </button>
@@ -453,38 +565,52 @@ export default function BusinessInventory() {
         </div>
       )}
 
+      {/* History Modal */}
       {historyProduct && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
-            <div className="px-5 py-4 border-t border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+        <div
+          className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4"
+          onClick={() => setHistoryProduct(null)}
+        >
+          <div
+            className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[85vh]"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
               <div>
-                <h3 className="font-extrabold text-slate-900 text-base">Stock History</h3>
-                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{historyProduct.name}</p>
+                <h3 className="font-black text-slate-900 text-base">Stock Audit Log</h3>
+                <p className="text-xs text-slate-500 mt-0.5 font-medium">{historyProduct.name}</p>
               </div>
-              <button type="button" onClick={() => setHistoryProduct(null)} className="text-gray-400 hover:text-gray-800 transition-colors p-1 text-2xl leading-none">&times;</button>
+              <button
+                type="button"
+                onClick={() => setHistoryProduct(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm transition-colors"
+              >
+                ✕
+              </button>
             </div>
+
             <div className="p-6 overflow-y-auto flex-1">
               {historyLoading ? (
                 <div className="flex justify-center py-12">
-                  <LoadingSpinner text="Fetching transaction logs..." />
+                  <LoadingSpinner text="Fetching audit logs..." />
                 </div>
               ) : historyItems.length === 0 ? (
-                <div className="text-center py-12 text-slate-400 text-sm font-medium">No stock adjustment history found.</div>
+                <div className="text-center py-12 text-slate-400 text-xs font-medium">No stock adjustment history found.</div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px] border-b">
+                  <table className="w-full text-xs">
+                    <thead className="bg-slate-50 text-slate-500 font-black uppercase tracking-wider text-[10px] border-b border-slate-100">
                       <tr>
                         <th className="px-4 py-3 text-left">Date</th>
-                        <th className="px-4 py-3 text-left">SKU/Attributes</th>
+                        <th className="px-4 py-3 text-left">Target SKU</th>
                         <th className="px-4 py-3 text-center">Change</th>
                         <th className="px-4 py-3 text-left">Note</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y">
+                    <tbody className="divide-y divide-slate-100">
                       {historyItems.map((h) => (
-                        <tr key={h._id} className="hover:bg-slate-50/40 transition-colors text-xs">
-                          <td className="px-4 py-3 text-slate-500">
+                        <tr key={h._id} className="hover:bg-slate-50/40 transition-colors">
+                          <td className="px-4 py-3 text-slate-500 font-mono">
                             {new Date(h.createdAt).toLocaleString('en-IN', {
                               day: '2-digit',
                               month: 'short',
@@ -492,13 +618,13 @@ export default function BusinessInventory() {
                               minute: '2-digit'
                             })}
                           </td>
-                          <td className="px-4 py-3 text-slate-700 font-semibold">
+                          <td className="px-4 py-3 text-slate-700 font-semibold font-mono">
                             {h.variantSku ? `SKU: ${h.variantSku}` : 'Main Product'}
                           </td>
-                          <td className={`px-4 py-3 text-center font-extrabold ${h.quantity > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                          <td className={`px-4 py-3 text-center font-black ${h.quantity > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                             {h.quantity > 0 ? `+${h.quantity}` : h.quantity}
                           </td>
-                          <td className="px-4 py-3 text-slate-500 leading-tight">
+                          <td className="px-4 py-3 text-slate-600">
                             {h.note || 'Manual Adjustment'}
                           </td>
                         </tr>
@@ -508,11 +634,12 @@ export default function BusinessInventory() {
                 </div>
               )}
             </div>
-            <div className="px-5 py-4 border-t border-gray-100 bg-gray-50/50 flex justify-end">
+
+            <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end">
               <button
                 type="button"
                 onClick={() => setHistoryProduct(null)}
-                className="px-5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border hover:bg-slate-50"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-colors"
               >
                 Close Logs
               </button>
@@ -523,3 +650,4 @@ export default function BusinessInventory() {
     </div>
   )
 }
+
