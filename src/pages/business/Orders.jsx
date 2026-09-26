@@ -132,7 +132,7 @@ export default function BusinessOrders() {
   }
 
   const handleDownloadLabel = (orderId, waybill) => {
-    const token = localStorage.getItem('storeToken')
+    const token = localStorage.getItem('storeToken') || localStorage.getItem('token') || localStorage.getItem('partnerToken')
     window.open(`${api.defaults.baseURL}/api/stores/orders/${orderId}/delhivery/label/${waybill}?token=${token}`, '_blank')
   }
 
@@ -366,7 +366,7 @@ export default function BusinessOrders() {
                                             </a>
                                           )}
                                           <button onClick={() => handleDownloadLabel(o._id, o.shipping.waybill)} className="panel-btn-outline" style={{ padding: '6px 12px', fontSize: 11 }}>
-                                            Label PDF
+                                            🏷️ Print Label
                                           </button>
                                         </div>
                                       </div>

@@ -42,6 +42,11 @@ export default function Orders(){
     }
   }
 
+  const handleDownloadLabel = (orderId, waybill) => {
+    const token = localStorage.getItem('token') || localStorage.getItem('storeToken') || localStorage.getItem('partnerToken')
+    window.open(`${api.defaults.baseURL}/api/orders/${orderId}/delhivery/label/${waybill}?token=${token}`, '_blank')
+  }
+
   useEffect(() => {
     const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
     
@@ -434,9 +439,20 @@ export default function Orders(){
                                             <div className="text-[8px] font-black text-blue-400 uppercase tracking-widest">Waybill</div>
                                             <div className="text-sm font-black text-blue-700">{o.shipping.waybill}</div>
                                           </div>
-                                          {o.shipping.trackingUrl && (
-                                            <a href={o.shipping.trackingUrl} target="_blank" rel="noreferrer" className="px-5 py-2 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-md hover:bg-blue-500 transition-all">Track Order</a>
-                                          )}
+                                          <div className="flex items-center gap-2">
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDownloadLabel(o._id, o.shipping.waybill);
+                                              }}
+                                              className="px-4 py-2 bg-rose-600 text-white text-[10px] font-black uppercase rounded-xl shadow-md hover:bg-rose-500 transition-all flex items-center gap-1.5"
+                                            >
+                                              <span>🏷️</span> Print Label
+                                            </button>
+                                            {o.shipping.trackingUrl && (
+                                              <a href={o.shipping.trackingUrl} target="_blank" rel="noreferrer" className="px-5 py-2 bg-blue-600 text-white text-[10px] font-black uppercase rounded-xl shadow-md hover:bg-blue-500 transition-all">Track Order</a>
+                                            )}
+                                          </div>
                                         </div>
                                       )}
                                     </div>
