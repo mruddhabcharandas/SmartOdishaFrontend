@@ -69,18 +69,24 @@ export default function BusinessDashboard() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 relative z-10">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 relative z-10">
           <Link
             to="/business/products"
-            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-2"
+            className="px-3.5 sm:px-4 py-2 sm:py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-1.5"
           >
             <span>➕</span> Add Product
           </Link>
           <Link
-            to="/business/wallet"
-            className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-black uppercase tracking-wider rounded-xl transition-all flex items-center gap-2 backdrop-blur-sm"
+            to="/business/variants"
+            className="px-3.5 sm:px-4 py-2 sm:py-2.5 bg-indigo-500/30 hover:bg-indigo-500/40 text-white border border-indigo-400/40 text-xs font-black uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 backdrop-blur-sm"
           >
-            <span>💳</span> Wallet & Payouts
+            <span>⚡</span> Variant Studio
+          </Link>
+          <Link
+            to="/business/wallet"
+            className="px-3.5 sm:px-4 py-2 sm:py-2.5 bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-black uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 backdrop-blur-sm"
+          >
+            <span>💳</span> Wallet
           </Link>
         </div>
 
@@ -89,7 +95,7 @@ export default function BusinessDashboard() {
       </div>
 
       {/* KPI Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         <MetricCard
           to="/business/wallet"
           title="Total Store Revenue"
@@ -133,11 +139,12 @@ export default function BusinessDashboard() {
         <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 px-1">
           Store Operations
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
           <QuickActionBtn to="/business/orders" label="Process Orders" icon="📦" />
           <QuickActionBtn to="/business/products" label="Manage Products" icon="🏷️" />
+          <QuickActionBtn to="/business/variants" label="Variant Studio" icon="⚡" />
           <QuickActionBtn to="/business/inventory" label="Stock Inventory" icon="📊" />
-          <QuickActionBtn to="/business/wallet" label="My Wallet & Balance" icon="💰" />
+          <QuickActionBtn to="/business/wallet" label="Wallet & Balance" icon="💰" />
         </div>
       </div>
 

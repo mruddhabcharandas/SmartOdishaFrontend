@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
 import ConfirmModal from '../../components/ConfirmModal'
@@ -6,6 +7,7 @@ import ImageUpload from '../../components/ImageUpload'
 
 export default function BusinessProducts() {
   const { notify } = useToast()
+  const navigate = useNavigate()
   const [items, setItems] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -14,8 +16,6 @@ export default function BusinessProducts() {
   const [editing, setEditing] = useState(null)
   const [viewing, setViewing] = useState(null)
   const [toDelete, setToDelete] = useState(null)
-  const [managingVariants, setManagingVariants] = useState(null)
-  const [editingVariant, setEditingVariant] = useState(null)
   const [brands, setBrands] = useState([])
   const [categories, setCategories] = useState([])
   const [subcategories, setSubcategories] = useState([])
@@ -288,44 +288,15 @@ export default function BusinessProducts() {
                                 <div className="flex items-center gap-2 mt-0.5">
                                   <span className="text-[9px] text-blue-600 font-bold uppercase">{p.brand?.name || 'Unbranded'}</span>
                                   <span className="text-[9px] text-gray-400 font-medium">{p.category?.name || 'General'}</span>
-                                  {p.variants?.length > 0 ? (
-                                    <button
-                                      type="button"
-                                      onClick={(e) => { e.stopPropagation(); setManagingVariants(p); }}
-                                      className="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-lg border border-indigo-100 transition-colors"
-                                      title="Open Variant Manager"
-                                    >
-                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                                      {p.variants.length} Variants
-                                    </button>
-                                  ) : (
-                                    <button
-                                      type="button"
-                                      onClick={(e) => { e.stopPropagation(); setManagingVariants(p); }}
-                                      className="inline-flex items-center gap-1 text-[10px] text-gray-400 hover:text-indigo-600 font-semibold"
-                                      title="Add variants to this product"
-                                    >
-                                      + Add Variants
-                                    </button>
-                                  )}
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); navigate('/business/variants?productId=' + p._id); }}
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-lg border border-indigo-100 transition-colors"
+                                    title="Open in Variant Studio"
+                                  >
+                                    <span>⚡</span> {p.variants?.length ? `${p.variants.length} Variants` : '0 Variants'}
+                                  </button>
                                 </div>
-                                {p.variants?.length > 0 && (
-                                  <div className="flex flex-wrap gap-1 mt-1.5">
-                                    {p.variants.slice(0, 3).map((v, idx) => (
-                                      <span key={idx} className="text-[9px] bg-gray-50 border border-gray-100 px-1.5 py-0.5 rounded text-gray-600 font-medium">
-                                        {Object.values(v.attributes instanceof Map ? Object.fromEntries(v.attributes) : (v.attributes || {})).join(', ')}
-                                      </span>
-                                    ))}
-                                    {p.variants.length > 3 && (
-                                      <span 
-                                        onClick={(e) => { e.stopPropagation(); setManagingVariants(p); }}
-                                        className="text-[9px] text-indigo-600 font-bold cursor-pointer hover:underline"
-                                      >
-                                        +{p.variants.length - 3} more
-                                      </span>
-                                    )}
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </td>
@@ -360,7 +331,7 @@ export default function BusinessProducts() {
                                   />
                                   <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl border border-gray-100 shadow-xl z-20 py-2">
                                     <button 
-                                      onClick={(e) => { e.stopPropagation(); setManagingVariants(p); setOpenDropdown(null); }}
+                                      onClick={(e) => { e.stopPropagation(); navigate('/business/variants?productId=' + p._id); setOpenDropdown(null); }}
                                       className="w-full px-4 py-2 text-left text-sm flex items-center gap-3 hover:bg-gray-50 transition-all text-indigo-600"
                                     >
                                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
@@ -758,65 +729,6 @@ export default function BusinessProducts() {
           </div>
         )}
 
-      {managingVariants && (
-        <div className="fixed inset-0 bg-slate-900/60 flex items-center justify-center z-50 p-2 sm:p-6 backdrop-blur-md overflow-hidden">
-          <div className="bg-white rounded-3xl w-full max-w-6xl h-[92vh] max-h-[880px] shadow-2xl animate-in zoom-in-95 flex flex-col relative overflow-hidden border border-slate-100">
-            {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white flex-shrink-0">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200/80 p-1 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                  {managingVariants.images?.[0] ? (
-                    <img src={managingVariants.images[0].url || managingVariants.images[0]} alt="" className="w-full h-full object-contain" />
-                  ) : (
-                    <span className="text-xl">📦</span>
-                  )}
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-bold text-gray-900 tracking-tight truncate max-w-md">{managingVariants.name}</h3>
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-100">
-                      Variant Studio
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-500 font-medium">
-                    <span>Base Price: <strong className="text-gray-900">₹{Number(managingVariants.price || 0).toLocaleString()}</strong></span>
-                    <span>·</span>
-                    <span>Total Variants: <strong className="text-gray-900">{managingVariants.variants?.length || 0}</strong></span>
-                    <span>·</span>
-                    <span>Category: <strong className="text-gray-900">{managingVariants.category?.name || 'General'}</strong></span>
-                  </div>
-                </div>
-              </div>
-              <button 
-                type="button" 
-                onClick={() => setManagingVariants(null)} 
-                className="w-9 h-9 rounded-xl hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors"
-                title="Close"
-              >
-                ✕
-              </button>
-            </div>
-            
-            {/* Scrollable Body */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-6 bg-slate-50/50">
-              <VariantManager 
-                product={managingVariants} 
-                setEditing={setManagingVariants}
-                editingVariant={editingVariant}
-                setEditingVariant={setEditingVariant}
-                onChanged={() => { 
-                  api.get(`/api/stores/products/${managingVariants._id}`).then(({data}) => {
-                    setManagingVariants(data)
-                    load(page)
-                  })
-                }} 
-                price={managingVariants.price}
-                weight={managingVariants.weight}
-              />
-            </div>
-          </div>
-        </div>
-      )}
 
       <ConfirmModal
         open={!!toDelete}
@@ -957,8 +869,11 @@ export default function BusinessProducts() {
     </div>
   )
 }
-
-function VariantManager({ product, setEditing, onChanged, editingVariant, setEditingVariant, price = '', weight = '' }) {
+// Variant management has moved to the dedicated BusinessVariants.jsx page
+function VariantManager() {
+  return null
+}
+function _unusedVariantManager({ product, setEditing, onChanged, editingVariant, setEditingVariant, price = '', weight = '' }) {
   const { notify } = useToast()
   const [activeTab, setActiveTab] = useState(
     (product.variants || []).length === 0 && (product.attributes || []).length === 0 ? 'options' : 'list'

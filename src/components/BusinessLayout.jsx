@@ -30,6 +30,15 @@ const NavIcon = ({ name, className = 'w-4 h-4' }) => {
           <path d="M12 22V12" />
         </svg>
       )
+    case 'variants':
+      return (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M16 3H5a2 2 0 0 0-2 2v11" />
+          <path d="M21 7H8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
+          <path d="M12 12h5" />
+          <path d="M12 16h3" />
+        </svg>
+      )
     case 'inv':
       return (
         <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -80,6 +89,7 @@ export default function BusinessLayout() {
       items: [
         { to: '/business/orders', label: 'Orders & Shipments', icon: 'orders' },
         { to: '/business/products', label: 'Products Catalog', icon: 'prod' },
+        { to: '/business/variants', label: 'Variant Studio', icon: 'variants' },
         { to: '/business/inventory', label: 'Live Inventory', icon: 'inv' }
       ]
     },
@@ -233,7 +243,7 @@ export default function BusinessLayout() {
         </aside>
 
         {/* Main Content Viewport */}
-        <main className="min-w-0 bg-slate-50/60 p-4 md:p-8">
+        <main className="min-w-0 bg-slate-50/60 p-2.5 sm:p-4 md:p-8">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

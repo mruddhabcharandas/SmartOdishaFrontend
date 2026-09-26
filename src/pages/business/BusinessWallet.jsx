@@ -250,8 +250,8 @@ export default function BusinessWallet() {
           </div>
         </div>
 
-        {/* Transactions Table */}
-        <div className="overflow-x-auto">
+        {/* Desktop Transactions Table (hidden on mobile) */}
+        <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
               <tr className="bg-slate-50/70 border-b border-slate-100 text-[11px] font-black uppercase text-slate-500 tracking-wider">
@@ -400,6 +400,111 @@ export default function BusinessWallet() {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Transactions Cards (visible on phones) */}
+        <div className="block md:hidden divide-y divide-slate-100">
+          {filteredTransactions.length > 0 ? (
+            filteredTransactions.map(tx => {
+              const isEarning = tx.type === 'EARNING'
+              const isPayout = tx.type === 'PAYOUT'
+              const isCancelled = tx.isCancelled || (tx.order && ['CANCELLED', 'RETURNED'].includes(tx.order.status))
+              const displayAmount = isCancelled && isEarning ? 0 : (tx.amount || 0)
+
+              return (
+                <div key={tx._id} className="p-4 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${
+                          isEarning
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
+                            : isPayout
+                            ? 'bg-indigo-50 text-indigo-700 border border-indigo-200/60'
+                            : 'bg-rose-50 text-rose-700 border border-rose-200/60'
+                        }`}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            isEarning ? 'bg-emerald-500' : isPayout ? 'bg-indigo-500' : 'bg-rose-500'
+                          }`}
+                        ></span>
+                        {tx.type}
+                      </span>
+                      <span className="font-mono text-xs text-slate-400 font-bold">
+                        #{tx._id.slice(-6).toUpperCase()}
+                      </span>
+                    </div>
+
+                    {isCancelled && isEarning ? (
+                      <div className="text-right">
+                        <span className="font-black text-slate-400 text-xs line-through block">
+                          ₹{Number(tx.amount || 0).toLocaleString('en-IN')}
+                        </span>
+                        <span className="px-1.5 py-0.2 rounded text-[9px] font-black uppercase bg-rose-50 text-rose-700 border border-rose-100">
+                          ₹0 Cancelled
+                        </span>
+                      </div>
+                    ) : (
+                      <div
+                        className={`font-black text-sm text-right ${
+                          isEarning
+                            ? 'text-emerald-700'
+                            : isPayout
+                            ? 'text-indigo-700'
+                            : 'text-rose-600'
+                        }`}
+                      >
+                        {isEarning ? '+' : '-'} ₹{Number(displayAmount).toLocaleString('en-IN')}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-xs text-slate-700 leading-snug">
+                    {tx.note || 'Wallet transaction'}
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <span>{new Date(tx.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                      <span>·</span>
+                      <span className="font-mono">{new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      {tx.order && (
+                        <>
+                          <span>·</span>
+                          <span className="font-mono font-bold text-slate-600">
+                            #{tx.order.orderNumber || tx.order._id?.toString().slice(-6).toUpperCase()}
+                          </span>
+                        </>
+                      )}
+                    </div>
+
+                    {tx.proofImage && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedProof(tx.proofImage)}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold text-indigo-600 bg-indigo-50 rounded-md border border-indigo-100"
+                      >
+                        Proof ↗
+                      </button>
+                    )}
+                  </div>
+
+                  {tx.referenceId && (
+                    <div className="text-[10px] text-slate-500 font-mono bg-slate-50 px-2 py-1 rounded-lg border border-slate-100 flex items-center gap-1">
+                      <span className="text-slate-400">UTR:</span>
+                      <span className="font-bold text-slate-700 truncate">{tx.referenceId}</span>
+                    </div>
+                  )}
+                </div>
+              )
+            })
+          ) : (
+            <div className="p-8 text-center text-slate-400">
+              <div className="text-2xl mb-1">📄</div>
+              <div className="font-black text-slate-700 text-xs">No transactions found</div>
+            </div>
+          )}
         </div>
       </div>
 

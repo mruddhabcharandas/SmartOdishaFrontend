@@ -49,6 +49,7 @@ import BusinessResetPassword from './pages/business/ResetPassword.jsx'
 import BusinessDashboard from './pages/business/Dashboard.jsx'
 import BusinessRequest from './pages/business/Request.jsx'
 import BusinessProducts from './pages/business/BusinessProductsPage.jsx'
+import BusinessVariants from './pages/business/BusinessVariants.jsx'
 import BusinessInventory from './pages/business/BusinessInventory.jsx'
 import BusinessProfile from './pages/business/BusinessProfile.jsx'
 import BusinessWallet from './pages/business/BusinessWallet.jsx'
@@ -105,6 +106,8 @@ export default function App() {
         <Route path="dashboard" element={<BusinessDashboard />} />
         <Route path="orders" element={<BusinessOrders />} />
         <Route path="products" element={<BusinessProducts />} />
+        <Route path="variants" element={<BusinessVariants />} />
+        <Route path="products/:id/variants" element={<BusinessVariants />} />
         <Route path="inventory" element={<BusinessInventory />} />
         <Route path="wallet" element={<BusinessWallet />} />
         <Route path="profile" element={<BusinessProfile />} />

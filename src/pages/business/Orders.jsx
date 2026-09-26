@@ -204,7 +204,7 @@ export default function BusinessOrders() {
   return (
     <div className="space-y-6 max-w-7xl mx-auto px-2 sm:px-4 py-4">
       {/* Top Header */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs uppercase tracking-widest font-black text-indigo-600">Seller Partner Hub</span>
@@ -212,23 +212,23 @@ export default function BusinessOrders() {
               Orders
             </span>
           </div>
-          <h1 className="text-2xl font-black text-slate-900 tracking-tight">Order Management</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Order Management</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Track incoming purchases, print Delhivery shipping labels, and manage order fulfillments.
           </p>
         </div>
-        <div className="flex items-center gap-2 self-start md:self-auto">
+        <div className="flex items-center gap-2 self-stretch sm:self-auto">
           <button
             onClick={handleSyncAllOrders}
             disabled={syncingAll}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm shadow-indigo-600/20 transition-all flex items-center gap-1.5"
+            className="flex-1 sm:flex-none px-3.5 sm:px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm shadow-indigo-600/20 transition-all flex items-center justify-center gap-1.5"
             title="Sync all shipped orders with Delhivery live tracking status"
           >
-            <span>{syncingAll ? '⏳' : '🚚'}</span> {syncingAll ? 'Syncing...' : 'Sync All Orders'}
+            <span>{syncingAll ? '⏳' : '🚚'}</span> {syncingAll ? 'Syncing...' : 'Sync All'}
           </button>
           <button
             onClick={loadOrders}
-            className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl border border-slate-200 transition-all flex items-center gap-1.5"
+            className="px-3.5 sm:px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl border border-slate-200 transition-all flex items-center justify-center gap-1.5"
           >
             <span>🔄</span> Refresh
           </button>
@@ -236,28 +236,28 @@ export default function BusinessOrders() {
       </div>
 
       {/* KPI Stats Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Orders</div>
-          <div className="text-2xl font-black text-slate-900 mt-1">{orderStats.total}</div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-3.5 sm:p-4 shadow-sm">
+          <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Orders</div>
+          <div className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{orderStats.total}</div>
         </div>
-        <div className="bg-white border border-blue-200 rounded-2xl p-4 shadow-sm bg-gradient-to-br from-white to-blue-50/30">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-blue-600">In Fulfillment</div>
-          <div className="text-2xl font-black text-blue-700 mt-1">{orderStats.active}</div>
+        <div className="bg-white border border-blue-200 rounded-2xl p-3.5 sm:p-4 shadow-sm bg-gradient-to-br from-white to-blue-50/30">
+          <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-blue-600">In Fulfillment</div>
+          <div className="text-xl sm:text-2xl font-black text-blue-700 mt-1">{orderStats.active}</div>
         </div>
-        <div className="bg-white border border-emerald-200 rounded-2xl p-4 shadow-sm bg-gradient-to-br from-white to-emerald-50/30">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-600">Delivered / Settled</div>
-          <div className="text-2xl font-black text-emerald-700 mt-1">{orderStats.delivered}</div>
+        <div className="bg-white border border-emerald-200 rounded-2xl p-3.5 sm:p-4 shadow-sm bg-gradient-to-br from-white to-emerald-50/30">
+          <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-600">Delivered</div>
+          <div className="text-xl sm:text-2xl font-black text-emerald-700 mt-1">{orderStats.delivered}</div>
         </div>
-        <div className="bg-white border border-rose-200 rounded-2xl p-4 shadow-sm bg-gradient-to-br from-white to-rose-50/30">
-          <div className="text-[11px] font-bold uppercase tracking-wider text-rose-600">Cancelled Orders</div>
-          <div className="text-2xl font-black text-rose-700 mt-1">{orderStats.cancelled}</div>
+        <div className="bg-white border border-rose-200 rounded-2xl p-3.5 sm:p-4 shadow-sm bg-gradient-to-br from-white to-rose-50/30">
+          <div className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-rose-600">Cancelled</div>
+          <div className="text-xl sm:text-2xl font-black text-rose-700 mt-1">{orderStats.cancelled}</div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
-        <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+      <div className="bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
           {[
             { id: 'ALL', label: 'All' },
             { id: 'NEW', label: 'New' },
@@ -270,7 +270,7 @@ export default function BusinessOrders() {
             <button
               key={st.id}
               onClick={() => setStatusFilter(st.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
                 statusFilter === st.id
                   ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
                   : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -284,17 +284,25 @@ export default function BusinessOrders() {
         <div className="relative w-full md:w-80">
           <input
             type="text"
-            placeholder="Search by Order #, Customer, Phone..."
+            placeholder="Search Order #, Customer, Phone..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
           />
           <span className="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 text-xs font-bold"
+            >
+              ✕
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Orders Table */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+      {/* DESKTOP ORDERS TABLE (hidden on mobile) */}
+      <div className="hidden md:block bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
@@ -590,6 +598,242 @@ export default function BusinessOrders() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* MOBILE CARDS VIEW (visible on small/medium screens) */}
+      <div className="block md:hidden space-y-3">
+        {loading ? (
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-400 font-medium">
+            Loading your orders...
+          </div>
+        ) : filteredOrders.length === 0 ? (
+          <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-400 italic">
+            No orders match your filter criteria.
+          </div>
+        ) : (
+          filteredOrders.map(o => {
+            const isExpanded = expandedId === o._id
+            const isCancelled = ['CANCELLED', 'RETURNED'].includes(o.status)
+            const displayStatus = o.status === 'PENDING_CASH_APPROVAL' ? 'NEW' : o.status
+            const badgeClass = statusStyles[o.status] || 'bg-slate-100 text-slate-700 border-slate-200'
+
+            return (
+              <div key={o._id} className="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+                {/* Header: Order ID + Status */}
+                <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
+                  <div>
+                    <div className="font-black text-slate-900 text-sm">#{o.orderNumber || o._id.slice(-6).toUpperCase()}</div>
+                    <div className="text-[10px] text-slate-400 font-medium">
+                      {o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}
+                    </div>
+                  </div>
+                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${badgeClass}`}>
+                    {displayStatus}
+                  </span>
+                </div>
+
+                {/* Customer and Earnings Row */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Customer</div>
+                    <div className="font-bold text-slate-800 truncate mt-0.5">{o.customer?.name || 'Customer'}</div>
+                    <div className="text-[11px] text-slate-500 font-medium">{o.customer?.phone || '—'}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Earnings</div>
+                    {isCancelled ? (
+                      <div className="mt-0.5">
+                        <span className="font-black text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded text-xs">₹0</span>
+                        <span className="text-[10px] text-slate-400 line-through ml-1">
+                          ₹{safeNumber(o.originalProductTotal || o.totalEstimate).toLocaleString()}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="mt-0.5">
+                        <span className="font-black text-slate-900 text-sm">
+                          ₹{safeNumber(o.storeRevenue || o.totalEstimate).toLocaleString()}
+                        </span>
+                        <div className="text-[10px] text-slate-400 font-medium">
+                          {o.items?.length || 0} unique item(s)
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Payment Badge & Toggle Details button */}
+                <div className="flex items-center justify-between pt-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">{o.paymentMethod || 'ONLINE'}</span>
+                    <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${
+                      o.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
+                    }`}>
+                      {o.paymentStatus}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => toggleExpand(o._id)}
+                    className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-indigo-600 bg-indigo-50/50 hover:bg-indigo-100/50 transition-all flex items-center gap-1"
+                  >
+                    <span>{isExpanded ? 'Hide Details ▲' : 'View Details ▼'}</span>
+                  </button>
+                </div>
+
+                {/* Mobile Expanded Section */}
+                {isExpanded && (
+                  <div className="pt-3 border-t border-slate-100 space-y-4">
+                    {/* Financial Summary */}
+                    {isCancelled ? (
+                      <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 space-y-1.5 text-xs">
+                        <div className="font-black text-rose-700">❌ Order Cancelled</div>
+                        <p className="text-rose-600 text-[11px] leading-relaxed">
+                          {o.refundReason ? `Reason: "${o.refundReason}"` : "This order was cancelled before delivery. Inventory was restored."}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 space-y-1.5 text-xs">
+                        <div className="flex justify-between text-slate-500">
+                          <span>Products Subtotal:</span>
+                          <span className="font-bold text-slate-800">₹{safeNumber(o.productTotal || o.totalEstimate).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between font-black text-slate-900 border-t border-slate-200 pt-1.5">
+                          <span>Net Seller Earnings:</span>
+                          <span className="text-indigo-600 font-black">₹{safeNumber(o.storeRevenue || o.totalEstimate).toLocaleString()}</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Shipping Address */}
+                    <div className="bg-slate-50 border border-slate-200/80 rounded-xl p-3 text-xs space-y-1">
+                      <div className="text-[10px] font-black uppercase tracking-wider text-slate-400">Shipping Address</div>
+                      <div className="font-bold text-slate-800">{o.customer?.name}</div>
+                      <div className="text-slate-600 text-[11px] leading-relaxed">
+                        {o.shippingAddress?.line1}
+                        {o.shippingAddress?.line2 && `, ${o.shippingAddress.line2}`}
+                        <br />
+                        {o.shippingAddress?.city}, {o.shippingAddress?.state} — {o.shippingAddress?.pincode}
+                      </div>
+                    </div>
+
+                    {/* Ordered Items */}
+                    <div>
+                      <div className="text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1.5">
+                        Items Ordered ({o.items?.length || 0})
+                      </div>
+                      <div className="space-y-2">
+                        {o.items?.map((it, idx) => (
+                          <div key={idx} className="flex items-center gap-2.5 bg-slate-50 border border-slate-200/80 rounded-xl p-2.5">
+                            <div className="w-10 h-10 border border-slate-200 rounded-lg overflow-hidden flex items-center justify-center bg-white flex-shrink-0">
+                              {it.image ? <img src={it.image} alt={it.name} className="w-full h-full object-contain p-0.5" /> : '📦'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs font-bold text-slate-900 truncate">{it.name}</div>
+                              {it.attributes && Object.keys(it.attributes).length > 0 && (
+                                <div className="text-[9px] text-indigo-600 font-bold uppercase tracking-wider">
+                                  {Object.entries(it.attributes instanceof Map ? Object.fromEntries(it.attributes) : it.attributes).map(([k,v])=>`${k}: ${v}`).join(' • ')}
+                                </div>
+                              )}
+                              <div className="text-[10px] text-slate-400 font-semibold">Qty: {it.quantity} × ₹{it.price}</div>
+                            </div>
+                            <div className="text-xs font-black text-slate-900">
+                              ₹{(it.price * it.quantity).toLocaleString()}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Delhivery & Fulfillment Actions */}
+                    <div className="space-y-2 pt-1 border-t border-slate-100">
+                      {o.shipping?.waybill && (
+                        <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-3 space-y-2 text-xs">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="text-[9px] text-blue-500 font-black uppercase tracking-wider">Delhivery Waybill</div>
+                              <div className="font-black text-blue-900 text-xs mt-0.5">{o.shipping.waybill}</div>
+                            </div>
+                            {o.shipping?.status && (
+                              <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-100 text-blue-800">
+                                {o.shipping.status}
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            <button
+                              onClick={() => handleSyncDelhiveryStatus(o._id)}
+                              disabled={actionLoading === `${o._id}-sync`}
+                              className="px-2.5 py-1 bg-indigo-600 text-white font-bold rounded-lg text-[11px] flex items-center gap-1 shadow-xs disabled:opacity-50"
+                            >
+                              <span>🔄</span> {actionLoading === `${o._id}-sync` ? "Syncing..." : "Sync"}
+                            </button>
+                            {o.shipping.trackingUrl && (
+                              <a
+                                href={o.shipping.trackingUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="px-2.5 py-1 bg-blue-600 text-white font-bold rounded-lg text-[11px]"
+                              >
+                                Track
+                              </a>
+                            )}
+                            <button
+                              onClick={() => handleDownloadLabel(o._id, o.shipping.waybill)}
+                              className="px-2.5 py-1 bg-white border border-blue-300 text-blue-700 font-bold rounded-lg text-[11px] flex items-center gap-1"
+                            >
+                              <span>🏷️</span> Thermal PDF
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex flex-wrap gap-2">
+                        {o.status === 'NEW' && (
+                          <button
+                            disabled={actionLoading === `${o._id}-CONFIRMED`}
+                            onClick={() => handleUpdateStatus(o._id, 'CONFIRMED')}
+                            className="flex-1 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm"
+                          >
+                            Confirm Order
+                          </button>
+                        )}
+
+                        {['CONFIRMED', 'PROCESSING'].includes(o.status) && (
+                          <button
+                            disabled={actionLoading === `${o._id}-pack`}
+                            onClick={() => handleMarkPacked(o._id)}
+                            className="flex-1 px-3 py-2 bg-amber-500 hover:bg-amber-400 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm"
+                          >
+                            Mark Packed
+                          </button>
+                        )}
+
+                        {['CONFIRMED', 'PACKED', 'PROCESSING'].includes(o.status) && !o.shipping?.waybill && (
+                          <button
+                            disabled={actionLoading === `${o._id}-shipment`}
+                            onClick={() => handleCreateShipment(o._id)}
+                            className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black uppercase tracking-wider rounded-xl transition-all shadow-sm"
+                          >
+                            {actionLoading === `${o._id}-shipment` ? 'Creating Shipment...' : 'Create Delhivery Shipment'}
+                          </button>
+                        )}
+
+                        {!['DELIVERED', 'FULFILLED', 'CANCELLED', 'SHIPPED', 'RETURNED'].includes(o.status) && (
+                          <button
+                            disabled={actionLoading === `${o._id}-cancel`}
+                            onClick={() => handleOpenCancel(o._id)}
+                            className="px-3 py-2 bg-white border border-rose-300 text-rose-600 hover:bg-rose-50 text-xs font-bold uppercase tracking-wider rounded-xl transition-all"
+                          >
+                            Cancel Order
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })
+        )}
       </div>
 
       {/* CANCEL ORDER MODAL */}

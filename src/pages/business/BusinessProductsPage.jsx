@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import api from '../../lib/api'
 import { useToast } from '../../components/Toast'
 import ConfirmModal from '../../components/ConfirmModal'
 import ImageUpload from '../../components/ImageUpload'
 import LoadingSpinner from '../../components/LoadingSpinner'
-import VariantManagerPanel from '../../components/panel/VariantManagerPanel'
 
 const emptyForm = {
   name: '',
@@ -29,13 +29,13 @@ const emptyForm = {
 
 export default function BusinessProductsPage() {
   const { notify } = useToast()
+  const navigate = useNavigate()
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [q, setQ] = useState('')
   const [form, setForm] = useState(emptyForm)
   const [editing, setEditing] = useState(null)
   const [toDelete, setToDelete] = useState(null)
-  const [managingVariants, setManagingVariants] = useState(null)
   const [showAdd, setShowAdd] = useState(false)
   const [brands, setBrands] = useState([])
   const [categories, setCategories] = useState([])
@@ -582,9 +582,13 @@ export default function BusinessProductsPage() {
                                 {p.category.name}
                               </span>
                             )}
-                            <span className="text-[10px] text-slate-400 font-mono">
-                              {p.variants?.length ? `${p.variants.length} Variants` : (p.sku || 'Simple Product')}
-                            </span>
+                            <Link
+                              to={`/business/variants?productId=${p._id}`}
+                              className="text-[10px] px-2 py-0.5 rounded-md font-bold bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors inline-flex items-center gap-1"
+                              title="Open in Variant Studio"
+                            >
+                              <span>⚡</span> {p.variants?.length ? `${p.variants.length} Variants` : '0 Variants'}
+                            </Link>
                           </div>
                         </div>
                       </div>
@@ -630,13 +634,13 @@ export default function BusinessProductsPage() {
                     {/* Action buttons */}
                     <td className="px-6 py-4 text-right">
                       <div className="inline-flex items-center gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => setManagingVariants(p)}
-                          className="px-2.5 py-1 text-xs font-bold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 transition-colors"
+                        <Link
+                          to={`/business/variants?productId=${p._id}`}
+                          className="px-2.5 py-1 text-xs font-bold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-100 transition-colors inline-flex items-center gap-1"
+                          title="Manage Variants Studio"
                         >
-                          Variants
-                        </button>
+                          <span>⚡</span> Variants
+                        </Link>
                         <button
                           type="button"
                           onClick={() => openEdit(p)}
@@ -704,20 +708,24 @@ export default function BusinessProductsPage() {
                       {stock <= 0 ? 'Out of Stock' : `${stock} left`}
                     </span>
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-1 font-mono">
-                    {p.variants?.length ? `${p.variants.length} Variants` : 'Simple Product'}
+                  <div className="mt-1">
+                    <Link
+                      to={`/business/variants?productId=${p._id}`}
+                      className="text-[10px] px-2 py-0.5 rounded-md font-bold bg-indigo-50 text-indigo-700 inline-flex items-center gap-1"
+                    >
+                      <span>⚡</span> {p.variants?.length ? `${p.variants.length} Variants` : '0 Variants'}
+                    </Link>
                   </div>
                 </div>
               </div>
 
               <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setManagingVariants(p)}
-                  className="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100"
+                <Link
+                  to={`/business/variants?productId=${p._id}`}
+                  className="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100 inline-flex items-center gap-1"
                 >
-                  Variants
-                </button>
+                  <span>⚡</span> Variants
+                </Link>
                 <button
                   type="button"
                   onClick={() => openEdit(p)}
@@ -845,16 +853,6 @@ export default function BusinessProductsPage() {
             </div>
           </form>
         </div>
-      )}
-
-      {/* Variant Manager Drawer */}
-      {managingVariants && (
-        <VariantManagerPanel
-          product={managingVariants}
-          apiPrefix="/api/stores/products"
-          onChanged={load}
-          onClose={() => setManagingVariants(null)}
-        />
       )}
 
       {/* Confirm Delete */}
