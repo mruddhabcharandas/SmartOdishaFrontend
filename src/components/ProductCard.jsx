@@ -313,7 +313,9 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           <img
             src={getImageUrl(p.images[0].url, 400)}
             alt={p.name}
-            loading="lazy"
+            loading={typeof index === 'number' && index < 4 ? 'eager' : 'lazy'}
+            fetchPriority={typeof index === 'number' && index < 2 ? 'high' : 'auto'}
+            decoding="async"
           />
         ) : (
           <span style={{ fontSize: '36px', opacity: '0.2' }}>📦</span>

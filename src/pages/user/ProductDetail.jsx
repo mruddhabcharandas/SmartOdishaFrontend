@@ -1227,9 +1227,12 @@ export default function ProductDetail() {
                     src={getImageUrl(imgs[activeImg], 800)}
                     alt={p.name}
                     className="pd-stage-img"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
                     onLoad={() => setImgLoading(false)}
                     onError={() => setImgLoading(false)}
-                    style={{ display: imgLoading ? 'none' : 'block' }}
+                    style={{ opacity: imgLoading ? 0 : 1, transition: 'opacity 0.2s ease-in-out' }}
                   />
                 : <div className="pd-stage-no-img">
                     <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
