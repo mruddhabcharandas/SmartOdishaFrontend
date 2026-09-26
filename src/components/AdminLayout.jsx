@@ -276,6 +276,16 @@ export default function AdminLayout() {
                   Seller Payouts
                 </>
               ), 'stores')}
+              {link('/admin/tickets', (
+                <>
+                  <span className="inline-block w-4 h-4 mr-2 align-middle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                    </svg>
+                  </span>
+                  Support Tickets
+                </>
+              ), null)}
               {link('/admin/staff', (
                 <>
                   <span className="inline-block w-4 h-4 mr-2 align-middle">

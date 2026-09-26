@@ -79,6 +79,23 @@ function getETA(createdAt) {
   return d
 }
 
+const FEEDBACK_TAG_OPTIONS = [
+  "⚡ Super Fast Delivery",
+  "📦 Safe & Eco Packaging",
+  "✨ Authentic Quality",
+  "💰 Value for Money",
+  "🤝 Polite Delivery Person",
+  "💯 Exactly as Described"
+]
+
+const RATING_EMOTIONS = {
+  1: { text: "Very Poor", emoji: "😞", color: "#dc2626" },
+  2: { text: "Poor", emoji: "🙁", color: "#ea580c" },
+  3: { text: "Good", emoji: "😊", color: "#d97706" },
+  4: { text: "Very Good", emoji: "😃", color: "#2563eb" },
+  5: { text: "Excellent!", emoji: "🤩", color: "#059669" }
+}
+
 export default function OrderHistory() {
   const [orders, setOrders]       = useState([])
   const [loading, setLoading]     = useState(true)
@@ -89,13 +106,29 @@ export default function OrderHistory() {
   const { token } = useAuth()
   const { notify } = useToast()
 
-  // Support Help Modal States
-  const [showHelpModal, setShowHelpModal] = useState(false)
-  const [helpOrder, setHelpOrder] = useState(null)
-  const [helpCategory, setHelpCategory] = useState('Order Status')
-  const [helpSubject, setHelpSubject] = useState('')
-  const [helpDescription, setHelpDescription] = useState('')
-  const [submittingHelp, setSubmittingHelp] = useState(false)
+  // Support Tickets States
+  const [myTickets, setMyTickets] = useState([])
+  const [showTicketsModal, setShowTicketsModal] = useState(false)
+  const [ticketTab, setTicketTab] = useState('list') // 'list' | 'detail' | 'create'
+  const [activeTicket, setActiveTicket] = useState(null)
+  const [ticketReply, setTicketReply] = useState('')
+  const [sendingReply, setSendingReply] = useState(false)
+  const [submittingTicket, setSubmittingTicket] = useState(false)
+  const [resolvingTicket, setResolvingTicket] = useState(false)
+  const [ticketCategory, setTicketCategory] = useState('Order Issue')
+  const [ticketSubject, setTicketSubject] = useState('')
+  const [ticketDescription, setTicketDescription] = useState('')
+  const [ticketOrderId, setTicketOrderId] = useState('')
+
+  // Order Delivery Feedback Modal States
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false)
+  const [feedbackOrder, setFeedbackOrder] = useState(null)
+  const [feedbackRating, setFeedbackRating] = useState(5)
+  const [feedbackHover, setFeedbackHover] = useState(0)
+  const [feedbackTags, setFeedbackTags] = useState([])
+  const [feedbackComment, setFeedbackComment] = useState('')
+  const [itemRatings, setItemRatings] = useState({})
+  const [submittingFeedback, setSubmittingFeedback] = useState(false)
 
   // Cancellation Modal States
   const [showCancelModal, setShowCancelModal] = useState(false)
@@ -111,37 +144,155 @@ export default function OrderHistory() {
     })
   }
 
+  const fetchMyTickets = async () => {
+    try {
+      const { data } = await api.get('/api/support-tickets/my-tickets')
+      setMyTickets(Array.isArray(data) ? data : [])
+    } catch (e) {
+      console.warn('Could not fetch support tickets:', e)
+    }
+  }
+
   useEffect(() => {
     if (!token) { navigate('/login', { state: { from: location.pathname + location.search } }); return }
     api.get('/api/orders/my')
       .then(({ data }) => { setOrders(data); setLoading(false) })
       .catch(() => setLoading(false))
+    fetchMyTickets()
   }, [token, navigate])
 
   const handleOpenHelp = (order) => {
-    setHelpOrder(order)
-    setHelpCategory('Order Status')
-    setHelpSubject(`Issue with Order #${order.orderNumber || order._id.slice(-6).toUpperCase()}`)
-    setHelpDescription('')
-    setShowHelpModal(true)
+    const oId = order ? order._id : ''
+    setTicketOrderId(oId)
+    setTicketCategory('Order Issue')
+    setTicketSubject(order ? `Help with Order #${order.orderNumber || order._id.slice(-6).toUpperCase()}` : '')
+    setTicketDescription('')
+    setTicketTab('create')
+    setShowTicketsModal(true)
   }
 
-  const handleCreateSupportTicket = async (e) => {
+  const handleOpenTicketsHub = () => {
+    fetchMyTickets()
+    setTicketTab('list')
+    setShowTicketsModal(true)
+  }
+
+  const handleSelectTicket = (t) => {
+    setActiveTicket(t)
+    setTicketReply('')
+    setTicketTab('detail')
+  }
+
+  const handleSendTicketReply = async (e) => {
     e.preventDefault()
-    setSubmittingHelp(true)
+    if (!ticketReply.trim() || !activeTicket) return
+    setSendingReply(true)
     try {
-      await api.post('/api/support-tickets', {
-        subject: helpSubject,
-        description: helpDescription,
-        category: helpCategory,
-        orderId: helpOrder._id
+      const { data } = await api.post(`/api/support-tickets/${activeTicket._id}/messages`, {
+        message: ticketReply.trim()
+      })
+      setActiveTicket(data)
+      setMyTickets(prev => prev.map(t => t._id === data._id ? data : t))
+      setTicketReply('')
+      notify('Reply sent to support team', 'success')
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to send reply', 'error')
+    } finally {
+      setSendingReply(false)
+    }
+  }
+
+  const handleResolveTicket = async () => {
+    if (!activeTicket) return
+    setResolvingTicket(true)
+    try {
+      const { data } = await api.put(`/api/support-tickets/${activeTicket._id}/resolve`)
+      setActiveTicket(data)
+      setMyTickets(prev => prev.map(t => t._id === data._id ? data : t))
+      notify('Ticket marked as resolved. Thank you!', 'success')
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to resolve ticket', 'error')
+    } finally {
+      setResolvingTicket(false)
+    }
+  }
+
+  const handleCreateTicket = async (e) => {
+    e.preventDefault()
+    if (!ticketSubject.trim() || !ticketDescription.trim()) return
+    setSubmittingTicket(true)
+    try {
+      const { data } = await api.post('/api/support-tickets', {
+        subject: ticketSubject.trim(),
+        description: ticketDescription.trim(),
+        category: ticketCategory,
+        orderId: ticketOrderId || undefined
       })
       notify('Support ticket raised successfully!', 'success')
-      setShowHelpModal(false)
+      setMyTickets(prev => [data, ...prev])
+      setActiveTicket(data)
+      setTicketTab('detail')
+      setTicketSubject('')
+      setTicketDescription('')
     } catch (err) {
       notify(err?.response?.data?.error || 'Failed to create support ticket', 'error')
     } finally {
-      setSubmittingHelp(false)
+      setSubmittingTicket(false)
+    }
+  }
+
+  // Feedback Handlers
+  const handleOpenFeedback = (order, defaultRating = 5) => {
+    setFeedbackOrder(order)
+    setFeedbackRating(order.feedbackRating || defaultRating)
+    setFeedbackHover(0)
+    setFeedbackTags(Array.isArray(order.feedbackTags) ? [...order.feedbackTags] : [])
+    setFeedbackComment(order.feedbackComment || '')
+    setItemRatings({})
+    setShowFeedbackModal(true)
+  }
+
+  const handleToggleTag = (tag) => {
+    setFeedbackTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    )
+  }
+
+  const handleSubmitFeedback = async (e) => {
+    e.preventDefault()
+    if (!feedbackOrder) return
+    setSubmittingFeedback(true)
+    try {
+      const { data } = await api.post(`/api/orders/${feedbackOrder._id}/feedback`, {
+        rating: feedbackRating,
+        comment: feedbackComment,
+        tags: feedbackTags
+      })
+
+      // Also submit ratings for any order items rated in the modal
+      for (const [pid, r] of Object.entries(itemRatings)) {
+        if (r > 0) {
+          try {
+            await api.post(`/api/products/${pid}/reviews`, { rating: r, comment: '' })
+            markProductReviewed(pid)
+          } catch (e) {}
+        }
+      }
+
+      setOrders(prev => prev.map(o => o._id === feedbackOrder._id ? {
+        ...o,
+        feedbackRating: data.feedbackRating,
+        feedbackComment: data.feedbackComment,
+        feedbackTags: data.feedbackTags,
+        feedbackAt: data.feedbackAt
+      } : o))
+
+      notify('Thank you for rating your delivery!', 'success')
+      setShowFeedbackModal(false)
+    } catch (err) {
+      notify(err?.response?.data?.error || 'Failed to submit feedback', 'error')
+    } finally {
+      setSubmittingFeedback(false)
     }
   }
 
@@ -157,7 +308,6 @@ export default function OrderHistory() {
     try {
       await api.post(`/api/orders/${cancellingId}/cancel-customer`, { reason: cancelReason })
       notify('Order cancelled successfully! Your refund amount will be credited to your bank account in 2-3 days.', 'success')
-      // Reload orders
       const { data } = await api.get('/api/orders/my')
       setOrders(data)
       setShowCancelModal(false)
@@ -597,6 +747,48 @@ export default function OrderHistory() {
         .oh-modal-btn.save { background: #fb641b; color: white; }
         .oh-modal-btn.save:hover { background: #e85a17; }
 
+        /* Support Tickets & Feedback Additions */
+        .oh-ticket-btn {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 8px 16px; border-radius: 100px;
+          background: rgba(79, 70, 229, 0.08); border: 1px solid rgba(79, 70, 229, 0.2);
+          color: #4f46e5; font-size: 12px; font-weight: 700; white-space: nowrap;
+          cursor: pointer; transition: all 0.2s; font-family: inherit;
+        }
+        .oh-ticket-btn:hover {
+          background: #4f46e5; color: white; border-color: #4f46e5;
+          box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);
+        }
+        .oh-ticket-badge {
+          background: #ef4444; color: white;
+          font-size: 10px; font-weight: 800; border-radius: 999px;
+          padding: 2px 7px; line-height: 1;
+        }
+
+        .oh-tag-chip {
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 6px 12px; border-radius: 999px;
+          font-size: 12px; font-weight: 600;
+          cursor: pointer; transition: all 0.15s;
+          border: 1px solid #e2e8f0; background: white; color: #475569;
+          user-select: none;
+        }
+        .oh-tag-chip.active {
+          background: #eff6ff; border-color: #3b82f6; color: #1d4ed8; font-weight: 700;
+        }
+        .oh-tag-chip:hover {
+          border-color: #93c5fd;
+        }
+
+        .oh-tab-item {
+          padding: 10px 16px; font-size: 13px; font-weight: 700;
+          cursor: pointer; border-bottom: 2px solid transparent;
+          color: #64748b; transition: all 0.15s;
+        }
+        .oh-tab-item.active {
+          color: #4f46e5; border-bottom-color: #4f46e5;
+        }
+
         @keyframes ohUp{
           from{opacity:0;transform:translateY(12px);}
           to  {opacity:1;transform:translateY(0);}
@@ -613,14 +805,27 @@ export default function OrderHistory() {
               <h1 className="oh-h1">Order <span>History</span></h1>
               <p className="oh-sub font-medium">Track, manage and request support for your orders.</p>
             </div>
-            {orders.length > 0 && (
-              <div className="oh-count-pill">
-                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/>
-                </svg>
-                {orders.length} Order{orders.length !== 1 ? 's' : ''}
-              </div>
-            )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="oh-ticket-btn"
+                onClick={handleOpenTicketsHub}
+              >
+                <span style={{ fontSize: 15 }}>🎧</span>
+                <span>Support Tickets</span>
+                {myTickets.length > 0 && (
+                  <span className="oh-ticket-badge">{myTickets.length}</span>
+                )}
+              </button>
+              {orders.length > 0 && (
+                <div className="oh-count-pill">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/>
+                  </svg>
+                  {orders.length} Order{orders.length !== 1 ? 's' : ''}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* ── EMPTY ── */}
@@ -913,49 +1118,131 @@ export default function OrderHistory() {
                           </div>
                         </div>
 
-                        {/* RATING */}
-                        {order.status === 'FULFILLED' && !order.feedbackRating && (
+                        {/* DELIVERY FEEDBACK & RATING */}
+                        {['DELIVERED', 'FULFILLED'].includes(order.status) && (
                           <>
                             <div className="oh-divider" />
                             <div>
-                              <div className="oh-section-label">Rate This Delivery</div>
-                              <div className="oh-stars">
-                                {[1,2,3,4,5].map(star => (
+                              <div className="oh-section-label" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
+                                <span>Delivery Experience & Feedback</span>
+                                {order.feedbackRating && (
                                   <button
-                                    key={star}
-                                    className={`oh-star ${star <= 3 ? 'low' : 'high'}`}
-                                    title={`${star} Star`}
-                                    onClick={async () => {
-                                      try {
-                                        const { data } = await api.post(`/api/orders/${order._id}/feedback`, { rating: star })
-                                        setOrders(prev => prev.map(o => o._id === order._id ? { ...o, feedbackRating: data.feedbackRating } : o))
-                                      } catch {}
-                                    }}
+                                    type="button"
+                                    onClick={() => handleOpenFeedback(order, order.feedbackRating)}
+                                    style={{ background: 'none', border: 'none', color: '#2563eb', fontSize: 12, fontWeight: 700, cursor: 'pointer', textDecoration: 'underline' }}
                                   >
-                                    <svg viewBox="0 0 24 24" fill="currentColor">
-                                      <path d="M12 .587l3.668 7.431L24 9.748l-6 5.848L19.335 24 12 19.771 4.665 24 6 15.596 0 9.748l8.332-1.73z"/>
-                                    </svg>
+                                    Edit Review
                                   </button>
-                                ))}
+                                )}
                               </div>
-                            </div>
-                          </>
-                        )}
 
-                        {order.feedbackRating && (
-                          <>
-                            <div className="oh-divider" />
-                            <div>
-                              <div className="oh-section-label">Your Rating</div>
-                              <div className="oh-stars">
-                                {[1,2,3,4,5].map(star => (
-                                  <div key={star} className={`oh-star ${star <= 3 ? 'low' : 'high'}`} style={{ cursor:'default' }}>
-                                    <svg viewBox="0 0 24 24" fill={star <= order.feedbackRating ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5">
-                                      <path d="M12 .587l3.668 7.431L24 9.748l-6 5.848L19.335 24 12 19.771 4.665 24 6 15.596 0 9.748l8.332-1.73z"/>
-                                    </svg>
+                              {order.feedbackRating ? (
+                                <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: 16 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                                    <div style={{ display: 'flex', gap: 4 }}>
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <svg
+                                          key={star}
+                                          viewBox="0 0 24 24"
+                                          fill={star <= order.feedbackRating ? '#f59e0b' : '#e2e8f0'}
+                                          width="18"
+                                          height="18"
+                                        >
+                                          <path d="M12 .587l3.668 7.431L24 9.748l-6 5.848L19.335 24 12 19.771 4.665 24 6 15.596 0 9.748l8.332-1.73z" />
+                                        </svg>
+                                      ))}
+                                    </div>
+                                    <span style={{ fontSize: 13, fontWeight: 700, color: RATING_EMOTIONS[order.feedbackRating]?.color || '#059669' }}>
+                                      {order.feedbackRating}/5 — {RATING_EMOTIONS[order.feedbackRating]?.text || 'Delivered'} {RATING_EMOTIONS[order.feedbackRating]?.emoji}
+                                    </span>
+                                    {order.feedbackAt && (
+                                      <span style={{ fontSize: 11, color: '#94a3b8', marginLeft: 'auto' }}>
+                                        Reviewed on {fmtDate(order.feedbackAt)}
+                                      </span>
+                                    )}
                                   </div>
-                                ))}
-                              </div>
+
+                                  {Array.isArray(order.feedbackTags) && order.feedbackTags.length > 0 && (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 10 }}>
+                                      {order.feedbackTags.map((t, idx) => (
+                                        <span
+                                          key={idx}
+                                          style={{
+                                            fontSize: 11,
+                                            fontWeight: 600,
+                                            padding: '3px 10px',
+                                            borderRadius: 999,
+                                            background: '#ecfdf5',
+                                            color: '#065f46',
+                                            border: '1px solid #a7f3d0'
+                                          }}
+                                        >
+                                          {t}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+
+                                  {order.feedbackComment && (
+                                    <div style={{ marginTop: 10, fontSize: 13, color: '#334155', fontStyle: 'italic', background: 'white', padding: '10px 14px', borderRadius: 6, border: '1px solid #f1f5f9' }}>
+                                      "{order.feedbackComment}"
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div style={{ background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)', border: '1px solid #bbf7d0', borderRadius: 8, padding: 16 }}>
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                                    <div>
+                                      <div style={{ fontSize: 14, fontWeight: 700, color: '#166534', display: 'flex', alignItems: 'center', gap: 6 }}>
+                                        <span>🎉 Order Delivered!</span>
+                                        <span style={{ fontSize: 12, fontWeight: 500, color: '#15803d' }}>How was your delivery & product experience?</span>
+                                      </div>
+                                      <div style={{ fontSize: 12, color: '#166534', marginTop: 2 }}>
+                                        Rate now to share feedback with our artisans and delivery teams.
+                                      </div>
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                                      <div style={{ display: 'flex', gap: 4 }}>
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                          <button
+                                            key={star}
+                                            type="button"
+                                            title={`Rate ${star} Star`}
+                                            onClick={() => handleOpenFeedback(order, star)}
+                                            style={{
+                                              background: 'white',
+                                              border: '1px solid #cbd5e1',
+                                              borderRadius: 4,
+                                              width: 32,
+                                              height: 32,
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              justifyContent: 'center',
+                                              cursor: 'pointer',
+                                              transition: 'all .15s'
+                                            }}
+                                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#f59e0b'; e.currentTarget.style.transform = 'scale(1.1)'; }}
+                                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#cbd5e1'; e.currentTarget.style.transform = 'scale(1)'; }}
+                                          >
+                                            <svg viewBox="0 0 24 24" fill="#f59e0b" width="16" height="16">
+                                              <path d="M12 .587l3.668 7.431L24 9.748l-6 5.848L19.335 24 12 19.771 4.665 24 6 15.596 0 9.748l8.332-1.73z" />
+                                            </svg>
+                                          </button>
+                                        ))}
+                                      </div>
+                                      <button
+                                        type="button"
+                                        className="oh-btn"
+                                        style={{ background: '#16a34a', color: 'white', padding: '8px 14px', fontSize: 11 }}
+                                        onClick={() => handleOpenFeedback(order, 5)}
+                                      >
+                                        ⭐ Rate Order
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </>
                         )}
@@ -965,6 +1252,16 @@ export default function OrderHistory() {
                         <div>
                           <div className="oh-section-label">Actions</div>
                           <div className="oh-action-row">
+                            {['DELIVERED', 'FULFILLED'].includes(order.status) && (
+                              <button
+                                className="oh-btn outline"
+                                style={{ borderColor: '#16a34a', color: '#16a34a', background: '#f0fdf4' }}
+                                onClick={() => handleOpenFeedback(order, order.feedbackRating || 5)}
+                              >
+                                ⭐ {order.feedbackRating ? 'Edit Review' : 'Rate & Review'}
+                              </button>
+                            )}
+
                             {order.paymentStatus === 'PAID' && order.billId && (
                               <>
                                 <button className="oh-btn green" onClick={() => {
@@ -994,7 +1291,7 @@ export default function OrderHistory() {
                             )}
 
                             <button className="oh-btn outline" onClick={() => handleOpenHelp(order)}>
-                              Need Help?
+                              🎧 Support Ticket
                             </button>
 
                             {canCancel && (
@@ -1019,56 +1316,487 @@ export default function OrderHistory() {
         </div>
       </div>
 
-      {/* HELP TICKET MODAL */}
-      {showHelpModal && helpOrder && (
+      {/* SUPPORT TICKETS HUB MODAL */}
+      {showTicketsModal && (
         <div className="oh-modal-overlay">
-          <div className="oh-modal">
-            <div className="oh-modal-header">
-              <div className="oh-modal-title">Need Help with Order #{helpOrder.orderNumber || helpOrder._id.slice(-6).toUpperCase()}</div>
-              <button className="oh-modal-close" onClick={() => setShowHelpModal(false)}>×</button>
-            </div>
-            <form onSubmit={handleCreateSupportTicket}>
-              <div className="oh-modal-body">
-                <div className="oh-form-group">
-                  <label className="oh-form-label">Category</label>
-                  <select 
-                    className="oh-form-input" 
-                    value={helpCategory} 
-                    onChange={e => setHelpCategory(e.target.value)}
-                  >
-                    <option value="Order Status">Order Status Query</option>
-                    <option value="Delivery Issue">Delivery Issues</option>
-                    <option value="Payment Issue">Payment/Refund Issues</option>
-                    <option value="Return Request">Return/Exchange Request</option>
-                    <option value="Other">Other Query</option>
-                  </select>
-                </div>
-                <div className="oh-form-group">
-                  <label className="oh-form-label">Subject</label>
-                  <input 
-                    type="text" 
-                    className="oh-form-input" 
-                    value={helpSubject} 
-                    onChange={e => setHelpSubject(e.target.value)} 
-                    required 
-                  />
-                </div>
-                <div className="oh-form-group">
-                  <label className="oh-form-label">Describe your issue</label>
-                  <textarea 
-                    className="oh-form-input" 
-                    rows="4" 
-                    value={helpDescription} 
-                    onChange={e => setHelpDescription(e.target.value)} 
-                    placeholder="Provide details of your query so our support team can assist you." 
-                    required
-                  />
+          <div className="oh-modal" style={{ maxWidth: 640 }}>
+            {/* Modal Header */}
+            <div className="oh-modal-header" style={{ padding: '14px 20px', background: '#f8fafc' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontSize: 18 }}>🎧</span>
+                <div>
+                  <div className="oh-modal-title" style={{ fontSize: 16 }}>Support Helpdesk</div>
+                  <div style={{ fontSize: 11, color: '#64748b' }}>We're here to assist with your orders, returns & payments</div>
                 </div>
               </div>
+              <button className="oh-modal-close" onClick={() => setShowTicketsModal(false)}>×</button>
+            </div>
+
+            {/* Modal Tabs */}
+            <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', background: '#fafafa', padding: '0 16px' }}>
+              <button
+                type="button"
+                className={`oh-tab-item${ticketTab === 'list' || ticketTab === 'detail' ? ' active' : ''}`}
+                onClick={() => setTicketTab('list')}
+              >
+                My Tickets ({myTickets.length})
+              </button>
+              <button
+                type="button"
+                className={`oh-tab-item${ticketTab === 'create' ? ' active' : ''}`}
+                onClick={() => {
+                  setTicketTab('create')
+                  if (!ticketSubject && orders.length > 0) {
+                    setTicketOrderId(orders[0]._id)
+                    setTicketSubject(`Help with Order #${orders[0].orderNumber || orders[0]._id.slice(-6).toUpperCase()}`)
+                  }
+                }}
+              >
+                ➕ Raise New Ticket
+              </button>
+            </div>
+
+            <div className="oh-modal-body" style={{ maxHeight: '65vh', overflowY: 'auto', padding: '18px 20px' }}>
+              {/* TAB 1: TICKETS LIST */}
+              {ticketTab === 'list' && (
+                <div>
+                  {myTickets.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '36px 12px' }}>
+                      <div style={{ fontSize: 36, marginBottom: 8 }}>🎫</div>
+                      <div style={{ fontWeight: 700, fontSize: 15, color: '#1e293b' }}>No Support Tickets</div>
+                      <p style={{ fontSize: 13, color: '#64748b', maxWidth: 360, margin: '6px auto 16px' }}>
+                        You don't have any support queries. Have an issue with an order, delivery or refund?
+                      </p>
+                      <button
+                        type="button"
+                        className="oh-btn violet"
+                        onClick={() => setTicketTab('create')}
+                      >
+                        ➕ Raise a Support Ticket
+                      </button>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                      {myTickets.map((t) => {
+                        const isResolved = t.status === 'Resolved' || t.status === 'Closed'
+                        const statusColors = {
+                          Open: { bg: '#fef3c7', text: '#92400e', border: '#fde68a' },
+                          'In Progress': { bg: '#eff6ff', text: '#1e40af', border: '#bfdbfe' },
+                          Resolved: { bg: '#ecfdf5', text: '#065f46', border: '#a7f3d0' },
+                          Closed: { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1' }
+                        }
+                        const sc = statusColors[t.status] || statusColors.Open
+
+                        return (
+                          <div
+                            key={t._id}
+                            onClick={() => handleSelectTicket(t)}
+                            style={{
+                              border: '1px solid #e2e8f0',
+                              borderRadius: 8,
+                              padding: '14px 16px',
+                              cursor: 'pointer',
+                              background: 'white',
+                              transition: 'all 0.15s'
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#4f46e5'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.transform = 'translateY(0)' }}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 4 }}>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: '#4f46e5', textTransform: 'uppercase' }}>
+                                {t.category}
+                              </span>
+                              <span
+                                style={{
+                                  fontSize: 10,
+                                  fontWeight: 700,
+                                  padding: '2px 8px',
+                                  borderRadius: 999,
+                                  background: sc.bg,
+                                  color: sc.text,
+                                  border: `1px solid ${sc.border}`
+                                }}
+                              >
+                                {t.status}
+                              </span>
+                            </div>
+                            <div style={{ fontWeight: 700, fontSize: 14, color: '#0f172a', marginBottom: 6 }}>
+                              {t.subject}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 12, color: '#64748b' }}>
+                              <span>
+                                {t.order?.orderNumber ? `Order #${t.order.orderNumber}` : (t.order ? `Order #${t.order._id?.slice(-6).toUpperCase()}` : 'General Inquiry')}
+                              </span>
+                              <span>{fmtDate(t.createdAt)} · {t.messages?.length || 0} msg{(t.messages?.length !== 1 ? 's' : '')}</span>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* TAB 2: TICKET DETAIL & CHAT */}
+              {ticketTab === 'detail' && activeTicket && (
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                    <button
+                      type="button"
+                      onClick={() => setTicketTab('list')}
+                      style={{ background: 'none', border: 'none', color: '#4f46e5', fontSize: 12, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+                    >
+                      ← Back to tickets
+                    </button>
+                    {activeTicket.status !== 'Resolved' && activeTicket.status !== 'Closed' && (
+                      <button
+                        type="button"
+                        onClick={handleResolveTicket}
+                        disabled={resolvingTicket}
+                        style={{
+                          background: '#ecfdf5',
+                          border: '1px solid #a7f3d0',
+                          color: '#065f46',
+                          fontSize: 11,
+                          fontWeight: 700,
+                          padding: '4px 10px',
+                          borderRadius: 6,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {resolvingTicket ? 'Resolving...' : '✓ Mark as Resolved'}
+                      </button>
+                    )}
+                  </div>
+
+                  <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '12px 16px', marginBottom: 14 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: '#e0e7ff', color: '#4338ca' }}>
+                        {activeTicket.category}
+                      </span>
+                      <span style={{ fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 999, background: activeTicket.status === 'Resolved' ? '#dcfce7' : '#fef3c7', color: activeTicket.status === 'Resolved' ? '#15803d' : '#b45309' }}>
+                        {activeTicket.status}
+                      </span>
+                    </div>
+                    <div style={{ fontWeight: 800, fontSize: 15, color: '#0f172a' }}>{activeTicket.subject}</div>
+                    <div style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
+                      Created on {fmtIST(activeTicket.createdAt)}
+                    </div>
+                  </div>
+
+                  {/* Conversation thread */}
+                  <div style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.04em' }}>
+                    Conversation History
+                  </div>
+                  <div
+                    style={{
+                      background: '#fff',
+                      border: '1px solid #e2e8f0',
+                      borderRadius: 8,
+                      padding: 14,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 12,
+                      maxHeight: 280,
+                      overflowY: 'auto'
+                    }}
+                  >
+                    {activeTicket.messages?.map((msg, i) => {
+                      const isAdmin = msg.senderModel === 'Admin'
+                      return (
+                        <div
+                          key={i}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: isAdmin ? 'flex-start' : 'flex-end',
+                            gap: 3
+                          }}
+                        >
+                          <div style={{ fontSize: 10, fontWeight: 700, color: isAdmin ? '#4f46e5' : '#64748b' }}>
+                            {isAdmin ? '🎧 Support Team' : 'You'}
+                          </div>
+                          <div
+                            style={{
+                              maxWidth: '85%',
+                              padding: '10px 14px',
+                              borderRadius: isAdmin ? '4px 14px 14px 14px' : '14px 4px 14px 14px',
+                              background: isAdmin ? '#f1f5f9' : '#4f46e5',
+                              color: isAdmin ? '#1e293b' : 'white',
+                              fontSize: 13,
+                              lineHeight: 1.45,
+                              wordBreak: 'break-word'
+                            }}
+                          >
+                            {msg.message}
+                          </div>
+                          <div style={{ fontSize: 10, color: '#94a3b8' }}>{fmtIST(msg.createdAt)}</div>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Reply Input Form */}
+                  <form onSubmit={handleSendTicketReply} style={{ marginTop: 12 }}>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <input
+                        type="text"
+                        className="oh-form-input"
+                        placeholder="Type your message to support..."
+                        value={ticketReply}
+                        onChange={(e) => setTicketReply(e.target.value)}
+                        required
+                      />
+                      <button
+                        type="submit"
+                        className="oh-btn violet"
+                        style={{ padding: '0 18px', flexShrink: 0 }}
+                        disabled={sendingReply}
+                      >
+                        {sendingReply ? '...' : 'Send'}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* TAB 3: CREATE TICKET FORM */}
+              {ticketTab === 'create' && (
+                <form onSubmit={handleCreateTicket}>
+                  {orders.length > 0 && (
+                    <div className="oh-form-group">
+                      <label className="oh-form-label">Related Order (Optional)</label>
+                      <select
+                        className="oh-form-input"
+                        value={ticketOrderId}
+                        onChange={(e) => {
+                          const val = e.target.value
+                          setTicketOrderId(val)
+                          if (val) {
+                            const o = orders.find(x => x._id === val)
+                            if (o) setTicketSubject(`Help with Order #${o.orderNumber || o._id.slice(-6).toUpperCase()}`)
+                          }
+                        }}
+                      >
+                        <option value="">General Query (No specific order)</option>
+                        {orders.map((o) => (
+                          <option key={o._id} value={o._id}>
+                            Order #{o.orderNumber || o._id.slice(-6).toUpperCase()} — {fmtDate(o.createdAt)} (₹{Math.round(safeNumber(o.totalEstimate)).toLocaleString()})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+
+                  <div className="oh-form-group">
+                    <label className="oh-form-label">Query Category</label>
+                    <select
+                      className="oh-form-input"
+                      value={ticketCategory}
+                      onChange={(e) => setTicketCategory(e.target.value)}
+                    >
+                      <option value="Order Issue">Order Status / Delivery Issue</option>
+                      <option value="Product Issue">Product Quality / Damage Query</option>
+                      <option value="Payment Issue">Payment & Refund Queries</option>
+                      <option value="Return/Refund">Return or Exchange Request</option>
+                      <option value="General Query">General Customer Support</option>
+                      <option value="Other">Other Query</option>
+                    </select>
+                  </div>
+
+                  <div className="oh-form-group">
+                    <label className="oh-form-label">Subject</label>
+                    <input
+                      type="text"
+                      className="oh-form-input"
+                      value={ticketSubject}
+                      onChange={(e) => setTicketSubject(e.target.value)}
+                      placeholder="e.g. Where is my delivery? / Damaged item received"
+                      required
+                    />
+                  </div>
+
+                  <div className="oh-form-group">
+                    <label className="oh-form-label">Detailed Description</label>
+                    <textarea
+                      className="oh-form-input"
+                      rows="4"
+                      value={ticketDescription}
+                      onChange={(e) => setTicketDescription(e.target.value)}
+                      placeholder="Explain what happened in detail so our customer happiness team can help you resolve it quickly..."
+                      required
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>
+                    <button type="button" className="oh-btn outline" onClick={() => setTicketTab('list')}>
+                      Cancel
+                    </button>
+                    <button type="submit" className="oh-btn violet" disabled={submittingTicket}>
+                      {submittingTicket ? 'Submitting...' : 'Submit Support Ticket'}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DELIVERY FEEDBACK & REVIEW MODAL */}
+      {showFeedbackModal && feedbackOrder && (
+        <div className="oh-modal-overlay">
+          <div className="oh-modal" style={{ maxWidth: 540 }}>
+            <div className="oh-modal-header" style={{ background: '#f8fafc' }}>
+              <div>
+                <div className="oh-modal-title">Order Delivery Experience</div>
+                <div style={{ fontSize: 11, color: '#64748b' }}>
+                  Order #{feedbackOrder.orderNumber || feedbackOrder._id.slice(-6).toUpperCase()}
+                </div>
+              </div>
+              <button className="oh-modal-close" onClick={() => setShowFeedbackModal(false)}>×</button>
+            </div>
+
+            <form onSubmit={handleSubmitFeedback}>
+              <div className="oh-modal-body" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+                {/* Overall Rating Section */}
+                <div style={{ textAlign: 'center', padding: '10px 0 16px' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 8 }}>
+                    How was your delivery experience?
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
+                    {[1, 2, 3, 4, 5].map((star) => {
+                      const active = star <= (feedbackHover || feedbackRating)
+                      return (
+                        <button
+                          key={star}
+                          type="button"
+                          onMouseEnter={() => setFeedbackHover(star)}
+                          onMouseLeave={() => setFeedbackHover(0)}
+                          onClick={() => setFeedbackRating(star)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: 4,
+                            transform: active ? 'scale(1.15)' : 'scale(1)',
+                            transition: 'all 0.15s'
+                          }}
+                        >
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill={active ? '#f59e0b' : '#cbd5e1'}
+                            width="34"
+                            height="34"
+                          >
+                            <path d="M12 .587l3.668 7.431L24 9.748l-6 5.848L19.335 24 12 19.771 4.665 24 6 15.596 0 9.748l8.332-1.73z" />
+                          </svg>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 800,
+                      color: RATING_EMOTIONS[feedbackHover || feedbackRating]?.color || '#059669'
+                    }}
+                  >
+                    {RATING_EMOTIONS[feedbackHover || feedbackRating]?.text} {RATING_EMOTIONS[feedbackHover || feedbackRating]?.emoji}
+                  </div>
+                </div>
+
+                {/* Quick Feedback Tags */}
+                <div className="oh-form-group">
+                  <label className="oh-form-label">What stood out to you?</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {FEEDBACK_TAG_OPTIONS.map((tag) => {
+                      const isSelected = feedbackTags.includes(tag)
+                      return (
+                        <div
+                          key={tag}
+                          className={`oh-tag-chip${isSelected ? ' active' : ''}`}
+                          onClick={() => handleToggleTag(tag)}
+                        >
+                          <span>{tag}</span>
+                          {isSelected && <span>✓</span>}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Feedback Comment */}
+                <div className="oh-form-group">
+                  <label className="oh-form-label">Detailed Comments & Experience</label>
+                  <textarea
+                    className="oh-form-input"
+                    rows="3"
+                    value={feedbackComment}
+                    onChange={(e) => setFeedbackComment(e.target.value)}
+                    placeholder="Tell us what you loved about the delivery, product quality, or packaging..."
+                  />
+                </div>
+
+                {/* Products in this order */}
+                {feedbackOrder.items?.length > 0 && (
+                  <div style={{ marginTop: 14, paddingTop: 14, borderTop: '1px solid #f1f5f9' }}>
+                    <div className="oh-form-label" style={{ marginBottom: 10 }}>
+                      Rate Items in this Order (Optional)
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                      {feedbackOrder.items.map((item, idx) => {
+                        const pid = orderLineProductId(item)
+                        const currentRate = itemRatings[pid] || 0
+                        return (
+                          <div
+                            key={idx}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              padding: '8px 12px',
+                              background: '#f8fafc',
+                              borderRadius: 6,
+                              border: '1px solid #e2e8f0'
+                            }}
+                          >
+                            <div style={{ fontSize: 13, fontWeight: 600, color: '#1e293b', flex: 1, paddingRight: 10 }} className="truncate">
+                              {item.name}
+                            </div>
+                            <div style={{ display: 'flex', gap: 4 }}>
+                              {[1, 2, 3, 4, 5].map((s) => (
+                                <button
+                                  key={s}
+                                  type="button"
+                                  onClick={() => setItemRatings(prev => ({ ...prev, [pid]: s }))}
+                                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}
+                                >
+                                  <svg
+                                    viewBox="0 0 24 24"
+                                    fill={s <= currentRate ? '#f59e0b' : '#cbd5e1'}
+                                    width="18"
+                                    height="18"
+                                  >
+                                    <path d="M12 .587l3.668 7.431L24 9.748l-6 5.848L19.335 24 12 19.771 4.665 24 6 15.596 0 9.748l8.332-1.73z" />
+                                  </svg>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="oh-modal-footer">
-                <button type="button" className="oh-modal-btn cancel" onClick={() => setShowHelpModal(false)}>Cancel</button>
-                <button type="submit" className="oh-modal-btn save" disabled={submittingHelp}>
-                  {submittingHelp ? 'Submitting...' : 'Submit Ticket'}
+                <button type="button" className="oh-modal-btn cancel" onClick={() => setShowFeedbackModal(false)}>
+                  Cancel
+                </button>
+                <button type="submit" className="oh-modal-btn save" disabled={submittingFeedback}>
+                  {submittingFeedback ? 'Submitting...' : 'Submit Feedback'}
                 </button>
               </div>
             </form>
