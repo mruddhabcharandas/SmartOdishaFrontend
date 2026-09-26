@@ -704,15 +704,23 @@ export default function Catalogue() {
         /* Product grid */
         .cat-grid {
           display: grid;
-          gap: 1px;
-          background: #f1f5f9;
+          gap: 16px;
+          padding: 16px;
+          background: #f8fafc;
+          align-items: stretch;
         }
         .cat-grid.cols-1 { grid-template-columns: 1fr; }
         .cat-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        @media (max-width: 639px) {
+          .cat-grid {
+            gap: 10px;
+            padding: 10px;
+          }
+        }
         @media (min-width: 500px) { .cat-grid { grid-template-columns: repeat(2, 1fr) !important; } }
         @media (min-width: 768px) { .cat-grid { grid-template-columns: repeat(3, 1fr) !important; } }
         @media (min-width: 1200px) { .cat-grid { grid-template-columns: repeat(4, 1fr) !important; } }
-        .cat-grid > * { background: #fff; }
+        .cat-grid > * { height: 100%; }
 
         /* Load more */
         .cat-load-more {

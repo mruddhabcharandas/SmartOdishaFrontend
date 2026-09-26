@@ -95,68 +95,80 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
       <style>{`
         .pc-premium-card {
           background: #ffffff;
-          border-radius: 12px;
-          border: 1px solid #f1f5f9;
+          border-radius: 14px;
+          border: 1px solid #e2e8f0;
           overflow: hidden;
           display: flex;
           flex-direction: column;
+          height: 100%;
+          width: 100%;
           transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
           cursor: pointer;
           position: relative;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+          box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         }
         .pc-premium-card:hover {
           transform: translateY(-4px);
-          box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.12), 0 8px 10px -6px rgba(79, 70, 229, 0.08);
-          border-color: rgba(79, 70, 229, 0.15);
+          box-shadow: 0 12px 28px -6px rgba(79, 70, 229, 0.15), 0 8px 12px -6px rgba(79, 70, 229, 0.08);
+          border-color: rgba(79, 70, 229, 0.3);
         }
         .pc-img-container {
           position: relative;
           width: 100%;
           aspect-ratio: 1/1;
-          background: #fafafa;
+          background: #f8fafc;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 12px;
-          border-bottom: 1px solid #f8fafc;
+          border-bottom: 1px solid #f1f5f9;
+          overflow: hidden;
+          flex-shrink: 0;
         }
         .pc-img-container img {
-          max-width: 100%;
-          max-height: 100%;
+          width: 100%;
+          height: 100%;
           object-fit: contain;
           transition: transform 0.35s ease;
         }
         .pc-premium-card:hover .pc-img-container img {
-          transform: scale(1.04);
+          transform: scale(1.05);
         }
         .pc-badge-discount {
           position: absolute;
           top: 8px;
           left: 8px;
-          background: #388e3c;
+          background: #16a34a;
           color: white;
-          padding: 3px 8px;
-          border-radius: 4px;
+          padding: 2px 7px;
+          border-radius: 6px;
           font-size: 10px;
           font-weight: 800;
           z-index: 10;
           letter-spacing: 0.02em;
-          box-shadow: 0 2px 4px rgba(56,142,60,0.2);
+          box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
         }
         .pc-content {
           padding: 12px;
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          justify-content: space-between;
+          gap: 10px;
+        }
+        .pc-body {
+          display: flex;
+          flex-direction: column;
+          gap: 5px;
         }
         .pc-title {
           font-size: 13px;
-          font-weight: 500;
+          font-weight: 600;
           color: #1e293b;
-          line-height: 1.4;
+          line-height: 19px;
           height: 38px;
+          min-height: 38px;
+          max-height: 38px;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
@@ -171,14 +183,15 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           display: flex;
           align-items: center;
           gap: 6px;
-          margin-top: 1px;
+          height: 20px;
+          min-height: 20px;
         }
         .pc-rating-badge {
-          background: #388e3c;
+          background: #16a34a;
           color: white;
-          padding: 2px 6px;
+          padding: 1px 5px;
           border-radius: 4px;
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 700;
           display: inline-flex;
           align-items: center;
@@ -186,7 +199,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
         }
         .pc-rating-count {
           font-size: 11px;
-          color: #878787;
+          color: #94a3b8;
           font-weight: 500;
         }
         .pc-assured-badge {
@@ -194,8 +207,8 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           align-items: center;
           gap: 2px;
           margin-left: auto;
-          background: rgba(79, 70, 229, 0.05);
-          border: 1px solid rgba(79, 70, 229, 0.1);
+          background: rgba(79, 70, 229, 0.06);
+          border: 1px solid rgba(79, 70, 229, 0.12);
           color: #4f46e5;
           font-size: 9px;
           font-weight: 800;
@@ -204,34 +217,57 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           letter-spacing: 0.02em;
           text-transform: uppercase;
         }
-        .pc-price-row {
+        .pc-price-box {
+          height: 38px;
+          min-height: 38px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+        }
+        .pc-price-main {
           display: flex;
           align-items: baseline;
           gap: 6px;
-          margin-top: 4px;
-          flex-wrap: wrap;
         }
         .pc-price-selling {
-          font-size: 17px;
-          font-weight: 700;
-          color: #212121;
+          font-size: 16px;
+          font-weight: 800;
+          color: #0f172a;
+          line-height: 1.2;
+        }
+        .pc-price-sub {
+          display: flex;
+          align-items: baseline;
+          gap: 6px;
+          height: 15px;
+          min-height: 15px;
         }
         .pc-price-mrp {
-          font-size: 12px;
-          color: #878787;
+          font-size: 11px;
+          color: #94a3b8;
           text-decoration: line-through;
-          font-weight: 400;
+          font-weight: 500;
+          line-height: 1;
         }
         .pc-price-discount {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 700;
-          color: #388e3c;
+          color: #16a34a;
+          line-height: 1;
+        }
+        .pc-price-placeholder {
+          font-size: 11px;
+          visibility: hidden;
+          line-height: 1;
         }
         .pc-info-row {
           font-size: 11px;
           color: #64748b;
-          font-weight: 500;
-          margin-top: 2px;
+          font-weight: 600;
+          height: 18px;
+          min-height: 18px;
+          display: flex;
+          align-items: center;
         }
         .pc-info-row b {
           color: #059669;
@@ -244,7 +280,7 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
           font-size: 12px;
           font-weight: 700;
           cursor: pointer;
-          margin-top: 6px;
+          margin-top: auto;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -286,60 +322,68 @@ export default function ProductCard({ p, authed = false, addToCart: propAddToCar
 
       {/* Content */}
       <div className="pc-content">
-        <Link
-          to={`/products/${productIdOrSlug}`}
-          onClick={e => e.stopPropagation()}
-          className="pc-title"
-        >
-          {p.name}
-        </Link>
+        <div className="pc-body">
+          <Link
+            to={`/products/${productIdOrSlug}`}
+            onClick={e => e.stopPropagation()}
+            className="pc-title"
+          >
+            {p.name}
+          </Link>
 
-        {/* Rating & Assured Check */}
-        <div className="pc-rating-row">
-          {Number(p.ratingCount || 0) > 0 && (
-            <>
-              <div className="pc-rating-badge">
-                {Number(p.ratingAvg || 0).toFixed(1)} ★
-              </div>
-              <span className="pc-rating-count">
-                ({Number(p.ratingCount || 0).toLocaleString()})
+          {/* Rating & Assured Check */}
+          <div className="pc-rating-row">
+            {Number(p.ratingCount || 0) > 0 ? (
+              <>
+                <div className="pc-rating-badge">
+                  {Number(p.ratingAvg || 0).toFixed(1)} ★
+                </div>
+                <span className="pc-rating-count">
+                  ({Number(p.ratingCount || 0).toLocaleString()})
+                </span>
+              </>
+            ) : null}
+            <span className="pc-assured-badge">
+              ✓ Assured
+            </span>
+          </div>
+
+          {/* Price Box with guaranteed identical height across all cards */}
+          <div className="pc-price-box">
+            <div className="pc-price-main">
+              <span className="pc-price-selling">
+                ₹{Number(minPrice).toLocaleString()}
               </span>
-            </>
-          )}
-          <span className="pc-assured-badge">
-            ✓ Assured
-          </span>
+            </div>
+            <div className="pc-price-sub">
+              {displayMrp > minPrice ? (
+                <>
+                  <span className="pc-price-mrp">
+                    ₹{Number(displayMrp).toLocaleString()}
+                  </span>
+                  <span className="pc-price-discount">
+                    {discount}% off
+                  </span>
+                </>
+              ) : (
+                <span className="pc-price-placeholder">-</span>
+              )}
+            </div>
+          </div>
+
+          {/* Stock / Delivery Status */}
+          <div className="pc-info-row">
+            {totalStock <= 0 ? (
+              <span style={{ color: '#ef4444', fontWeight: 600 }}>Out of Stock</span>
+            ) : totalStock <= 5 ? (
+              <span style={{ color: '#7c3aed', fontWeight: 600 }}>Only {totalStock} left</span>
+            ) : (
+              <b style={{ color: '#059669', fontWeight: 600 }}>In Stock</b>
+            )}
+          </div>
         </div>
 
-        {/* Price Row */}
-        <div className="pc-price-row">
-          <span className="pc-price-selling">
-            ₹{Number(minPrice).toLocaleString()}
-          </span>
-          {displayMrp > minPrice && (
-            <>
-              <span className="pc-price-mrp">
-                ₹{Number(displayMrp).toLocaleString()}
-              </span>
-              <span className="pc-price-discount">
-                {discount}% off
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* Stock / Delivery Status */}
-        <div className="pc-info-row">
-          {totalStock <= 0 ? (
-            <span style={{ color: '#ef4444', fontWeight: 600 }}>Out of Stock</span>
-          ) : totalStock <= 5 ? (
-            <span style={{ color: '#7c3aed', fontWeight: 600 }}>Only {totalStock} left</span>
-          ) : (
-            <b style={{ color: '#059669', fontWeight: 600 }}>In Stock</b>
-          )}
-        </div>
-
-        {/* Button */}
+        {/* Action Button pinned at bottom */}
         <button
           disabled={!authed || totalStock <= 0}
           className="pc-action-btn"
