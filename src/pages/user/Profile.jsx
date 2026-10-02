@@ -105,11 +105,21 @@ export default function Profile() {
     if (!token) { navigate('/login', { state: { from: location.pathname } }); return; }
     loadProfile();
     loadAddresses();
+    loadTickets();
   }, [token]);
 
   useEffect(() => {
     if (activeSection === 'support') loadTickets();
   }, [activeSection]);
+
+  const isCustomerMsg = (msg) => {
+    if (!msg) return false;
+    if (msg.senderModel === 'Customer') return true;
+    if (msg.sender === 'user') return true;
+    if (user?._id && String(msg.sender) === String(user._id)) return true;
+    if (user?.id && String(msg.sender) === String(user.id)) return true;
+    return false;
+  };
 
   const loadProfile = async () => {
     try {
@@ -133,7 +143,7 @@ export default function Profile() {
 
   const handleSaveProfile = async (e) => {
     e.preventDefault(); setSaving(true);
-    try { await api.put('/api/user/profile', formData); await refreshProfile(); notify('Profile updated!', 'success'); }
+    try { await api.put('/api/user/profile', { name: formData.name }); await refreshProfile(); notify('Profile updated successfully!', 'success'); }
     catch (e) { notify(e?.response?.data?.error || 'Failed to update', 'error'); }
     finally { setSaving(false); }
   };
@@ -429,9 +439,21 @@ export default function Profile() {
                     <input type="email" value={user?.email || ''} disabled className={disabledCls} />
                   </Field>
                   <Field label="Phone Number">
-                    <input type="tel" name="phone" value={formData.phone}
-                      onChange={e => setFormData(p => ({ ...p, phone: e.target.value.replace(/\D/g,'').slice(0,10) }))}
-                      className={inputCls} placeholder="10-digit mobile number" />
+                    <div className="relative">
+                      <input
+                        type="tel"
+                        value={formData.phone ? (formData.phone.startsWith('+91') ? formData.phone : `+91 ${formData.phone}`) : (user?.phone ? `+91 ${user.phone}` : 'Not provided')}
+                        disabled
+                        className={`${disabledCls} pr-24 font-mono font-medium`}
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/60">
+                        <Ico n="lock" cls="w-3 h-3 text-amber-600" />
+                        <span>Fixed</span>
+                      </div>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1.5">
+                      <span>🔒 Registered mobile number cannot be changed for account security & verification.</span>
+                    </p>
                   </Field>
                   <button type="submit" disabled={saving} className={btnPrimary}>
                     {saving ? 'Saving…' : 'Save Changes'}
@@ -516,13 +538,36 @@ export default function Profile() {
                   <>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="pf-display font-black text-slate-800">Support</h2>
-                        <p className="text-slate-400 text-xs mt-0.5">{tickets.length} ticket{tickets.length !== 1 ? 's' : ''}</p>
+                        <h2 className="pf-display font-black text-slate-800 text-lg">Help & Support Desk</h2>
+                        <p className="text-slate-400 text-xs mt-0.5">{tickets.length} total ticket{tickets.length !== 1 ? 's' : ''}</p>
                       </div>
                       <button onClick={() => setShowNewTicketModal(true)}
-                        className="flex items-center gap-1.5 px-4 py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl font-bold text-xs shadow-md shadow-violet-200 active:scale-[0.97] transition-all">
-                        <Ico n="plus" cls="w-4 h-4" /> New Ticket
+                        className="flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md shadow-indigo-200 active:scale-[0.97] transition-all">
+                        <Ico n="plus" cls="w-4 h-4" /> Raise New Ticket
                       </button>
+                    </div>
+
+                    {/* Direct Contact Helpline Banner */}
+                    <div className="bg-gradient-to-r from-amber-50 via-orange-50 to-indigo-50 border border-amber-200/70 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center flex-shrink-0 text-xl font-bold">
+                          💬
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-slate-800">Need instant assistance with an order?</div>
+                          <div className="text-[11px] text-slate-500">Reach the SmartOdisha customer care desk directly for urgent help.</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <a href="https://wa.me/917978257002" target="_blank" rel="noopener noreferrer"
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm shadow-emerald-200">
+                          WhatsApp Desk
+                        </a>
+                        <a href="mailto:support@smartodisha.in"
+                          className="px-3 py-1.5 bg-white border border-slate-200 hover:border-indigo-300 text-slate-700 hover:text-indigo-600 rounded-xl text-xs font-bold transition-all shadow-sm">
+                          Email Help
+                        </a>
+                      </div>
                     </div>
 
                     {ticketsLoading ? (
@@ -532,21 +577,38 @@ export default function Profile() {
                         <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-3 text-slate-300">
                           <Ico n="help" cls="w-7 h-7" />
                         </div>
-                        <h3 className="pf-display font-black text-slate-700 mb-1">No tickets yet</h3>
-                        <p className="text-slate-400 text-sm mb-4">Raise a ticket for orders, payments, returns…</p>
-                        <button onClick={() => setShowNewTicketModal(true)} className="px-5 py-2.5 bg-violet-600 text-white rounded-xl font-bold text-sm hover:bg-violet-700 transition-all">
-                          Create Ticket
+                        <h3 className="pf-display font-black text-slate-700 mb-1">No support tickets found</h3>
+                        <p className="text-slate-400 text-sm mb-4">Have an issue with delivery, payment, or products? Raise a ticket and we'll resolve it quickly.</p>
+                        <button onClick={() => setShowNewTicketModal(true)} className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all">
+                          Create New Ticket
                         </button>
                       </div>
                     ) : (
                       tickets.map(t => (
                         <button key={t._id} onClick={() => setSelectedTicket(t)}
-                          className="w-full bg-white rounded-2xl border border-slate-100 shadow-sm p-4 text-left hover:border-violet-200 hover:shadow-md active:scale-[0.98] transition-all">
-                          <div className="flex items-start justify-between gap-2">
+                          className="w-full bg-white rounded-2xl border border-slate-100 hover:border-indigo-200 shadow-sm p-4 text-left hover:shadow-md active:scale-[0.98] transition-all">
+                          <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                                <span className="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+                                  #TICK-{t._id.slice(-6).toUpperCase()}
+                                </span>
+                                <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+                                  {t.category || 'General'}
+                                </span>
+                                {t.order && (
+                                  <span className="text-[10px] font-semibold text-slate-400">
+                                    Order #{t.order?.orderNumber || (typeof t.order === 'string' ? t.order.slice(-6) : '')}
+                                  </span>
+                                )}
+                              </div>
                               <div className="pf-display font-black text-slate-800 text-sm truncate">{t.subject}</div>
                               <div className="text-slate-400 text-xs mt-1 line-clamp-1">{t.description}</div>
-                              <div className="text-slate-300 text-[10px] mt-1.5">{new Date(t.updatedAt).toLocaleDateString()}</div>
+                              <div className="flex items-center gap-3 text-slate-400 text-[10px] mt-2">
+                                <span>Updated {new Date(t.updatedAt || t.createdAt).toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                <span>•</span>
+                                <span>{t.messages?.length || 1} message{(t.messages?.length || 1) !== 1 ? 's' : ''}</span>
+                              </div>
                             </div>
                             <span className={statusBadge(t.status)}>{t.status}</span>
                           </div>
@@ -556,54 +618,77 @@ export default function Profile() {
                   </>
                 ) : (
                   /* Ticket Detail */
-                  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                    <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-3">
-                      <button onClick={() => setSelectedTicket(null)} className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
+                  <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col">
+                    <div className="px-4 py-3 border-b border-slate-100 flex items-center gap-3 bg-slate-50/70">
+                      <button onClick={() => setSelectedTicket(null)} className="p-1.5 rounded-lg hover:bg-slate-200/70 text-slate-500 hover:text-slate-700 transition-colors">
                         <Ico n="chevL" cls="w-4 h-4" />
                       </button>
                       <div className="flex-1 min-w-0">
-                        <div className="pf-display font-black text-slate-800 text-sm truncate">{selectedTicket.subject}</div>
-                        <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] font-mono font-bold bg-slate-200/80 text-slate-700 px-2 py-0.5 rounded">
+                            #TICK-{selectedTicket._id.slice(-6).toUpperCase()}
+                          </span>
                           <span className={statusBadge(selectedTicket.status)}>{selectedTicket.status}</span>
-                          <span className="text-slate-300 text-[10px]">{selectedTicket.category}</span>
+                          <span className="text-slate-500 text-xs font-semibold">{selectedTicket.category}</span>
                         </div>
+                        <div className="pf-display font-black text-slate-800 text-sm truncate mt-0.5">{selectedTicket.subject}</div>
                       </div>
                       {selectedTicket.status !== 'Resolved' && (
                         <button onClick={() => handleResolveTicket(selectedTicket._id)}
-                          className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl font-bold text-xs hover:bg-emerald-100 transition-colors">
-                          <Ico n="check" cls="w-3.5 h-3.5" /> Resolve
+                          className="flex items-center gap-1 px-3 py-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl font-bold text-xs hover:bg-emerald-100 transition-colors flex-shrink-0">
+                          <Ico n="check" cls="w-3.5 h-3.5" /> Mark Resolved
                         </button>
                       )}
                     </div>
 
-                    {/* Messages */}
-                    <div className="p-4 space-y-3 max-h-80 overflow-y-auto bg-slate-50/50">
-                      {selectedTicket.messages?.map((msg, i) => (
-                        <div key={i} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm font-medium leading-relaxed
-                            ${msg.sender === 'user'
-                              ? 'bg-gradient-to-br from-violet-600 to-indigo-600 text-white rounded-br-sm'
-                              : 'bg-white text-slate-700 border border-slate-100 rounded-bl-sm shadow-sm'}`}>
-                            <p>{msg.message}</p>
-                            <p className={`text-[10px] mt-1.5 font-semibold ${msg.sender === 'user' ? 'text-violet-200' : 'text-slate-300'}`}>
-                              {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                            </p>
+                    {/* Messages Area */}
+                    <div className="p-4 space-y-4 max-h-96 overflow-y-auto bg-slate-50/40">
+                      {selectedTicket.messages?.map((msg, i) => {
+                        const isUser = isCustomerMsg(msg);
+                        return (
+                          <div key={i} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+                            <div className="flex items-center gap-1.5 mb-1 px-1">
+                              {!isUser && (
+                                <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[9px] font-black shadow-xs">
+                                  SO
+                                </span>
+                              )}
+                              <span className={`text-[11px] font-bold ${isUser ? 'text-indigo-600' : 'text-slate-700'}`}>
+                                {isUser ? 'You' : 'SmartOdisha Support'}
+                              </span>
+                              <span className="text-[10px] text-slate-300">
+                                {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                            <div className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-sm
+                              ${isUser
+                                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-tr-none shadow-indigo-100'
+                                : 'bg-white text-slate-800 border border-slate-200/80 rounded-tl-none'}`}>
+                              <p className="whitespace-pre-wrap">{msg.message}</p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
-                    {/* Reply box */}
-                    <div className="p-3 border-t border-slate-100 flex gap-2">
-                      <input value={messageInput} onChange={e => setMessageInput(e.target.value)}
-                        onKeyPress={e => e.key === 'Enter' && handleAddMessage(selectedTicket._id)}
-                        placeholder="Type a reply…"
-                        className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all" />
-                      <button onClick={() => handleAddMessage(selectedTicket._id)}
-                        disabled={!messageInput.trim()}
-                        className="p-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl disabled:opacity-40 transition-all active:scale-95 flex-shrink-0">
-                        <Ico n="send" cls="w-4 h-4" />
-                      </button>
+                    {/* Reply input */}
+                    <div className="p-3 border-t border-slate-100 bg-white">
+                      {selectedTicket.status === 'Resolved' && (
+                        <div className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-1.5 mb-2 font-medium">
+                          ✓ This ticket is marked resolved. Sending a message below will automatically reopen it for assistance.
+                        </div>
+                      )}
+                      <div className="flex gap-2">
+                        <input value={messageInput} onChange={e => setMessageInput(e.target.value)}
+                          onKeyPress={e => e.key === 'Enter' && messageInput.trim() && handleAddMessage(selectedTicket._id)}
+                          placeholder="Type your reply to SmartOdisha Support…"
+                          className="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all" />
+                        <button onClick={() => handleAddMessage(selectedTicket._id)}
+                          disabled={!messageInput.trim()}
+                          className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white rounded-xl font-bold text-xs transition-all active:scale-95 flex items-center gap-1.5 flex-shrink-0 shadow-md shadow-indigo-100">
+                          <Ico n="send" cls="w-4 h-4" /> Send
+                        </button>
+                      </div>
                     </div>
                   </div>
                 )}

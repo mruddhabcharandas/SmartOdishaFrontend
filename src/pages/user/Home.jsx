@@ -28,8 +28,11 @@ export default function Home() {
       "description": "Premium shopping platform for quality products from trusted local stores across Odisha."
     })
     api.get('/api/offers?activeOnly=true').then(({ data }) => setOffers(data || [])).catch(() => setOffers([]))
-    api.get('/api/public/stores').then(({ data }) => setStores(data?.filter(store => store.isPopular) || [])).catch(() => setStores([]))
-    api.get('/api/products?limit=12').then(({ data }) => setProducts(data?.items || [])).catch(() => setProducts([]))
+    api.get('/api/public/stores').then(({ data }) => {
+      const popular = data?.filter(store => store.isPopular) || []
+      setStores(popular.length > 0 ? popular : (data || []))
+    }).catch(() => setStores([]))
+    api.get('/api/products?limit=24').then(({ data }) => setProducts(data?.items || [])).catch(() => setProducts([]))
     api.get('/api/public/hero-slides').then(({ data }) => setHeroSlides(data || [])).catch(() => setHeroSlides([]))
     api.get('/api/public/settings').then(({ data }) => {
       if (data && data.freeDeliveryAbove !== undefined) {
@@ -46,12 +49,92 @@ export default function Home() {
     return () => clearInterval(interval)
   }, [heroSlides])
 
+  const top10Products = useMemo(() => {
+    if (!products || products.length === 0) return []
+    return products.slice(0, 10)
+  }, [products])
+
+  const odishaTraditions = useMemo(() => [
+    {
+      id: 'sambalpuri',
+      title: 'Sambalpuri & Ikat Weaves',
+      odiaTitle: 'ସମ୍ବଲପୁରୀ ବସ୍ତ୍ର',
+      badge: 'GI Tagged Heritage',
+      desc: 'Authentic handwoven Bandha tie-and-dye sarees, kurtas & fabrics from master weavers of Western Odisha.',
+      color: 'from-amber-600/90 to-red-800/95',
+      accentColor: '#f59e0b',
+      icon: '🥻',
+      tag: 'Western Odisha Handlooms',
+      search: 'Sambalpuri'
+    },
+    {
+      id: 'tarakasi',
+      title: 'Cuttack Silver Filigree',
+      odiaTitle: 'କଟକ ତାରକସି',
+      badge: '500+ Yrs Legacy',
+      desc: 'World-renowned Tarakasi delicate wirecraft jewelry, Konark sun wheel motifs & sacred silver mementos.',
+      color: 'from-slate-700/95 to-indigo-900/95',
+      accentColor: '#38bdf8',
+      icon: '✨',
+      tag: 'Millennium City Jewelry',
+      search: 'Silver'
+    },
+    {
+      id: 'pattachitra',
+      title: 'Raghurajpur Pattachitra',
+      odiaTitle: 'ରଘୁରାଜପୁର ପଟ୍ଟଚିତ୍ର',
+      badge: 'Ancient Storytelling',
+      desc: 'Sacred mythological epics hand-painted on treated canvas and palm-leaf engravings with natural pigments.',
+      color: 'from-red-700/90 to-amber-900/95',
+      accentColor: '#ea580c',
+      icon: '🎨',
+      tag: 'Heritage Folk Art',
+      search: 'Pattachitra'
+    },
+    {
+      id: 'puri-khaja',
+      title: 'Puri Jagannath Sweets',
+      odiaTitle: 'ପୁରୀ ଖଜା ଓ ମିଠା',
+      badge: 'Sacred Confectionery',
+      desc: 'Crispy layered pheni khaja, puri gaja, and coastal Odisha delights delivered fresh with authentic temple flavours.',
+      color: 'from-amber-700/90 to-orange-950/95',
+      accentColor: '#fbbf24',
+      icon: '🥟',
+      tag: 'Coastal Odia Flavours',
+      search: 'Khaja'
+    },
+    {
+      id: 'chandua',
+      title: 'Pipili Appliqué Crafts',
+      odiaTitle: 'ପିପିଲି ଚାନ୍ଦୁଆ',
+      badge: 'Vibrant Needlecraft',
+      desc: 'Geometric handcrafted embroidered canopies, lanterns, decorative umbrellas & traditional home wall art.',
+      color: 'from-rose-600/90 to-purple-900/95',
+      accentColor: '#f43f5e',
+      icon: '🏮',
+      tag: 'Artisan Needlework',
+      search: 'Applique'
+    },
+    {
+      id: 'kandhamal',
+      title: 'Kandhamal Organic Produce',
+      odiaTitle: 'କନ୍ଧମାଳ ହଳଦୀ',
+      badge: 'GI Tagged Pure Forest',
+      desc: 'Medicinal high-curcumin organic golden turmeric, raw Mayurbhanj forest honey & wild tribal spices.',
+      color: 'from-emerald-700/90 to-teal-950/95',
+      accentColor: '#10b981',
+      icon: '🌿',
+      tag: 'Tribal Co-op Organics',
+      search: 'Organic'
+    }
+  ], [])
+
   const tickerLoop = useMemo(() => {
     const neutral = [
-      { key: 'n1', label: `Free Delivery on Orders Above ₹${freeDeliveryAbove}`, pill: 'FREE SHIPPING' },
-      { key: 'n2', label: 'COD Available Across Odisha', pill: 'CASH ON DELIVERY' },
-      { key: 'n3', label: '7-Day Easy Returns', pill: 'HASSLE-FREE' },
-      { key: 'n4', label: '100% Secure Payments', pill: 'TRUSTED' }
+      { key: 'n1', label: `Free Delivery Across Odisha on Orders Above ₹${freeDeliveryAbove}`, pill: 'FREE SHIPPING' },
+      { key: 'n2', label: '100% Genuine Handlooms & Certified Local Crafts', pill: 'ODISHA PRIDE' },
+      { key: 'n3', label: 'Cash on Delivery Available Across All 30 Districts', pill: 'CASH ON DELIVERY' },
+      { key: 'n4', label: '7-Day Easy & Transparent Returns', pill: 'HASSLE-FREE' }
     ]
     return [...neutral, ...neutral]
   }, [freeDeliveryAbove])
@@ -66,13 +149,18 @@ export default function Home() {
   return (
     <div className="home-root min-h-screen">
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@700;800;900&family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap');
         * { box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; }
+        body { font-family: 'Plus Jakarta Sans', 'DM Sans', sans-serif; }
         
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
+          50% { transform: translateY(-8px); }
+        }
+        
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.6; transform: scale(1); }
+          50% { opacity: 1; transform: scale(1.05); }
         }
         
         @keyframes gradient {
@@ -82,48 +170,52 @@ export default function Home() {
         }
 
         .home-root {
-          font-family: 'Inter', sans-serif;
-          background: #f8fafc;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          background: #fdfbf7;
           color: #0f172a;
         }
 
-
         .top-ticker {
-          background: linear-gradient(90deg, #0f172a, #1e3a8a, #4f46e5);
-          color: white;
+          background: linear-gradient(90deg, #7c2d12, #991b1b, #1e1b4b, #0f172a);
+          color: #fef3c7;
           padding: 8px 20px;
-          font-size: 12px;
+          font-size: 11.5px;
           font-weight: 700;
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 12px;
           flex-wrap: wrap;
+          border-bottom: 1px solid rgba(245, 158, 11, 0.25);
         }
         @media (max-width: 640px) {
-          .top-ticker { justify-content: center; text-align: center; gap: 8px; }
+          .top-ticker { justify-content: center; text-align: center; gap: 8px; font-size: 11px; }
         }
-        .ticker-right { display: flex; gap: 12px; }
-        .ticker-link { color: white; text-decoration: none; font-weight: 700; transition: all 0.2s; padding: 6px 16px; border-radius: 100px; background: rgba(255,255,255,0.2); font-size:11px; letter-spacing: 0.1em; text-transform: uppercase; }
-        .ticker-link:hover { background: rgba(255,255,255,0.3); transform: translateY(-1px); }
+        .ticker-right { display: flex; gap: 10px; }
+        .ticker-link { color: #fef08a; text-decoration: none; font-weight: 700; transition: all 0.2s; padding: 5px 14px; border-radius: 100px; background: rgba(254, 240, 138, 0.15); font-size:11px; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid rgba(254, 240, 138, 0.3); }
+        .ticker-link:hover { background: rgba(254, 240, 138, 0.25); transform: translateY(-1px); }
 
         .hero {
           color: white;
-          padding: 80px 20px 100px;
+          padding: 70px 20px 90px;
           position: relative;
           overflow: hidden;
-          background: linear-gradient(to bottom right, #0f172a, #1e3a8a, #312e81);
+          background: 
+            radial-gradient(circle at 85% 20%, rgba(220, 38, 38, 0.22) 0%, transparent 50%),
+            radial-gradient(circle at 15% 80%, rgba(217, 119, 6, 0.2) 0%, transparent 50%),
+            radial-gradient(circle at 50% 50%, rgba(30, 27, 75, 0.5) 0%, transparent 70%),
+            linear-gradient(135deg, #090d16 0%, #0f172a 35%, #1e1b4b 75%, #2c121e 100%);
         }
         .hero::before {
           content: '';
           position: absolute;
-          top: -180px;
+          top: -150px;
           left: 50%;
           transform: translateX(-50%);
-          width: 800px;
-          height: 500px;
+          width: 850px;
+          height: 520px;
           border-radius: 50%;
-          background: radial-gradient(ellipse, rgba(99,102,241,0.15), transparent 65%);
+          background: radial-gradient(ellipse, rgba(245, 158, 11, 0.12), transparent 65%);
           pointer-events: none;
         }
         .hero-inner {
@@ -133,7 +225,7 @@ export default function Home() {
           flex-direction: column;
           align-items: center;
           text-align: center;
-          gap: 40px;
+          gap: 36px;
           position: relative;
           z-index: 1;
         }
@@ -141,68 +233,81 @@ export default function Home() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 24px;
+          gap: 20px;
+          max-width: 820px;
         }
         .hero-eyebrow {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 8px 18px;
-          background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 8px 20px;
+          background: rgba(245, 158, 11, 0.12);
+          border: 1px solid rgba(245, 158, 11, 0.35);
           backdrop-filter: blur(10px);
           border-radius: 100px;
           font-size: 11px;
-          font-weight: 700;
+          font-weight: 800;
           width: fit-content;
-          letter-spacing: 0.15em;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: #a5b4fc;
+          color: #fde68a;
+          box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15);
         }
-        .hero-eyebrow span.dot { width: 5px; height: 5px; border-radius: 50%; background: #6366f1; box-shadow: 0 0 5px rgba(99,102,241,0.5); }
+        .hero-eyebrow span.dot { width: 6px; height: 6px; border-radius: 50%; background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
         .hero-title {
-          font-family: 'Bebas Neue', sans-serif;
-          font-size: clamp(38px, 6vw, 68px);
-          line-height: 1.1;
-          letter-spacing: 0.03em;
-          color: white;
+          font-family: 'Cinzel', 'Bebas Neue', serif;
+          font-size: clamp(34px, 5.5vw, 62px);
+          line-height: 1.15;
+          letter-spacing: 0.02em;
+          color: #ffffff;
+          font-weight: 800;
         }
         .hero-title .accent {
-          background: linear-gradient(90deg, #93c5fd, #a5b4fc, #c4b5fd);
+          background: linear-gradient(90deg, #fcd34d, #f59e0b, #fb7185, #fcd34d);
           background-size: 200% 200%;
           -webkit-background-clip: text;
           background-clip: text;
           -webkit-text-fill-color: transparent;
           animation: gradient 8s ease infinite;
         }
-        .hero-desc {
+        .hero-odia-subtitle {
           font-size: 16px;
-          line-height: 1.6;
-          color: #94a3b8;
-          max-width: 520px;
-          font-weight: 500;
+          color: #fde68a;
+          font-weight: 600;
+          letter-spacing: 0.05em;
+          margin-top: -6px;
+        }
+        .hero-desc {
+          font-size: 15px;
+          line-height: 1.65;
+          color: #cbd5e1;
+          max-width: 620px;
+          font-weight: 400;
         }
         @media (max-width: 640px) {
-          .hero-desc { font-size: 14px; }
+          .hero-desc { font-size: 13.5px; }
+          .hero-odia-subtitle { font-size: 14px; }
         }
         .hero-search {
           display: flex;
           width: 100%;
-          max-width: 560px;
+          max-width: 600px;
           gap: 0px;
-          margin-top: 8px;
+          margin-top: 6px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+          border-radius: 16px;
         }
         .hero-search-input {
           flex: 1;
           padding: 16px 20px;
-          border-radius: 14px 0 0 14px;
-          border: 1px solid rgba(255,255,255,0.15);
+          border-radius: 16px 0 0 16px;
+          border: 1px solid rgba(254, 240, 138, 0.25);
           border-right: none;
           outline: none;
           font-size: 14px;
           font-weight: 500;
-          background: rgba(255,255,255,0.08);
-          backdrop-filter: blur(10px);
+          background: rgba(15, 23, 42, 0.6);
+          backdrop-filter: blur(14px);
           color: white;
           transition: all 0.3s;
         }
@@ -210,38 +315,75 @@ export default function Home() {
           color: #94a3b8;
         }
         .hero-search-input:focus {
-          background: rgba(255,255,255,0.15);
-          border-color: rgba(99,102,241,0.5);
+          background: rgba(15, 23, 42, 0.85);
+          border-color: rgba(245, 158, 11, 0.6);
         }
         .hero-search-btn {
           padding: 16px 28px;
-          border-radius: 0 14px 14px 0;
+          border-radius: 0 16px 16px 0;
           border: none;
-          background: linear-gradient(135deg, #3b82f6, #4f46e5, #7c3aed);
+          background: linear-gradient(135deg, #b45309, #d97706, #b91c1c);
           color: white;
           font-weight: 800;
-          font-size: 11px;
-          letter-spacing: 0.15em;
+          font-size: 11.5px;
+          letter-spacing: 0.12em;
           text-transform: uppercase;
           cursor: pointer;
           transition: all 0.3s;
-          box-shadow: 0 8px 24px rgba(79,70,229,0.3);
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          box-shadow: 0 8px 24px rgba(180, 83, 9, 0.35);
         }
         .hero-search-btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 12px 28px rgba(180, 83, 9, 0.5);
+          background: linear-gradient(135deg, #d97706, #b45309, #991b1b);
+        }
+        .hero-quick-tags {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          flex-wrap: wrap;
+          margin-top: 2px;
+        }
+        .hero-quick-label {
+          font-size: 11px;
+          font-weight: 700;
+          color: #fcd34d;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+        }
+        .hero-quick-pill {
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(254, 240, 138, 0.2);
+          color: #f1f5f9;
+          padding: 4px 12px;
+          border-radius: 100px;
+          font-size: 11px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .hero-quick-pill:hover {
+          background: rgba(245, 158, 11, 0.25);
+          border-color: #f59e0b;
+          color: #fef08a;
           transform: translateY(-2px);
-          box-shadow: 0 14px 32px rgba(79,70,229,0.4);
         }
         .hero-cta {
           display: flex;
           flex-wrap: wrap;
           justify-content: center;
           gap: 12px;
+          margin-top: 4px;
         }
         .btn-primary {
-          background: linear-gradient(135deg, #3b82f6, #4f46e5, #7c3aed);
+          background: linear-gradient(135deg, #b45309, #b91c1c, #991b1b);
           color: white;
-          border: none;
-          padding: 15px 32px;
+          border: 1px solid rgba(254, 240, 138, 0.3);
+          padding: 14px 28px;
           border-radius: 14px;
           font-weight: 800;
           font-size: 11px;
@@ -254,11 +396,10 @@ export default function Home() {
           justify-content: center;
           gap: 8px;
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          box-shadow: 0 8px 24px rgba(79,70,229,0.35);
-        }
+          box-shadow: 0 8px 24px rgba(185, 28, 28, 0.35);
         .btn-primary:hover {
-          transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 14px 32px rgba(79,70,229,0.45);
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 12px 30px rgba(185, 28, 28, 0.45);
         }
         .btn-secondary {
           background: rgba(255,255,255,0.08);
@@ -493,120 +634,212 @@ export default function Home() {
           transform: translateY(-2px);
         }
 
-        .stores-grid {
+        /* Odisha Theme Badges & Helpers */
+        .odisha-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 14px;
+          background: rgba(217, 119, 6, 0.1);
+          border: 1px solid rgba(217, 119, 6, 0.25);
+          border-radius: 100px;
+          color: #b45309;
+          font-weight: 800;
+          font-size: 10px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+        .odisha-badge span.dot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #d97706;
+          box-shadow: 0 0 6px #d97706;
+        }
+
+        /* ──── ODISHA TRADITIONS SHOWCASE ──── */
+        .traditions-grid {
           display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
+          grid-template-columns: repeat(1, 1fr);
+          gap: 16px;
         }
         @media (min-width: 640px) {
-          .stores-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+          .traditions-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
         }
         @media (min-width: 1024px) {
-          .stores-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+          .traditions-grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
         }
-        .store-card {
+        .tradition-card {
+          position: relative;
+          border-radius: 22px;
+          overflow: hidden;
           background: white;
-          border: 1px solid rgba(79,70,229,0.1);
-          border-radius: 18px;
-          overflow: hidden;
-          cursor: pointer;
+          border: 1px solid rgba(217, 119, 6, 0.18);
+          box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05);
+          display: flex;
+          flex-direction: column;
           text-decoration: none;
-          color: #1e1b2e;
-          transition: all 0.3s ease;
-          box-shadow: 0 2px 12px rgba(79,70,229,0.04);
-          display: flex;
-          flex-direction: column;
-          position: relative;
+          color: #0f172a;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .store-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 6px 24px rgba(99,102,241,0.12);
-          border-color: rgba(99,102,241,0.2);
+        .tradition-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 16px 36px rgba(180, 83, 9, 0.18);
+          border-color: #f59e0b;
         }
-        .store-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(79,70,229,0.2), transparent); opacity:0; transition: opacity 0.2s; }
-        .store-card:hover::before { opacity:1; }
-        .store-image-container {
-          width: 100%;
-          aspect-ratio: 4/3;
-          background: #f8fafc;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+        .tradition-header {
+          padding: 24px 22px 18px;
+          color: white;
           position: relative;
           overflow: hidden;
-          padding: 20px;
         }
-        .store-image {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
+        .tradition-header::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: radial-gradient(circle at 100% 0%, rgba(255,255,255,0.2) 0%, transparent 60%);
+          pointer-events: none;
         }
-        .store-placeholder {
-          display: flex;
+        .tradition-icon-badge {
+          font-size: 32px;
+          margin-bottom: 12px;
+          display: inline-block;
+          filter: drop-shadow(0 4px 8px rgba(0,0,0,0.25));
         }
-        .store-content {
-          padding: 16px;
+        .tradition-gi-tag {
+          display: inline-block;
+          font-size: 9.5px;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          text-transform: uppercase;
+          background: rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.35);
+          backdrop-filter: blur(8px);
+          padding: 3px 10px;
+          border-radius: 100px;
+          margin-bottom: 8px;
+        }
+        .tradition-odia-title {
+          font-size: 13px;
+          color: #fef3c7;
+          font-weight: 700;
+          margin-bottom: 2px;
+          letter-spacing: 0.03em;
+        }
+        .tradition-title {
+          font-family: 'Cinzel', 'Plus Jakarta Sans', serif;
+          font-size: 19px;
+          font-weight: 800;
+          color: white;
+          margin: 0;
+          line-height: 1.25;
+          letter-spacing: 0.02em;
+        }
+        .tradition-body {
+          padding: 18px 22px 20px;
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          flex: 1;
+          gap: 12px;
+          background: #ffffff;
         }
-        .store-name {
-          font-size: 14px;
-          font-weight: 700;
-          color: #1e1b2e;
+        .tradition-desc {
+          font-size: 12.5px;
+          color: #64748b;
+          line-height: 1.55;
+          margin: 0;
         }
-        .store-badge {
+        .tradition-cta {
+          margin-top: auto;
           display: inline-flex;
           align-items: center;
           gap: 6px;
-          font-size: 10px;
-          font-weight: 700;
-          color: #059669;
+          font-size: 11.5px;
+          font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.08em;
-          background: rgba(5,150,105,0.06);
-          border: 1px solid rgba(5,150,105,0.12);
-          padding: 4px 10px;
-          border-radius: 8px;
-          width: fit-content;
+          color: #b45309;
+          transition: all 0.2s;
+        }
+        .tradition-card:hover .tradition-cta {
+          color: #d97706;
+          gap: 10px;
         }
 
-        .products-grid {
+        /* ──── TOP 10 SELLING PRODUCTS ──── */
+        .top10-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
+          gap: 14px;
         }
         @media (min-width: 640px) {
-          .products-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+          .top10-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
         }
         @media (min-width: 1024px) {
-          .products-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+          .top10-grid { grid-template-columns: repeat(5, 1fr); gap: 18px; }
         }
-        .product-card {
+        .top10-card {
           background: white;
-          border: 1px solid rgba(79,70,229,0.1);
-          border-radius: 18px;
+          border: 1px solid rgba(217, 119, 6, 0.16);
+          border-radius: 20px;
           overflow: hidden;
           cursor: pointer;
           text-decoration: none;
-          color: #1e1b2e;
-          transition: all 0.3s ease;
-          box-shadow: 0 2px 12px rgba(79,70,229,0.04);
+          color: #0f172a;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
           display: flex;
           flex-direction: column;
           position: relative;
         }
-        .product-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 6px 24px rgba(99,102,241,0.12);
-          border-color: rgba(99,102,241,0.2);
+        .top10-card:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 14px 30px rgba(180, 83, 9, 0.14);
+          border-color: #f59e0b;
         }
-        .product-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background: linear-gradient(90deg, transparent, rgba(79,70,229,0.2), transparent); opacity:0; transition: opacity 0.2s; }
-        .product-card:hover::before { opacity:1; }
-        .product-image-container {
+        .card-out-of-stock {
+          opacity: 0.85;
+        }
+        .top10-rank-badge {
+          position: absolute;
+          top: 10px;
+          left: 10px;
+          z-index: 10;
+          padding: 4px 10px;
+          border-radius: 8px;
+          font-size: 9.5px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+        .rank-gold {
+          background: linear-gradient(135deg, #d97706, #f59e0b, #b45309);
+          color: #ffffff;
+          box-shadow: 0 4px 12px rgba(217, 119, 6, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .rank-silver {
+          background: linear-gradient(135deg, #334155, #64748b, #475569);
+          color: #ffffff;
+          box-shadow: 0 4px 10px rgba(71, 85, 105, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .rank-bronze {
+          background: linear-gradient(135deg, #9a3412, #c2410c, #7c2d12);
+          color: #ffffff;
+          box-shadow: 0 4px 10px rgba(194, 65, 12, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .rank-standard {
+          background: rgba(15, 23, 42, 0.82);
+          backdrop-filter: blur(8px);
+          color: #fde68a;
+          border: 1px solid rgba(254, 240, 138, 0.3);
+        }
+        .top10-image-container {
           width: 100%;
           aspect-ratio: 1;
-          background: #f8fafc;
+          background: #fafaf9;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -614,39 +847,392 @@ export default function Home() {
           overflow: hidden;
           padding: 16px;
         }
-        .product-image {
+        .top10-image {
           width: 100%;
           height: 100%;
           object-fit: contain;
+          transition: transform 0.4s ease;
         }
-        .product-content {
-          padding: 12px 12px 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
+        .top10-card:hover .top10-image {
+          transform: scale(1.06);
         }
-        .product-name {
-          font-size: 13px;
-          font-weight: 600;
-          color: #1e1b2e;
-          line-height: 1.4;
-        }
-        .product-price-row {
+        .top10-placeholder {
           display: flex;
           align-items: center;
-          gap: 8px;
+          justify-content: center;
         }
-        .product-price {
-          font-family: 'Bebas Neue', sans-serif;
-          font-size: 20px;
+        .top10-discount-pill {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          background: #dc2626;
+          color: white;
+          font-size: 10px;
+          font-weight: 800;
+          padding: 3px 8px;
+          border-radius: 6px;
+          box-shadow: 0 2px 8px rgba(220, 38, 38, 0.35);
+        }
+        .top10-content {
+          padding: 14px 14px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          flex: 1;
+        }
+        .top10-seller {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 10.5px;
           font-weight: 700;
-          color: #4f46e5;
-          letter-spacing: 0.03em;
+          color: #b45309;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
-        .product-mrp {
+        .top10-seller-icon {
+          font-size: 11px;
+        }
+        .top10-title {
+          font-size: 13.5px;
+          font-weight: 700;
+          color: #0f172a;
+          line-height: 1.35;
+          margin: 0;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          min-height: 36px;
+        }
+        .top10-rating-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11px;
+        }
+        .top10-stars {
+          display: inline-flex;
+          align-items: center;
+          gap: 2px;
+          color: #d97706;
+          font-weight: 800;
+        }
+        .top10-stars .star-icon {
+          color: #f59e0b;
           font-size: 12px;
-          color: #9ca3af;
+        }
+        .rating-count {
+          color: #94a3b8;
+          font-size: 10.5px;
+        }
+        .top10-stock-out {
+          margin-left: auto;
+          font-size: 9.5px;
+          font-weight: 800;
+          color: #b91c1c;
+          background: #fee2e2;
+          padding: 1px 6px;
+          border-radius: 4px;
+          text-transform: uppercase;
+        }
+        .top10-stock-low {
+          margin-left: auto;
+          font-size: 9.5px;
+          font-weight: 800;
+          color: #c2410c;
+          background: #ffedd5;
+          padding: 1px 6px;
+          border-radius: 4px;
+        }
+        .top10-price-row {
+          display: flex;
+          align-items: baseline;
+          gap: 8px;
+          margin-top: 2px;
+        }
+        .top10-price {
+          font-family: 'Bebas Neue', sans-serif;
+          font-size: 22px;
+          font-weight: 700;
+          color: #b91c1c;
+          letter-spacing: 0.02em;
+        }
+        .top10-mrp {
+          font-size: 12px;
+          color: #94a3b8;
           text-decoration: line-through;
+        }
+        .top10-action-btn {
+          margin-top: 6px;
+          padding: 8px 12px;
+          border-radius: 10px;
+          background: #fef3c7;
+          border: 1px solid #fde68a;
+          color: #92400e;
+          font-size: 11px;
+          font-weight: 800;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          transition: all 0.2s;
+        }
+        .top10-card:hover .top10-action-btn {
+          background: #b45309;
+          color: #ffffff;
+          border-color: #b45309;
+        }
+
+        /* ──── CATALOG SEE MORE CTA BANNER ──── */
+        .catalog-see-more-banner {
+          background: 
+            radial-gradient(circle at 10% 20%, rgba(217, 119, 6, 0.25) 0%, transparent 40%),
+            radial-gradient(circle at 90% 80%, rgba(185, 28, 28, 0.25) 0%, transparent 40%),
+            linear-gradient(135deg, #111827 0%, #1e1b4b 50%, #2b1122 100%);
+          border: 1px solid rgba(245, 158, 11, 0.35);
+          border-radius: 24px;
+          padding: 36px 32px;
+          color: white;
+          margin-top: 36px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          align-items: center;
+          gap: 24px;
+          box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+          position: relative;
+          overflow: hidden;
+        }
+        @media (min-width: 768px) {
+          .catalog-see-more-banner { flex-direction: row; text-align: left; }
+        }
+        .catalog-see-more-content {
+          max-width: 650px;
+        }
+        .catalog-see-more-badge {
+          display: inline-flex;
+          background: rgba(245, 158, 11, 0.2);
+          border: 1px solid rgba(245, 158, 11, 0.4);
+          color: #fde68a;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+          padding: 4px 12px;
+          border-radius: 100px;
+          margin-bottom: 10px;
+        }
+        .catalog-see-more-title {
+          font-family: 'Cinzel', 'Plus Jakarta Sans', serif;
+          font-size: clamp(20px, 3vw, 28px);
+          font-weight: 800;
+          color: #ffffff;
+          margin: 0 0 8px;
+          line-height: 1.25;
+        }
+        .catalog-see-more-desc {
+          font-size: 13.5px;
+          color: #cbd5e1;
+          margin: 0;
+          line-height: 1.55;
+        }
+        .catalog-see-more-btn {
+          background: linear-gradient(135deg, #f59e0b, #d97706, #b45309);
+          color: white;
+          padding: 16px 32px;
+          border-radius: 14px;
+          font-weight: 800;
+          font-size: 12.5px;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          text-decoration: none;
+          box-shadow: 0 8px 24px rgba(217, 119, 6, 0.45);
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          flex-shrink: 0;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .catalog-see-more-btn:hover {
+          transform: translateY(-2px) scale(1.02);
+          box-shadow: 0 14px 32px rgba(217, 119, 6, 0.6);
+        }
+
+        /* ──── POPULAR SELLERS (BOUTIQUE MERCHANT CARDS) ──── */
+        .boutique-stores-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 14px;
+        }
+        @media (min-width: 640px) {
+          .boutique-stores-grid { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        }
+        @media (min-width: 1024px) {
+          .boutique-stores-grid { grid-template-columns: repeat(4, 1fr); gap: 22px; }
+        }
+        .boutique-store-card {
+          background: white;
+          border: 1px solid rgba(217, 119, 6, 0.16);
+          border-radius: 22px;
+          overflow: hidden;
+          text-decoration: none;
+          display: flex;
+          flex-direction: column;
+          transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+          box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+          position: relative;
+        }
+        .boutique-store-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 16px 36px rgba(180, 83, 9, 0.15);
+          border-color: #f59e0b;
+        }
+        .boutique-store-banner {
+          height: 80px;
+          background: linear-gradient(135deg, #7c2d12, #991b1b, #1e1b4b);
+          position: relative;
+          display: flex;
+          justify-content: flex-end;
+          padding: 8px 12px;
+        }
+        .boutique-banner-pattern {
+          position: absolute;
+          inset: 0;
+          background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.15) 0%, transparent 60%);
+          pointer-events: none;
+        }
+        .boutique-state-pill {
+          position: relative;
+          z-index: 1;
+          font-size: 8.5px;
+          font-weight: 800;
+          letter-spacing: 0.1em;
+          color: #fef08a;
+          background: rgba(0, 0, 0, 0.35);
+          backdrop-filter: blur(4px);
+          padding: 3px 8px;
+          border-radius: 100px;
+          height: fit-content;
+          border: 1px solid rgba(254, 240, 138, 0.3);
+        }
+        .boutique-avatar-wrapper {
+          display: flex;
+          justify-content: center;
+          margin-top: -40px;
+          position: relative;
+          z-index: 2;
+        }
+        .boutique-avatar-ring {
+          width: 78px;
+          height: 78px;
+          border-radius: 50%;
+          background: white;
+          padding: 3px;
+          border: 2.5px solid #f59e0b;
+          box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+        }
+        .boutique-avatar-img {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+        .boutique-avatar-fallback {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #fef3c7, #fde68a);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .boutique-initial {
+          color: #92400e;
+          font-weight: 900;
+          font-size: 24px;
+          font-family: 'Cinzel', serif;
+        }
+        .boutique-content {
+          padding: 14px 16px 18px;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 6px;
+          flex: 1;
+        }
+        .boutique-name {
+          font-size: 14.5px;
+          font-weight: 800;
+          color: #0f172a;
+          margin: 0;
+          line-height: 1.3;
+        }
+        .boutique-badges-row {
+          display: flex;
+          gap: 6px;
+          flex-wrap: wrap;
+          justify-content: center;
+          margin-top: 2px;
+        }
+        .boutique-verified-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 9.5px;
+          font-weight: 700;
+          color: #047857;
+          background: #ecfdf5;
+          border: 1px solid #a7f3d0;
+          padding: 2px 7px;
+          border-radius: 100px;
+        }
+        .boutique-city-badge {
+          display: inline-flex;
+          align-items: center;
+          font-size: 9.5px;
+          font-weight: 700;
+          color: #92400e;
+          background: #fef3c7;
+          border: 1px solid #fde68a;
+          padding: 2px 7px;
+          border-radius: 100px;
+        }
+        .boutique-desc {
+          font-size: 11.5px;
+          color: #64748b;
+          line-height: 1.45;
+          margin: 4px 0 6px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .boutique-action {
+          margin-top: auto;
+          padding: 7px 14px;
+          border-radius: 10px;
+          background: #fff7ed;
+          border: 1px solid #fed7aa;
+          color: #c2410c;
+          font-size: 10.5px;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          transition: all 0.2s;
+        }
+        .boutique-store-card:hover .boutique-action {
+          background: #ea580c;
+          color: white;
+          border-color: #ea580c;
         }
 
         .offers {
@@ -828,7 +1414,7 @@ export default function Home() {
 
       {/* Top Ticker */}
       <div className="top-ticker">
-        <span>✦ Free Delivery on ₹{freeDeliveryAbove}+ • 7-Day Returns • 100% Secure Checkout</span>
+        <span>✦ 100% Authentic Odisha Crafts & Handlooms • Fast Delivery Across All 30 Districts • Cash on Delivery</span>
         <div className="ticker-right">
           <Link to="/orders" className="ticker-link">Track Order</Link>
           <a href={`https://wa.me/${CONFIG.SUPPORT_WHATSAPP}`} target="_blank" rel="noopener noreferrer" className="ticker-link">24/7 Support</a>
@@ -839,37 +1425,82 @@ export default function Home() {
       <section className="hero relative overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -left-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl floating"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl floating" style={{ animationDelay: '3s' }}></div>
+          <div className="absolute -top-20 -left-20 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl floating"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-red-600/15 rounded-full blur-3xl floating" style={{ animationDelay: '3s' }}></div>
         </div>
         <div className="hero-inner">
           <div className="hero-left">
             <div className="hero-eyebrow">
-          <span className="dot"></span>
-          <span>Odisha's Premium Marketplace</span>
-        </div>
+              <span className="dot"></span>
+              <span>THE PRIDE OF UTKALA • ଓଡ଼ିଶାର ନିଜସ୍ଵ ମାର୍କେଟପ୍ଲେସ୍</span>
+            </div>
+            
             <h1 className="hero-title">
-              Shop the Best of <span className="accent">Odisha</span>
+              Experience The Soul of <span className="accent">Odisha</span>
             </h1>
+            
+            <div className="hero-odia-subtitle">
+              ଓଡ଼ିଶାର ଶ୍ରେଷ୍ଠ କାରିଗରୀ, ବସ୍ତ୍ର ଓ ଉତ୍ପାଦ ଏବେ ଆପଣଙ୍କ ଦ୍ୱାରରେ
+            </div>
+
             <p className="hero-desc">
-              Experience premium shopping with curated products from trusted local stores. Enjoy fast delivery, secure payments, and exclusive deals across Odisha.
+              Direct from master Sambalpuri weavers, Cuttack silver filigree artisans, Raghurajpur folk painters, Puri confectionery masters, and trusted merchants across all 30 districts of Odisha.
             </p>
+
+            {/* Hero Search */}
+            <form onSubmit={handleSearch} className="hero-search">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search Sambalpuri sarees, Cuttack silver filigree, Pattachitra, Puri khaja..."
+                className="hero-search-input"
+              />
+              <button type="submit" className="hero-search-btn">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span>Search</span>
+              </button>
+            </form>
+
+            {/* Quick Suggestions */}
+            <div className="hero-quick-tags">
+              <span className="hero-quick-label">Trending Now:</span>
+              {[
+                { label: '🥻 Sambalpuri Saree', q: 'Sambalpuri' },
+                { label: '✨ Tarakasi Silver', q: 'Silver' },
+                { label: '🎨 Pattachitra Art', q: 'Pattachitra' },
+                { label: '🥟 Puri Khaja', q: 'Khaja' },
+                { label: '🌿 Kandhamal Haldi', q: 'Organic' }
+              ].map((tag, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => navigate(`/products?search=${encodeURIComponent(tag.q)}`)}
+                  className="hero-quick-pill"
+                >
+                  {tag.label}
+                </button>
+              ))}
+            </div>
 
             <div className="hero-cta">
               <Link to="/products" className="btn-primary">
-                Explore Products
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                Explore All Products
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
               <Link to="/about" className="btn-secondary">
-                About SmartOdisha
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                Our Story & Heritage
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
             </div>
           </div>
+
           <div className="hero-right">
             {heroSlides.length > 0 ? (
               <div className="hero-slider-container">
@@ -908,99 +1539,316 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features Bar */}
       <section className="features">
         <div className="feature-card">
-          <div className="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-            </svg>
+          <div className="feature-icon" style={{ background: '#fef3c7', color: '#b45309' }}>
+            <span style={{ fontSize: '24px' }}>🚀</span>
           </div>
           <div className="feature-text">
-            <h4>Free Delivery</h4>
-            <p>On orders above ₹{freeDeliveryAbove}</p>
+            <h4>All 30 Districts</h4>
+            <p>Fast doorstep delivery across Odisha</p>
           </div>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-            </svg>
+          <div className="feature-icon" style={{ background: '#fee2e2', color: '#b91c1c' }}>
+            <span style={{ fontSize: '24px' }}>🥻</span>
           </div>
           <div className="feature-text">
-            <h4>Easy Returns</h4>
-            <p>7-day hassle-free returns</p>
+            <h4>100% Genuine Heritage</h4>
+            <p>Direct from verified artisans & stores</p>
           </div>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-            </svg>
+          <div className="feature-icon" style={{ background: '#ecfdf5', color: '#047857' }}>
+            <span style={{ fontSize: '24px' }}>💵</span>
           </div>
           <div className="feature-text">
-            <h4>Secure Payments</h4>
-            <p>100% encrypted checkout</p>
+            <h4>Cash on Delivery</h4>
+            <p>Pay when order arrives safely</p>
           </div>
         </div>
         <div className="feature-card">
-          <div className="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-            </svg>
+          <div className="feature-icon" style={{ background: '#eff6ff', color: '#1d4ed8' }}>
+            <span style={{ fontSize: '24px' }}>🛡️</span>
           </div>
           <div className="feature-text">
-            <h4>Fast Shipping</h4>
-            <p>Reliable delivery across Odisha</p>
+            <h4>7-Day Easy Returns</h4>
+            <p>Hassle-free guarantee & support</p>
           </div>
         </div>
       </section>
 
+      {/* ──── ODISHA TRADITIONS & HERITAGE SHOWCASE ──── */}
+      <section className="section-wrapper odisha-traditions-section">
+        <div className="section-header">
+          <div className="section-title-group">
+            <span className="section-eyebrow odisha-badge">
+              <span className="dot"></span>
+              <span>✨ HERITAGE & CRAFTS • ଓଡ଼ିଶାର ଐତିହ୍ୟ ଓ ପରମ୍ପରା</span>
+            </span>
+            <h2 className="section-title">Treasures & Traditions of Odisha</h2>
+            <p className="section-subtitle">
+              Explore iconic GI-tagged crafts, legendary weaves, sacred temple delicacies, and tribal forest riches
+            </p>
+          </div>
+          <Link to="/products" className="section-btn hidden sm:inline-flex">
+            Browse All Traditions
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+        </div>
 
+        <div className="traditions-grid">
+          {odishaTraditions.map((tradition) => (
+            <Link
+              key={tradition.id}
+              to={`/products?search=${encodeURIComponent(tradition.search)}`}
+              className="tradition-card"
+            >
+              <div className={`tradition-header bg-gradient-to-br ${tradition.color}`}>
+                <div className="flex items-center justify-between">
+                  <span className="tradition-icon-badge">{tradition.icon}</span>
+                  <span className="tradition-gi-tag">{tradition.badge}</span>
+                </div>
+                <div className="tradition-odia-title">{tradition.odiaTitle}</div>
+                <h3 className="tradition-title">{tradition.title}</h3>
+              </div>
+              <div className="tradition-body">
+                <p className="tradition-desc">{tradition.desc}</p>
+                <div className="tradition-cta">
+                  <span>Explore Collection</span>
+                  <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
 
-      {/* Our Popular Sellers */}
-      {stores.length > 0 && (
-        <section className="section-wrapper">
+      {/* ──── TOP 10 SELLING PRODUCTS ──── */}
+      {top10Products.length > 0 && (
+        <section className="section-wrapper top-products-section">
           <div className="section-header">
             <div className="section-title-group">
-              <span className="section-eyebrow">Trusted Partners</span>
-              <h2 className="section-title">Popular Sellers</h2>
-              <p className="section-subtitle">Shop from verified local sellers offering the best products and service</p>
+              <span className="section-eyebrow odisha-badge">
+                <span className="dot"></span>
+                <span>🔥 TOP BESTSELLERS • ସର୍ବାଧିକ ବିକ୍ରିତ ଉତ୍ପାଦ</span>
+              </span>
+              <h2 className="section-title">Top 10 Best Selling Products</h2>
+              <p className="section-subtitle">
+                Most loved authentic treasures, handlooms, and everyday favourites ordered by customers across Odisha
+              </p>
             </div>
+            <Link to="/products" className="section-btn hidden sm:inline-flex">
+              View All Products
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
           </div>
-          <div className="stores-grid">
-            {stores.map((store) => (
-              <Link
-                key={store._id}
-                to={`/products?store=${store._id}`}
-                className="store-card"
-              >
-                <div className="store-image-container">
-                  {store.sellerAvatar?.url || store.logo || store.image?.url ? (
-                    <img
-                      src={getImageUrl(store.sellerAvatar?.url || store.logo || store.image?.url, 600)}
-                      alt={store.name}
-                      className="store-image"
-                    />
-                  ) : (
-                    <div className="store-placeholder">
-                      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="1.5">
-                        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+
+          <div className="top10-grid">
+            {top10Products.map((product, index) => {
+              const rank = index + 1
+              const rankClass = rank === 1 ? 'rank-gold' : rank === 2 ? 'rank-silver' : rank === 3 ? 'rank-bronze' : 'rank-standard'
+              const rankLabel = rank === 1 ? '👑 #1 BESTSELLER' : rank === 2 ? '🥈 #2 TRENDING' : rank === 3 ? '🥉 #3 HOT PICK' : `#${rank} CHOICE`
+              const discount = product.discountPercent || (product.mrp && product.price && product.mrp > product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0)
+              const isOutOfStock = product.stock !== undefined && product.stock <= 0
+
+              return (
+                <Link
+                  key={product._id}
+                  to={`/product/${product.slug || product._id}`}
+                  className={`top10-card ${isOutOfStock ? 'card-out-of-stock' : ''}`}
+                >
+                  {/* Rank Ribbon */}
+                  <div className={`top10-rank-badge ${rankClass}`}>
+                    {rankLabel}
+                  </div>
+
+                  {/* Product Image */}
+                  <div className="top10-image-container">
+                    {product.images && product.images.length > 0 ? (
+                      <img
+                        src={getImageUrl(product.images[0]?.url || product.images[0], 500)}
+                        alt={product.name}
+                        className="top10-image"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="top10-placeholder">
+                        <svg width="48" height="48" fill="none" stroke="#cbd5e1" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                      </div>
+                    )}
+                    {discount > 0 && (
+                      <span className="top10-discount-pill">
+                        {discount}% OFF
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Product Content */}
+                  <div className="top10-content">
+                    {/* Merchant Tag */}
+                    <div className="top10-seller">
+                      <span className="top10-seller-icon">📍</span>
+                      <span className="truncate">{product.storeName || 'SmartOdisha Verified'}</span>
+                    </div>
+
+                    {/* Product Name */}
+                    <h3 className="top10-title" title={product.name}>
+                      {product.name}
+                    </h3>
+
+                    {/* Ratings */}
+                    <div className="top10-rating-row">
+                      <div className="top10-stars">
+                        <span className="star-icon">★</span>
+                        <span className="rating-val">{product.ratingAvg > 0 ? product.ratingAvg.toFixed(1) : '4.8'}</span>
+                      </div>
+                      <span className="rating-count">({product.ratingCount || 15}+ reviews)</span>
+                      {isOutOfStock ? (
+                        <span className="top10-stock-out">Out of stock</span>
+                      ) : product.stock !== undefined && product.stock <= 5 ? (
+                        <span className="top10-stock-low">Only {product.stock} left</span>
+                      ) : null}
+                    </div>
+
+                    {/* Pricing */}
+                    <div className="top10-price-row">
+                      <div className="top10-price">₹{product.price?.toLocaleString('en-IN')}</div>
+                      {product.mrp && product.mrp > product.price && (
+                        <div className="top10-mrp">₹{product.mrp?.toLocaleString('en-IN')}</div>
+                      )}
+                    </div>
+
+                    {/* CTA button */}
+                    <div className="top10-action-btn">
+                      <span>View Details</span>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                       </svg>
                     </div>
-                  )}
-                </div>
-                <div className="store-content">
-                  <div className="store-name">{store.name}</div>
-                  <div className="store-badge">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2">
-                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    Verified
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* Catalog CTA ("See More") */}
+          <div className="catalog-see-more-banner">
+            <div className="catalog-see-more-content">
+              <div className="catalog-see-more-badge">
+                <span>✦ COMPLETE ODISHA MARKETPLACE</span>
+              </div>
+              <h3 className="catalog-see-more-title">
+                Explore Over 1,000+ Authentic Odisha Creations
+              </h3>
+              <p className="catalog-see-more-desc">
+                From handcrafted Sambalpuri silk to filigree jewelry, temple sweets, tribal forest delicacies, and everyday essentials — shop direct from local creators.
+              </p>
+            </div>
+            <Link to="/products" className="catalog-see-more-btn">
+              <span>Explore Full Catalog (1,000+ Products)</span>
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* ──── POPULAR SELLERS (BOUTIQUE MERCHANTS) ──── */}
+      {stores.length > 0 && (
+        <section className="section-wrapper popular-sellers-section">
+          <div className="section-header">
+            <div className="section-title-group">
+              <span className="section-eyebrow odisha-badge">
+                <span className="dot"></span>
+                <span>🏛️ VERIFIED LOCAL MERCHANTS • ପ୍ରତିଷ୍ଠିତ ବ୍ୟବସାୟୀ</span>
+              </span>
+              <h2 className="section-title">Popular Odisha Sellers</h2>
+              <p className="section-subtitle">
+                Support authentic regional artisans, heritage boutiques, and verified local stores across Odisha
+              </p>
+            </div>
+          </div>
+
+          <div className="boutique-stores-grid">
+            {stores.map((store) => {
+              const avatarSrc = store.sellerAvatar?.url || store.logo || store.image?.url
+              const city = store.address?.city || 'Odisha'
+
+              return (
+                <Link
+                  key={store._id}
+                  to={`/products?store=${store._id}`}
+                  className="boutique-store-card"
+                >
+                  {/* Card Header Pattern Banner */}
+                  <div className="boutique-store-banner">
+                    <div className="boutique-banner-pattern"></div>
+                    <span className="boutique-state-pill">ODISHA VERIFIED</span>
+                  </div>
+
+                  {/* Overlapping Circular Avatar */}
+                  <div className="boutique-avatar-wrapper">
+                    <div className="boutique-avatar-ring">
+                      {avatarSrc ? (
+                        <img
+                          src={getImageUrl(avatarSrc, 400)}
+                          alt={store.name}
+                          className="boutique-avatar-img"
+                        />
+                      ) : (
+                        <div className="boutique-avatar-fallback">
+                          <span className="boutique-initial">
+                            {store.name?.charAt(0)?.toUpperCase() || 'S'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Store Details */}
+                  <div className="boutique-content">
+                    <h3 className="boutique-name" title={store.name}>
+                      {store.name}
+                    </h3>
+
+                    <div className="boutique-badges-row">
+                      <span className="boutique-verified-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        Verified Partner
+                      </span>
+                      <span className="boutique-city-badge">
+                        📍 {city}
+                      </span>
+                    </div>
+
+                    <p className="boutique-desc">
+                      Authentic local craftsmanship & premium collections directly from trusted Odisha merchant.
+                    </p>
+
+                    {/* Action Link */}
+                    <div className="boutique-action">
+                      <span>Visit Store</span>
+                      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         </section>
       )}
