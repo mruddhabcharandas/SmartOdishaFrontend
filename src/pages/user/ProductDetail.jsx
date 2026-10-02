@@ -192,6 +192,22 @@ const STYLES = `
     letter-spacing: 0.03em;
   }
 
+  .pd-stage-badge-zoom {
+    position: absolute; bottom: 12px; right: 12px; z-index: 10;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 11px; font-weight: 600;
+    padding: 5px 11px; border-radius: 20px;
+    display: flex; align-items: center; gap: 5px;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: all 0.2s ease;
+  }
+  .pd-stage:hover .pd-stage-badge-zoom { color: var(--primary); border-color: rgba(79,70,229,0.3); }
+
   .pd-img-skeleton {
     position: absolute; inset: 0;
     background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
@@ -321,14 +337,22 @@ const STYLES = `
   /* Stock */
   .pd-stock {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 6px 12px; border-radius: 6px;
-    font-size: 12px; font-weight: 600;
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.02em;
     margin-top: 14px;
   }
-  .pd-stock.in { background: #dcfce7; color: #166534; }
-  .pd-stock.low { background: #fef3c7; color: #b45309; }
-  .pd-stock.out { background: #fee2e2; color: #b91c1c; }
-  .pd-stock-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .pd-stock.in { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+  .pd-stock.low { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+  .pd-stock.out { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+  .pd-stock-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .pd-stock.in .pd-stock-dot { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25); animation: pdPulse 2s infinite; }
+  .pd-stock.low .pd-stock-dot { box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25); }
+  @keyframes pdPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
 
   /* Action Buttons in Info Card (Share & Wishlist) */
   .pd-head-actions {
@@ -457,23 +481,29 @@ const STYLES = `
   
   /* Circular Color Swatch */
   .pd-color-swatch {
-    width: 40px; height: 40px; border-radius: 50%;
-    border: 2px solid var(--border); background: var(--card);
-    cursor: pointer; transition: all 0.2s ease;
+    width: 42px; height: 42px; border-radius: 50%;
+    border: 2px solid #e2e8f0; background: var(--card);
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative; display: flex; align-items: center; justify-content: center;
     padding: 0;
   }
-  .pd-color-swatch:hover:not(.disabled) { border-color: var(--primary); }
+  .pd-color-swatch:hover:not(.disabled) { border-color: var(--primary); transform: scale(1.06); }
   .pd-color-swatch.on {
     border-color: var(--primary);
-    box-shadow: 0 0 0 2px var(--primary-dim);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
   }
   .pd-color-swatch-inner {
     width: calc(100% - 8px); height: calc(100% - 8px); border-radius: 50%;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .pd-color-swatch.oos { opacity: 0.6; }
+  .pd-swatch-oos-line {
+    position: absolute; width: 100%; height: 2px;
+    background: #ef4444; transform: rotate(-45deg); opacity: 0.85;
+    pointer-events: none;
   }
   .pd-color-swatch.disabled {
-    opacity: 0.4; cursor: not-allowed;
+    opacity: 0.35; cursor: not-allowed; pointer-events: none;
   }
   .pd-color-swatch.disabled::after {
     content: ''; position: absolute; width: 100%; height: 2px;
@@ -482,19 +512,33 @@ const STYLES = `
 
   /* Option Box Card */
   .pd-chip-card {
-    padding: 10px 16px; border: 2px solid var(--border);
+    padding: 9px 15px; border: 1.5px solid #e2e8f0;
     background: var(--card); color: var(--ink);
-    font-size: 14px; font-weight: 600; border-radius: 8px;
-    cursor: pointer; transition: all 0.2s ease; font-family: inherit;
+    font-size: 13.5px; font-weight: 600; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); font-family: inherit;
     line-height: 1.2; text-align: center;
-    min-width: 80px;
+    min-width: 68px; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
   }
-  .pd-chip-card:hover:not(.disabled):not(.on) { border-color: var(--primary); background: var(--bg2); }
+  .pd-chip-card:hover:not(.disabled):not(.on) { border-color: var(--primary); background: #f8fafc; transform: translateY(-1px); }
   .pd-chip-card.on {
-    border-color: var(--primary); background: var(--primary-dim);
-    color: var(--primary);
+    border-color: var(--primary); background: rgba(79, 70, 229, 0.08);
+    color: var(--primary); box-shadow: 0 0 0 1px var(--primary);
   }
-  .pd-chip-card.disabled { opacity: 0.4; cursor: not-allowed; text-decoration: line-through; }
+  .pd-chip-card.oos {
+    color: #94a3b8;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+  }
+  .pd-chip-card.oos.on {
+    border-color: #ef4444;
+    background: #fef2f2;
+    color: #b91c1c;
+    box-shadow: 0 0 0 1px #ef4444;
+  }
+  .pd-chip-oos-tag {
+    font-size: 9.5px; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 0.02em;
+  }
+  .pd-chip-card.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; text-decoration: line-through; }
 
   /* ── Delivery ── */
   .pd-del-body { padding: 20px; }
@@ -538,14 +582,15 @@ const STYLES = `
   .pd-pin-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .pd-del-result {
-    margin-top: 16px; padding: 12px 16px;
-    border-radius: 8px; font-size: 13px;
+    margin-top: 16px; padding: 14px 16px;
+    border-radius: 10px; font-size: 13px;
     line-height: 1.5;
   }
-  .pd-del-result.ok { background: var(--green-dim); color: var(--green); }
-  .pd-del-result.fail { background: rgba(239,68,68,0.08); color: var(--red); }
-  .pd-del-eta { font-weight: 600; display: flex; align-items: center; gap: 8px; }
-  .pd-del-details { font-size: 12px; color: var(--ink2); margin-top: 6px; padding-left: 20px; }
+  .pd-del-result.ok { background: #ecfdf5; border: 1px solid #d1fae5; color: #065f46; }
+  .pd-del-result.fail { background: #fef2f2; border: 1px solid #fee2e2; color: #991b1b; }
+  .pd-del-result.out-of-stock { background: #fff1f2; border: 1px solid #ffe4e6; color: #9f1239; }
+  .pd-del-eta { font-weight: 700; display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
+  .pd-del-details { font-size: 12px; color: var(--ink2); margin-top: 6px; padding-left: 23px; font-weight: 500; }
 
   /* ── Tabs ── */
   .pd-tabs-wrap { padding: 20px 20px 0; }
@@ -638,6 +683,17 @@ const STYLES = `
   .pd-btn-buy:active:not(:disabled) { transform: scale(0.98); }
   .pd-btn-cart:disabled, .pd-btn-buy:disabled { background: #f1f5f9; color: var(--ink4); cursor: not-allowed; box-shadow: none; }
 
+  /* Out of Stock CTA */
+  .pd-btn-oos {
+    width: 100%; padding: 16px 20px;
+    background: #fef2f2; color: #b91c1c;
+    border: 1.5px solid #fecaca; border-radius: 12px;
+    font-size: 14px; font-weight: 700; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    cursor: not-allowed; text-transform: uppercase; letter-spacing: 0.5px;
+    box-shadow: none; user-select: none;
+  }
+
   /* ── Mobile Sticky CTA ── */
   .pd-sticky-cta {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
@@ -677,6 +733,16 @@ const STYLES = `
   .pd-mob-buy:hover:not(:disabled) { transform: translateY(-2px); }
   .pd-mob-buy:active:not(:disabled) { transform: scale(0.98); }
   .pd-mob-cart:disabled, .pd-mob-buy:disabled { background: #f1f5f9; color: var(--ink4); cursor: not-allowed; box-shadow: none; }
+
+  .pd-mob-oos {
+    flex: 1; padding: 14px;
+    background: #fef2f2; color: #b91c1c;
+    border: 1.5px solid #fecaca; border-radius: 12px;
+    font-size: 13px; font-weight: 700; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    cursor: not-allowed; text-transform: uppercase; letter-spacing: 0.5px;
+    user-select: none;
+  }
 
   /* ── Hide desktop CTA on mobile ── */
   .pd-desktop-cta { display: none; }
@@ -830,7 +896,7 @@ export default function ProductDetail() {
 
   const [error, setError] = useState(null);
   const [selected, setSelected] = useState({});
-  const [imgLoading, setImgLoading] = useState(true);
+  const [imgLoading, setImgLoading] = useState(false);
   const [activeVariant, setActiveVariant] = useState(null);
   const [activeImg, setActiveImg] = useState(0);
   const [lightbox, setLightbox] = useState(false);
@@ -960,12 +1026,56 @@ export default function ProductDetail() {
   const hasSpecifications = p && Array.isArray(p.specifications) && p.specifications.length > 0;
   const hasDescription = p?.description?.length > 0;
 
-  useEffect(() => { setImgLoading(true); }, [activeImg, activeVariant, matchedVariant]);
-
   const imgs = useMemo(() => {
     if (matchedVariant?.images?.length > 0) return matchedVariant.images;
     return Array.isArray(p?.images) ? p.images : [];
   }, [p, matchedVariant]);
+
+  const currentImgUrl = useMemo(() => {
+    if (!imgs || imgs.length === 0) return '';
+    const imgObj = imgs[activeImg] || imgs[0];
+    return imgObj ? getImageUrl(imgObj, 800) : '';
+  }, [imgs, activeImg]);
+
+  const previewImgUrl = useMemo(() => {
+    if (!imgs || imgs.length === 0) return '';
+    const imgObj = imgs[activeImg] || imgs[0];
+    return imgObj ? getImageUrl(imgObj, 400) : '';
+  }, [imgs, activeImg]);
+
+  const prevImgUrlRef = useRef('');
+
+  useEffect(() => {
+    if (!currentImgUrl) {
+      setImgLoading(false);
+      return;
+    }
+    if (prevImgUrlRef.current === currentImgUrl) return;
+    prevImgUrlRef.current = currentImgUrl;
+
+    const probe = new Image();
+    probe.src = currentImgUrl;
+    if (probe.complete && probe.naturalWidth > 0) {
+      setImgLoading(false);
+    } else {
+      setImgLoading(true);
+      probe.onload = () => setImgLoading(false);
+      probe.onerror = () => setImgLoading(false);
+    }
+  }, [currentImgUrl]);
+
+  // Preload remaining gallery images for instantaneous switching
+  useEffect(() => {
+    if (Array.isArray(imgs) && imgs.length > 1) {
+      imgs.slice(1, 6).forEach(img => {
+        const u = getImageUrl(img, 800);
+        if (u) {
+          const pre = new Image();
+          pre.src = u;
+        }
+      });
+    }
+  }, [imgs]);
 
   const touchImgRef = useRef({ x0: 0, y0: 0, active: false });
   const skipMainImgClickRef = useRef(false);
@@ -1142,14 +1252,25 @@ export default function ProductDetail() {
     return sortVariantValues(lowKey, Array.from(set));
   };
 
-  const isOptEnabled = (key, val) => {
+  const isOptExists = (key, val) => {
     if (!p?.variants?.length) return true;
     const lowKey = key.toLowerCase().trim();
-    if (lowKey === 'option') return p.variants.some(v => v.isActive !== false && v.stock > 0 && (v.sku === val || v._id === val));
+    if (lowKey === 'option') return p.variants.some(v => v.isActive !== false && (v.sku === val || v._id === val));
+    return p.variants.some(v => {
+      if (v.isActive === false) return false;
+      const vAttrs = normalizeAttrs(v.attributes, v.sku, p.attributes);
+      return Object.entries(vAttrs).some(([vk, vv]) => vk.toLowerCase().trim() === lowKey && String(vv || '').toLowerCase().trim() === String(val || '').toLowerCase().trim());
+    });
+  };
+
+  const isOptInStock = (key, val) => {
+    if (!p?.variants?.length) return (p?.stock || 0) > 0;
+    const lowKey = key.toLowerCase().trim();
+    if (lowKey === 'option') return p.variants.some(v => v.isActive !== false && (v.stock || 0) > 0 && (v.sku === val || v._id === val));
     const otherSelections = { ...selected };
     delete otherSelections[lowKey];
     return p.variants.some(v => {
-      if (v.isActive === false || v.stock <= 0) return false;
+      if (v.isActive === false || (v.stock || 0) <= 0) return false;
       const vAttrs = normalizeAttrs(v.attributes, v.sku, p.attributes);
       let matchVal = false;
       Object.entries(vAttrs).forEach(([vk, vv]) => {
@@ -1168,6 +1289,8 @@ export default function ProductDetail() {
       return false;
     });
   };
+
+  const isOptEnabled = (key, val) => isOptExists(key, val);
 
   const handleAddToCart = async () => {
     if (!isAuthenticated) { navigate('/login', { state: { from: location.pathname + location.search } }); return; }
@@ -1317,23 +1440,55 @@ export default function ProductDetail() {
 
 
 
-              {imgLoading && imgs[activeImg] && <div className="pd-img-skeleton" />}
-              {imgs[activeImg]
-                ? <img
-                    src={getImageUrl(imgs[activeImg], 800)}
-                    alt={p.name}
-                    className="pd-stage-img"
-                    loading="eager"
-                    fetchPriority="high"
-                    decoding="async"
-                    onLoad={() => setImgLoading(false)}
-                    onError={() => setImgLoading(false)}
-                    style={{ opacity: imgLoading ? 0 : 1, transition: 'opacity 0.2s ease-in-out' }}
-                  />
-                : <div className="pd-stage-no-img">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
-                  </div>
-              }
+              {imgLoading && <div className="pd-img-skeleton" />}
+              {imgLoading && previewImgUrl && (
+                <img
+                  src={previewImgUrl}
+                  alt=""
+                  aria-hidden="true"
+                  className="pd-stage-img"
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    filter: 'blur(10px)',
+                    opacity: 0.6,
+                    transform: 'scale(1.02)',
+                    pointerEvents: 'none'
+                  }}
+                />
+              )}
+              {currentImgUrl ? (
+                <img
+                  key={currentImgUrl}
+                  ref={(el) => {
+                    if (el && el.complete && el.naturalWidth > 0 && imgLoading) {
+                      setImgLoading(false);
+                    }
+                  }}
+                  src={currentImgUrl}
+                  alt={p.name}
+                  className="pd-stage-img"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  onLoad={() => setImgLoading(false)}
+                  onError={() => setImgLoading(false)}
+                  style={{
+                    opacity: imgLoading ? 0.3 : 1,
+                    filter: imgLoading ? 'blur(2px)' : 'none',
+                    transition: 'opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                  }}
+                />
+              ) : (
+                <div className="pd-stage-no-img">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+              )}
+
+              <div className="pd-stage-badge-zoom">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                Click to Zoom
+              </div>
             </div>
 
             {imgs.length > 1 && (
@@ -1440,7 +1595,11 @@ export default function ProductDetail() {
                     </>
                   )}
                 </div>
-                <div className="pd-tax">{p.gst > 0 ? `Inclusive of ${p.gst}% GST` : 'Inclusive of all taxes · Free Delhivery Shipping'}</div>
+                <div className="pd-tax">
+                  {!isAvailable
+                    ? 'Inclusive of all taxes · Currently unavailable for purchase'
+                    : (p.gst > 0 ? `Inclusive of ${p.gst}% GST` : 'Inclusive of all taxes · Free Delhivery Shipping')}
+                </div>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
@@ -1529,30 +1688,34 @@ export default function ProductDetail() {
                         </div>
                         <div className="pd-chips">
                           {opts.map((optVal, optIdx) => {
-                            const enabled = isOptEnabled(attr, optVal);
+                            const exists = isOptExists(attr, optVal);
+                            const inStock = isOptInStock(attr, optVal);
                             const isOn = selected[lowAttr]?.toLowerCase() === String(optVal).toLowerCase();
                             
                             if (isColor) {
                               return (
                                 <button
                                   key={optIdx}
-                                  className={`pd-color-swatch${isOn ? ' on' : ''}${!enabled ? ' disabled' : ''}`}
-                                  onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
-                                  disabled={!enabled}
-                                  title={String(optVal).toUpperCase()}
+                                  className={`pd-color-swatch${isOn ? ' on' : ''}${!inStock ? ' oos' : ''}${!exists ? ' disabled' : ''}`}
+                                  onClick={() => exists && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
+                                  disabled={!exists}
+                                  title={`${String(optVal).toUpperCase()}${!inStock ? ' (Out of Stock)' : ''}`}
                                 >
                                   <span className="pd-color-swatch-inner" style={{ backgroundColor: optVal.toLowerCase() }} />
+                                  {!inStock && <span className="pd-swatch-oos-line" />}
                                 </button>
                               );
                             } else {
                               return (
                                 <button
                                   key={optIdx}
-                                  className={`pd-chip-card${isOn ? ' on' : ''}${!enabled ? ' disabled' : ''}`}
-                                  onClick={() => enabled && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
-                                  disabled={!enabled}
+                                  className={`pd-chip-card${isOn ? ' on' : ''}${!inStock ? ' oos' : ''}${!exists ? ' disabled' : ''}`}
+                                  onClick={() => exists && setSelected(s => ({ ...s, [lowAttr]: String(optVal) }))}
+                                  disabled={!exists}
+                                  title={!inStock ? 'Out of Stock' : undefined}
                                 >
-                                  {String(optVal).toUpperCase()}
+                                  <span>{String(optVal).toUpperCase()}</span>
+                                  {!inStock && <span className="pd-chip-oos-tag">Sold Out</span>}
                                 </button>
                               );
                             }
@@ -1570,8 +1733,8 @@ export default function ProductDetail() {
           <div className="pd-card">
             <div className="pd-del-body">
               <div className="pd-dlabel">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '8px' }}><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-                Delivery Check
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginRight: '8px' }}><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                Delivery & Services
               </div>
 
               {user?.savedAddresses?.length > 0 ? (
@@ -1605,12 +1768,28 @@ export default function ProductDetail() {
                     className="pd-pin-input"
                   />
                   <button type="submit" className="pd-pin-btn" disabled={checkingDelivery || pincode.length !== 6}>
-                    {checkingDelivery ? '...' : 'Check'}
+                    {checkingDelivery ? 'Checking...' : 'Check'}
                   </button>
                 </form>
               )}
 
-              {deliveryInfo && (
+              {!isAvailable ? (
+                <div className="pd-del-result out-of-stock">
+                  <div className="pd-del-eta" style={{ color: '#dc2626' }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="15" y1="9" x2="9" y2="15" />
+                      <line x1="9" y1="9" x2="15" y2="15" />
+                    </svg>
+                    Currently Out of Stock
+                  </div>
+                  <div className="pd-del-details" style={{ color: '#64748b' }}>
+                    {deliveryInfo?.serviceable
+                      ? `Delivery to ${pincode || selectedAddress?.pincode || 'your location'} is supported, but this item is currently unavailable.`
+                      : 'Estimated delivery dates will be available once this item is back in stock.'}
+                  </div>
+                </div>
+              ) : deliveryInfo ? (
                 <div className={`pd-del-result ${deliveryInfo.serviceable ? 'ok' : 'fail'}`}>
                   {deliveryInfo.serviceable ? (
                     <div>
@@ -1630,7 +1809,7 @@ export default function ProductDetail() {
                     </div>
                   )}
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
 
@@ -1715,14 +1894,27 @@ export default function ProductDetail() {
 
           {/* ─ Desktop CTA ─ */}
           <div className="pd-cta pd-desktop-cta">
-            <button className="pd-btn-cart" onClick={handleAddToCart} disabled={!canAddToCart}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-              Add to Cart
-            </button>
-            <button className="pd-btn-buy" onClick={handleBuyNow} disabled={!canAddToCart}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>
-              Buy Now
-            </button>
+            {!isAvailable ? (
+              <button className="pd-btn-oos" disabled>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="15" y1="9" x2="9" y2="15" />
+                  <line x1="9" y1="9" x2="15" y2="15" />
+                </svg>
+                Currently Out of Stock
+              </button>
+            ) : (
+              <>
+                <button className="pd-btn-cart" onClick={handleAddToCart} disabled={!canAddToCart}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                  Add to Cart
+                </button>
+                <button className="pd-btn-buy" onClick={handleBuyNow} disabled={!canAddToCart}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>
+                  Buy Now
+                </button>
+              </>
+            )}
           </div>
 
         </div>
@@ -1744,10 +1936,10 @@ export default function ProductDetail() {
       )}
 
       {/* ── Lightbox ── */}
-      {lightbox && imgs[activeImg] && (
+      {lightbox && currentImgUrl && (
         <div className="pd-lb" onClick={() => setLightbox(false)}>
           <button className="pd-lb-close" onClick={() => setLightbox(false)}>×</button>
-          <img src={getImageUrl(imgs[activeImg], 1200)} alt={p.name} onClick={e => e.stopPropagation()} />
+          <img src={getImageUrl(imgs[activeImg] || imgs[0], 1200)} alt={p.name} onClick={e => e.stopPropagation()} />
         </div>
       )}
 
@@ -1758,14 +1950,27 @@ export default function ProductDetail() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2, type: 'spring', stiffness: 300, damping: 25 }}
       >
-        <button className="pd-mob-cart" onClick={handleAddToCart} disabled={!canAddToCart}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-          Add to Cart
-        </button>
-        <button className="pd-mob-buy" onClick={handleBuyNow} disabled={!canAddToCart}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>
-          Buy Now
-        </button>
+        {!isAvailable ? (
+          <div className="pd-mob-oos">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="15" y1="9" x2="9" y2="15" />
+              <line x1="9" y1="9" x2="15" y2="15" />
+            </svg>
+            Currently Out of Stock
+          </div>
+        ) : (
+          <>
+            <button className="pd-mob-cart" onClick={handleAddToCart} disabled={!canAddToCart}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              Add to Cart
+            </button>
+            <button className="pd-mob-buy" onClick={handleBuyNow} disabled={!canAddToCart}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>
+              Buy Now
+            </button>
+          </>
+        )}
       </motion.div>
 
       {/* ── Share Modal ── */}
