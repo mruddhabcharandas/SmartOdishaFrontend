@@ -61,7 +61,7 @@ export default function Home() {
       odiaTitle: 'ସମ୍ବଲପୁରୀ ବସ୍ତ୍ର',
       badge: 'GI Tagged Heritage',
       desc: 'Authentic handwoven Bandha tie-and-dye sarees, kurtas & fabrics from master weavers of Western Odisha.',
-      color: 'from-amber-600/90 to-red-800/95',
+      gradient: 'linear-gradient(135deg, #d97706 0%, #b91c1c 60%, #7f1d1d 100%)',
       accentColor: '#f59e0b',
       icon: '🥻',
       tag: 'Western Odisha Handlooms',
@@ -73,7 +73,7 @@ export default function Home() {
       odiaTitle: 'କଟକ ତାରକସି',
       badge: '500+ Yrs Legacy',
       desc: 'World-renowned Tarakasi delicate wirecraft jewelry, Konark sun wheel motifs & sacred silver mementos.',
-      color: 'from-slate-700/95 to-indigo-900/95',
+      gradient: 'linear-gradient(135deg, #334155 0%, #1e293b 50%, #1e1b4b 100%)',
       accentColor: '#38bdf8',
       icon: '✨',
       tag: 'Millennium City Jewelry',
@@ -85,7 +85,7 @@ export default function Home() {
       odiaTitle: 'ରଘୁରାଜପୁର ପଟ୍ଟଚିତ୍ର',
       badge: 'Ancient Storytelling',
       desc: 'Sacred mythological epics hand-painted on treated canvas and palm-leaf engravings with natural pigments.',
-      color: 'from-red-700/90 to-amber-900/95',
+      gradient: 'linear-gradient(135deg, #b91c1c 0%, #9a3412 60%, #451a03 100%)',
       accentColor: '#ea580c',
       icon: '🎨',
       tag: 'Heritage Folk Art',
@@ -97,7 +97,7 @@ export default function Home() {
       odiaTitle: 'ପୁରୀ ଖଜା ଓ ମିଠା',
       badge: 'Sacred Confectionery',
       desc: 'Crispy layered pheni khaja, puri gaja, and coastal Odisha delights delivered fresh with authentic temple flavours.',
-      color: 'from-amber-700/90 to-orange-950/95',
+      gradient: 'linear-gradient(135deg, #b45309 0%, #c2410c 60%, #7c2d12 100%)',
       accentColor: '#fbbf24',
       icon: '🥟',
       tag: 'Coastal Odia Flavours',
@@ -109,7 +109,7 @@ export default function Home() {
       odiaTitle: 'ପିପିଲି ଚାନ୍ଦୁଆ',
       badge: 'Vibrant Needlecraft',
       desc: 'Geometric handcrafted embroidered canopies, lanterns, decorative umbrellas & traditional home wall art.',
-      color: 'from-rose-600/90 to-purple-900/95',
+      gradient: 'linear-gradient(135deg, #e11d48 0%, #be123c 50%, #581c87 100%)',
       accentColor: '#f43f5e',
       icon: '🏮',
       tag: 'Artisan Needlework',
@@ -121,7 +121,7 @@ export default function Home() {
       odiaTitle: 'କନ୍ଧମାଳ ହଳଦୀ',
       badge: 'GI Tagged Pure Forest',
       desc: 'Medicinal high-curcumin organic golden turmeric, raw Mayurbhanj forest honey & wild tribal spices.',
-      color: 'from-emerald-700/90 to-teal-950/95',
+      gradient: 'linear-gradient(135deg, #047857 0%, #065f46 60%, #064e3b 100%)',
       accentColor: '#10b981',
       icon: '🌿',
       tag: 'Tribal Co-op Organics',
@@ -397,6 +397,7 @@ export default function Home() {
           gap: 8px;
           transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
           box-shadow: 0 8px 24px rgba(185, 28, 28, 0.35);
+        }
         .btn-primary:hover {
           transform: translateY(-2px) scale(1.02);
           box-shadow: 0 12px 30px rgba(185, 28, 28, 0.45);
@@ -1607,7 +1608,7 @@ export default function Home() {
               to={`/products?search=${encodeURIComponent(tradition.search)}`}
               className="tradition-card"
             >
-              <div className={`tradition-header bg-gradient-to-br ${tradition.color}`}>
+              <div className="tradition-header" style={{ background: tradition.gradient }}>
                 <div className="flex items-center justify-between">
                   <span className="tradition-icon-badge">{tradition.icon}</span>
                   <span className="tradition-gi-tag">{tradition.badge}</span>
