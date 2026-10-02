@@ -111,7 +111,7 @@ export default function BusinessOrders() {
       notify('Order marked as Packed successfully', 'success')
       loadOrders()
     } catch (err) {
-      notify(err.response?.data?.error || 'Failed to mark as Packed', 'error')
+      notify(err.response?.data?.message || err.response?.data?.error || 'Failed to mark as Packed', 'error')
     } finally {
       setActionLoading(null)
     }

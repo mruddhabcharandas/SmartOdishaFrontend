@@ -39,7 +39,7 @@ export default function Orders(){
         load(page)
       }
     } catch (err) {
-      notify(err.response?.data?.error || 'Failed to create shipment', 'error')
+      notify(err.response?.data?.message || err.response?.data?.error || 'Failed to create shipment', 'error')
     }
   }
 
@@ -380,17 +380,17 @@ export default function Orders(){
                                     </div>
                                     <div className="space-y-1">
                                       <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Payment Status</div>
-                                      <div className={`text-xs font-black uppercase tracking-widest ${o.paymentStatus === 'PAID' ? 'text-emerald-600' : o.paymentStatus === 'PARTIAL' ? 'text-blue-600' : 'text-amber-600'}`}>
+                                      <div className={`text-xs font-black uppercase tracking-widest ${o.paymentStatus === 'PAID' ? 'text-emerald-600' : ['PARTIAL', 'PARTIAL_PAID', 'PARTIALLY_PAID'].includes(o.paymentStatus) ? 'text-blue-600' : 'text-amber-600'}`}>
                                         {o.paymentStatus}
                                       </div>
                                     </div>
                                   </div>
 
-                                  {o.paymentMethod === 'COD_20' && o.paymentStatus === 'PARTIAL' && (
+                                  {['COD', 'COD_20'].includes(o.paymentMethod) && ['PARTIAL', 'PARTIAL_PAID'].includes(o.paymentStatus) && (
                                     <button 
                                       onClick={(e) => { 
                                         e.stopPropagation(); 
-                                        api.patch(`/api/orders/${o._id}/finalize-cod`).then(()=>{ notify('COD finalized & bill generated','success'); load(page) }).catch(()=>notify('Finalize failed','error'))
+                                        api.patch(`/api/orders/${o._id}/finalize-cod`).then(()=>{ notify('COD finalized & bill generated','success'); load(page) }).catch((err)=>notify(err.response?.data?.message || 'Finalize failed','error'))
                                       }}
                                       className="w-full bg-blue-600 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-100 hover:bg-blue-500 transition-all transform hover:-translate-y-0.5"
                                     >
