@@ -550,6 +550,32 @@ export default function Enquiry() {
       } else {
         if (!dataToUse && hasOrderId) {
           console.log('Missing prepareData for callback order verification!')
+        } else if (!hasOrderId && dataToUse?.cashfreeOrderId) {
+          // User hit Back from Cashfree or reloaded checkout!
+          console.log('Detected draft payment without redirect query. Checking sync-pending with backend...');
+          try {
+            const { data: syncRes } = await api.post('/api/orders/sync-pending', {
+              cashfreeOrderId: dataToUse.cashfreeOrderId
+            });
+            if (syncRes?.paid) {
+              console.log('Payment was already made! Navigating to order success:', syncRes);
+              localStorage.removeItem('prepareData');
+              setPrepareData(null);
+              clearCart();
+              notify('Payment verified! Your order has been placed.', 'success');
+              navigate(`/order-success/${syncRes.orderId}`, {
+                state: {
+                  orderId: syncRes.orderId,
+                  orderNumber: syncRes.orderNumber,
+                  totalAmount: dataToUse.totalAmount,
+                  paymentMethod: dataToUse.paymentMethod
+                }
+              });
+              return;
+            }
+          } catch (syncErr) {
+            console.warn('sync-pending check failed or payment still pending:', syncErr.message);
+          }
         } else {
           console.log('No active callback or missing order_id in query parameters.')
         }
